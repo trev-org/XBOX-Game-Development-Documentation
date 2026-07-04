@@ -1,0 +1,90 @@
+---
+title: "Lighting API reference"
+sidebarTitle: "Lighting"
+description: "Reference for the GDK dynamic lighting API: enumerate compatible peripherals, push color buffers, and respect platform-wide lighting preferences."
+icon: "lightbulb"
+---
+
+The GDK dynamic lighting API drives RGB illumination on supported gaming peripherals — keyboards, mice, headsets, controllers — through a single, vendor-neutral surface. Your title pushes color buffers; the platform brokers to whichever connected hardware supports addressable lighting.
+
+For a conceptual walkthrough see [Dynamic Lighting](/gdk/dynamic-lighting).
+
+## Headers and libraries
+
+```cpp
+#include <XGameLighting.h>
+```
+
+Link against `xgameruntime.lib`.
+
+## Capability negotiation
+
+Before drawing, query each connected device for its capabilities:
+
+- **Lamp count** — how many addressable LEDs the device exposes
+- **Lamp position** — 3D coordinates relative to the device frame, for mapping a logical effect to physical LEDs
+- **Update mode** — whether the device accepts per-frame updates or only periodic refreshes
+- **Color depth** — RGB vs. RGBW vs. monochrome
+
+Query once at startup and again whenever a `device-added` event fires.
+
+## Frame loop
+
+A typical render loop for lighting:
+
+```cpp
+// 1. Compute the logical effect for this frame
+std::vector<RGBColor> effectBuffer = ComputeLightingEffect(gameState);
+
+// 2. For each compatible device, remap and submit
+for (auto& device : compatibleDevices) {
+    std::vector<RGBColor> deviceBuffer = RemapToDeviceLamps(
+        effectBuffer, device.lampPositions);
+
+    XGameLightingSubmitColorBuffer(device.handle,
+        deviceBuffer.data(),
+        static_cast<uint32_t>(deviceBuffer.size()));
+}
+```
+
+Keep the per-device remap fast — lighting runs on the render thread budget.
+
+## Player preference checks
+
+Before pushing color buffers each frame, verify the platform-wide dynamic lighting setting and the per-app override. If either is off, skip submission entirely (don't push black; the OS hands control back to the device's vendor profile).
+
+```cpp
+bool enabled = false;
+XGameLightingIsEnabledForTitle(&enabled);
+if (!enabled) {
+    // Player has disabled lighting for this title. Stop submitting.
+    return;
+}
+```
+
+## Suspend handling
+
+When your title is suspended or constrained, stop pushing lighting updates. The OS does not zero the device on suspend by default; if you leave a bright cue running, the player will see it on the dashboard. Push a final "idle" color buffer in your suspend handler.
+
+## Windows.Devices.Lights.LampArray (PC)
+
+On PC, the **`Windows.Devices.Lights.LampArray`** WinRT API is the underlying mechanism the GDK lighting surface targets. If you need finer control than the GDK shim provides, you can use `LampArray` directly:
+
+| Type | Purpose |
+| --- | --- |
+| `LampArray` | A single addressable lighting device. Enumerated via `Windows.Devices.Enumeration`. |
+| `LampArray.LampCount` / `LampInfo` | Number and physical layout of lamps, including XY position and key/lamp purpose hints. |
+| `LampArray.SetColor` / `SetColors` / `SetColorsForIndices` / `SetColorsForKey` | Push colors per-lamp, per-index, per-purpose (gamepad button, keyboard key), or whole-array. |
+| `LampArray.RequestMessageAsync` | Vendor extension channel for device-specific effects. |
+| `LampArrayEffectPlaylist`, `LampArrayColorRampEffect`, `LampArrayBlinkEffect`, etc. | Built-in effect primitives that run on the device without per-frame CPU cost. |
+| `LampArray.IsAvailable` / `IsConnected` / `AvailabilityChanged` | Player-preference and hot-plug awareness; mirrors `XGameLightingIsEnabledForTitle`. |
+| `LampArrayKind` | Hint for the device class (`Keyboard`, `Mouse`, `Headset`, `Chassis`, `GameController`, `Peripheral`, `Furniture`, `Art`, `Speaker`, `Notification`). |
+
+The GDK surface is preferred for cross-platform titles because it works identically on PC and console. Drop down to `LampArray` only when you need vendor effects or purpose-aware addressing not yet exposed by the GDK shim.
+
+## See also
+
+- [Dynamic Lighting](/gdk/dynamic-lighting) — conceptual guide
+- [Lighting API reference (Microsoft Learn)](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/lighting/gc-reference-lighting-toc) — full per-function documentation
+- [Windows.Devices.Lights namespace (Microsoft Learn)](https://learn.microsoft.com/en-us/uwp/api/windows.devices.lights) — `LampArray` WinRT API
+- [GameInput](/reference/gameinput) — the input-side companion API

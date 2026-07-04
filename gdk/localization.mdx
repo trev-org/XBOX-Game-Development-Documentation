@@ -1,0 +1,125 @@
+---
+title: "Localize your GDK title across regions and languages"
+sidebarTitle: "Localization"
+description: "Plan localization for your GDK title: MicrosoftGame.config locale lists, resource selection, font and IME considerations, and per-region store listings."
+icon: "language"
+---
+
+Shipping globally on XBOX and the Microsoft Store means declaring which languages your title supports, providing localized resources, and letting the platform select the right strings and assets based on the player's console language. The GDK gives you the manifest entries and runtime helpers; the rest is conventional Win32-style resource loading.
+
+## Declare supported languages
+
+List every language your title ships with in `MicrosoftGame.config` under the `Resources` element. The platform uses this list to:
+
+- Decide which store listing to show in each market
+- Pick the closest matching language for the in-game UI
+- Validate that you provide a localized title name and description per language at cert
+
+```xml
+<Resources>
+  <Resource Language="en-US" />
+  <Resource Language="fr-FR" />
+  <Resource Language="de-DE" />
+  <Resource Language="ja-JP" />
+  <Resource Language="zh-CN" />
+</Resources>
+```
+
+The first entry is the **default** language and is the fallback used when the player's console language is not in the list.
+
+## Runtime language selection
+
+At runtime, query the player's preferred UI language from the platform and load the matching string table or asset bundle. The recommended call is the Win32 `GetUserPreferredUILanguages` API, which returns a prioritized list.
+
+```cpp
+ULONG numLanguages = 0;
+ULONG bufferSize = 0;
+GetUserPreferredUILanguages(
+    MUI_LANGUAGE_NAME,
+    &numLanguages,
+    nullptr,
+    &bufferSize);
+
+std::vector<wchar_t> buffer(bufferSize);
+GetUserPreferredUILanguages(
+    MUI_LANGUAGE_NAME,
+    &numLanguages,
+    buffer.data(),
+    &bufferSize);
+
+// buffer contains a double-null-terminated list of BCP-47 tags,
+// for example: L"en-US\0fr-FR\0\0"
+```
+
+## Fonts and scripts
+
+- **Latin / Cyrillic / Greek.** A single font with a broad glyph range usually covers all European languages.
+- **CJK (Chinese, Japanese, Korean).** Plan for large glyph atlases. Use the platform font fallback or ship a dedicated CJK font.
+- **Arabic and Hebrew.** Right-to-left layout requires bidi-aware text rendering. Test your HUD layouts in both LTR and RTL contexts.
+
+## IME and text input
+
+For any free-form text input (player names, chat, search), use the platform virtual keyboard via `XGameUiShowTextEntryAsync`. The keyboard automatically switches to the correct IME for the player's language — no per-language handling required in your title.
+
+## Store listings
+
+Each declared language requires a store listing in Partner Center: title, description, screenshots, and feature lists. Missing or machine-translated listings are a common cert failure. Plan localization of marketing copy alongside in-game strings.
+
+## Console-supported languages
+
+The console exposes a fixed set of UI languages — the shell will only let the player pick from that list. Things to know:
+
+- The supported list grows over time; treat it as a runtime query, not a hard-coded constant
+- If the player picks a language your title does not support, fall back to your default `Resource`
+- Cert validates that you ship at least the title's stated supported languages — do not list languages you cannot deliver
+
+## Determining locale and geolocation
+
+Two distinct concepts:
+
+- **Locale** — the user's UI language preference (`GetUserPreferredUILanguages`); affects text and formatting
+- **Geolocation** — the user's market or region (`XSystemGetXboxLiveSandboxId` \+ market metadata); affects content gating, store catalog, age ratings
+
+Never assume locale equals geolocation. A Japanese-speaking player in the US sees Japanese UI but US store offerings.
+
+## Supported and unsupported locales
+
+Some locales are platform-supported but **not** valid as a default for a shipping title (e.g. constructed locales, ICU-only entries). When choosing your default `Resource`:
+
+- Pick a widely supported BCP-47 tag (`en-US`, `fr-FR`)
+- Avoid region-neutral tags (`fr` without a region) for the default
+- Map runtime locale to your shipping locale through a fallback table; do not let the OS surprise you
+
+## Localizing packaged resources
+
+The platform ships a Windows-MUI-style mechanism for per-locale resources:
+
+- Place locale-specific resources in a `Resources\<locale>` directory
+- The runtime resolves the closest matching resource at load time via Windows MUI fallback rules
+- Use `makepri` to build the package resource index (PRI); checked in to your build pipeline
+- For very large per-locale assets (voice-over, FMV), tag them with Intelligent Delivery `<Language>` so only the user's language installs
+
+Pair this with [Intelligent Delivery language recipes](/gdk/intelligent-delivery) to keep install size tight.
+
+## Supported NLS APIs
+
+Most Win32 NLS (National Language Support) APIs work on the GDK exactly as on Windows:
+
+- Locale name parsing (`LocaleNameToLCID`, `LCIDToLocaleName`)
+- Sort tables and culture-aware compare (`CompareStringEx`)
+- Number, currency, and date formatting (`GetNumberFormatEx`, `GetDateFormatEx`)
+- Calendars (Gregorian, Japanese, Buddhist, etc.)
+
+A small number of legacy NLS surfaces are blocked or returned as stubs on the console. Validate any NLS code path on a dev kit before depending on it.
+
+## Speech accessibility and localization
+
+Game Chat 2 TTS / STT supports a documented set of languages — narrower than the UI language list. List the supported chat languages explicitly in your store listing; otherwise players will assume chat localization matches the UI list and report bugs.
+
+## See also
+
+- [Game Config](/gdk/game-config) — where the `Resources` element lives
+- [Game Config Schema](/reference/microsoftgameconfig-schema)
+- [Store Listing](/publishing/store-listing)
+- [Intelligent Delivery](/gdk/intelligent-delivery) — language recipes
+- [Speech accessibility](/principles/speech-accessibility)

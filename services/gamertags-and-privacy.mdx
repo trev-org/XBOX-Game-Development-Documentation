@@ -1,0 +1,72 @@
+---
+title: "Gamertags and privacy"
+sidebarTitle: "Gamertags & privacy"
+description: "Modern gamertags, privacy permission checks, and string verification on XBOX."
+icon: "shield-halved"
+---
+
+Display user-generated content (gamertags, chat, club names) safely and respect each player's privacy settings.
+
+## Modern gamertags
+
+- Gamertags can include Unicode characters and a numeric suffix (`Player#1234`).
+- Use [XSAPI Profile](/reference/xsapi-profile) to fetch the canonical display string.
+- Always render the modern gamertag exactly as returned — do not strip the suffix.
+
+## Privacy checks
+
+Before sending invites, voice, text, or sharing UGC, check permissions with [XSAPI Privacy](/reference/xsapi-privacy):
+
+- `XblPrivacyCheckPermissionAsync` — single-permission check.
+- `XblPrivacyBatchCheckPermissionAsync` — batch check for many users.
+
+## String verification
+
+Validate user-entered strings (gamertags, clan names, custom presence) against the Microsoft policy and profanity filter with [XSAPI String Verify](/reference/xsapi-string-verify) before display or storage.
+
+## Classic vs modern gamertags
+
+- **Classic gamertags** — single-segment ASCII tags issued before 2019; still valid and still display verbatim
+- **Modern gamertags** — Unicode primary tag plus optional numeric suffix; written `Player#1234`
+- Always fetch the canonical display string via `XblProfileGetUserProfileAsync`; never reconstruct from cached parts
+- Render the suffix in the same style the shell uses (smaller, lighter weight is the platform convention)
+
+## Modern gamertag rules and testing
+
+When validating user-entered gamertags (rename flows, clan tags that mimic gamertags):
+
+- The platform enforces the canonical character set (Unicode categories allowed, profanity blocked)
+- Rate-limit user-driven rename queries; gamertag availability calls are expensive
+- Test the **backwards-compatibility** path — older accounts may not have a suffix; your UI must collapse the `#` separator
+- Cert verifies that modern gamertags render correctly in HUD, scoreboards, chat, leaderboards, and invites
+
+## Privilege checks
+
+In addition to privacy permissions, gate features by **user privilege** before showing UI:
+
+- `XPRIVILEGE_COMMUNICATIONS` — text/voice chat
+- `XPRIVILEGE_MULTIPLAYER_SESSIONS` — online multiplayer
+- `XPRIVILEGE_VIEW_FRIENDS_LIST`
+- `XPRIVILEGE_USER_CREATED_CONTENT` — UGC creation and consumption
+- `XPRIVILEGE_GAME_DVR`, `XPRIVILEGE_BROADCAST`
+- `XPRIVILEGE_PROFILE_VIEWING`, `XPRIVILEGE_ADD_FRIEND`, `XPRIVILEGE_SHARE_KINECT_CONTENT`
+
+Check with `XUserCheckPrivilege` (client) or evaluate XSTS claims (server). Privileges combine with privacy — a user may have the privilege but lack permission to communicate with a specific other user.
+
+### Client-side vs server-side privilege checks
+
+- **Client** — check before showing UI; cache for the session, re-check on user state change
+- **Server** — re-validate from the XSTS claims for any service-side action; client claims may be stale or spoofed
+
+## Reporting and string verification
+
+- Combine `XSAPI String Verify` with reputation/feedback submission so abusive content is both blocked and surfaced
+- Run any user-visible string through string-verify before storing it server-side
+- For shared title state (clan names, custom presence) run verify on update _and_ on read in case policy changes
+
+## Related
+
+- [Social](/services/social)
+- [People system](/services/people-system)
+- [XSAPI Privacy reference](/reference/xsapi-privacy) · [XSAPI String Verify reference](/reference/xsapi-string-verify)
+- [XSAPI Profile reference](/reference/xsapi-profile)

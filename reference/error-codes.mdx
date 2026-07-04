@@ -1,0 +1,418 @@
+---
+title: "GDK error codes reference (XGameErr.h)"
+sidebarTitle: "GDK error codes"
+description: "Reference for FACILITY_GAMING HRESULT ranges defined in XGameErr.h: how to decode codes, common values per area, and retry guidance."
+icon: "circle-exclamation"
+---
+
+GDK-specific failures are returned as `HRESULT` values in the **`FACILITY_GAMING` (0x803)** facility. The constants are declared in `XGameErr.h` and follow the standard Win32 HRESULT layout: severity, facility, customer bit, and a per-area code.
+
+For the conceptual side of error handling — retries, async patterns, crash reporting — see [Error handling](/gdk/error-handling).
+
+## Header
+
+```cpp
+#include <XGameErr.h>
+```
+
+## Layout
+
+GDK HRESULTs follow the standard 32-bit Win32 HRESULT structure:
+
+```text
+31  30..28   27   26..16    15..0
+ S   reserved C   Facility  Code
+```
+
+- **S** — severity (1 = failure)
+- **Facility** — `FACILITY_GAMING` (0x803) for GDK codes
+- **Code** — per-area integer
+
+Use the `HRESULT_FACILITY` and `HRESULT_CODE` macros to inspect a returned value.
+
+```cpp
+HRESULT hr = XUserAddResult(async, &user);
+if (FAILED(hr) && HRESULT_FACILITY(hr) == FACILITY_GAMING) {
+    LogGdkError(hr);
+}
+```
+
+## Code ranges by area
+
+| Range | Area | Examples |
+| --- | --- | --- |
+| `E_GAMERUNTIME_*` | XGameRuntime init | `E_GAMERUNTIME_NOT_INITIALIZED`, `E_GAMERUNTIME_DLL_NOT_FOUND` |
+| `E_GAMEUSER_*` | XUser sign-in | `E_GAMEUSER_RESOLVE_USER_ISSUE_REQUIRED`, `E_GAMEUSER_NO_DEFAULT_USER`, `E_GAMEUSER_NO_TITLE_ID` |
+| `E_GAMEPACKAGE_*` | XPackage | `E_GAMEPACKAGE_APP_NOT_PACKAGED`, `E_GAMEPACKAGE_DOWNLOAD_REQUIRED` |
+| `E_GAMESTORE_*` | XStore | `E_GAMESTORE_NETWORK_ERROR`, `E_GAMESTORE_LICENSE_ACTION_NOT_APPLICABLE_TO_PRODUCT` |
+| `E_GS_*` | XGameSave | `E_GS_QUOTA_EXCEEDED`, `E_GS_CONTAINER_NOT_IN_SYNC`, `E_GS_BLOB_NOT_FOUND` |
+| `E_GAMESTREAMING_*` | XGameStreaming | `E_GAMESTREAMING_NOT_INITIALIZED`, `E_GAMESTREAMING_CLIENT_NOT_CONNECTED` |
+
+<Note>
+  The exact set of constants changes per GDK release. Always check `XGameErr.h` in the GDK version you're shipping against for the authoritative list.
+</Note>
+
+## Decoding at runtime
+
+For a developer-friendly log entry, decode the facility and code parts explicitly:
+
+```cpp
+void LogHResult(const char* call, HRESULT hr)
+{
+    if (SUCCEEDED(hr)) return;
+
+    fprintf(stderr,
+        "%s failed: HRESULT 0x%08X (facility=%d code=%u)\n",
+        call, hr, HRESULT_FACILITY(hr), HRESULT_CODE(hr));
+}
+```
+
+## Standard Win32 codes
+
+GDK APIs also surface plain Win32 HRESULTs where appropriate:
+
+| Code | Meaning in GDK context |
+| --- | --- |
+| `E_INVALIDARG` | Bad parameter — fix in code, do not retry |
+| `E_OUTOFMEMORY` | Allocation failed — check title budget |
+| `E_ABORT` | Async cancelled — user backed out of UI |
+| `HRESULT_FROM_WIN32(ERROR_CANCELLED)` | Player cancelled an OS dialog |
+| `HTTP_E_STATUS_*` | Wraps an HTTP status from a network call — retry-with-backoff |
+
+## Retry classification
+
+A pragmatic mapping for retry policy:
+
+- **Always retry** (transient): `HTTP_E_STATUS_SERVER_ERROR`, `WININET_E_*` timeouts, `E_GAMESTORE_NETWORK_ERROR`.
+- **Surface to UI**: `E_GAMEUSER_RESOLVE_USER_ISSUE_REQUIRED`, `E_GAMEUSER_NO_DEFAULT_USER`. These need the player to act.
+- **Log and fail**: `E_INVALIDARG`, `E_GAMERUNTIME_NOT_INITIALIZED`, `E_GAMERUNTIME_DLL_NOT_FOUND`. These are programming errors — do not retry.
+
+## See also
+
+- [Error handling](/gdk/error-handling) — patterns and retry strategies
+- [Async programming model](/gdk/async-programming) — where `HRESULT` shows up in callbacks
+- [XBOX Live HRESULT error codes](/reference/xbl-error-codes) — XSAPI, XAL, Auth Manager, and HTTP Client codes
+- [Error codes (Microsoft Learn)](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/errorcodes) — authoritative per-code listing
+
+## Constant reference
+
+Constant definitions for the GDK error code values declared in `XGameErr.h`. Each table is sorted by increasing `HRESULT` value to make numeric lookup easier. For comprehensive tool and platform HRESULT coverage (including launch, deployment, and diagnostics tool scenarios), see Error Lookup (`xberror.exe`).
+
+### Game runtime
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAME_MISSING_GAME_CONFIG` | `0x87E5001F` | This app is missing a required `MicrosoftGame.config` file. | Add a valid `MicrosoftGame.config` to the package, then rebuild/redeploy. |
+| `E_GAMERUNTIME_NOT_INITIALIZED` | `0x89240100` | The game runtime is not initialized. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_DLL_NOT_FOUND` | `0x89240101` | The game runtime DLL was not found. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_VERSION_MISMATCH` | `0x89240102` | The game runtime DLL does not support this version of the GDK. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_WINDOW_NOT_FOREGROUND` | `0x89240103` | The operation requires the application window to be in the foreground. | Bring the app window to the foreground, then retry the operation. |
+| `E_GAMERUNTIME_SUSPENDED` | `0x89240104` | The game runtime is in a suspended state. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_UNINITIALIZE_ACTIVEOBJECTS` | `0x89240105` | The game runtime has active objects at `XGameRuntimeUninitialize`. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_MULTIPLAYER_NOT_CONFIGURED` | `0x89240106` | No multiplayer activity is set on the service for this user on this title. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_OPTIONS_MISMATCH` | `0x89240109` | The runtime was already initialized with a different set of options. Uninitialize before reinitializing with new options. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_OPTIONS_NOT_SUPPORTED` | `0x8924010A` | The options passed are not compatible with the game's package. The game config information must match the package. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_GAMECONFIG_BAD_FORMAT` | `0x8924010B` | The game config passed to `Initialize` cannot be parsed. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+| `E_GAMERUNTIME_INVALID_HANDLE` | `0x8924010C` | Handles are not valid for use across runtime initializations. | Validate runtime init/uninit order, package compatibility, and app state before retrying. |
+
+### Game user
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAMEUSER_MAX_USERS_ADDED` | `0x89245100` | Cannot add this user because the maximum number of users has been reached. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_SIGNED_OUT` | `0x89245101` | Cannot perform the operation because the user is signed out. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_RESOLVE_USER_ISSUE_REQUIRED` | `0x89245102` | UI is required to resolve an issue with this user. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_DEFERRAL_NOT_AVAILABLE` | `0x89245103` | Not an appropriate time to request deferral. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_USER_NOT_FOUND` | `0x89245104` | User matching the ID was not found. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_NO_TOKEN_REQUIRED` | `0x89245105` | No token is required for this call. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_NO_DEFAULT_USER` | `0x89245106` | No current default user. If you get this error, call `XUserAddAsync` again without `AddDefaultUserSilently`. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_FAILED_TO_RESOLVE` | `0x89245107` | Failed to resolve the given privilege. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_NO_TITLE_ID` | `0x89245108` | An XBOX Live TitleId must be configured. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_UNKNOWN_GAME_IDENTITY` | `0x89245109` | The game identity is not recognized. The MSAAppId and TitleId do not match the ones associated to the game. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_NO_PACKAGE_IDENTITY` | `0x89245110` | A package identity must be configured. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_FAILED_TO_GET_TOKEN` | `0x89245111` | The token request failed. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_INVALID_APP_CONFIGURATION` | `0x89245112` | The MSAAppId in the game config is invalid or not configured for the authentication stack. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_MALFORMED_MSAAPPID` | `0x89245113` | The MSAAppId in the game config does not match the expected format (16 character string or GUID). | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_INCONSISTENT_MSAAPPID_AND_TITLEID` | `0x89245114` | The MSAAppId and TitleId in the game config do not match the ones associated to the game. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+
+### Game package
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAMEPACKAGE_APP_NOT_PACKAGED` | `0x89245200` | The game is not packaged in a container. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_NO_INSTALLED_LANGUAGES` | `0x89245201` | The game uses Intelligent Delivery to selectively install languages, but none are installed. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_NO_STORE_ID` | `0x89245202` | The `StoreId` attribute must be set in the application's game config. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_INVALID_SELECTOR` | `0x89245203` | A chunk selector was provided that does not resolve to a chunk in the package. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_DOWNLOAD_REQUIRED` | `0x89245204` | One or more required chunks must be downloaded to mount the package on this device. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_NO_TAG_CHANGE` | `0x89245205` | Change installed chunks in this package using Features, not tags. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_DLC_NOT_SUPPORTED` | `0x89245206` | Game does not support the DLC package. Ensure correct DLC compatibility in the game config. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_DUPLICATE_ID_VALUES` | `0x89245207` | The package contains more than one executable mapping to the same `ID` attribute. Check for duplicate `ID` attributes in the `Executable` elements. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_NO_PACKAGE_IDENTIFIER` | `0x89245208` | Could not resolve an identifier for the package. The package might not be installed. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_CONFIG_NO_ROOT_NODE` | `0x89245209` | Could not find a root `<Game>` node in the `MicrosoftGame.config` file. Check that the file is properly formatted. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_ZERO_VERSION` | `0x8924520A` | The `Version` attribute in the `Identity` node in `MicrosoftGame.config` cannot be `0.0.0.0`. Increment or remove this attribute. If no version is specified, the default is `1.0.0.0`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_NO_MSAAPPID_NOTITLEID` | `0x8924520B` | The `MSAAppId` or `TitleId` element in `MicrosoftGame.config` is missing. Both must be specified when using `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_DEPRECATED_PC_ENTRIES` | `0x8924520C` | The `DesktopRegistration` entries `modFolder`, `enableWritesToPackageRoot`, `disableRegistryWriteVirtualization`, and `disableFilesystemWriteVirtualization` are deprecated in `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_SUM_REQUIRES_MSAAPPID` | `0x8924520D` | The `MSAAppId` and `TitleId` elements are required when using the Simplified User Model (`AdvancedUserModel` element) and `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_NO_CODE_CLOUD_SAVES_REQUIRES_MSAAPPID` | `0x8924520E` | The `MSAAppId` and `TitleId` elements are required when using No Code Cloud Saves (`NoCodePCRoot` element) and `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_MSAAPPID_OR_TITLEID_IS_DEFAULT` | `0x8924520F` | The `MSAAppId` or `TitleId` element is a default value. If `NoCodePCRoot` or `AdvancedUserModel` is specified, both `TitleId` and `MSAAppId` must be valid IDs from Partner Center when using `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+
+### Game store
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAMESTORE_LICENSE_ACTION_NOT_APPLICABLE_TO_PRODUCT` | `0x89245300` | The game requested a license for a product that cannot be licensed. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_NETWORK_ERROR` | `0x89245301` | The game failed to communicate with the store network. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_SERVER_ERROR` | `0x89245302` | The game received a bad response from the store server. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_INSUFFICIENT_QUANTITY` | `0x89245303` | The user does not have enough of this consumable to use the requested amount. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_ALREADY_PURCHASED` | `0x89245304` | The user already owns this product. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_LICENSE_ACTION_THROTTLED` | `0x89245305` | The game excessively queried a license for the product and is now throttled. Limit is 30 licensing attempts within 10 minutes for the same product. | Verify store connectivity, entitlement/license state, then retry the request. |
+
+### Game streaming
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAMESTREAMING_NOT_INITIALIZED` | `0x89245400` | The XGameStreaming runtime is not initialized. Call `XGameStreamingInitialize` before calling other APIs. | Ensure streaming is initialized and client/session context is valid, then retry. |
+| `E_GAMESTREAMING_CLIENT_NOT_CONNECTED` | `0x89245401` | The specified client is not connected. | Ensure streaming is initialized and client/session context is valid, then retry. |
+| `E_GAMESTREAMING_NO_DATA` | `0x89245402` | The requested data is not available. The data might be available later. | Ensure streaming is initialized and client/session context is valid, then retry. |
+| `E_GAMESTREAMING_NO_DATACENTER` | `0x89245403` | The current machine is not running in a datacenter. | Ensure streaming is initialized and client/session context is valid, then retry. |
+| `E_GAMESTREAMING_NOT_STREAMING_CONTROLLER` | `0x89245404` | The current reading did not come from a streaming controller. | Ensure streaming is initialized and client/session context is valid, then retry. |
+
+### Game save
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GS_INVALID_CONTAINER_NAME` | `0x80830001` | The name of the container is invalid. Valid container name characters include uppercase/lowercase letters, digits, underscores, and forward slashes. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_NO_ACCESS` | `0x80830002` | The operation failed because the title does not have access to the container storage spaces. Check that the SCID and TitleId are configured correctly. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_OUT_OF_LOCAL_STORAGE` | `0x80830003` | The device does not have enough storage capacity to save the game. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_USER_CANCELED` | `0x80830004` | The user canceled the download of their save games. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_UPDATE_TOO_BIG` | `0x80830005` | The size of the save update is too large. The total size of an XGameSave update must be smaller than `GS_MAX_BLOB_SIZE` (16 MB). | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_QUOTA_EXCEEDED` | `0x80830006` | The title's storage quota for this user has been exceeded. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_PROVIDED_BUFFER_TOO_SMALL` | `0x80830007` | The buffer provided to the API was too small. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_BLOB_NOT_FOUND` | `0x80830008` | The specified blob cannot be found. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_NO_SERVICE_CONFIGURATION` | `0x80830009` | The title is not properly configured for connected storage. Check that the SCID is correct and the title is configured in Partner Center. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_CONTAINER_NOT_IN_SYNC` | `0x8083000A` | The container is not synchronized yet. Ensure the XGameSave container is synchronized before submitting updates. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_CONTAINER_SYNC_FAILED` | `0x8083000B` | The synchronization of the container failed. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_USER_NOT_REGISTERED_IN_SERVICE` | `0x8083000C` | The user's MSA is not yet an XBOX services account. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_HANDLE_EXPIRED` | `0x8083000D` | The handle used by the function expired and must be reacquired. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_ASYNC_FUNCTION_REQUIRED` | `0x8083000E` | This synchronous function is being called on a time-sensitive thread and risks deadlocks. Use the async implementation instead. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_PROVIDER_MISMATCH` | `0x8083000F` | The game is mixing XGameSave and XGameSaveFiles calls, which is not supported. | See Game Saves Debugging for detailed troubleshooting guidance. |
+
+## Console tools and transport
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_APP_USER_TERMINATE_REQUEST` | `0x87E1001D` | A user explicitly requested app termination. | A user explicitly requested app termination. |
+| `E_DSTORAGE_XVD_DEVICE_NOT_SUPPORTED` | `0x89240004` | The specified XVD isn't on a supported NVMe device. | The specified XVD isn't on a supported NVMe device. |
+| `E_COULD_NOT_CONNECT` | `0x8C110303` | Failed to connect to the specified devkit. | No connection could be made to the target console. Verify the specified HostName or IP address. Check the firewall, the network settings, and the ability to ping the console. |
+| `E_XTFAPP_APPLICATION_EXITED_BEFORE_ACTIVATION_COMPLETE` | `0x8D160122` | The application exited or crashed before completing activation. | None. |
+| `E_XTFAPP_DIRECTORY_NOT_FOUND` | `0x8D16018D` | The provided directory was not found. | Ensure that the directory exists. |
+
+## XBOX PC Remote Iteration
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_PROCESSNOTFOUND` | `0x8C114002` | Process not found. Verify the process ID matches an active target process. | Verify the process ID of the target process by checking the list of running processes; provide a valid process ID of an active process. |
+| `E_INVALIDPROCESSID` | `0x8C114003` | Invalid process ID. Provide a numeric process ID. | Provide a valid process ID containing only numbers. |
+| `E_INVALIDPIN` | `0x8C114004` | PIN is not in the expected format. Enter a valid 6-character PIN. | Input the correct PIN on the client device. |
+| `E_INVALIDSSHKEY` | `0x8C114005` | SSH key is not in expected form. Use a valid public key and retry pairing. | Generate a valid SSH public key; execute the pairing again providing the path to the valid key. |
+| `E_PAIRINGTIMEOUT` | `0x8C114006` | Pair mode exceeded maximum time. Restart pairing and enter the PIN within 2 minutes. | Restart PIN pairing process; input PIN on client device before timeout (2 min). |
+| `E_TOOMANYFAILURES` | `0x8C114007` | Too many failed PIN attempts. Restart pairing and enter the correct PIN. | Restart PIN pairing process; input correct PIN on client device. |
+| `E_CLIENTNOTAUTHORIZED` | `0x8C114008` | Device rejected client. Complete pairing successfully, then retry the connection. | Complete PIN pairing process successfully; execute the connection request again. |
+| `E_SERVERNOTAUTHORIZED` | `0x8C114009` | Client rejected device. Complete pairing successfully, then retry the connection. | Complete PIN pairing process successfully; execute the connection request again. |
+| `E_SSHKEYTOOLARGE` | `0x8C11400A` | SSH key is too large. Generate a supported key type/size and retry with that key. | Generate a new SSH key using a supported algorithm and size (e.g., ED25519 or RSA-2048); ensure the correct key is specified for the RIT connection. |
+| `E_GAMENOTSUSPENDED` | `0x8C11400B` | Specified process cannot be resumed. Verify the process is suspended before calling resume. | Verify the process state before resuming; ensure no other tool has already resumed or terminated the process. |
+| `E_GAMENOTRUNNING` | `0x8C11400C` | No game process is running. Launch the game before calling game-process operations. | Verify processes currently running; launch the game before exercising game-process dependent API. |
+| `E_GAMEOVERSUSPENDED` | `0x8C11400D` | Thread suspend count is not zero. Resume until the suspend count returns to zero, or restart the process. | Resume the thread repeatedly until suspend count reaches zero, or restart the process to reset thread state. |
+| `E_GAMESTILLRUNNING` | `0x8C11400E` | Only one game may run at a time. Stop the currently running game before launching another. | Ensure there is no previous game process running; terminate the currently running game (if any) before launching another; retry launching the game process. |
+| `E_GAMEEXITABANDONED` | `0x8C11400F` | Wait for game exit was abandoned. Verify PID/TID and retry termination. | Check if the game process is still running; verify if the right process ID and thread ID were provided for termination; retry to terminate the process. |
+| `E_GAMEFILEPATHNOTEXIST` | `0x8C114010` | Game file path does not exist. Validate the remote path and confirm deployment succeeded. | Validate the path exists on the remote device; confirm deployment succeeded. |
+| `E_SERVERTOOOLD` | `0x8C114011` | Server version is too old for this client. Update `wdEndpoint` on the remote machine. | Update the `wdEndpoint` on the remote machine to the latest version. |
+| `E_NAMERESOLUTIONFAILED` | `0x8C114012` | Could not resolve remote machine name. Verify hostname and DNS, or test with IP address. | Verify hostname spelling, DNS configuration, and network connectivity; use IP address to isolate name resolution issues. |
+| `E_INVALIDADDRESS` | `0x8C114013` | Invalid address. Correct the address format and use a valid IPv4 address. | Confirm the right IP address; correct the address format and ensure it uses an IPv4 protocol. |
+| `E_CONNECTIONERROR` | `0x8C114014` | Connection failed. Check network/firewall/service availability and retry. | Check network connectivity, firewall rules, service availability on the remote machine; check device visibility (they should be able to ping each other); retry the connection with logging enabled. |
+| `E_LISTENERALREADYRUNNING` | `0x8C114015` | Another listener is active. Stop the existing endpoint instance or reuse it. | Stop the existing running instance of the endpoint before launching a new one; alternatively, use the instance of the endpoint already running instead of launching a new one. |
+| `E_ADMIN_REQUIRED` | `0x8C114016` | Administrator privileges required. Run the endpoint as Administrator. | Re-run the endpoint as Administrator. |
+| `E_INVALIDTHREADID` | `0x8C114017` | Invalid thread ID. Provide a numeric thread ID. | Provide a valid thread ID containing only numbers. |
+| `E_INVALIDPIDTID_PAIR` | `0x8C114018` | Process ID is not associated with thread ID. Re-query threads for that process and retry. | Re-query thread list from the process; ensure IDs are not cached or stale; validate that the thread ID was obtained from the correct process context. |
+| `E_THREADNOTFOUND` | `0x8C114019` | Thread not found. Re-query current thread IDs and retry with a non-stale ID. | Re-query thread list from the process; ensure IDs are not cached or stale; validate that the thread ID was obtained from the correct process context. |
+
+## XAPU
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `XAPU_E_QUEUE_FULL` | `0x8AC81000` | XAPU command queue is full. | XAPU command queue is full. |
+| `XAPU_E_PENDING_RESULTS` | `0x8AC81001` | No result available at the moment. | No result available at the moment. |
+| `XAPU_E_INVALID_COMMAND` | `0x8AC81002` | Invalid XAPU command value. | Invalid XAPU command value. |
+| `XAPU_E_INVALID_STREAM_INDEX` | `0x8AC81003` | Invalid stream index in the submitted XAPU command. | Invalid stream index in the submitted XAPU command. |
+| `XAPU_E_NO_DEVICE_RESOURCES` | `0x8AC81004` | Not enough resources on the system to support the requested number of streams. | Not enough resources on the system to support the requested number of streams. |
+| `XAPU_E_ALREADY_ACTIVE` | `0x8AC81005` | The stream is already active. | The stream is already active. |
+| `XAPU_E_BUFFER_TOO_SMALL` | `0x8AC81006` | Output buffer is too small to fit the data. | Output buffer is too small to fit the data. |
+| `XAPU_E_PROCESSING_ERROR` | `0x8AC81007` | The hardware failed to process the command. | The hardware failed to process the command. |
+| `XAPU_E_BAD_OPUS_PACKET` | `0x8AC81008` | The hardware encountered errors when decoding an Opus packet. Check for any errors in encoding. | The hardware encountered errors when decoding an Opus packet. Check for any errors in encoding. |
+| `XAPU_E_DEVICE_FAULT` | `0x8AC81050` | An unrecoverable firmware crash has occurred. | An unrecoverable firmware crash has occurred. |
+| `XAPU_E_DEVICE_TIMEOUT` | `0x8AC81051` | The hardware did not respond in a timely manner. | The hardware did not respond in a timely manner. |
+| `XAPU_E_DEVICE_FATAL_ERROR` | `0x8AC81052` | The hardware has encountered an error and the connection needs to be re-established. | The hardware has encountered an error and the connection needs to be re-established. |
+
+## XDSP
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `XDSP_E_QUEUE_FULL` | `0x8AC810A0` | The command queue is full. | Wait a sufficient amount of time for the hardware to finish processing the current submitted commands before submitting more. |
+| `XDSP_E_PENDING_RESULTS` | `0x8AC810A1` | The `XDspStream` was deactivated before all results from submitted commands were received. | Wait a sufficient amount of time for the hardware to finish processing the submitted commands of the stream before deactivating the stream. |
+| `XDSP_E_NO_DEVICE_RESOURCES` | `0x8AC810A2` | No XDSP device resources are available to service your request. | No XDSP device resources are available to service your request. |
+| `XDSP_E_DEVICE_FATAL_ERROR` | `0x8AC810A3` | A fatal error has occurred (e.g. crash/hang) for the currently processed command. The hardware has an auto-recovery mechanism that allows subsequent commands to continue being processed. | Check the `XDspStatus` structure to understand which command sequence has failed. |
+| `XDSP_E_NOT_ALL_HANDLES_DEACTIVATED` | `0x8AC810A4` | `XDspDisconnect` was called on an `XDspClient` before all `XDspStream` objects associated with the client have been deactivated. | Deactivate all `XDspStream` objects associated with the client before calling `XDspDisconnect`. |
+| `XDSP_E_MAX_CLIENTS_EXCEEDED` | `0x8AC810A5` | The maximum number of `XDspClient`s have already been created. | The maximum number of `XDspClient`s have already been created. |
+| `XDSP_E_MAX_AGGREGATE_IMPULSE_RESPONSE_EXCEEDED` | `0x8AC810A6` | The current `XDspConnect` call will cause XDSP to exceed the maximum supported aggregate impulse response length, and is therefore invalid. | The current `XDspConnect` call will cause XDSP to exceed the maximum supported aggregate impulse response length, and is therefore invalid. |
+| `XDSP_E_INVALID_IMPULSE_RESPONSE_LENGTH` | `0x8AC810A7` | `XDspActivate` was called with an impulse response length that is either too large or too small. | `XDspActivate` was called with an impulse response length that is either too large or too small. |
+
+### Game user
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAMEUSER_MAX_USERS_ADDED` | `0x89245100` | Cannot add this user because the maximum number of users has been reached. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_SIGNED_OUT` | `0x89245101` | Cannot perform the operation because the user is signed out. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_RESOLVE_USER_ISSUE_REQUIRED` | `0x89245102` | UI is required to resolve an issue with this user. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_DEFERRAL_NOT_AVAILABLE` | `0x89245103` | Not an appropriate time to request deferral. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_USER_NOT_FOUND` | `0x89245104` | User matching the ID was not found. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_NO_TOKEN_REQUIRED` | `0x89245105` | No token is required for this call. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_NO_DEFAULT_USER` | `0x89245106` | No current default user. If you get this error, call `XUserAddAsync` again without `AddDefaultUserSilently`. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_FAILED_TO_RESOLVE` | `0x89245107` | Failed to resolve the given privilege. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_NO_TITLE_ID` | `0x89245108` | An XBOX Live TitleId must be configured. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_UNKNOWN_GAME_IDENTITY` | `0x89245109` | The game identity is not recognized. The MSAAppId and TitleId do not match the ones associated to the game. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_NO_PACKAGE_IDENTITY` | `0x89245110` | A package identity must be configured. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_FAILED_TO_GET_TOKEN` | `0x89245111` | The token request failed. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_INVALID_APP_CONFIGURATION` | `0x89245112` | The MSAAppId in the game config is invalid or not configured for the authentication stack. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_MALFORMED_MSAAPPID` | `0x89245113` | The MSAAppId in the game config does not match the expected format (16 character string or GUID). | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+| `E_GAMEUSER_INCONSISTENT_MSAAPPID_AND_TITLEID` | `0x89245114` | The MSAAppId and TitleId in the game config do not match the ones associated to the game. | Verify sign-in/default user/title identity configuration, then retry the user flow. |
+
+### Game package
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAMEPACKAGE_APP_NOT_PACKAGED` | `0x89245200` | The game is not packaged in a container. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_NO_INSTALLED_LANGUAGES` | `0x89245201` | The game uses Intelligent Delivery to selectively install languages, but none are installed. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_NO_STORE_ID` | `0x89245202` | The `StoreId` attribute must be set in the application's game config. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_INVALID_SELECTOR` | `0x89245203` | A chunk selector was provided that does not resolve to a chunk in the package. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_DOWNLOAD_REQUIRED` | `0x89245204` | One or more required chunks must be downloaded to mount the package on this device. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_NO_TAG_CHANGE` | `0x89245205` | Change installed chunks in this package using Features, not tags. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_DLC_NOT_SUPPORTED` | `0x89245206` | Game does not support the DLC package. Ensure correct DLC compatibility in the game config. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_DUPLICATE_ID_VALUES` | `0x89245207` | The package contains more than one executable mapping to the same `ID` attribute. Check for duplicate `ID` attributes in the `Executable` elements. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_NO_PACKAGE_IDENTIFIER` | `0x89245208` | Could not resolve an identifier for the package. The package might not be installed. | Validate package installation/content state and retry after redeploying required assets. |
+| `E_GAMEPACKAGE_CONFIG_NO_ROOT_NODE` | `0x89245209` | Could not find a root `<Game>` node in the `MicrosoftGame.config` file. Check that the file is properly formatted. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_ZERO_VERSION` | `0x8924520A` | The `Version` attribute in the `Identity` node in `MicrosoftGame.config` cannot be `0.0.0.0`. Increment or remove this attribute. If no version is specified, the default is `1.0.0.0`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_NO_MSAAPPID_NOTITLEID` | `0x8924520B` | The `MSAAppId` or `TitleId` element in `MicrosoftGame.config` is missing. Both must be specified when using `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_DEPRECATED_PC_ENTRIES` | `0x8924520C` | The `DesktopRegistration` entries `modFolder`, `enableWritesToPackageRoot`, `disableRegistryWriteVirtualization`, and `disableFilesystemWriteVirtualization` are deprecated in `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_SUM_REQUIRES_MSAAPPID` | `0x8924520D` | The `MSAAppId` and `TitleId` elements are required when using the Simplified User Model (`AdvancedUserModel` element) and `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_NO_CODE_CLOUD_SAVES_REQUIRES_MSAAPPID` | `0x8924520E` | The `MSAAppId` and `TitleId` elements are required when using No Code Cloud Saves (`NoCodePCRoot` element) and `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+| `E_GAMEPACKAGE_CONFIG_MSAAPPID_OR_TITLEID_IS_DEFAULT` | `0x8924520F` | The `MSAAppId` or `TitleId` element is a default value. If `NoCodePCRoot` or `AdvancedUserModel` is specified, both `TitleId` and `MSAAppId` must be valid IDs from Partner Center when using `configVersion >= 1`. | Correct `MicrosoftGame.config` schema/values, then rebuild/redeploy the package. |
+
+### Game store
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAMESTORE_LICENSE_ACTION_NOT_APPLICABLE_TO_PRODUCT` | `0x89245300` | The game requested a license for a product that cannot be licensed. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_NETWORK_ERROR` | `0x89245301` | The game failed to communicate with the store network. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_SERVER_ERROR` | `0x89245302` | The game received a bad response from the store server. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_INSUFFICIENT_QUANTITY` | `0x89245303` | The user does not have enough of this consumable to use the requested amount. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_ALREADY_PURCHASED` | `0x89245304` | The user already owns this product. | Verify store connectivity, entitlement/license state, then retry the request. |
+| `E_GAMESTORE_LICENSE_ACTION_THROTTLED` | `0x89245305` | The game excessively queried a license for the product and is now throttled. Limit is 30 licensing attempts within 10 minutes for the same product. | Verify store connectivity, entitlement/license state, then retry the request. |
+
+### Game streaming
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GAMESTREAMING_NOT_INITIALIZED` | `0x89245400` | The XGameStreaming runtime is not initialized. Call `XGameStreamingInitialize` before calling other APIs. | Ensure streaming is initialized and client/session context is valid, then retry. |
+| `E_GAMESTREAMING_CLIENT_NOT_CONNECTED` | `0x89245401` | The specified client is not connected. | Ensure streaming is initialized and client/session context is valid, then retry. |
+| `E_GAMESTREAMING_NO_DATA` | `0x89245402` | The requested data is not available. The data might be available later. | Ensure streaming is initialized and client/session context is valid, then retry. |
+| `E_GAMESTREAMING_NO_DATACENTER` | `0x89245403` | The current machine is not running in a datacenter. | Ensure streaming is initialized and client/session context is valid, then retry. |
+| `E_GAMESTREAMING_NOT_STREAMING_CONTROLLER` | `0x89245404` | The current reading did not come from a streaming controller. | Ensure streaming is initialized and client/session context is valid, then retry. |
+
+### Game save
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_GS_INVALID_CONTAINER_NAME` | `0x80830001` | The name of the container is invalid. Valid container name characters include uppercase/lowercase letters, digits, underscores, and forward slashes. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_NO_ACCESS` | `0x80830002` | The operation failed because the title does not have access to the container storage spaces. Check that the SCID and TitleId are configured correctly. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_OUT_OF_LOCAL_STORAGE` | `0x80830003` | The device does not have enough storage capacity to save the game. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_USER_CANCELED` | `0x80830004` | The user canceled the download of their save games. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_UPDATE_TOO_BIG` | `0x80830005` | The size of the save update is too large. The total size of an XGameSave update must be smaller than `GS_MAX_BLOB_SIZE` (16 MB). | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_QUOTA_EXCEEDED` | `0x80830006` | The title's storage quota for this user has been exceeded. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_PROVIDED_BUFFER_TOO_SMALL` | `0x80830007` | The buffer provided to the API was too small. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_BLOB_NOT_FOUND` | `0x80830008` | The specified blob cannot be found. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_NO_SERVICE_CONFIGURATION` | `0x80830009` | The title is not properly configured for connected storage. Check that the SCID is correct and the title is configured in Partner Center. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_CONTAINER_NOT_IN_SYNC` | `0x8083000A` | The container is not synchronized yet. Ensure the XGameSave container is synchronized before submitting updates. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_CONTAINER_SYNC_FAILED` | `0x8083000B` | The synchronization of the container failed. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_USER_NOT_REGISTERED_IN_SERVICE` | `0x8083000C` | The user's MSA is not yet an XBOX services account. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_HANDLE_EXPIRED` | `0x8083000D` | The handle used by the function expired and must be reacquired. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_ASYNC_FUNCTION_REQUIRED` | `0x8083000E` | This synchronous function is being called on a time-sensitive thread and risks deadlocks. Use the async implementation instead. | See Game Saves Debugging for detailed troubleshooting guidance. |
+| `E_GS_PROVIDER_MISMATCH` | `0x8083000F` | The game is mixing XGameSave and XGameSaveFiles calls, which is not supported. | See Game Saves Debugging for detailed troubleshooting guidance. |
+
+## Console tools and transport
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_APP_USER_TERMINATE_REQUEST` | `0x87E1001D` | A user explicitly requested app termination. | A user explicitly requested app termination. |
+| `E_DSTORAGE_XVD_DEVICE_NOT_SUPPORTED` | `0x89240004` | The specified XVD isn't on a supported NVMe device. | The specified XVD isn't on a supported NVMe device. |
+| `E_COULD_NOT_CONNECT` | `0x8C110303` | Failed to connect to the specified devkit. | No connection could be made to the target console. Verify the specified HostName or IP address. Check the firewall, the network settings, and the ability to ping the console. |
+| `E_XTFAPP_APPLICATION_EXITED_BEFORE_ACTIVATION_COMPLETE` | `0x8D160122` | The application exited or crashed before completing activation. | None. |
+| `E_XTFAPP_DIRECTORY_NOT_FOUND` | `0x8D16018D` | The provided directory was not found. | Ensure that the directory exists. |
+
+## XBOX PC Remote Iteration
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_PROCESSNOTFOUND` | `0x8C114002` | Process not found. Verify the process ID matches an active target process. | Verify the process ID of the target process by checking the list of running processes; provide a valid process ID of an active process. |
+| `E_INVALIDPROCESSID` | `0x8C114003` | Invalid process ID. Provide a numeric process ID. | Provide a valid process ID containing only numbers. |
+| `E_INVALIDPIN` | `0x8C114004` | PIN is not in the expected format. Enter a valid 6-character PIN. | Input the correct PIN on the client device. |
+| `E_INVALIDSSHKEY` | `0x8C114005` | SSH key is not in expected form. Use a valid public key and retry pairing. | Generate a valid SSH public key; execute the pairing again providing the path to the valid key. |
+| `E_PAIRINGTIMEOUT` | `0x8C114006` | Pair mode exceeded maximum time. Restart pairing and enter the PIN within 2 minutes. | Restart PIN pairing process; input PIN on client device before timeout (2 min). |
+| `E_TOOMANYFAILURES` | `0x8C114007` | Too many failed PIN attempts. Restart pairing and enter the correct PIN. | Restart PIN pairing process; input correct PIN on client device. |
+| `E_CLIENTNOTAUTHORIZED` | `0x8C114008` | Device rejected client. Complete pairing successfully, then retry the connection. | Complete PIN pairing process successfully; execute the connection request again. |
+| `E_SERVERNOTAUTHORIZED` | `0x8C114009` | Client rejected device. Complete pairing successfully, then retry the connection. | Complete PIN pairing process successfully; execute the connection request again. |
+| `E_SSHKEYTOOLARGE` | `0x8C11400A` | SSH key is too large. Generate a supported key type/size and retry with that key. | Generate a new SSH key using a supported algorithm and size (e.g., ED25519 or RSA-2048); ensure the correct key is specified for the RIT connection. |
+| `E_GAMENOTSUSPENDED` | `0x8C11400B` | Specified process cannot be resumed. Verify the process is suspended before calling resume. | Verify the process state before resuming; ensure no other tool has already resumed or terminated the process. |
+| `E_GAMENOTRUNNING` | `0x8C11400C` | No game process is running. Launch the game before calling game-process operations. | Verify processes currently running; launch the game before exercising game-process dependent API. |
+| `E_GAMEOVERSUSPENDED` | `0x8C11400D` | Thread suspend count is not zero. Resume until the suspend count returns to zero, or restart the process. | Resume the thread repeatedly until suspend count reaches zero, or restart the process to reset thread state. |
+| `E_GAMESTILLRUNNING` | `0x8C11400E` | Only one game may run at a time. Stop the currently running game before launching another. | Ensure there is no previous game process running; terminate the currently running game (if any) before launching another; retry launching the game process. |
+| `E_GAMEEXITABANDONED` | `0x8C11400F` | Wait for game exit was abandoned. Verify PID/TID and retry termination. | Check if the game process is still running; verify if the right process ID and thread ID were provided for termination; retry to terminate the process. |
+| `E_GAMEFILEPATHNOTEXIST` | `0x8C114010` | Game file path does not exist. Validate the remote path and confirm deployment succeeded. | Validate the path exists on the remote device; confirm deployment succeeded. |
+| `E_SERVERTOOOLD` | `0x8C114011` | Server version is too old for this client. Update `wdEndpoint` on the remote machine. | Update the `wdEndpoint` on the remote machine to the latest version. |
+| `E_NAMERESOLUTIONFAILED` | `0x8C114012` | Could not resolve remote machine name. Verify hostname and DNS, or test with IP address. | Verify hostname spelling, DNS configuration, and network connectivity; use IP address to isolate name resolution issues. |
+| `E_INVALIDADDRESS` | `0x8C114013` | Invalid address. Correct the address format and use a valid IPv4 address. | Confirm the right IP address; correct the address format and ensure it uses an IPv4 protocol. |
+| `E_CONNECTIONERROR` | `0x8C114014` | Connection failed. Check network/firewall/service availability and retry. | Check network connectivity, firewall rules, service availability on the remote machine; check device visibility (they should be able to ping each other); retry the connection with logging enabled. |
+| `E_LISTENERALREADYRUNNING` | `0x8C114015` | Another listener is active. Stop the existing endpoint instance or reuse it. | Stop the existing running instance of the endpoint before launching a new one; alternatively, use the instance of the endpoint already running instead of launching a new one. |
+| `E_ADMIN_REQUIRED` | `0x8C114016` | Administrator privileges required. Run the endpoint as Administrator. | Re-run the endpoint as Administrator. |
+| `E_INVALIDTHREADID` | `0x8C114017` | Invalid thread ID. Provide a numeric thread ID. | Provide a valid thread ID containing only numbers. |
+| `E_INVALIDPIDTID_PAIR` | `0x8C114018` | Process ID is not associated with thread ID. Re-query threads for that process and retry. | Re-query thread list from the process; ensure IDs are not cached or stale; validate that the thread ID was obtained from the correct process context. |
+| `E_THREADNOTFOUND` | `0x8C114019` | Thread not found. Re-query current thread IDs and retry with a non-stale ID. | Re-query thread list from the process; ensure IDs are not cached or stale; validate that the thread ID was obtained from the correct process context. |
+
+## XAPU
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `XAPU_E_QUEUE_FULL` | `0x8AC81000` | XAPU command queue is full. | XAPU command queue is full. |
+| `XAPU_E_PENDING_RESULTS` | `0x8AC81001` | No result available at the moment. | No result available at the moment. |
+| `XAPU_E_INVALID_COMMAND` | `0x8AC81002` | Invalid XAPU command value. | Invalid XAPU command value. |
+| `XAPU_E_INVALID_STREAM_INDEX` | `0x8AC81003` | Invalid stream index in the submitted XAPU command. | Invalid stream index in the submitted XAPU command. |
+| `XAPU_E_NO_DEVICE_RESOURCES` | `0x8AC81004` | Not enough resources on the system to support the requested number of streams. | Not enough resources on the system to support the requested number of streams. |
+| `XAPU_E_ALREADY_ACTIVE` | `0x8AC81005` | The stream is already active. | The stream is already active. |
+| `XAPU_E_BUFFER_TOO_SMALL` | `0x8AC81006` | Output buffer is too small to fit the data. | Output buffer is too small to fit the data. |
+| `XAPU_E_PROCESSING_ERROR` | `0x8AC81007` | The hardware failed to process the command. | The hardware failed to process the command. |
+| `XAPU_E_BAD_OPUS_PACKET` | `0x8AC81008` | The hardware encountered errors when decoding an Opus packet. Check for any errors in encoding. | The hardware encountered errors when decoding an Opus packet. Check for any errors in encoding. |
+| `XAPU_E_DEVICE_FAULT` | `0x8AC81050` | An unrecoverable firmware crash has occurred. | An unrecoverable firmware crash has occurred. |
+| `XAPU_E_DEVICE_TIMEOUT` | `0x8AC81051` | The hardware did not respond in a timely manner. | The hardware did not respond in a timely manner. |
+| `XAPU_E_DEVICE_FATAL_ERROR` | `0x8AC81052` | The hardware has encountered an error and the connection needs to be re-established. | The hardware has encountered an error and the connection needs to be re-established. |
+
+## XDSP
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `XDSP_E_QUEUE_FULL` | `0x8AC810A0` | The command queue is full. | Wait a sufficient amount of time for the hardware to finish processing the current submitted commands before submitting more. |
+| `XDSP_E_PENDING_RESULTS` | `0x8AC810A1` | The `XDspStream` was deactivated before all results from submitted commands were received. | Wait a sufficient amount of time for the hardware to finish processing the submitted commands of the stream before deactivating the stream. |
+| `XDSP_E_NO_DEVICE_RESOURCES` | `0x8AC810A2` | No XDSP device resources are available to service your request. | No XDSP device resources are available to service your request. |
+| `XDSP_E_DEVICE_FATAL_ERROR` | `0x8AC810A3` | A fatal error has occurred (e.g. crash/hang) for the currently processed command. The hardware has an auto-recovery mechanism that allows subsequent commands to continue being processed. | Check the `XDspStatus` structure to understand which command sequence has failed. |
+| `XDSP_E_NOT_ALL_HANDLES_DEACTIVATED` | `0x8AC810A4` | `XDspDisconnect` was called on an `XDspClient` before all `XDspStream` objects associated with the client have been deactivated. | Deactivate all `XDspStream` objects associated with the client before calling `XDspDisconnect`. |
+| `XDSP_E_MAX_CLIENTS_EXCEEDED` | `0x8AC810A5` | The maximum number of `XDspClient`s have already been created. | The maximum number of `XDspClient`s have already been created. |
+| `XDSP_E_MAX_AGGREGATE_IMPULSE_RESPONSE_EXCEEDED` | `0x8AC810A6` | The current `XDspConnect` call will cause XDSP to exceed the maximum supported aggregate impulse response length, and is therefore invalid. | The current `XDspConnect` call will cause XDSP to exceed the maximum supported aggregate impulse response length, and is therefore invalid. |
+| `XDSP_E_INVALID_IMPULSE_RESPONSE_LENGTH` | `0x8AC810A7` | `XDspActivate` was called with an impulse response length that is either too large or too small. | `XDspActivate` was called with an impulse response length that is either too large or too small. |

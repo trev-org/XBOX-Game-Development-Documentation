@@ -1,0 +1,50 @@
+---
+title: "Variable Rate Shading"
+sidebarTitle: "VRS"
+description: "Use Variable Rate Shading (VRS) to reduce pixel shader cost in non-critical screen regions."
+icon: "table-cells"
+---
+
+VRS lets you reduce pixel shader work in regions of the frame where full-rate shading isn't needed.
+
+## VRS tiers on XBOX
+
+- **Tier 1** — per-draw shading rate.
+- **Tier 2** — per-primitive and screen-space shading-rate images.
+
+## Common uses
+
+- **Foveated rendering** — full rate in the center, coarser at the edges.
+- **Motion-based VRS** — coarser rate where motion vectors are large.
+- **Content-adaptive VRS** — coarser rate in low-contrast areas.
+
+## Why VRS
+
+Pixel shader cost dominates frame time in most modern engines. VRS lets you spend that cost where the eye notices:
+
+- Foveal regions, foreground characters, weapon hands — full rate
+- Periphery, blurred backgrounds, motion-blurred regions — coarser rate
+- Typical savings: 10–30% of pixel-shader cost with no perceptible quality loss
+
+## Feature design
+
+VRS on Series X|S supports three combiners:
+
+1. **Per-draw rate** — set with `RSSetShadingRate`; applies to the whole draw
+2. **Per-primitive rate** — emitted by the vertex / mesh shader as `SV_ShadingRate`
+3. **Screen-space rate image** — a small texture mapped to the framebuffer, selects rate per tile
+
+The three sources combine through a configurable combiner (`Override`, `Min`, `Max`, `Sum`) — typical pipelines use min/passthrough at draw, then max at the image stage.
+
+## API usage
+
+- Bind the shading-rate image via `RSSetShadingRateImage`
+- Author the rate image at 1/16 of the framebuffer resolution (16×16 pixel tiles)
+- Refresh the image per frame from motion vectors \+ screen-space contrast
+- Use the per-draw rate to opt entire post-process passes into half-rate
+
+## Related
+
+- [Graphics overview](/gdk/graphics-overview)
+- [Mesh shaders](/gdk/mesh-shaders)
+- [Sampler feedback](/gdk/sampler-feedback)

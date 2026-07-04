@@ -1,0 +1,59 @@
+---
+title: "Welcome to the XBOX Game Development Kit"
+sidebarTitle: "Welcome guide"
+description: "An introduction to the XBOX GDK and the goals behind it."
+icon: "hand-wave"
+keywords: ["XBOX GDK", "Game Development Kit", "Game Core", "XBOX Series X|S development", "XBOX One development", "cross-platform games", "XSAPI"]
+related: ["/gdk/get-started", "/gdk/download-install", "/onboarding", "/gdk/porting-guides", "/gdk/packaging"]
+---
+
+The XBOX Game Development Kit (GDK) is a unified, comprehensive SDK that gives you everything you need to develop, publish, and run games on XBOX Series X|S, XBOX One, and Windows PC. Built on a shared Game Core programming model, the GDK lets you write cross-platform game code once and target both console and PC with the same set of APIs. Whether you're integrating XBOX services such as achievements, multiplayer, and cloud saves, packaging your title for the Microsoft Store, or squeezing every bit of performance out of XBOX hardware, the GDK is your starting point. From a solo indie developer shipping their first PC title to a large studio shipping a cross-generational console blockbuster, the GDK scales to fit your workflow and engine of choice.
+
+<CardGroup cols={2}>
+  <Card title="Get Started" icon="rocket" href="/gdk/get-started">
+    Set up your development environment and create your first GDK project in Visual Studio.
+  </Card>
+
+  <Card title="Core Features" icon="cube" href="/gdk/game-config">
+    Explore common GDK features including MicrosoftGame.config, packaging, game saves, and input.
+  </Card>
+
+  <Card title="XBOX Services" icon="trophy" href="/services/overview">
+    Integrate achievements, leaderboards, multiplayer, cloud saves, and more into your game.
+  </Card>
+
+  <Card title="Publishing" icon="store" href="/publishing/overview">
+    Package your game, meet XBOX certification requirements, and submit to the Microsoft Store.
+  </Card>
+
+  <Card title="PlayFab Integration" icon="database" href="/playfab/overview">
+    Connect your game to PlayFab for player data, live operations, and backend services.
+  </Card>
+
+  <Card title="API Reference" icon="code" href="/reference/system-overview">
+    Browse the full GDK API reference for Gaming Runtime, XBOX services, and platform APIs.
+  </Card>
+</CardGroup>
+
+## How to get up and running
+
+Getting from zero to a running GDK project takes just four steps. Follow them in order and you'll have a working development environment — ready to build for XBOX or Windows — in a single session.
+
+<Steps>
+  <Step title="Join a developer program">
+    Register at [XBOX Developers](https://www.xbox.com/Developers/) to gain access to the GDK, Partner Center, secure downloads, and XBOX developer forums. PC-only titles can use the public GDK, but console development and XBOX services require program membership.
+  </Step>
+  <Step title="Download and install the GDK">
+    Download the latest GDK release from [aka.ms/gdkdl](https://aka.ms/gdkdl) (secure, requires program membership) or clone the [public GDK on GitHub](https://aka.ms/gdk). Run the installer on a 64-bit Windows 10 (May 2019 Update or later) or Windows 11 machine that has Visual Studio 2019 or 2022 installed.
+  </Step>
+  <Step title="Configure MicrosoftGame.config">
+    Every GDK title is identified by a `MicrosoftGame.config` file. Create a product in [Partner Center](https://partner.microsoft.com/dashboard/windows/overview), then copy the Title ID, Identity Name, Publisher, and MSAAppId values into your project's `MicrosoftGame.config` so your game can authenticate with XBOX services and be submitted to the Microsoft Store.
+  </Step>
+  <Step title="Build and run your game">
+    Choose the right Visual Studio project template for your target platform (`Gaming.Desktop.x64` for PC, `Gaming.Xbox.Scarlett.x64` for XBOX Series X|S, or `Gaming.Xbox.XboxOne.x64` for XBOX One), build your project, and deploy. Switch your sandbox to your development sandbox ID and sign in with a test account to validate XBOX services features end-to-end.
+  </Step>
+</Steps>
+
+<Card title="Next: What is the GDK?" icon="arrow-right" href="/gdk/what-is-gdk">
+  Learn the GDK's components, programming model, and what shipping on PC vs. XBOX actually means.
+</Card>

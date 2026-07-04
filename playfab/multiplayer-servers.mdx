@@ -1,0 +1,109 @@
+---
+title: "PlayFab Multiplayer Servers (Thunderhead)"
+sidebarTitle: "Multiplayer Servers"
+description: "Host dedicated game servers with PlayFab Multiplayer Servers — build authoring, allocation, GSDK integration, scaling, and live operations."
+icon: "server"
+---
+
+**PlayFab Multiplayer Servers** (internally **Thunderhead**) is PlayFab's globally distributed, managed dedicated-server hosting product. Upload your dedicated server build, and PlayFab orchestrates VM allocation, scaling, region selection, and lifecycle so you don't run your own fleet.
+
+Use Multiplayer Servers when your title needs **authoritative dedicated servers** (FPS, MMO, competitive multiplayer) rather than peer-to-peer or hosted-listen-server topologies. For simpler grouping and matchmaking handed off to Party, see [Lobby & matchmaking](/playfab/multiplayer-lobby).
+
+## How it works
+
+1. **Author a build**: package your dedicated server executable (Windows or Linux container/process) into a Multiplayer Servers build.
+2. **Define regions & SKUs**: choose Azure regions, VM SKU sizes, and standing-by counts.
+3. **GSDK integration**: link your dedicated server to PlayFab via the **Game Server SDK (GSDK)** for allocation, heartbeats, and graceful shutdown.
+4. **Allocate at runtime**: matchmaking (or your service) calls `RequestMultiplayerServer` to grab a server in a region; PlayFab returns the IP/port to the clients.
+5. **Scale & retire**: PlayFab keeps `Standby` servers warm, scales up under load, and rolls servers out when a new build is published.
+
+## Authoring a build
+
+Authoring covers:
+
+- **Build definition** — name, container image or Windows assets, executable, command-line arguments, ports.
+- **Required DLLs** — for Windows builds, run `Determining required DLLs` against your binary so Thunderhead VMs match your runtime deps.
+- **Build alias** — point a stable alias at multiple build IDs so you can flight new versions to a percentage of allocations before promoting.
+- **Linux containers** — Linux builds run in containerized hosts; provide a container image plus start command.
+- **Crash dump collection** — enable to receive minidumps from server crashes for triage.
+- **Profiler attach** — supported for debugging hot-path issues on a live allocation.
+
+Upload via Game Manager UI or `Deploy using PowerShell API` for CI.
+
+## Integrating the GSDK
+
+The **GSDK** is the contract between your dedicated server and the Thunderhead agent:
+
+- **`ReadyForPlayers()`** — call once your server has loaded assets and is ready to accept connections. Required to leave `StandingBy` state.
+- **Heartbeats** — the GSDK sends periodic state heartbeats so PlayFab knows the server is alive.
+- **Allocated callback** — fires when PlayFab allocates this VM to a session; payload includes session-specific config you set via `RequestMultiplayerServer`.
+- **Graceful shutdown** — listen for the shutdown notification and terminate active matches cleanly, then exit.
+- **Server logs** — write to the standard logging path; PlayFab archives logs per session for retrieval via `Archiving and retrieving multiplayer server logs`.
+
+Languages: C\+\+ (Windows/Linux), C#, Java, Go, Node.js. The GSDK source is on GitHub.
+
+### LocalMultiplayerAgent
+
+The **LocalMultiplayerAgent (LMA)** runs the Thunderhead agent on your dev box so you can:
+
+- Exercise the GSDK lifecycle (StandingBy → Active → Terminated) without uploading a build
+- Validate your container image or DLL set
+- Reproduce allocation-time bugs locally
+- Iterate without burning Thunderhead VM quota
+
+LMA is the recommended first step before any cloud deployment.
+
+## Allocation and connectivity
+
+- **`RequestMultiplayerServer`** — server-to-server API that allocates a VM and returns its public IP, ports, and a session config blob.
+- **Build alias** — pass an alias instead of a build ID to flight across versions.
+- **Region preference list** — clients (or matchmaker) pass an ordered region list; Thunderhead picks the first region with capacity.
+- **Client connection** — clients open a UDP/TCP socket to the returned IP:port. There is no Thunderhead-side proxy.
+- **Session config** — initial JSON config passed at allocation reaches your server via GSDK so you can configure the match (map, rules, players).
+
+See `Connecting clients to game servers` and `Allocating game servers and configuring vs debugging tools` for end-to-end flows.
+
+## Scaling: standing-by, active, and dynamic standby
+
+Thunderhead maintains a pool model per region:
+
+- **StandingBy** — pre-warmed VMs ready for instant allocation. You pay for these.
+- **Active** — allocated to a session. You pay for these.
+- **MaxServers** — hard ceiling per region per build.
+- **Dynamic Standby** — autoscale the standby pool based on observed allocation rate to balance cost and allocation latency.
+
+Tune StandingBy / MaxServers per region based on your peak concurrency. Dynamic Standby is recommended for titles with predictable allocation curves.
+
+## Build management & live operations
+
+- **Build server overview / Build definition** — schemas you fill in when authoring.
+- **Deploy using Game Manager** — UI workflow for one-off builds.
+- **Deploy using PowerShell API** — script-driven workflow for CI/CD.
+- **Diagnosing builds with the server map view** — Game Manager's per-region map showing standby vs. active counts; the first place to look when allocations fail.
+- **Identifying and increasing core limits** — Thunderhead enforces vCPU quotas per region; request increases ahead of beta and launch.
+- **Best practices** — keep server boot time low, fail-fast on missing config, never block `ReadyForPlayers`, and shed allocations cleanly on shutdown.
+
+## Billing
+
+Billing is per **vCPU-hour** for standing-by and active VMs, with separate rates for Linux containers. Two specific cases:
+
+- **EA Billing** — invoiced through Microsoft for EA-tier customers.
+- **Comm SLA** — Communication SLA covers the platform availability commitments.
+
+Monitor cost from Game Manager and use Dynamic Standby to avoid over-provisioning.
+
+## When to use vs. Lobby/Party
+
+| Topology | Use this |
+| --- | --- |
+| Dedicated authoritative servers (FPS, MMO) | **Multiplayer Servers** \+ GSDK |
+| Pre-game grouping, then a peer host | **Lobby** \+ **Party** for transport |
+| Skill-based queue → dedicated server | **Matchmaking** → **Multiplayer Servers** allocation |
+| Skill-based queue → peer host | **Matchmaking** → **Lobby** → **Party** |
+
+## Related
+
+- [Lobby & matchmaking](/playfab/multiplayer-lobby)
+- [Party & voice](/playfab/party-voice)
+- [Live service management](/playfab/live-service-management)
+- [Insights & analytics](/playfab/analytics)

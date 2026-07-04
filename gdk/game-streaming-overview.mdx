@@ -1,0 +1,29 @@
+---
+title: "Game streaming overview"
+sidebarTitle: "Game streaming overview"
+description: "How XBOX Cloud Gaming and Remote Play change input, latency, and session lifetime."
+icon: "satellite-dish"
+---
+
+XBOX titles run in two streaming contexts: **XBOX Cloud Gaming** (server-side game on Azure) and **Remote Play** (player's own console).
+
+## What changes for streaming
+
+- **Input** — touch and virtual controller inputs may arrive instead of physical gamepads.
+- **Latency** — round-trip latency is higher and variable.
+- **Resolution / bitrate** — the encoder may run at variable quality.
+- **Sessions** — cloud sessions are short-lived and may resume on a different VM.
+
+## APIs
+
+- [XGameStreaming](/reference/xgamestreaming) — detect streaming, query the client, swap touch layouts.
+- [Cloud-aware API](/gdk/cloud-aware-api) — react to client connection changes.
+- [Touch Adaptation Kit](/reference/touch-adaptation-kit) — declarative touch layouts.
+
+## Related API documentation
+
+- [XGameStreaming API reference](/reference/xgamestreaming)
+
+## See also
+
+- [Game streaming](/gdk/game-streaming)

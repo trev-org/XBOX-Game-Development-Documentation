@@ -1,0 +1,27 @@
+---
+title: "Quick Resume"
+sidebarTitle: "Quick Resume"
+description: "Handle long suspend windows and stale state when XBOX Series X|S resumes your title via Quick Resume."
+icon: "pause"
+---
+
+Quick Resume lets XBOX Series X|S players switch between multiple suspended games and pick up exactly where they left off.
+
+## What your title must handle
+
+- **Long suspend windows** — your process may be frozen for hours or days.
+- **State invalidation** — network sessions, sign-in tokens, and matchmaking tickets can expire while suspended.
+- **System clock changes** — the wall clock may jump significantly between resume cycles.
+- **Constrained / unconstrained transitions** — use `PLM` events (`Suspending`, `Resuming`) to save state and reacquire resources.
+
+## Best practices
+
+- Reconnect to PlayFab Party / multiplayer sessions on resume and gracefully fall back to a safe menu.
+- Refresh XSAPI tokens via [XUser](/reference/xuser).
+- Recompute time-of-day and live-event state instead of trusting cached values.
+- Save a recovery point during suspend so you can reload safely if the OS evicts you from Quick Resume.
+
+## Related
+
+- [Console overview](/gdk/console-overview)
+- [Cross-gen](/gdk/cross-gen)

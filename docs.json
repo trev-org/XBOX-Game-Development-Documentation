@@ -1,0 +1,666 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "XBOX Game Development Documentation",
+  "description": "XBOX Game Development Documentation",
+  "colors": {
+    "primary": "#7CC400",
+    "light": "#7CC400",
+    "dark": "#7CC400"
+  },
+  "logo": {
+    "light": "/images/We_Are_Xbox_Email-Signature_200x200.png",
+    "dark": "/images/We_Are_Xbox_Email-Signature_200x200.png"
+  },
+  "favicon": "/favicon.png",
+  "appearance": {
+    "default": "dark"
+  },
+  "background": {
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#09090b"
+    },
+    "image": {
+      "light": "/images/xbox_logo_transparent_6_25-10.png",
+      "dark": "/images/xbox_logo_transparent_6_25-10.png"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "href": "https://github.com/edigonzales-microsoft/mintlify-docs",
+        "label": "Collaborate with us in GitHub"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "XBOX Game Dev Website",
+      "href": "https://developer.microsoft.com/en-us/games/"
+    }
+  },
+  "footer": {
+    "socials": {
+      "discord": "https://developer.microsoft.com/en-us/games",
+      "youtube": "https://www.youtube.com/msftgamedev",
+      "github": "https://github.com/microsoft/Xbox-GDK-Samples"
+    }
+  },
+  "fonts": {
+    "heading": {
+      "family": "Segoe UI Bold",
+      "source": "/fonts/Segoe UI Bold.woff",
+      "format": "woff",
+      "weight": 700
+    },
+    "body": {
+      "family": "Segoe UI",
+      "source": "/fonts/Segoe UI.woff",
+      "format": "woff",
+      "weight": 400
+    }
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs"
+  },
+  "redirects": [
+    {
+      "source": "/pc-e2e/register-id-xbox",
+      "destination": "/onboarding",
+      "permanent": true
+    },
+    {
+      "source": "/pc-e2e/partner-center-account",
+      "destination": "/onboarding",
+      "permanent": true
+    },
+    {
+      "source": "/pc-e2e/partner-center-product",
+      "destination": "/onboarding",
+      "permanent": true
+    },
+    {
+      "source": "/pc-e2e/integrate-gdk",
+      "destination": "/pc-e2e/engines/custom-engine",
+      "permanent": true
+    },
+    {
+      "source": "/pc-e2e/publish-your-game",
+      "destination": "/publishing/overview",
+      "permanent": true
+    },
+    {
+      "source": "/services/achievements-eb-vs-tm",
+      "destination": "/services/player-data",
+      "permanent": true
+    },
+    {
+      "source": "/services/stats-eb-vs-tm",
+      "destination": "/services/player-data",
+      "permanent": true
+    },
+    {
+      "source": "/services/multiplayer-intro",
+      "destination": "/services/multiplayer",
+      "permanent": true
+    },
+    {
+      "source": "/services/mpsd",
+      "destination": "/services/multiplayer",
+      "permanent": true
+    },
+    {
+      "source": "/services/mpm",
+      "destination": "/services/multiplayer",
+      "permanent": true
+    },
+    {
+      "source": "/services/mpa",
+      "destination": "/services/multiplayer-activity",
+      "permanent": true
+    },
+    {
+      "source": "/services/matchmaking",
+      "destination": "/services/multiplayer",
+      "permanent": true
+    },
+    {
+      "source": "/services/test-accounts",
+      "destination": "/tools/test-account-tool",
+      "permanent": true
+    },
+    {
+      "source": "/reference/error-codes-detailed",
+      "destination": "/reference/error-codes",
+      "permanent": true
+    },
+    {
+      "source": "/tools/pgo",
+      "destination": "/tools/profile-guided-optimization",
+      "permanent": true
+    },
+    {
+      "source": "/introduction",
+      "destination": "/gdk/welcome",
+      "permanent": true
+    },
+    {
+      "source": "/reference/xsapi-context-and-globals",
+      "destination": "/reference/xsapi-context",
+      "permanent": true
+    },
+    {
+      "source": "/reference/xsapi-social-manager",
+      "destination": "/reference/social-manager",
+      "permanent": true
+    }
+  ],
+  "metadata": {
+    "timestamp": true
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Get Started",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              {
+                "group": "Welcome & Introduction",
+                "icon": "hand-wave",
+                "pages": [
+                  "index",
+                  "gdk/welcome",
+                  "gdk/glossary"
+                ]
+              },
+              {
+                "group": "Onboarding & Access",
+                "icon": "id-card",
+                "pages": [
+                  "onboarding",
+                  "gdk/access-resources",
+                  "gdk/setup-organization",
+                  "gdk/security-requirements"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Build & Develop",
+        "pages": [
+          {
+            "group": "Setup & Install",
+            "icon": "download",
+            "pages": [
+              "gdk/what-is-gdk",
+              "gdk/get-started",
+              "gdk/download-install",
+              "gdk/sdk-and-tools",
+              "gdk/dev-pc-setup",
+              "gdk/samples"
+            ]
+          },
+          {
+            "group": "Build Your First Title",
+            "icon": "play",
+            "pages": [
+              "gdk/developing-new-titles",
+              "gdk/add-backend-services",
+              "gdk/porting-guides"
+            ]
+          },
+          {
+            "group": "GDK and Game Engines Integration",
+            "icon": "rocket",
+            "pages": [
+              "pc-e2e/overview",
+              "pc-e2e/gdk-and-engines",
+              "pc-e2e/engines/unreal",
+              "pc-e2e/engines/gamemaker",
+              "pc-e2e/engines/custom-engine",
+              "pc-e2e/engines/godot",
+              "pc-e2e/handheld",
+              "pc-e2e/optional-services",
+              "pc-e2e/engines/unity"
+            ]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              {
+                "group": "Game Configuration",
+                "icon": "file-code",
+                "pages": [
+                  "gdk/game-config",
+                  "gdk/microsoftgameconfig-editor",
+                  "gdk/microsoftgameconfig-localization"
+                ]
+              },
+              {
+                "group": "Users & Identity",
+                "icon": "user",
+                "pages": [
+                  "gdk/user-model",
+                  "gdk/xuser-identity",
+                  "gdk/xuser-signin-best-practice",
+                  "gdk/guest-users"
+                ]
+              },
+              {
+                "group": "Async & Memory",
+                "icon": "shuffle",
+                "pages": [
+                  "gdk/async-programming",
+                  "gdk/async-task-queues",
+                  "gdk/memory",
+                  "gdk/error-handling",
+                  "gdk/threading.mdx"
+                ]
+              },
+              {
+                "group": "Packaging & Saves",
+                "icon": "box",
+                "pages": [
+                  "gdk/packaging",
+                  "gdk/packaging-pc",
+                  "gdk/intelligent-delivery",
+                  "gdk/game-saves",
+                  "gdk/game-saves-overview"
+                ]
+              },
+              {
+                "group": "Platform Features",
+                "icon": "plug",
+                "pages": [
+                  "gdk/localization",
+                  "gdk/text-to-speech",
+                  "gdk/platform-integration",
+                  "gdk/game-streaming"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Services",
+        "groups": [
+          {
+            "group": "XBOX Services",
+            "pages": [
+              "services/overview",
+              "services/multiplayer",
+              "services/game-chat",
+              "services/multiplayer-activity",
+              "services/develop-and-test",
+              "services/achievements",
+              "services/cloud-storage",
+              "services/player-data",
+              "services/social",
+              "services/people-system",
+              "services/rich-presence",
+              "services/gamertags-and-privacy"
+            ]
+          },
+          {
+            "group": "PlayFab",
+            "pages": [
+              "playfab/overview",
+              "playfab/microsoft-store",
+              "playfab/economy",
+              "playfab/multiplayer-lobby",
+              "playfab/leaderboards-stats",
+              "playfab/party-voice",
+              "playfab/analytics",
+              "playfab/identity",
+              "playfab/live-service-management",
+              "playfab/player-progression",
+              "playfab/multiplayer-servers.mdx",
+              "playfab/party",
+              "playfab/sign-in-concepts",
+              "playfab/player-sign-in",
+              "playfab/insights-analytics"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Console Features",
+        "groups": [
+          {
+            "group": "Console Features",
+            "pages": [
+              {
+                "group": "Overview",
+                "icon": "compass",
+                "pages": [
+                  "gdk/console-overview"
+                ]
+              },
+              {
+                "group": "System & I/O",
+                "icon": "microchip",
+                "pages": [
+                  "gdk/audio",
+                  "gdk/storage",
+                  "gdk/networking",
+                  "gdk/directstorage",
+                  "gdk/input"
+                ]
+              },
+              {
+                "group": "Graphics",
+                "icon": "image",
+                "pages": [
+                  "gdk/sampler-feedback",
+                  "gdk/xbox-texture-compressor",
+                  "gdk/graphics-overview",
+                  "gdk/raytracing",
+                  "gdk/vrs",
+                  "gdk/mesh-shaders"
+                ]
+              },
+              {
+                "group": "Capture & Streaming",
+                "icon": "video",
+                "pages": [
+                  "gdk/cloud-aware-api",
+                  "gdk/game-dvr",
+                  "gdk/game-streaming-overview",
+                  "gdk/atg-engagement"
+                ]
+              },
+              {
+                "group": "Platform",
+                "icon": "right-left",
+                "pages": [
+                  "gdk/cross-gen",
+                  "gdk/quick-resume",
+                  "gdk/dynamic-lighting"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tools",
+        "groups": [
+          {
+            "group": "Tools",
+            "pages": [
+              {
+                "group": "Overview & Visual Studio",
+                "icon": "toolbox",
+                "pages": [
+                  "tools/overview",
+                  "tools/visual-studio"
+                ]
+              },
+              {
+                "group": "PC Tools",
+                "icon": "display",
+                "pages": [
+                  "tools/pc-tools",
+                  "tools/wdapp",
+                  "tools/launching-on-pc",
+                  "tools/pc-remote-tools"
+                ]
+              },
+              {
+                "group": "XBOX Service Tools",
+                "icon": "screwdriver-wrench",
+                "pages": []
+              },
+              {
+                "group": "Console Tools",
+                "icon": "sitemap",
+                "pages": []
+              },
+              {
+                "group": "Profiling & Debug",
+                "icon": "magnifying-glass-chart",
+                "pages": []
+              },
+              "tools/pix-for-windows",
+              "tools/pc-sandbox-switcher",
+              "tools/player-data-reset",
+              "tools/test-account-tool",
+              "tools/trace-analyzer",
+              "tools/xbox-service-tools",
+              "tools/pix-for-xbox",
+              "tools/xbwatson",
+              "tools/xbox-manager",
+              "tools/dev-home",
+              "tools/device-portal",
+              "tools/console-command-line-tools",
+              "tools/shader-compiler",
+              "tools/profile-guided-optimization"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Principles",
+        "groups": [
+          {
+            "group": "Game Principles",
+            "icon": "compass",
+            "pages": [
+              "principles/localization-globalization",
+              "principles/security-overview",
+              "principles/accessibility-overview",
+              "principles/speech-accessibility",
+              "principles/xbox-accessibility-guidelines",
+              "principles/accessibility-resources",
+              "principles/mgats",
+              "principles/sustainability-overview",
+              "principles/energy-efficiency-essentials",
+              "principles/sustainability-case-studies"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Publishing & Commerce",
+        "groups": [
+          {
+            "group": "Publishing & Commerce",
+            "icon": "shield-check",
+            "pages": [
+              "publishing/overview",
+              "publishing/branches",
+              "publishing/add-ons",
+              "publishing/packages",
+              "publishing/game-setup",
+              "publishing/xbox-requirements",
+              "publishing/xr-top-failing",
+              "publishing/xstore-deep-dive",
+              "publishing/xstore-server-to-service",
+              "publishing/xstore-pc",
+              "publishing/xbox-insider-program",
+              "publishing/developer-account",
+              "publishing/certification",
+              "publishing/cert-bypass-program",
+              "publishing/discs",
+              "publishing/franchise-hubs",
+              "publishing/pre-release",
+              "publishing/pricing",
+              "publishing/properties",
+              "publishing/ratings",
+              "publishing/sandboxes",
+              "publishing/store-listing",
+              "publishing/xr-fma"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API",
+        "groups": [
+          {
+            "group": "Error Codes",
+            "icon": "circle-exclamation",
+            "pages": [
+              "reference/error-codes-overview",
+              "reference/error-codes",
+              "reference/xbl-error-codes",
+              "reference/playfab-errors"
+            ]
+          },
+          {
+            "group": "System APIs",
+            "icon": "microchip",
+            "pages": [
+              "reference/system-overview",
+              "reference/xgameruntime",
+              "reference/xgamesave",
+              "reference/xtaskqueue",
+              "reference/xgameruntime-features",
+              "reference/xgamestreaming",
+              "reference/xpackage",
+              "reference/xstore",
+              "reference/xuser",
+              "reference/gameinput",
+              "reference/chat",
+              "reference/lighting",
+              "reference/tools-api",
+              "reference/xaccessibility",
+              "reference/xspeechsynthesizer",
+              "reference/xappcapture",
+              "reference/xdisplay",
+              "reference/xthread",
+              "reference/xerror",
+              "reference/xlauncher",
+              "reference/xsystem",
+              "reference/xgame",
+              "reference/xgameevent",
+              "reference/xgameactivation",
+              "reference/xpersistentlocalstorage",
+              "reference/xgameui",
+              "reference/xasync",
+              "reference/xgamesavefiles",
+              "reference/audio-apis",
+              "reference/gameinput-extended",
+              "reference/touch-adaptation-kit",
+              "reference/dstorage",
+              "reference/xnetworking",
+              "reference/xcurl",
+              "reference/pix3",
+              "reference/xtf",
+              "reference/httpclient",
+              "reference/wdp-extended",
+              "reference/xasyncprovider",
+              "reference/xgameruntimetypes",
+              "reference/xgamesave-wrapper",
+              "reference/xmem",
+              "reference/xfrontpaneldisplay",
+              "reference/networking",
+              "reference/wdp-rest",
+              "reference/remote-iteration",
+              "reference/xuser-api",
+              "reference/xgameinvite.mdx",
+              "reference/xgameprotocol.mdx"
+            ]
+          },
+          {
+            "group": "XBOX Services API",
+            "icon": "xbox",
+            "pages": [
+              "reference/xsapi-overview",
+              "reference/social-manager",
+              "reference/microsoftgameconfig-schema",
+              "reference/microsoftgameconfig-elements",
+              "reference/xsapi-achievements",
+              "reference/xsapi-achievements-manager",
+              "reference/xsapi-multiplayer",
+              "reference/xsapi-multiplayer-manager",
+              "reference/xsapi-multiplayer-activity",
+              "reference/xsapi-presence",
+              "reference/xsapi-privacy",
+              "reference/xsapi-social",
+              "reference/xsapi-profile",
+              "reference/xsapi-leaderboard",
+              "reference/xsapi-matchmaking",
+              "reference/xsapi-real-time-activity",
+              "reference/xsapi-events",
+              "reference/xsapi-title-storage",
+              "reference/xsapi-stats",
+              "reference/xsapi-string-verify",
+              "reference/xsapi-context",
+              "reference/xsapi-rest-overview",
+              "reference/xsapi-json",
+              "reference/xsapi-rest",
+              "reference/xsapi-user-statistics",
+              "reference/xsapi-context-and-globals",
+              "reference/xsapi-social-manager"
+            ]
+          },
+          {
+            "group": "PlayFab API",
+            "icon": "server",
+            "pages": [
+              "reference/playfab-overview",
+              "reference/playfab-authentication",
+              "reference/playfab-player-data",
+              "reference/playfab-profiles",
+              "reference/playfab-economy",
+              "reference/playfab-title-data",
+              "reference/playfab-lobby-matchmaking",
+              "reference/playfab-multiplayer-servers",
+              "reference/playfab-cloudscript",
+              "reference/playfab-insights",
+              "reference/playfab-statistics",
+              "reference/playfab-groups",
+              "reference/playfab-friends",
+              "reference/playfab-playstream-events",
+              "reference/playfab-access-policy",
+              "reference/playfab-party"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "pages": [
+          "resources/overview",
+          {
+            "group": "External Links",
+            "pages": [
+              "resources/gdk",
+              "resources/publishing",
+              "resources/community",
+              "resources/platforms-tools",
+              "resources/middleware"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "banner": {
+    "content": "XBOX Game Development Documentation",
+    "color": {
+      "light": "#09090b",
+      "dark": "#09090b"
+    }
+  },
+  "seo": {
+    "metatags": {
+      "author": "XBOX",
+      "category": "Game Development",
+      "og:site_name": "XBOX Game Development Documentation",
+      "og:image": "/images/We_Are_Xbox_Email-Signature_200x200.png",
+      "twitter:card": "summary_large_image",
+      "twitter:image": "/images/We_Are_Xbox_Email-Signature_200x200.png"
+    },
+    "indexing": "navigable"
+  },
+  "thumbnails": {
+    "background": "/images/We_Are_Xbox_Teams-Background_01_Original_1920x1080.png"
+  }
+}

@@ -1,0 +1,57 @@
+---
+title: "Dynamic lighting"
+sidebarTitle: "Dynamic lighting"
+description: "Drive RGB lighting on compatible peripherals from your GDK title."
+icon: "lightbulb"
+---
+
+Drive RGB lighting on compatible peripherals (controllers, keyboards, mice, headsets) from your title via the GDK [Lighting API](/reference/lighting).
+
+## What you can do
+
+- Enumerate compatible peripherals.
+- Push per-LED color buffers in sync with gameplay (damage flashes, health, team color).
+- Respect platform-wide lighting preferences — stop pushing colors when the user opts out.
+
+## Best practices
+
+- Keep an idle ambient pattern so devices don't go dark when nothing is happening.
+- Throttle updates to 60–90 Hz — anything higher is wasted bandwidth.
+- Always fall back gracefully when the API isn't available (older OS / non-RGB device).
+
+## Lighting basics
+
+Dynamic lighting on the GDK is built on `Windows.Devices.Lights.LampArray`:
+
+- **LampArray** — a per-device collection of addressable LEDs with positional metadata
+- **Lamp** — a single addressable light. Each lamp exposes its purpose (indicator, accent, key) and 3D position
+- **Effect playlist** — queue colour changes and have the system interpolate between them on its own thread
+- **Ownership** — your title takes foreground ownership of a `LampArray` while focused; the OS restores ambient state when you lose focus
+
+The platform also enforces global user preference — if the player has disabled dynamic lighting in Settings, your title's writes are silently dropped. Always check `IsAvailable` before authoring elaborate effects.
+
+## Working with colors
+
+- Author lighting in **linear sRGB**, then let the runtime apply the device's per-LED gamma curve
+- Provide a per-lamp purpose mask (indicator vs accent) — players can opt out of any one class
+- Respect the per-lamp **brightness ceiling** the device reports; many keyboards cap brightness in firmware
+- Use the lamp position metadata to drive directional effects (impact flashes from the hit direction)
+
+## Effects
+
+Typical effects ship as composable presets:
+
+| Effect | Use |
+| --- | --- |
+| **Solid** | Team color, season palette, ambient idle |
+| **Pulse** | Low-health warning, ability cooldown, comms incoming |
+| **Wave** | Damage absorbed, shield recharge |
+| **Ripple** | Hit feedback radiating from the impact point |
+| **Color cycle** | Menu / loading idle |
+
+Author effects as data, not code — store effect templates in your title data so designers can tune timing and palette without engine rebuilds.
+
+## Related
+
+- [Lighting API reference](/reference/lighting)
+- [Platform integration](/gdk/platform-integration)

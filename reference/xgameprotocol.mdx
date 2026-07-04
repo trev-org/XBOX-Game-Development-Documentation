@@ -1,0 +1,101 @@
+---
+title: "XGameProtocol API reference"
+sidebarTitle: "XGameProtocol"
+description: "Receive protocol-URI activations (custom scheme deep links) delivered to a running title."
+icon: "link"
+---
+
+The **XGameProtocol** API delivers **custom protocol activations** to a running title. When the shell launches a URI that matches a protocol scheme declared in your `MicrosoftGame.config`, the platform routes the URI to your title via this API.
+
+Pair with [XGameActivation](/reference/xgameactivation) for the **cold-launch** path (title not yet running) and use **XGameProtocol** for the **already-running** path so you can route the URI in-place.
+
+**Header:** `XGameProtocol.h`\
+**Library:** `xgameruntime.lib`
+
+## Declaring protocols
+
+In `MicrosoftGame.config`, declare every protocol your title handles:
+
+```xml
+<Extensions>
+  <Extension Category="windows.protocol">
+    <Protocol Name="mygame" />
+  </Extension>
+</Extensions>
+```
+
+After installation, URIs of the form `mygame://...` activate your title.
+
+## XGameProtocolRegisterForActivation
+
+```cpp
+HRESULT XGameProtocolRegisterForActivation(
+    XTaskQueueHandle queue,
+    void* context,
+    XGameProtocolActivationCallback* callback,
+    XTaskQueueRegistrationToken* token);
+```
+
+- `queue` — task queue that dispatches the callback.
+- `callback` — fires with the activation URI.
+- `token` — used later with `XGameProtocolUnregisterForActivation`.
+
+### XGameProtocolActivationCallback
+
+```cpp
+typedef void XGameProtocolActivationCallback(
+    void* context,
+    const char* protocolUri);
+```
+
+The `protocolUri` is the full URI as activated (`mygame://path?query`). Parse to route the user inside your title (open a specific level, redeem a code, navigate to a screen).
+
+## XGameProtocolUnregisterForActivation
+
+```cpp
+bool XGameProtocolUnregisterForActivation(
+    XTaskQueueRegistrationToken token,
+    bool wait);
+```
+
+Detach the callback during shutdown. Pass `wait = true` to block on any in-flight invocation.
+
+## Usage pattern
+
+```cpp
+XTaskQueueRegistrationToken s_protoToken {};
+
+HRESULT RegisterProtocolHandler(XTaskQueueHandle queue)
+{
+    return XGameProtocolRegisterForActivation(
+        queue,
+        /*context*/ nullptr,
+        [](void*, const char* uri) {
+            RouteUriInsideTitle(uri);  // navigate the user
+        },
+        &s_protoToken);
+}
+```
+
+## Cold-launch vs. running-title
+
+| State | API to use |
+| --- | --- |
+| Title cold-launched by a `mygame://` URI | [XGameActivation](/reference/xgameactivation) (event type `Protocol`) |
+| Title already running, second URI fires | **XGameProtocol** callback |
+
+Register both so deep links work whether or not the user has the title already open.
+
+## Common URI patterns
+
+| Pattern | Use |
+| --- | --- |
+| `mygame://redeem?code=ABC123` | Promo code redemption — hand off to your entitlement service |
+| `mygame://join?lobbyId=xyz` | Friend share-link — resolve lobby and join |
+| `mygame://screen/store` | UI deep-link — navigate to the store screen |
+
+## Related
+
+- [XGameActivation](/reference/xgameactivation) — cold-launch activations across all event types
+- [XGameInvite](/reference/xgameinvite) — multiplayer invites specifically
+- [Platform integration](/gdk/platform-integration) — declaring protocol schemes and file-type activations in `MicrosoftGame.config`

@@ -1,0 +1,39 @@
+---
+title: "MicrosoftGame.config Editor"
+sidebarTitle: "MicrosoftGame.config editor"
+description: "UI tool for creating and editing your MicrosoftGame.config file."
+icon: "pen-to-square"
+---
+
+The **MicrosoftGame.config Editor** is a UI tool for authoring `.mgc` / `MicrosoftGame.config` files. Available as a standalone app and integrated into Visual Studio.
+
+## Features
+
+- **Platform tabs** — separate XBOX and PC config; shared values live in **General**
+- **Executable** — specify the title executable
+- **Target Device Family** — PC, XBOX One, XBOX Series
+- **Store Information** — associate your local config with Partner Center
+- **Tile Image** — supply one source PNG; all required image sizes are generated automatically
+
+## Launch options
+
+- Double-click `GameConfigEditor.exe` in `C:\Program Files (x86)\Microsoft GDK\bin`
+- **Start menu → Microsoft GDK → MicrosoftGame.config Editor**
+- From any GDK Gaming Command Prompt: `GameConfigEditor.exe [path-to-config-or-folder]`
+- In Visual Studio: double-click any `.mgc` file in Solution Explorer
+
+## Associate with Microsoft Store
+
+Your Partner Center account needs one of these roles:
+
+- Manager (Windows)
+- Developer
+- Business Contributor
+- Finance Contributor
+- Marketer
+
+Click **Associate with the Microsoft Store** to launch the Store Association Wizard — it pulls down title identity values and writes them to your local config.
+
+## Generate tile images
+
+Provide a single 480x480 PNG — the editor auto-generates all other required image sizes.

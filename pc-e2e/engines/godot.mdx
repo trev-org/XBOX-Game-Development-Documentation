@@ -1,0 +1,53 @@
+---
+title: "Use the GDK with Godot"
+sidebarTitle: "Godot"
+description: "Use the XBOX Godot Sample to integrate the GDK, XBOX services, and PlayFab into your Godot project for XBOX on PC."
+icon: "robot"
+---
+
+The [XBOX Godot Sample](https://aka.ms/XBOXGodotSample) is a public, source-only reference on GitHub. It demonstrates how to build a Godot extension that integrates the Microsoft GDK, XBOX services, and PlayFab — so you can ship to XBOX on PC without leaving Godot.
+
+## What's included
+
+- Microsoft GDK platform services
+- XBOX services (sign-in, achievements, etc.)
+- PlayFab Core \+ Services
+- PlayFab Multiplayer (Lobby, Matchmaking, Party)
+- PlayFab Game Saves
+- GameInput (with a bridge to Godot's `Input` / `InputMap`)
+
+Compatible with the April 2026 GDK out of the box.
+
+## What this is — and isn't
+
+<Info>
+  - **Source-only sample**, not a product. MIT-licensed at the wrapper layer; GDK and PlayFab require their own installs and license acceptance.
+  - **No fixed update cadence.** Microsoft monitors the repo and iterates, but this is not a commercial release. Community PRs welcome.
+  - **XBOX on PC only.** Does not include XBOX Series X|S or XBOX One support — see below.
+</Info>
+
+## Get started
+
+| Resource | Description |
+| --- | --- |
+| [XBOX Godot Sample](https://aka.ms/XBOXGodotSample) | Reference implementation binding GDK \+ PlayFab \+ GameInput to Godot |
+| [Microsoft GDK](https://github.com/microsoft/GDK) | The public GDK |
+| [PlayFab Unified SDK](https://aka.ms/PlayFabUnifiedSDK) | All-in-one PlayFab SDK |
+| [GameInput](https://aka.ms/GameInput) | Next-generation input API |
+| [XBOX Godot Docs](https://aka.ms/XBOXGodotDocs) | Detailed documentation |
+| [XBOX Godot Issues](https://aka.ms/XBOXGodotIssues) | Report bugs, request features, contribute |
+
+After integration, follow the rest of the [PC end-to-end guide](/pc-e2e/overview) to register your title, set up Partner Center, and publish to the Microsoft Store.
+
+## XBOX Series X|S and XBOX One support
+
+The XBOX Godot Sample is **PC-only**. Because Godot is open source and MIT-licensed, the Godot Foundation does not officially maintain console export templates — console SDKs are distributed under NDA, which is incompatible with Godot's open development model.
+
+For current console porting details and middleware providers, see [Godot and console porting](https://godotengine.org/consoles/).
+
+If you're shipping to XBOX Series X|S or XBOX One via Godot, contact your XBOX representative. Not yet registered? Start with [ID@XBOX onboarding](/onboarding).
+
+## Related
+
+- [GDK and game engines](/pc-e2e/gdk-and-engines)
+- [PC end-to-end overview](/pc-e2e/overview)

@@ -1,0 +1,109 @@
+---
+title: "Set up your development PC for the GDK"
+sidebarTitle: "Dev PC setup"
+description: "Hardware and OS requirements for developing GDK titles for XBOX and Windows."
+icon: "desktop"
+---
+
+Verify your development PC meets the requirements below before installing the GDK.
+
+## Hardware
+
+### Common
+
+- A fast, modern PC.
+- 30 GB of free space (GDK install).
+
+### XBOX-targeted development
+
+We recommend:
+
+- **NVMe SSD** with a **heatsink** to offset thermal throttling.
+- **10 GbE NIC** on the dev PC. The XBOX Series X Dev Kit debug NIC supports 10 GbE for faster deployments.
+- **10 GbE switch** and **Category 6a cables**. Put your dev PC and dev console on the same Ethernet switch and subnet.
+- A motherboard with **Thunderbolt 3** support (planned deployment path).
+- **4K / UHD \+ HDR** monitors and TVs to validate display features.
+
+#### Validated 10 GbE hardware reference
+
+- Netgear XS708T 8-port switch
+- AQuantia Aqtion AQN-107 PCIe 10GBase-T adapter
+- Intel Ethernet Converged Network Adapter X540-T1
+- Samsung SSD 970 EVO NVMe M.2 1 TB
+- Category 6a Ethernet cables
+
+## Operating system
+
+<Warning>
+  GDK Visual Studio (VSIX) components are **not supported on ARM devices**. Install the GDK on an x64 development PC.
+</Warning>
+
+### Developing XBOX titles
+
+Supported clients:
+
+- Windows 10 (64-bit) — Home, Pro, Enterprise
+- Windows 11 (64-bit) — Home, Pro, Enterprise
+
+Supported build servers:
+
+- Windows Server 2019 (1809\+) — Standard, Datacenter
+
+<Note>
+  GDK versions prior to June 2020 supported Windows 7 / 8 / 8.1. That support has been removed; GDK setup blocks installation on unsupported OSes.
+</Note>
+
+### Developing Windows titles (Gaming Runtime)
+
+- Windows 10 May 2019 Update or later (64-bit)
+- Windows 11 (64-bit)
+
+Notes:
+
+- The Gaming Runtime Development Kit will **not** install on 32-bit Windows.
+- Keep graphics drivers up to date for reliable remote tooling.
+
+### Testing MSIXVC-packaged PC games
+
+- Windows 10 May 2019 Update or later (64-bit)
+- **Gaming Services Runtime** (auto-installed with any Microsoft Store MSIXVC title; or install manually from the Store).
+
+## Microsoft Symbol Servers
+
+Enable Microsoft Symbol Servers to get Gaming Runtime symbols.
+
+1. Visual Studio → **Debug** → **Options** → **Symbols**.
+2. Check **Microsoft Symbol Servers**.
+
+See the [Microsoft public symbol server](https://learn.microsoft.com/windows-hardware/drivers/debugger/microsoft-public-symbols) docs for more.
+
+## Build Without Install (BWOI)
+
+BWOI lets your build servers consume the GDK without running the installer — critical for CI and locked-down build environments:
+
+- Extract the GDK setup payload to a known directory
+- Point your build environment variables at the extracted layout
+- Build with `msbuild` or your toolchain of choice; no machine-wide registration needed
+- Tools that normally read from registry-set environment paths use BWOI environment overrides instead
+
+Differences vs full setup:
+
+- BWOI does not install Visual Studio integration (`.vsix`)
+- Some tools need a one-time extraction step (XBTC, makepkg payloads)
+- Per-developer dev kits and PIX still install normally on workstations
+
+BWOI is the recommended way to run GDK builds in containerized CI.
+
+## Remote Windows game development
+
+For multi-PC dev pipelines (artist on Win10 desktop, build on Server 2019, target on a separate test PC):
+
+- **Remote game-dev tools** — deploy and debug to a remote Windows PC over the dev network
+- **Remote Windows game-dev quickstart** — one-page setup for the dev → target tools pairing
+- **Tools FAQ** — common issues (firewall, antivirus quarantine, drive mapping)
+- Use Hyper-V or VMware for ephemeral test images; remote tooling tolerates fast image swaps
+
+## Next steps
+
+- [SDK & tools requirements](/gdk/sdk-and-tools)
+- [Download & install the GDK](/gdk/download-install)

@@ -1,0 +1,86 @@
+---
+title: "Async task queues with XTaskQueue"
+description: "Configure work and completion dispatch with XTaskQueue."
+icon: "list-ol"
+---
+
+The GDK async pattern uses **task queues** to control where and when async work and completion callbacks execute. Each queue has two ports.
+
+## Dispatch modes
+
+| Mode | Behavior |
+| --- | --- |
+| **Thread pool** | Callbacks run on the system thread pool, in parallel as threads become available |
+| **Serialized thread pool** | Same as thread pool, but one at a time |
+| **Manual** | Callbacks are not auto-dispatched — you call `XTaskQueueDispatch` yourself |
+| **Immediate** | Callback runs synchronously on the submitting thread; no queuing |
+
+## Handles and lifetime
+
+- Task queue handles are sharable, ref-counted resources
+- `XTaskQueueDuplicateHandle`, `XTaskQueueSubmitCallback`, `XTaskQueueSubmitDelayedCallback`, and `XTaskQueueCreateComposite` all add a reference
+- Handles are per-process — not marshalable
+
+## Process task queue
+
+A default **process task queue** is configured. Used when no queue is passed to an `XAsyncBlock`.
+
+## Common patterns
+
+- **Thread pool queue** — fire-and-forget async
+- **Manual queue** — STL threads pump work and completion separately
+- **Win32 message loop integration** — thread pool for work, completion callbacks from the WindowProc
+- **Composite queues** — mix ports from existing queues (`XTaskQueueCreateComposite`) to send work on one queue's port and completion on another's
+- **Delayed callbacks** — `XTaskQueueSubmitDelayedCallback` for retries or timers
+- **Waiters** — register a Win32 kernel handle; callback fires when it signals (`XTaskQueueRegisterWaiter`)
+
+## Submitting your own callbacks
+
+You can use the task queue infrastructure for your own work even outside of `XAsync` calls. Use `XTaskQueueSubmitCallback` to post a `XTaskQueueCallback` to a queue's work or completion port. This lets you reuse one queue across XAsync, gameplay deferred work, and Win32 integration without writing your own thread pool.
+
+## Async task function example
+
+A typical async pattern looks like:
+
+```cpp
+struct MyAsyncContext {
+    int result;
+};
+
+HRESULT MyAsyncWork(XAsyncBlock* async, int input) {
+    auto ctx = new MyAsyncContext{};
+    HRESULT hr = XAsyncBegin(async, ctx, MyAsyncWork, __FUNCTION__,
+        [](XAsyncOp op, const XAsyncProviderData* data) -> HRESULT {
+            auto ctx = static_cast<MyAsyncContext*>(data->context);
+            switch (op) {
+            case XAsyncOp::DoWork:
+                ctx->result = /* compute */;
+                XAsyncComplete(data->async, S_OK, sizeof(int));
+                return S_OK;
+            case XAsyncOp::GetResult:
+                *static_cast<int*>(data->buffer) = ctx->result;
+                return S_OK;
+            case XAsyncOp::Cleanup:
+                delete ctx;
+                return S_OK;
+            }
+            return S_OK;
+        });
+    return hr;
+}
+```
+
+## Process task queue
+
+Every process gets a default task queue available via `XTaskQueueGetCurrentProcessTaskQueue`. Any `XAsyncBlock` with a null queue uses it. You can also override it with `XTaskQueueSetCurrentProcessTaskQueue` — useful for redirecting library code to a queue you control.
+
+## Handle lifetime patterns
+
+- Always pair `XTaskQueueDuplicateHandle` with `XTaskQueueCloseHandle`
+- Closing the last handle terminates the queue; in-flight callbacks still run
+- Use `XTaskQueueTerminate` to drain a queue deterministically before shutdown
+
+## Related API documentation
+
+- [XTaskQueue API reference](/reference/xtaskqueue) — `XTaskQueueCreate`, `XTaskQueueDispatch`, `XTaskQueueTerminate`, `XTaskQueueRegisterMonitor`, `XTaskQueueRegisterWaiter`, `XTaskQueueSetCurrentProcessTaskQueue`
+- [XAsync API reference](/reference/xasync) — `XAsyncBlock`

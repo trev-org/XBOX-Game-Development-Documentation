@@ -1,0 +1,68 @@
+---
+title: "GDK glossary of terms and acronyms"
+sidebarTitle: "Glossary"
+description: "Key terms and acronyms used throughout the XBOX GDK documentation."
+icon: "book-bookmark"
+---
+
+## Core platform
+
+| Term | Definition |
+| --- | --- |
+| **GDK** | XBOX Game Development Kit. The umbrella SDK that contains the GRDK and GXDK. |
+| **GRDK** | Gaming Runtime Development Kit. Headers, libs, and tools for developing GDK titles for PC and XBOX that use Gaming Runtime features (MSIXVC, Connected Storage, etc.). |
+| **GXDK** | Gaming eXtensions Development Kit. The XBOX-only piece of the GDK — D3D12.x, `xb*` remote management tools, Visual Studio integration. |
+| **Gaming Runtime** | The set of components that implement modern cross-device games on Microsoft platforms (MSIXVC, Installation Management, Connected Storage, Store Commerce, Accessibility, Game Invites, TCUI). |
+| **Game OS** | The minimal, fast, secure OS that runs GDK games on XBOX. |
+| **WINAPI\_FAMILY\_GAMES** | The Win32 API partition that represents the subset of Win32 APIs supported by the GDK. Required on XBOX. |
+| **xgameplatform.lib** | The umbrella import library that defines entry points for all `WINAPI_FAMILY_GAMES` APIs. |
+| **XGameRuntime** | The GDK runtime library you initialize with `XGameRuntimeInitialize`. Required on XBOX. |
+
+## Packaging & deployment
+
+| Term | Definition |
+| --- | --- |
+| **MSIXVC** | The packaging format used by GDK titles on both PC and XBOX. Required for Microsoft Store submission. |
+| **MicrosoftGame.config** | The required configuration file (formerly `MicrosoftGameConfig.mgc`) that declares your title's identity, executables, capabilities, and Gaming Runtime features. |
+| **makepkg** | The command-line tool that creates MSIXVC packages. |
+| **wdapp** | The command-line tool that deploys and tests MSIXVC packages on a PC. |
+| **Intelligent Delivery** | The Gaming Runtime feature that lets a game download only the chunks needed for the current configuration (language, region, optional content). |
+| **Streaming Install** | The feature that lets a game start running while package content is still being downloaded. |
+
+## Identity & accounts
+
+| Term | Definition |
+| --- | --- |
+| **Partner Center** | The Microsoft developer portal where you set up your organization, register titles, configure XBOX services, and submit games. |
+| **Microsoft Entra ID** | Identity service (formerly Azure AD) used to manage members of your organization in Partner Center. |
+| **TitleId** | XBOX-assigned identifier for your title. Goes in `MicrosoftGame.config`. |
+| **MSAAppId** | Microsoft Account App ID, used by XBOX services to identify the title. |
+| **Sandbox** | An isolated XBOX services environment used for development and testing. Switch sandboxes with `XblPCSandbox.exe`. |
+| **Test account** | A sandboxed XBOX account used to validate XBOX services functionality before going to RETAIL. |
+| **XUID** | XBOX User Identifier. |
+
+## Services
+
+| Term | Definition |
+| --- | --- |
+| **XSAPI** | XBOX Services API — flat C API surface for XBOX services. |
+| **XAL** | XBOX Authentication Library. |
+| **Connected Storage / Game Saves** | Cloud-backed game save storage exposed via `XGameSave`. |
+| **TCUI** | Title-Callable UI — standardized system UI shown on behalf of the game via `XGameUI`. |
+| **PlayFab** | Microsoft's LiveOps backend for analytics, economy, multiplayer, leaderboards, etc. |
+
+## Tools & debugging
+
+| Term | Definition |
+| --- | --- |
+| **PIX for Windows / PIX for XBOX** | The official GPU and CPU profiler / debugger. |
+| **`xb*` tools** | Remote-management command-line tools for XBOX dev kits (`xbconnect`, `xbcopy`, `xbrun`, etc.). |
+| **XBOX Manager** | Desktop app for managing your dev kits. |
+| **XDP** | XBOX Device Portal — web-based dev kit management. |
+| **xbWatson** | Crash dump capture and analysis tool. |
+| **Trace Analyzer** | Tool for analyzing XBOX services / Gaming Runtime traces. |
+
+## See also
+
+- Gaming Runtime glossary — a deeper glossary for runtime components and APIs
+- [Onboarding with ID@XBOX](/onboarding)

@@ -1,0 +1,24 @@
+---
+title: "XSAPI overview"
+sidebarTitle: "XSAPI overview"
+description: "Overview of the XBOX Services API (XSAPI) C/C++ surface, with links to each per-service reference."
+icon: "compass"
+---
+
+XSAPI (XBOX Services API) is the C/C\+\+ client library for XBOX Live services. It exposes achievements, social, multiplayer, presence, stats, leaderboards, title storage, and more.
+
+## Architecture
+
+- **Core context** (`XblContextHandle`) — created per `XUserHandle`.
+- **Transport** — `libHttpClient` for HTTPS and WebSocket.
+- **Async** — the standard GDK [async model](/gdk/async-programming) with `XTaskQueue`.
+
+## Per-service references
+
+- [Achievements](/reference/xsapi-achievements), [Achievements Manager](/reference/xsapi-achievements-manager)
+- [Multiplayer](/reference/xsapi-multiplayer), [Multiplayer Manager](/reference/xsapi-multiplayer-manager), [Multiplayer Activity](/reference/xsapi-multiplayer-activity), [Matchmaking](/reference/xsapi-matchmaking)
+- [Social](/reference/xsapi-social), [Social Manager](/reference/social-manager), [Privacy](/reference/xsapi-privacy), [Profile](/reference/xsapi-profile)
+- [Presence](/reference/xsapi-presence), [Real-Time Activity](/reference/xsapi-real-time-activity)
+- [Stats](/reference/xsapi-stats), [Leaderboard](/reference/xsapi-leaderboard), [Title Storage](/reference/xsapi-title-storage), [Events](/reference/xsapi-events), [String Verify](/reference/xsapi-string-verify)
+- [Context & Globals](/reference/xsapi-context)
+- [REST overview](/reference/xsapi-rest-overview), [JSON objects](/reference/xsapi-json)

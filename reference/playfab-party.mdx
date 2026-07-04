@@ -1,0 +1,28 @@
+---
+title: "PlayFab Party API reference"
+sidebarTitle: "Party"
+description: "Reference for the PlayFab Party C/C++ API — networks, endpoints, chat controls, and state pump."
+icon: "phone-volume"
+---
+
+Reference for the PlayFab Party C/C\+\+ API — the cross-platform voice and data transport.
+
+## Core types
+
+- `PartyManager` — global initialization and event pump.
+- `PartyLocalUser`, `PartyLocalChatControl` — per-local-user identity and microphone / speaker.
+- `PartyNetwork` — a connected mesh shared by all participants.
+- `PartyEndpoint` — a logical endpoint on a network; used for reliable / unreliable messages.
+- `PartyChatControl` — voice peer; supports per-user mute, gain, and chat permissions.
+
+## Per-frame loop
+
+1. Call `PartyManager::StartProcessingStateChanges` to drain events.
+2. Handle events: connection state, member join / leave, network errors.
+3. Send any outgoing data via `PartyEndpoint::SendMessage`.
+4. Call `FinishProcessingStateChanges`.
+
+## Related
+
+- [PlayFab Party (concepts)](/playfab/party-voice)
+- [Multiplayer Lobby](/reference/playfab-lobby-matchmaking)

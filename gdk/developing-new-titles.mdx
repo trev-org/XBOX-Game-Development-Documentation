@@ -1,0 +1,76 @@
+---
+title: "Develop a new GDK title"
+sidebarTitle: "Develop a new title"
+description: "Create a new GDK project using Visual Studio templates for PC, XBOX, or both."
+icon: "code"
+---
+
+GDK titles can target PCs, XBOX consoles, or both (with a shared codebase). You pick the target and how much device-specific extension you use.
+
+## Project templates
+
+Installing the GXDK adds nine GDK project templates to Visual Studio: five for PC, four for XBOX.
+
+| Target | Template | Description |
+| --- | --- | --- |
+| **Desktop** | Direct3D 12 Desktop Game (Classic) | Standalone PC game on the stock x64 MSBuild platform. |
+|  | Direct3D 12 Desktop Game | Standalone PC game on the `Gaming.Desktop.x64` custom MSBuild platform. |
+|  | Direct3D 12 Desktop Game Makefile | PC game built from a makefile via command prompt. |
+|  | Desktop Static Library | Static lib targeting `Gaming.Desktop.x64`. |
+|  | Desktop DLL | DLL targeting `Gaming.Desktop.x64`. |
+| **Console** | Direct3D 12 XBOX Game | Standalone XBOX game executable. |
+|  | Direct3D 12 XBOX Game Makefile | XBOX game built from a makefile. |
+|  | XBOX Static Library | Static lib targeting the XBOX platforms. |
+|  | XBOX DLL | DLL targeting the XBOX platforms. |
+
+## Create a project
+
+1. Open Visual Studio.
+2. **File** → **New** → **Project**.
+3. In **All Languages**, choose **C\+\+**. In **All Platforms**, choose **XBOX** or **Windows**. In **All Project Types**, choose **Games**. (You can also search by template name.)
+4. Pick a template and click **OK**.
+
+## Choosing a template
+
+### PC only
+
+**Direct3D 12 Desktop Game** is the starting point.
+
+- Uses `WINAPI_FAMILY_DESKTOP_APP` and links against the full set of PC libs (`kernel32.lib`, `user32.lib`, etc.).
+- Includes headers \+ libs for D3D12; provides a simple swap chain, D3D device, and update/render loop.
+- Includes `XGameRuntime.h` and links `XGameRuntime.lib` — all GDK Gaming Runtime capabilities are ready.
+- XSAPI extension lib available by default.
+- Builds against the stock x64 platform or the custom `Gaming.Desktop.x64` platform.
+- Creates a `MicrosoftGameConfig.mgc` with placeholders for your Partner Center identity.
+
+### XBOX only
+
+**Direct3D 12 XBOX Game** is the starting point.
+
+- Uses `WINAPI_FAMILY_GAMES` and links against `XGamePlatform.lib`.
+- Includes D3D12 headers ready for XBOX D3D12.x extensions.
+- Includes `XGameRuntime.h` and links `XGameRuntime.lib`.
+- XSAPI extension lib available by default.
+- Uses the `Gaming.XBOX.XboxOne.x64` MSBuild platform with remote-debug expectations.
+- Creates a `MicrosoftGameConfig.mgc` with placeholders.
+
+### PC \+ XBOX (shared codebase)
+
+Start with one template (e.g., **Direct3D 12 Desktop Game**) and **add a second build configuration** targeting `Gaming.XBOX.XboxOne.x64` (or vice versa).
+
+You'll need to tailor source with `#define`/`#ifdef` or partition platform-specific code into separate DLLs:
+
+- The PC configuration uses stock D3D12.
+- The XBOX configuration uses D3D12.x.
+
+Switching the active configuration changes the debugger, libs linked, and other tooling settings automatically.
+
+## Next steps
+
+- [Get started with the GDK](/gdk/get-started)
+- [MicrosoftGame.config overview](/gdk/game-config)
+- [Packaging your game](/gdk/packaging)
+
+<Tip>
+  **Adding backend services?** Most titles pair the GDK with [PlayFab](/playfab/overview) for identity, multiplayer, leaderboards, economy, and live-ops. You can wire it in any time after your project builds.
+</Tip>

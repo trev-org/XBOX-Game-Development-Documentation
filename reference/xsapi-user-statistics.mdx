@@ -1,0 +1,27 @@
+---
+title: "XSAPI User Statistics API reference"
+sidebarTitle: "User Statistics"
+description: "Read and subscribe to legacy event-based user statistics on XSAPI."
+icon: "chart-column"
+---
+
+Legacy event-based **user statistics** APIs on XSAPI. Stats represent gameplay quantities (kills, races finished, items collected) used for achievements and leaderboards.
+
+## Functions
+
+- `XblUserStatisticsGetSingleUserStatisticAsync`
+- `XblUserStatisticsGetMultipleUserStatisticsAsync`
+- `XblUserStatisticsGetMultipleUserStatisticsForMultipleServiceConfigurationsAsync`
+- `XblUserStatisticsSubscribeToStatisticChange` / `XblUserStatisticsUnsubscribeFromStatisticChange`
+
+## Compared to other stat APIs
+
+- For writes, use [event-based stats](/reference/xsapi-events) and the Stats service.
+- For title-managed stats, use [XSAPI Stats](/reference/xsapi-stats).
+- For PlayFab statistics, see [PlayFab Statistics](/reference/playfab-statistics).
+
+## Related
+
+- [Stats](/reference/xsapi-stats)
+- [Events](/reference/xsapi-events)
+- [Leaderboard](/reference/xsapi-leaderboard)

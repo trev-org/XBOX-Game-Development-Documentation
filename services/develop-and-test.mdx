@@ -1,0 +1,158 @@
+---
+title: "Develop, test, and troubleshoot XBOX services integrations"
+sidebarTitle: "Develop & test"
+description: "Sandboxes, test accounts, offline play, fine-grained rate limiting, and the standard troubleshooting flow for XBOX services development."
+icon: "flask"
+---
+
+XBOX services has two distinct realities: **RETAIL** (the live production XBOX network) and your **dev sandboxes** (isolated copies of the service stack for testing). Every step of development happens against a sandbox; every certified build runs against RETAIL.
+
+## Sandboxes
+
+A **sandbox** is a string identifier (for example `MYTITLE.1`) that scopes every XBOX services call you make — achievements unlocked, sessions joined, stats written, presence shown. Other titles in the same Partner Center publisher share access to your sandbox; outsiders cannot see it.
+
+- **PC** — switch sandboxes with [`XblPCSandbox.exe`](/tools/pc-sandbox-switcher).
+- **Console** — switch with `xbconfig.exe Sandbox` or through [XBOX Manager](/tools/xbox-manager) / [Dev Home](/tools/dev-home).
+
+Go back to `RETAIL` before certification testing.
+
+## Test accounts
+
+A **test account** is an XBOX Live account that exists only inside your sandbox. Microsoft provisions a pool of them for your title; you can also add real accounts for senior dev/QA. Use the [Test Account Tool](/tools/test-account-tool) to set them up on a kit.
+
+When something looks wrong, the [Player Data Reset tool](/tools/player-data-reset) wipes achievements, stats, and history for a test account so you can re-run the unlock path cleanly.
+
+## Best practices for calling XBOX services
+
+- **Batch writes** — do not flush a stat or achievement every frame. Coalesce to natural game beats.
+- **Cache reads** — friend lists, presence, and profile data can be stale for a few minutes; don't re-fetch on every UI redraw.
+- **Use async** — every XBOX services call is async (`XAsyncBlock` / `XTaskQueue`). Never block the game thread.
+- **Don't poll** — prefer notification callbacks (presence change, friend change, sign-out) over polling loops.
+
+## Fine-grained rate limiting
+
+Each service has its own per-title, per-user, per-time-window quota. When you hit it, the service returns 429 and a hint at when to retry. Treat 429 as expected:
+
+- Apply exponential backoff with jitter on retries.
+- Surface a friendly "syncing…" state in UI rather than an error toast.
+- Check the [Trace Analyzer](/tools/trace-analyzer) reports for repeated 429s during dev — they predict cert failures.
+
+## Offline play
+
+Not every session has network. Design every XBOX services touchpoint to degrade gracefully:
+
+- Achievements and stats unlock locally; sync to the service when connectivity returns.
+- Cloud saves (`XGameSave`) keep working against local storage and sync on reconnect.
+- Friends, presence, MPSD show last-known state, marked as stale.
+- Block only the features that absolutely require live network (matchmaking, leaderboard refresh, store purchase).
+
+The full **offline play** guidance covers the certification rules for what must keep working without network.
+
+## Troubleshooting
+
+The top three causes of "my title can't reach XBOX services":
+
+1. **Wrong sandbox** on the kit or PC — always check `xbconfig` / `XblPCSandbox` first.
+2. **Token expired** — reacquire on every resume from suspend.
+3. **Service config drift** — the title's `XblConfig` in Partner Center does not match what the title is compiled against. Re-run Config as Source.
+
+Deeper diagnosis:
+
+- [Trace Analyzer](/tools/trace-analyzer) — offline call-pattern review.
+- Fiddler integration — inspect raw HTTPS traffic.
+- The published service troubleshooting docs cover sign-in errors, sandbox errors, and per-API HTTP error reference.
+
+## XBOX services identity and authentication
+
+XBOX services authenticates titles and users through layered tokens:
+
+- **MSA** — the user's Microsoft Account; the root identity used by the shell
+- **XToken** — an XBOX-issued device/title-level token; titles do not handle this directly
+- **XSTS token** — XBOX Secure Token Service token; carries the per-user, per-title claims that XBOX services validates
+- **PlayFab entity token** — derived from the XSTS token when you use PlayFab on top of XBOX services
+
+The standard flow:
+
+1. Title calls `XUserAddAsync` → user is signed in to the shell
+2. Title calls `XUserGetTokenAndSignatureAsync` → receives an XSTS token suitable for a target URL
+3. Title attaches the XSTS token to outbound XBOX services HTTP requests (XSAPI does this for you)
+4. Server-side, your custom service validates XSTS claims before honouring the request
+
+Sample XSTS token claims include `xuid`, `usr`, `agg` (age group), `tid` (title id), `sbx` (sandbox), and several privacy/permission flags.
+
+## Privacy and privileges
+
+The platform exposes two complementary check surfaces:
+
+- **Privacy permissions** — per-pair (this user → that user) checks for communication, profile viewing, sharing, multiplayer
+- **User privileges** — per-user feature gates (chat, multiplayer, broadcast, user-created content)
+
+Always check both before showing UI; one without the other is not enough for cert.
+
+## Real-Time Activity (RTA)
+
+RTA is the service-push channel that surfaces presence, multiplayer session changes, stat updates, and other events to your title without polling:
+
+- Open a single RTA channel per signed-in user and subscribe to topics on it
+- The channel uses WebSockets under the hood; XSAPI manages reconnect with exponential backoff
+- Register for **stat notifications**, **session changes**, **presence changes**, and **invite events** through RTA topics
+- **Best practice** — coalesce handlers on the title side so a burst of events does not stall your render thread
+
+## Service-to-service (S2S) calls
+
+Some XBOX services calls are server-to-server, signed with a publisher claim instead of an XSTS token:
+
+- **Title service authentication** — your back end authenticates as the title and calls service endpoints (e.g. write achievements, batch presence)
+- **Web service authentication** — your back end authenticates as itself for custom XBOX services calls
+- **Website authentication** — companion websites authenticate users via XBOX sign-in delegation
+- **Security tokens** — XSTS tokens contain signed claims; sample tokens, token claim references, and validation patterns are documented in the GDK
+- **Custom service config** — author **relying parties**, **access policies**, and **single sign-on** entries in Partner Center so your back end can mint S2S tokens
+- **MPSD-S2S** — server-driven multiplayer session creation and host migration patterns
+- **Delete accounts list** — keep your back end GDPR-compliant by polling the deleted-accounts feed
+
+Run S2S traffic through a privileged hosted environment; never embed the publisher claim in shipped client code.
+
+## XSAPI introduction
+
+The **XBOX services API (XSAPI)** is the supported client SDK for XBOX services:
+
+- **Flat C surface** (`xsapi-c`) — the canonical surface for new code; pairs with `XAsync` / `XTaskQueue`
+- **Flat C async patterns** — every call uses the `*Async` / `*Result` pair; no exceptions, no smart pointers
+- **C\+\+ wrappers** — sample `xsapi_cpp` wrappers ship as source; use them as starting points, not as the SDK
+- **Backcompat APIs** — some legacy XSAPI surfaces remain for porting; mark them deprecated and migrate to flat C
+- **GS / Game Services namespacing** — newer endpoints sit under the `GS` umbrella; XSAPI exposes them via the same flat C calls
+
+## Portal configuration (Partner Center)
+
+Before any XBOX services call works, you configure the title in Partner Center:
+
+- **XBL setup** — pair the title with its **Service Configuration ID (SCID)** and assign sandboxes
+- **Summary tab** — Partner Center's at-a-glance overview of the service config
+- **Partner Center partners** — add publishing partners (e.g., separate dev studio) with scoped access
+- **Service config IDs (multiplayer)** — author session templates, matchmaking rules, achievement/stat schemas
+- **Data sharing UDC** — opt into User Data Collection only if your title needs analytics on top of the platform default
+- **Game DVR config** — block capture for cutscenes or NPC dialogues that should not be re-shared
+
+Always promote config from DEV → CERT → RETAIL sandboxes in order; never edit RETAIL directly.
+
+## Error handling
+
+The XBOX services error model is layered:
+
+- **HRESULTs** on the client (XSAPI returns `HRESULT` everywhere)
+- **HTTP status codes** for REST and S2S calls (200/201, 400, 401/403, 404, 412 precondition, 429 rate limit, 5xx)
+- **Error categories** — auth errors, validation errors, throttling, transient
+- **Best practice** — handle 401/403 (auth) and 412 (precondition) explicitly; backoff on 429; treat 5xx as retryable
+
+The XBL error code reference (HRESULT to text mapping) is a critical companion for support cases.
+
+## Game binding
+
+**Game binding** ties a player's local game session to their cloud profile during sign-in. Use the platform-provided binding rather than reinventing it; the binding is what makes presence, multiplayer, and Connected Storage work correctly under Quick Resume and account switches.
+
+## See also
+
+- [Multiplayer](/services/multiplayer)
+- [Trace Analyzer](/tools/trace-analyzer)
+- [XSAPI overview reference](/reference/xsapi-overview) · [XSAPI REST](/reference/xsapi-rest)
+- [XBL error codes](/reference/xbl-error-codes)

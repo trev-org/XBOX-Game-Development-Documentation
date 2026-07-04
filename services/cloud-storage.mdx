@@ -1,0 +1,26 @@
+---
+title: "Cloud storage"
+sidebarTitle: "Cloud storage"
+description: "XBOX Title Storage blobs and XGameSave Connected Storage for cloud-backed game data."
+icon: "cloud"
+---
+
+Use XBOX Title Storage to persist per-user or global blobs in the cloud, and Connected Storage / XGameSave for game saves.
+
+## Storage types
+
+- **Trusted user storage** — server-authoritative writes (via a service-to-service call).
+- **Untrusted user storage** — client-writable per-user blobs.
+- **Session storage** — scoped to a multiplayer session.
+- **Global title storage** — read-only blobs published by your title.
+- **Connected Storage (XGameSave)** — fault-tolerant cross-device game saves.
+
+## Implement
+
+- [XSAPI Title Storage](/reference/xsapi-title-storage) for cloud blobs.
+- [XGameSave](/reference/xgamesave) for game saves.
+- [Game saves overview](/gdk/game-saves-overview)
+
+## Related
+
+- [XBOX services overview](/services/overview)

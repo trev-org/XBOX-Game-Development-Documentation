@@ -1,0 +1,24 @@
+---
+title: "Error handling"
+sidebarTitle: "Error handling"
+description: "Patterns for handling HRESULT, XError, and service errors across the GDK."
+icon: "bug"
+---
+
+All GDK APIs return `HRESULT`. Build a consistent error-handling layer so errors surface cleanly to logs, telemetry, and UI.
+
+## Patterns
+
+- **Check every `HRESULT`** — don't ignore.
+- **Use `XError`** — register a global handler for unrecoverable runtime errors with [XError](/reference/xerror).
+- **Distinguish recoverable vs fatal** — network blips are recoverable; failed `XGameRuntimeInitialize` is fatal.
+- **Log XSAPI service errors with correlation IDs** — they're required for Microsoft support tickets.
+
+## Cert-relevant
+
+XR-021 and friends require graceful handling of sign-in, network, and storage errors. See [Certification](/publishing/certification).
+
+## Related
+
+- [XError reference](/reference/xerror)
+- [Async model](/gdk/async-programming)

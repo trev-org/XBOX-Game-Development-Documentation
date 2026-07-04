@@ -1,0 +1,234 @@
+---
+title: "Package your XBOX GDK game for XBOX and Windows PC"
+sidebarTitle: "Packaging"
+description: "Learn how to create GDK packages for XBOX and PC using makepkg, Intelligent Delivery, MSIXVC2, and package encryption for Microsoft Store submission."
+icon: "box"
+---
+
+Packaging is the process of bundling your game's executables, assets, and manifest into a distributable format that Microsoft Store can ingest, validate, and deliver to players. The GDK packaging system is shared across XBOX console and Windows PC targets, giving you Streaming Install, Intelligent Delivery, differential content updates, and support for downloadable content (DLC) — all from a single toolchain.
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Streaming Install" icon="download" href="/reference/xpackage">
+    Players can start your game as soon as the first required chunk is installed. Additional content continues downloading in the background while the player is already in the game.
+  </Card>
+
+  <Card title="Intelligent Delivery" icon="tags" href="/reference/xpackage">
+    Tag content chunks as language-specific or hardware-specific (e.g., 4K textures for XBOX One X and XBOX Series consoles) so that players only download what their system actually needs.
+  </Card>
+
+  <Card title="Differential Updates" icon="arrows-rotate" href="/reference/xpackage">
+    Only the changed portions of a package need to be downloaded when you publish an update, significantly reducing update sizes for players and CDN bandwidth costs for you.
+  </Card>
+
+  <Card title="Redistributable Support (PC)" icon="puzzle-piece" href="/publishing/overview">
+    PC packages can declare dependencies on common framework packages (DirectX, Visual C\+\+ runtimes) and include custom installer actions that run with elevated privileges at install time.
+  </Card>
+</CardGroup>
+
+## Packaging workflow
+
+<Steps>
+  <Step title="Configure MicrosoftGame.config">
+    Ensure your `MicrosoftGame.config` has a valid `Identity`, at least one `Executable` in `ExecutableList`, `ShellVisuals`, and a `StoreId` for commerce-related APIs to function. Set `configVersion="1"`.
+  </Step>
+  <Step title="Create a layout file (layout.xml)">
+    The layout file tells `makepkg` which files belong in the package and how they are organized into chunks. Intelligent Delivery tags (language, device family) are applied here.
+  </Step>
+  <Step title="Run makepkg to build the package">
+    For **XBOX console** and **PC (MSIXVC)**, use `makepkg.exe`:
+
+    ```bash
+    # XBOX console (XVC format)
+    makepkg pack /f layout.xml /d .\gamefiles\ /pd .\output\
+    
+    # PC (MSIXVC format)
+    makepkg pack /f layout.xml /d .\gamefiles\ /pd .\output\ /pc
+    ```
+
+    For **PC with the new MSIXVC2 format** (April 2026 GDK\+), use `makepkg2.exe`:
+
+    ```bash
+    makepkg2 pack /f layout.xml /d .\gamefiles\ /pd .\output\
+    ```
+  </Step>
+  <Step title="Test with a sideloaded package">
+    Install the package on a development kit or test PC to verify installation behavior, chunk streaming, and Gaming Runtime integration before submitting to Partner Center.
+  </Step>
+  <Step title="Upload to Partner Center">
+    Upload the resulting `.xvc` (console) or `.msixvc` / `.msixvc2` (PC) package to Partner Center for certification and store publishing. You can automate this step with the **Package Uploader** open-source tool.
+  </Step>
+</Steps>
+
+## MSIXVC2 for PC (April 2026 GDK\+)
+
+Starting with the April 2026 GDK, a next-generation PC packaging format called **MSIXVC2** is available as a preview. It delivers significant improvements over the original MSIXVC format:
+
+| Metric | Improvement |
+| --- | --- |
+| Content update size | 64–94% smaller |
+| Packaging speed | Up to 7.6× faster |
+| Workflow | Combined pack and upload in a single command |
+
+MSIXVC2 is **PC-only**. XBOX console games continue to use the XVC format. Both formats are supported by the `makepkg2` tool.
+
+<Tip>
+  If you are starting a new PC game or overhauling your packaging pipeline, MSIXVC2 is the recommended format for its dramatically smaller update deltas and faster turnaround during development.
+</Tip>
+
+## Package encryption
+
+The GDK packaging system encrypts your content in the following contexts:
+
+- **On optical disc media** — always encrypted
+- **On the content distribution network (CDN)** — encrypted in transit and at rest
+- **Installed on a console** — always encrypted
+- **On an external hard drive formatted for games** connected to a console — always encrypted
+
+<Note>
+  When a PC package is installed on Windows and licensed (i.e., while the game is running), users can access the package contents unencrypted. The GDK packaging system is **not** a DRM solution for PC. Certain parts of a package — including `MicrosoftGame.config`, icons, images, and Intelligent Delivery tags — are always stored unencrypted even on the CDN.
+</Note>
+
+## Automating uploads
+
+You can automate package uploads to Partner Center using the open-source **Package Uploader** tool. Package Uploader is a .NET 5.0 cross-platform application that interacts programmatically with the Partner Center API, making it easy to integrate publishing into your CI/CD pipeline.
+
+## Dynamic chunk ordering
+
+Your game can change the chunk installation order at runtime in response to player actions — for example, prioritizing the installation of a specific map or game mode based on what the player selects in the title screen. This lets you minimize wait times for the content your players are most likely to engage with first.
+
+## Submission Validator
+
+`SubmissionValidator.dll` runs an offline subset of the Partner Center ingestion checks against a built package before you upload, surfacing failures that would otherwise be caught in certification. Use it in CI to fail builds early on:
+
+- Manifest and `MicrosoftGame.config` schema errors
+- Missing or malformed Intelligent Delivery tags
+- Chunk layout problems (oversized first chunk, broken streaming-install graph)
+- Asset/encoding issues that block ingestion
+
+Validator output includes a fixed catalog of message codes you can suppress or treat as warnings in your pipeline.
+
+## XBOX Game Package Manager (XGPM)
+
+**XGPM** is the developer-PC tool for inspecting, mounting, and managing locally installed packages and their chunks during development. Use it to:
+
+- List installed packages and licenses on the dev kit or PC
+- Mount and unmount packages to verify file layout matches `layout.xml`
+- Trigger streaming-install behavior to test chunk gating
+- Remove and re-register packages without a full uninstall
+
+## Flat File Install
+
+**Flat File Install** lets the GDK launch your game directly from a directory of loose files, skipping the packaged install entirely. It is the fastest inner loop during development because rebuilding does not require re-packaging. Flat File Install is dev-only and not a shipping format.
+
+## Framework Packages (PC)
+
+PC packages declare dependencies on shared runtimes — DirectX, Visual C\+\+ redistributables, .NET, and similar — as **framework packages**. The Store installs the correct framework package automatically alongside your game, so you do not ship private copies of common redistributables.
+
+## Custom installation actions (PC, Win32)
+
+Win32 Microsoft Store games can declare **custom install actions** that run with elevated privileges at install, update, repair, and uninstall time. Use them for driver installation, registry setup, or other prerequisites that cannot be expressed as framework dependencies. Custom actions are reviewed during certification.
+
+## Games-as-a-Service (GaaS) packaging
+
+GaaS titles can ship content updates as separate **content packages** that are licensed and installed independently of the base game. This supports seasonal content, large free updates, and per-region rollouts without re-uploading the full base package.
+
+## Disc and cross-gen test discs
+
+For physical media, the packaging toolchain can produce:
+
+- **Test discs** — burnable images used for compatibility and certification testing on retail hardware
+- **Disc subsets** — small disc layouts that pair with a streaming install for fast first-boot
+- **Cross-generation test discs** — single disc images that install the correct XBOX One or XBOX Series X|S build based on the console it is inserted into
+- **Test compilation discs** — multi-title disc images used during cert sweeps and partner showcases
+- **Multi-disc layouts** — split very large titles across two physical discs while keeping a single install identity
+
+## Downloadable content (DLC)
+
+DLC ships as a separate package that licenses against your base game's `StoreId`:
+
+- Author a DLC `layout.xml` against the same `MicrosoftGame.config` family identity
+- Tag DLC chunks with Intelligent Delivery hints so optional packs install only on supported hardware
+- Use [`XPackage`](/reference/xpackage) at runtime to enumerate installed DLC and gate content
+- DLC supports streaming install, differential updates, and Intelligent Delivery just like the base package
+
+## Mods
+
+Mod packages let player- or partner-authored content extend a shipping title without touching the base package signature:
+
+- Each mod is its own MSIX/XVC package referencing the host title's identity
+- The runtime mounts mods via `XPackage` and surfaces them to your code as a list of mounted package mount points
+- Sign mods through Partner Center to distribute via the Store, or via a developer signature for first-party DLC-style flows
+
+## Updates and differential testing
+
+- **Differential updates** — `makepkg`/`makepkg2` produce delta packages from a previous build using `/p` previous-package input; verify the delta size before uploading
+- **MSIXVC2 updates** — the new format produces dramatically smaller deltas; use the `compare` command to check expected delta size in CI
+- **Testing updates** — install the previous version on a dev kit or PC, then apply the delta package via Dev Home / Visual Studio to validate first-run-after-update behaviour
+- **Encryption changes between versions** — re-keying invalidates differential delivery; only re-key when you absolutely must
+
+## Streaming install testing
+
+- Enable **streaming install simulation** on the dev kit / PC so chunks become available in your `layout.xml` order rather than all at once
+- Use `XPackageEnumeratePackages` and `XPackageGetInstallProgress` to drive in-game UI from the streaming-install state
+- Verify that the **first chunk** boots the game to a playable state — certification requires it
+- Test **chunk reordering** by switching the priority of language or game-mode chunks from your title and confirming the system reflects the new order
+
+## Custom install actions (recipes)
+
+PC packages can declare an Intelligent Delivery **recipe** — a static manifest of what to install for given device/language combinations — alongside dynamic `Custom Install Actions`:
+
+- **Custom recipe** — author a JSON recipe to pre-select chunks for known hardware (e.g. 4K assets only on capable GPUs)
+- **Language recipe** — install only the languages the user has selected in Windows / shell settings
+- **Device recipe** — gate chunks on `XSystemAnalyticsInfo` device family and SKU at install time
+- **On-demand recipe** — defer optional content until your title requests it through `XPackageInstallChunks`
+- **Features recipe** — bundle Intelligent Delivery hints with feature-flag metadata so support engineers can re-trigger installs
+
+## Packaging during development
+
+Inner-loop tips:
+
+- Use **Flat File Install** as the default for daily iteration — no repackaging
+- Switch to **loose package install** (built `layout.xml`, no encryption) for end-to-end install validation
+- Reserve **full encrypted MSIXVC/MSIXVC2 builds** for nightly CI and pre-cert validation
+- Drive packaging from a single `layout.xml` per SKU and parameterise device-family chunks with build variables; do not maintain divergent layouts
+
+## Reference tools cheat sheet
+
+| Tool | Purpose |
+| --- | --- |
+| `makepkg` | Build XVC (console) and MSIXVC (PC) packages |
+| `makepkg2` | Build MSIXVC2 (PC) packages with smaller deltas and faster turnaround |
+| `makepri` | Generate the package resource index for localized assets |
+| `packageutil` / `packageutil2` | Inspect, decrypt, and re-sign packages; used in CI for integrity checks |
+| `splitpkg` | Split a built package into Intelligent Delivery shards for staging tests |
+| `Package Uploader` | Push packages to Partner Center from CI |
+| `SubmissionValidator` | Run offline cert pre-flight against a built package |
+| `XGPM` | Mount / unmount / inspect installed packages on the dev kit or PC |
+
+## Deployment schema reference
+
+Advanced `layout.xml` authoring uses a small set of XML elements:
+
+- **`<Package>`** — the package identity and top-level metadata
+- **`<Chunk>`** — a named chunk and its Intelligent Delivery tags
+- **`<FileGroup>`** — a wildcard-driven set of files included in a chunk
+
+See the deployment schema tools reference for the full element list, allowed attributes, and the `atoc-deployment-schema` topic index.
+
+## Packaging debugging
+
+When a package will not install or will not boot:
+
+- Run **SubmissionValidator** locally — most cert blockers surface here first
+- Inspect the manifest with `packageutil dump`
+- Compare the `MicrosoftGame.config` from the failing package against a known-good build
+- Use **Dev Home → Installed games → Logs** to capture the install/boot trace
+- For streaming install failures, log `XPackageInstallChunks` results and check `XPackageGetInstallProgress` at every state change
+
+## Related API documentation
+
+- [XPackage API reference](/reference/xpackage) — `XPackageEnumeratePackages`, `XPackageEnumerateFeatures`, `XPackageMount`, `XPackageMountWithUiAsync`, `XPackageCreateInstallationMonitor`, `XPackageRegisterInstallationProgressChanged`, `XPackageRegisterPackageInstalled`, `XPackageFeature`
+- [XGame API reference](/reference/xgame) — `XLaunchNewGame`
+- [XStore API reference](/reference/xstore) — `XStoreQueryGameLicenseAsync` (mods)

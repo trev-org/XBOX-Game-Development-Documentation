@@ -1,0 +1,91 @@
+---
+title: "Raytracing"
+sidebarTitle: "Raytracing"
+description: "Hardware-accelerated DXR 1.1 raytracing on XBOX Series X|S."
+icon: "splotch"
+---
+
+XBOX Series X|S supports **hardware-accelerated DXR 1.1** raytracing via DirectX 12 Ultimate.
+
+## What's supported
+
+- Inline raytracing (`RayQuery`) and dynamic ray dispatch (`DispatchRays`).
+- Acceleration structures: top-level (TLAS) and bottom-level (BLAS) with refit and rebuild.
+- Procedural primitives via intersection shaders.
+
+## Best practices
+
+- Build BLAS once and reuse — refit for animated geometry.
+- Compact BLAS using `BuildRaytracingAccelerationStructure` compaction queries.
+- Hybrid pipelines (raster \+ RT) typically beat pure path tracing on console budgets.
+- Use sampler feedback and VRS to keep RT cost bounded.
+
+## Hardware design
+
+XBOX Series X|S ray tracing runs on dedicated traversal hardware integrated into the GPU:
+
+- **BVH traversal** offloaded to fixed-function units; shader cores stay busy with shading work
+- **Triangle / box intersection** in hardware; intersection shaders only run for custom primitives
+- **Async with compute** — you can run ray traces concurrently with rasterization or compute
+- Bandwidth, not throughput, is the typical bottleneck — keep BVH small and well-laid-out
+
+## XDXR — Xbox DXR
+
+**XDXR** is the XBOX extension surface for DXR. On top of standard DXR 1.1 it exposes:
+
+- **BVH builders** with platform-specific quality / size / build-time trade-offs
+- **Standalone traversal** — issue traversal without a full ray-generation shader; useful for hybrid pipelines
+- **Offline RTPSO** — bake ray tracing pipeline state objects at build time so first-frame trace cost is bounded
+- **BVH compression** — smaller acceleration structures with negligible quality loss
+- **k-DOP optimization** — author k-DOP bounding volumes for thin or animated geometry to improve traversal efficiency
+
+Use XDXR for shipping titles whenever you need every microsecond — DXR-only code paths are fine for prototypes but leave performance on the table.
+
+## BVH compression
+
+BVH compression reduces the memory footprint of acceleration structures:
+
+- Especially valuable for large open worlds and high-instance-count scenes
+- Authored via XDXR builder flags; transparent to ray-traversal code
+- Verify quality with PIX raytracing visualization before shipping; some scenes show subtle precision loss
+
+## Standalone traversal
+
+Standalone traversal lets you query ray intersections without dispatching a full ray-generation shader:
+
+- Use from compute shaders for hybrid renderers (raster lighting \+ RT shadows or AO)
+- Lower fixed cost than `DispatchRays` for a single ray; not a substitute when you need full hit/miss/shading pipeline
+- Pair with sampler feedback to avoid tracing where the rasterizer already produced a high-confidence result
+
+## Offline RTPSO
+
+Ray tracing pipeline state objects (RTPSOs) can be very expensive to compile at runtime. XDXR's **offline RTPSO** path bakes them at build time:
+
+- Author your RTPSO descriptions in your content pipeline
+- Compile against the GDK's offline RTPSO toolchain
+- Load the pre-compiled RTPSO at runtime — sub-millisecond create cost
+- Critical for streaming content and dynamic shader permutations
+
+## k-DOP optimization
+
+For animated meshes, thin geometry, or high-instance-count scenes, author per-mesh **k-DOP** (k-discrete oriented polytope) bounding volumes:
+
+- Tighter than AABBs for non-axis-aligned geometry — faster traversal rejection
+- Author offline; the XDXR builder consumes them automatically
+- Biggest wins on hair, cloth, and scattered foliage
+
+## Best practices (extended)
+
+- Build BLAS once and reuse — refit for animated geometry
+- Compact BLAS using `BuildRaytracingAccelerationStructure` compaction queries
+- Hybrid pipelines (raster \+ RT) typically beat pure path tracing on console budgets
+- Use sampler feedback and VRS to keep RT cost bounded
+- Profile with PIX **GPU Trace** and the **Xbox raytracing performance** view; the 2024 GDK adds per-stage cost breakdown
+- Bake RTPSOs offline whenever possible — runtime PSO compilation is the largest first-frame stall source
+
+## Related
+
+- [Graphics overview](/gdk/graphics-overview)
+- [Mesh shaders](/gdk/mesh-shaders)
+- [VRS](/gdk/vrs)
+- [PIX for XBOX](/tools/pix-for-xbox)

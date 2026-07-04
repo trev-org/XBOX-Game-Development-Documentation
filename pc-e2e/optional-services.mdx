@@ -1,0 +1,26 @@
+---
+title: "Optional services"
+sidebarTitle: "Optional services"
+description: "Which XBOX and PlayFab services to layer in after your PC GDK title is running."
+icon: "plug"
+---
+
+Once your PC GDK title runs, layer in optional XBOX and PlayFab services as your design requires.
+
+## Common adoption order
+
+1. **Sign-in & identity** — [XUser](/gdk/user-model) and [PlayFab sign-in](/playfab/player-sign-in).
+2. **Achievements & stats** — [XSAPI Achievements](/services/achievements) and [Stats](/reference/xsapi-stats).
+3. **Cloud saves** — [XGameSave](/gdk/game-saves).
+4. **Social** — [friends and recent players](/services/social).
+5. **Multiplayer** — [MPSD \+ Game Chat 2](/services/multiplayer) or [PlayFab Lobby \+ Party](/playfab/multiplayer-lobby).
+6. **Commerce** — [XStore](/publishing/xstore-deep-dive) and [DLC](/publishing/add-ons).
+7. **Live ops** — [PlayFab live service management](/playfab/live-service-management).
+
+Pick what fits your title — none are mandatory beyond what XR requires for the markets you target.
+
+## Related
+
+- [PC overview](/pc-e2e/overview)
+- [XBOX services overview](/services/overview)
+- [PlayFab overview](/playfab/overview)

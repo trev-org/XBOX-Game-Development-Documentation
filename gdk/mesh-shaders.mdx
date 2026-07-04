@@ -1,0 +1,75 @@
+---
+title: "Mesh shaders"
+sidebarTitle: "Mesh shaders"
+description: "Use mesh and amplification shaders to cull and generate geometry on the GPU."
+icon: "shapes"
+---
+
+Mesh shaders replace the legacy vertex / geometry / tessellation pipeline with two new stages: **amplification** and **mesh**.
+
+## Why use them
+
+- Cull at meshlet granularity, before the rasterizer.
+- Procedurally generate geometry on the GPU without round-trip CPU buffers.
+- Bypass input-assembler limits for huge instanced scenes.
+
+## Best practices on XBOX Series X|S
+
+- Pack vertices into ~64-vertex / ~126-primitive meshlets.
+- Use the amplification shader for instance culling, LOD selection, and meshlet visibility tests.
+- Combine with [VRS](/gdk/vrs) and [sampler feedback](/gdk/sampler-feedback) for further savings.
+
+## API design
+
+The mesh-shader pipeline has two HLSL entry points and a fixed export contract:
+
+- **Amplification shader (AS)** — runs first; reads instance data, performs coarse culling and LOD selection, and **dispatches** mesh shader threadgroups via `DispatchMesh`
+- **Mesh shader (MS)** — emits up to 256 vertices and 256 primitives per threadgroup using `SetMeshOutputCounts`, `vertices[]`, `indices[]`, and `primitives[]`
+- **Payload** — the AS hands a packed payload struct to each MS dispatch; keep it small (\< 16 KB)
+
+The MS replaces the entire VS/HS/DS/GS chain. Pixel shader binding and PSO state are unchanged.
+
+## Pipeline usage
+
+Typical render pass:
+
+1. CPU builds a list of meshlets per draw call (offline, in your authoring pipeline)
+2. Bind PSO with AS \+ MS stages; bind a structured buffer of meshlets and instance data
+3. `ExecuteIndirect` or `DispatchMesh` to kick the AS
+4. AS culls instances and dispatches MS threadgroups
+5. MS emits triangles directly to the rasterizer
+
+No vertex buffers, no index buffer, no input assembler. Indirect arguments are minimal.
+
+## Meshlet rendering
+
+A **meshlet** is a small cluster of triangles that fits in one MS threadgroup. Typical sizes:
+
+- 64 vertices, 126 primitives per meshlet (the platform sweet spot on Series X|S)
+- Author offline with a meshlet generator (open-source `meshoptimizer` works well)
+- Store meshlets contiguously with shared vertex data and per-meshlet bounding info (sphere or cone) used for culling
+
+## Meshlet culling
+
+The amplification shader is where the win comes from:
+
+- **Frustum culling** at meshlet granularity — reject thousands of meshlets per frame
+- **Backface cone culling** — reject meshlets whose normal cone faces away from the camera
+- **Occlusion culling** — feed last frame's Hi-Z or sampler feedback to skip occluded meshlets
+- **LOD selection** — pick a meshlet LOD per cluster based on projected size, swap meshlets in/out without CPU work
+
+## Mesh shaders on Xbox Series X|S
+
+Specifics for the platform:
+
+- **Wave size** — Series X|S optimally runs MS at the platform's native wave width; keep threadgroup sizes a multiple of the wave to avoid divergence
+- **Bandwidth-first design** — avoid wide reads inside the MS; do them in the AS and pass results in the payload
+- **Async with compute** — interleave mesh-shader passes with compute work to fill the GPU
+- **Tooling** — PIX **Mesh Viewer** introspects emitted vertices and primitives per meshlet; use it to debug culling and emission rates
+
+## Related
+
+- [Graphics overview](/gdk/graphics-overview)
+- [Raytracing](/gdk/raytracing)
+- [VRS](/gdk/vrs) · [Sampler feedback](/gdk/sampler-feedback)
+- [PIX for XBOX](/tools/pix-for-xbox)

@@ -1,0 +1,25 @@
+---
+title: "Insights & analytics (deep dive)"
+sidebarTitle: "Insights deep dive"
+description: "KQL queries, Insights performance levels, and cross-correlating PlayFab with XBOX data."
+icon: "chart-mixed"
+---
+
+A deep dive into PlayFab Insights, the Explorer query interface, and how to combine PlayFab telemetry with XBOX player data.
+
+## Insights query model
+
+- Insights stores events in a Kusto-backed data lake.
+- Query with KQL via the Explorer pane or the Insights REST API.
+- Set performance levels (Insights units) for higher concurrency or longer retention.
+
+## Combining with XBOX
+
+- Match `XUID` with PlayFab master ID for cross-source analysis.
+- Send key XSAPI / XStore events through `WriteEvents` for unified retention dashboards.
+- Use PlayFab Segments to drive A/B tests and targeted live ops.
+
+## Related
+
+- [Insights & analytics overview](/playfab/analytics)
+- [Live service management](/playfab/live-service-management)

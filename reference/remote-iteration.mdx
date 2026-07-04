@@ -1,0 +1,31 @@
+---
+title: "Remote iteration reference"
+sidebarTitle: "Remote iteration"
+description: "Iterate on dev-kit assets and code without redeploying full packages."
+icon: "arrows-rotate"
+---
+
+Remote iteration lets you push file or asset changes to an XBOX dev kit without rebuilding and redeploying the full package — critical for iteration speed on art, audio, and script content.
+
+## Tools
+
+- **`xbcopy`** — copy files between PC and dev kit.
+- **`xbapp`** — launch, suspend, terminate, and manage installed apps.
+- **`wdapp`** — PC-side equivalent. For driving a remote PC over the network, see the [XBOX PC Remote Tools](/tools/pc-remote-tools) (`wdRemote`, `wdEndpoint`, `wdCapture`, `wdCaptureSession`).
+- **Remote Run** in the [XTF](/reference/xtf) — programmatic remote launch from build scripts.
+
+## Recommended workflow
+
+1. Loose-file your asset directories during development.
+2. Mount them on the dev kit so engine reloads pick up changes instantly.
+3. Use [WDP REST](/reference/wdp-rest) endpoints to automate the loop in your editor.
+
+## Related conceptual documentation
+
+- [XBOX PC Remote Tools](/tools/pc-remote-tools) — pairing, provisioning, and iterating on remote Windows devices.
+
+## See also
+
+- [WDP REST](/reference/wdp-rest)
+- [WDP extended](/reference/wdp-extended)
+- [XTF](/reference/xtf)

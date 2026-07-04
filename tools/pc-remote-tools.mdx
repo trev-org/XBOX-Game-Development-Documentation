@@ -1,0 +1,424 @@
+---
+title: "XBOX PC Remote Tools"
+sidebarTitle: "PC Remote Tools"
+description: "Conceptual overview of the XBOX PC Remote Tools — Xbox PC Toolbox, the Xbox PC Device Manager PowerShell module (XDM), and the wdRemote / wdEndpoint command-line tools — for provisioning, pairing, and iterating on remote Windows devices (handhelds, desktops, and test machines) over a LAN."
+icon: "tower-broadcast"
+keywords: ["XBOX PC Remote Tools", "Xbox PC Toolbox", "Xbox PC Device Manager", "XDM", "wdRemote", "wdEndpoint", "Fully Managed", "Lightweight", "remote iteration", "handheld", "remote-win-gamedev"]
+related: ["/tools/pc-tools", "/tools/wdapp", "/tools/launching-on-pc", "/reference/remote-iteration", "/gdk/dev-pc-setup"]
+---
+
+<Note>
+  The **Xbox PC Toolbox** app is in preview. Download it from the [Microsoft Store](https://aka.ms/toolboxinstaller) on Windows.
+</Note>
+
+The **XBOX PC Remote Tools** streamline game development on remote Windows devices — handhelds, desktops, and test machines — over a local area network. They handle secure provisioning, PIN pairing, acquisition, incremental deployment, game launch, and termination, plus optional Visual Studio remote debugging.
+
+This page is the conceptual entry point. For step-by-step setup see the [How-to guide](#how-to-use-the-tools) and the [Quickstart](#quickstart) below.
+
+## Tool suite
+
+<CardGroup cols={2}>
+  <Card title="Xbox PC Toolbox" icon="window-maximize">
+    Graphical app that provisions both the dev PC and the remote target device, runs the PIN pairing flow, manages add-ons, and installs the remote-iteration command-line tools.
+  </Card>
+
+  <Card title="Xbox PC Device Manager (XDM)" icon="shield-halved">
+    PowerShell module installed during setup. Establishes secure, encrypted communication between dev PC and target devices, manages OpenSSH config and trust, and enables PowerShell remoting over SSH.
+  </Card>
+
+  <Card title="wdRemote.exe" icon="terminal">
+    Runs on the **development PC**. Sends `deploy`, `launch`, and `terminate` commands to a target device.
+  </Card>
+
+  <Card title="wdEndpoint.exe" icon="satellite-dish">
+    Runs on the **remote target device**. Listens on HTTPS port 4275 and executes the commands `wdRemote` sends.
+  </Card>
+</CardGroup>
+
+## Supported workflows
+
+- **Provision devices** — prepare a dev PC and a target device for remote iteration.
+- **Pair devices** — establish a secure, encrypted, authorized connection via PIN.
+- **Manage devices** — unpair, rename, or update connection settings from the device workspace.
+- **Deploy and manage games** — incrementally deploy, launch, and terminate from the command line.
+- **Attach the Visual Studio debugger** — attach Visual Studio 2022 to a game running on a remote Windows device.
+- **Fully Managed mode** — remote iteration plus device management via PowerShell remoting over SSH.
+- **Lightweight mode** — remote iteration only (deploy / launch / terminate) over HTTPS/TLS without SSH.
+
+## Key capabilities
+
+### Secure communication
+
+The SSH-based portion of the connection only carries PowerShell remoting for command execution. Remote iteration operations (deploy, launch, terminate) flow over HTTPS. Both channels are encrypted end-to-end, protecting builds and telemetry from interception or tampering.
+
+### Incremental deployment
+
+`wdRemote /action:deploy` ships only the **changed portions** of a build instead of reinstalling the whole package — dramatically faster than a full redeploy during iteration.
+
+### Remote execution
+
+Launch, test, and terminate games on remote target devices from the dev PC without physical access. The remote execution path enforces the **one game at a time (OGAT)** guarantee and automatically terminates the previously running game before launching a new one.
+
+### Device management
+
+Track, monitor, and manage multiple paired devices from the Xbox PC Toolbox device workspace — including unpairing, renaming, and updating IP / connection settings.
+
+### Automated setup
+
+Xbox PC Toolbox automates dependency install, environment configuration, and credential setup using WinGet and Desired State Configuration (DSC) so you don't manually wire up every prerequisite.
+
+## Fully Managed vs. Lightweight
+
+The device type you select on the **dev PC must match** the device type on the target device.
+
+|  | Fully Managed | Lightweight |
+| --- | --- | --- |
+| **Encryption** | SSH | HTTPS/TLS |
+| **Best for** | Full device management and remote iteration | Quick setup for deploy / launch / terminate |
+| **Protocol** | PowerShell remoting over SSH | HTTPS/TLS |
+| **Setup** | SSH auto-installed and configured; fingerprint accept | No SSH setup; faster provisioning |
+| **Remote iteration** | Deploy, launch, terminate | Deploy, launch, terminate |
+| **Device management** | DSC config, sandbox management, PowerShell remoting | Not available |
+| **Entra-joined devices** | Not supported | Supported (auto-selected) |
+
+## Limitations and dependencies
+
+- Both devices need internet access **during setup**.
+- Both devices must be on the **same local network** and able to ping each other.
+- The Xbox PC Toolbox app is acquired from the **RETAIL** sandbox; switch to a dev sandbox after setup if needed.
+- Only **Windows 10 or Windows 11 Home / Pro** is supported.
+- **Physical access** to both devices is required during setup.
+- **Administrator access** is required on both devices.
+- Microsoft Entra ID–joined target devices are supported via **Lightweight only** — the app auto-disables Fully Managed for those devices.
+
+## High-level workflow
+
+<Steps>
+  <Step title="Initial one-time setup">
+    1. Install **Xbox PC Toolbox** on the dev PC from the Microsoft Store.
+    2. In the app on the dev PC, select **Set as development device** and complete the install-tools flow (network adapter, SSH passphrase, configure).
+    3. Install **Xbox PC Toolbox** on the remote target device and select **Set as a remote target device**. Choose **Fully Managed** or **Lightweight**.
+    4. Complete the **PIN pairing** flow — generate the PIN on the target, enter it on the dev PC (you have two minutes), and accept the SSH fingerprint for Fully Managed.
+    5. Install the remote-iteration tools (`wdRemote` on dev PC, `wdEndpoint` on target) using the app.
+  </Step>
+  <Step title="Ongoing development loop">
+    From the dev PC, use `wdRemote` to:
+
+    - **Deploy** game build deltas to the target.
+    - **Launch** the game for testing.
+    - **Terminate** the running game when done.
+    - Repeat for every code or content change.
+  </Step>
+  <Step title="Optional: attach Visual Studio">
+    Use the Visual Studio 2022 remote-Windows debugger to attach to the game running on the paired target device over the same secure channel.
+  </Step>
+</Steps>
+
+## Quickstart
+
+### Prerequisites
+
+- Internet access on both devices during setup.
+- Install Xbox PC Toolbox from the Microsoft Store on both devices.
+- Devices on the same LAN, able to ping each other.
+- Windows 10 / 11 Home or Pro on both devices.
+- Physical and administrator access to both devices.
+
+### Cleanup from earlier previews
+
+If you participated in earlier previews, run the cleanup script on both devices before installing. Otherwise skip this section.
+
+1. Download the [cleanup script](https://aka.ms/CleanupScript) to each device.
+2. On the **development PC**, open PowerShell as administrator and run:
+   ```powershell
+   pwsh Remove-XboxPCDeviceArtifacts.ps1 -Target devpc
+   ```
+3. On the **target device**, copy the script over (USB / nearby sharing), open PowerShell as administrator, and run:
+   ```powershell
+   pwsh Remove-XboxPCDeviceArtifacts.ps1 -Target targetdevice
+   ```
+
+### Changes Xbox PC Toolbox setup makes
+
+<AccordionGroup>
+  <Accordion title="Development PC">
+    - Enables Developer Mode.
+    - Installs PowerShell modules in your Documents folder.
+    - Sets the network adapter profile to private.
+    - Enables file and printer sharing and network discovery on private networks.
+    - Enables Windows Remote Management (WinRM).
+    - Installs OpenSSH Client and configures `ssh-agent` to start automatically.
+    - Creates SSH keys.
+  </Accordion>
+
+  <Accordion title="Target device">
+    - Enables Developer Mode.
+    - Installs PowerShell modules in your Documents folder.
+    - Sets the network adapter profile to private.
+    - Enables file and printer sharing and network discovery on private networks.
+    - Enables WinRM.
+    - Installs OpenSSH Server and configures `sshd` to start automatically.
+    - Adds a firewall rule for the SSH server on **port 22**.
+    - Removes sleep and display timeouts.
+    - Configures SSH for the PowerShell subsystem and key-based authentication.
+    - Installs the Visual C\+\+ Runtime Redistributable.
+    - Sets a `netsh` HTTPS rule on **port 4275** so `wdEndpoint` can listen for incoming connections.
+  </Accordion>
+</AccordionGroup>
+
+## How to use the tools
+
+### Set up the development device
+
+1. Install Xbox PC Toolbox on the dev PC.
+2. Open the app, select **Set as development device**, then **Continue**.
+3. Select **Install Tools** to add the required components. (Selecting Install Tools accepts the [Terms of Agreement](https://www.microsoft.com/en-us/servicesagreement).)
+4. Choose the network adapter for the secure channel (auto-selected if only one).
+5. Add a strong passphrase to protect the SSH key — **save it securely**.
+6. Select **Confirm** to start configuration. When complete, the device workspace screen appears.
+
+### Set up the remote target device
+
+Same steps as the dev PC, with these differences:
+
+- At step 2, select **Set as a remote target device** instead.
+- Choose a device type — **Fully Managed** (SSH) or **Lightweight** (HTTPS/TLS only). Both encrypt communication.
+- You do not create SSH keys or a passphrase on the target.
+
+### Manage device add-ons
+
+Add-ons are optional components for workflows not every project needs. After setup, you can enable or disable them per device from the add-on workspace.
+
+The **Windows Graphics Tools** add-on enables the D3D debug layer and GPU-based validation — required for debugging or profiling DirectX graphics with tools like PIX. The Toolbox provides it inline so you don't have to leave the app to manage Windows optional features.
+
+<Note>
+  If disabling an add-on fails, ensure Windows is fully up to date and restart the device. If the issue persists, report it through Feedback Hub.
+</Note>
+
+### Pair devices
+
+1. **On the target:** in the workspace, select **Pair device** → **Start Pairing**. The app shows a PIN plus connection details (IP / device name, username). The PIN expires in **two minutes**.
+2. **On the dev PC:** in the workspace, select **Pair device** and choose Fully Managed or Lightweight (must match the target).
+3. **On the dev PC:** enter the IP/name, PIN, username, and a nickname; select **Pair device**.
+4. **On the target:** when pairing succeeds, select **Return Home**.
+5. **On the dev PC (Fully Managed only):** the app opens a terminal asking to accept the SSH fingerprint — type `yes` and press Enter. After connecting, type `exit` to close the window. Do not close with the **X** button — it can cause issues.
+6. **On the dev PC:** a success screen confirms the secure pairing. Return to the workspace to see all paired targets, tagged Fully Managed or Lightweight.
+
+### Unpair devices
+
+Select the gear icon on a device card to **Unpair**, **Rename**, or **Edit connection settings**.
+
+<Warning>
+  Unpair from the **remote target device**, not the dev PC. Unpairing from the target removes SSH keys on both sides for a clean disconnection. Unpairing from the dev PC only removes the device from your local workspace.
+</Warning>
+
+### Start an interactive session with XDM
+
+In the device workspace on the dev PC, find the target card and select **Connect**. This opens an interactive PowerShell-remoting session over SSH — commands you run there execute on the target.
+
+### Use wdRemote
+
+Open a command-line terminal on the dev PC. Remote paths are relative to the gameroot directory on the target, which is `C:\%ProgramData%\Microsoft GDK\wdEndpoint\gameroot`.
+
+#### Deploy a game (incremental)
+
+```cmd
+# Syntax
+wdRemote /action:deploy /device:<computername or ip address> /source:<source_directory> /destination:<destination_directory_under_gameroot>
+
+# Example
+wdRemote /action:deploy /device:mypc1 /source:c:\game /destination:gamedir
+```
+
+#### Launch a game
+
+```cmd
+# Syntax
+wdRemote /action:launch /device:<computername or ip address> /path:<remote_path_to_exe_within_gameroot>
+
+# Example
+wdRemote /action:launch /device:mypc1 /path:gamedir\game.exe
+```
+
+#### Terminate a game
+
+```cmd
+# Syntax
+wdRemote /action:terminate /device:<computername or ip address> /processid:<game_process_id>
+
+# Example
+wdRemote /action:terminate /device:mypc1 /processid:1234
+```
+
+## Ports and protocols
+
+| Component | Protocol | Port |
+| --- | --- | --- |
+| **XDM** (Fully Managed) | OpenSSH / PowerShell remoting | **22** |
+| **wdEndpoint** | HTTPS/TLS | **4275** |
+
+In corporate networks, open **port 22** and **port 4275** between the dev PC and target, and disconnect from any VPN before pairing.
+
+## Best practices
+
+- Avoid reimaging handheld targets to Windows Pro — it can introduce extra processes and reduce available resources.
+- Use Xbox PC Toolbox for provisioning, secure-channel setup, dependency install, and configuration.
+- Test connectivity from Xbox PC Toolbox before deploying.
+- Use XDM-enabled remote sessions and PowerShell remoting for command execution on the target.
+- Use `wdRemote` and `wdEndpoint` for deploy / launch / terminate.
+- Ensure adequate disk space on the target.
+- Use the terminate command for clean iteration cycles.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="What's the difference between XDM and wdRemote / wdEndpoint?">
+    **XDM** sets up the secure communication channel. **wdRemote** / **wdEndpoint** deploy and launch games over that channel. You need both: XDM for the connection, `wdRemote`/`wdEndpoint` for game ops.
+  </Accordion>
+
+  <Accordion title="Why run wdEndpoint as Administrator the first time?">
+    The first run requires admin access to create and store certificates and bind the HTTPS URL on port 4275. Subsequent runs don't require elevation.
+  </Accordion>
+
+  <Accordion title="Can I deploy multiple games to the same target?">
+    Yes. Deploy each game to a different directory under gameroot and launch as needed.
+  </Accordion>
+
+  <Accordion title="What happens if the network drops during deployment?">
+    `wdRemote` returns an error. After restoring connectivity, retry the deploy command.
+  </Accordion>
+
+  <Accordion title="Is all communication encrypted?">
+    Yes. Fully Managed uses SSH; Lightweight uses HTTPS/TLS. Both encrypt everything between dev PC and target.
+  </Accordion>
+
+  <Accordion title="Can I use these tools with any Windows game?">
+    Yes — `wdRemote` / `wdEndpoint` work with any Windows executable, not just GDK titles.
+  </Accordion>
+
+  <Accordion title="How do I find connection details for a paired target?">
+    They appear on the **Testing Device** screen after pairing. Alternatively, on the target run `$env:ComputerName`, `$env:Username`, and `ipconfig` in PowerShell.
+  </Accordion>
+
+  <Accordion title="How do I verify and change the sandbox?">
+    Run `xblpcsandbox /get` to check; run `XblPCSandbox.exe RETAIL` to switch back to RETAIL (required for downloading Xbox PC Toolbox).
+  </Accordion>
+
+  <Accordion title="How do I verify the device configuration?">
+    Run `dsc config test -f "$env:LOCALAPPDATA\XboxPCDeviceManager\config\devPC.dsc.yaml"` on the dev PC, the corresponding `targetDevice.dsc.yaml` on the target, or `network.dsc.yaml` on either.
+  </Accordion>
+</AccordionGroup>
+
+## Known issues
+
+- **PowerShell / DSC setup can fail** and Xbox PC Toolbox may close during setup. Workaround: uninstall and reinstall PowerShell and DSC via WinGet (see _Troubleshooting_ below).
+- **Domain-joined target devices** only support password-based OpenSSH auth in Fully Managed mode; use Lightweight as an alternative.
+- **`winget` command errors** (e.g. `winget search` fails): reboot the target device.
+- **Visual Studio remote debugger performance** is not yet optimized — expect slower iteration than local debugging.
+- The remote debugger may **stop responding after ~50 iterations**. Restart the target and the debugger session.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Pairing fails on a corporate network">
+    - Confirm devices can see each other on the LAN — corporate firewalls or segmentation may block device-to-device traffic.
+    - Open **port 22** (OpenSSH) and **port 4275** (remote iteration) between the devices.
+    - Disconnect from any VPN before pairing.
+    - If your org requires device registration, confirm registration per IT policy.
+  </Accordion>
+
+  <Accordion title="Error installing required tools">
+    Errors installing Xbox PC Device Manager, `Microsoft.PowerShell.*`, or `Microsoft.Windows.Developer` modules are usually OneDrive-related. Delete the module directories from `%onedrive%/Documents/PowerShell/Modules/` and try again.
+  </Accordion>
+
+  <Accordion title="PowerShell / DSC provisioning fails during setup">
+    Open an elevated terminal and reinstall:
+
+    ```powershell
+    winget uninstall Microsoft.PowerShell
+    winget uninstall Microsoft.DSC
+    winget install Microsoft.PowerShell --installer-type wix
+    winget install Microsoft.DSC --installer-type zip
+    ```
+
+    If setup hangs while installing DSC after these steps, restart Xbox PC Toolbox and try again.
+  </Accordion>
+
+  <Accordion title="OpenSSH: kex_exchange_identification: read: Connection reset">
+    - Restart the target device.
+    - Ensure the device is on a **private** network profile (otherwise the firewall may block).
+    - Check for a corrupted `known_hosts` file on your dev PC.
+
+    This is an OpenSSH-specific issue, unrelated to Xbox PC Toolbox.
+  </Accordion>
+
+  <Accordion title="winget PowerShell 7.5 install fails (0x8A150049)">
+    Uninstall PowerShell 7.6 (bundled with Visual Studio 2026). The newer version causes installation conflicts.
+  </Accordion>
+
+  <Accordion title="winget over SSH fails after pairing">
+    Run `Repair-WinGetPackageManager` on the target, or reboot it.
+  </Accordion>
+
+  <Accordion title="Game deployment fails on a handheld">
+    Handhelds with aggressive sleep timers can sleep mid-deployment. Increase or disable the sleep timer on the target during deployment.
+  </Accordion>
+
+  <Accordion title="Pairing succeeds on target but SSH fails on dev PC">
+    1. On the target, verify `sshd` is running:
+       ```powershell
+       Get-Service sshd
+       Restart-Service sshd
+       ```
+    2. On the dev PC, test whether `ssh-agent` is offering stale keys by bypassing it:
+       ```powershell
+       ssh -o IdentitiesOnly=yes -i "$env:USERPROFILE\.ssh\XboxPCDeviceManagerKey" -o PreferredAuthentications=publickey user@target-ip "echo SUCCESS"
+       ```
+       - If that **succeeds**, clear and reload the agent:
+         ```powershell
+         ssh-add -D
+         Restart-Service ssh-agent
+         ssh-add "$env:USERPROFILE\.ssh\XboxPCDeviceManagerKey"
+         ssh-add -l
+         ssh -o PreferredAuthentications=publickey user@target-ip "echo SUCCESS"
+         ```
+       - If it **fails**, the issue is on the target side — collect OpenSSH logs (below).
+  </Accordion>
+
+  <Accordion title="Collect OpenSSH logs">
+    1. Open Notepad as administrator and open `C:\ProgramData\ssh\sshd_config` (use _All Files_ filter).
+    2. Replace the `# Logging` block:
+       ```text
+       SyslogFacility LOCAL0
+       LogLevel Debug3
+       ```
+    3. Restart SSH in an elevated PowerShell:
+       ```powershell
+       net stop sshd
+       net start sshd
+       ```
+    4. Reproduce the issue.
+    5. Collect logs from `C:\ProgramData\ssh\logs` and zip them for the team.
+    6. Revert the config changes and restart `sshd` again.
+  </Accordion>
+</AccordionGroup>
+
+## Report a problem
+
+From the Xbox PC Toolbox title bar, select **Send Feedback → Report a Problem**. Include:
+
+- Operating System version (Windows 10/11 build)
+- PowerShell version (`$PSVersionTable`) — for XDM issues
+- Network configuration (Wi-Fi / Ethernet, corporate / home)
+- Exact error messages
+- Repro steps
+- Which tool (Xbox PC Toolbox, XDM, `wdRemote`, or `wdEndpoint`)
+- Preview version
+
+## See also
+
+- [PC tools — wdapp, PIX, WDP](/tools/pc-tools)
+- [wdapp (Application Management tool)](/tools/wdapp)
+- [Launching on PC](/tools/launching-on-pc)
+- [Remote iteration (dev kit)](/reference/remote-iteration)
+- [Dev PC setup](/gdk/dev-pc-setup)

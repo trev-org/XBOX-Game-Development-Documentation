@@ -1,0 +1,75 @@
+---
+title: "XSAPI Context, Settings, and Globals API reference"
+sidebarTitle: "Context & Globals"
+icon: "gear"
+description: "XblContext lifecycle, per-context HTTP / WebSocket settings, XSAPI global initialization, memory hooks, routed call handlers, and platform storage hooks."
+---
+
+## XBOX Live Context (`xbox_live_context_c`)
+
+Create a per-user XSAPI context to scope service calls to a signed-in user.
+
+| Function | Description |
+| --- | --- |
+| `XblContextCreateHandle` | Create a context for an `XUserHandle` |
+| `XblContextDuplicateHandle` | Duplicate a handle |
+| `XblContextCloseHandle` | Release |
+| `XblContextGetUser` | Owning user |
+| `XblContextGetXboxUserId` | XUID for the owning user |
+
+**Handle:** `XblContextHandle`. **Helper struct:** `XblGuid`.
+
+## Context Settings (`xbox_live_context_settings_c`)
+
+Tune per-context HTTP retry, timeout, and WebSocket behavior. All names are prefixed `XblContextSettings`.
+
+| Get / Set pair | Controls |
+| --- | --- |
+| `…HttpRetryDelay` | Retry back-off |
+| `…HttpTimeoutWindow` | Overall HTTP timeout window |
+| `…LongHttpTimeout` | Long-poll timeout |
+| `…WebsocketTimeoutWindow` | WebSocket timeout |
+| `…UseCrossPlatformQosServers` | QoS server selection |
+
+## Globals (`xbox_live_global_c`)
+
+| Function | Description |
+| --- | --- |
+| `XblInitialize` / `XblCleanupAsync` | Library lifecycle (`XblInitArgs`) |
+| `XblGetAsyncQueue` | Default queue |
+| `XblGetScid` | SCID |
+| `XblSetApiType` | Pick API mode (`XblApiType`) |
+| `XblSetOverrideConfiguration` / `XblSetOverrideLocale` | Test/dev overrides |
+| `XblMemSetFunctions` / `XblMemGetFunctions` | Memory hooks |
+| `XblAddServiceCallRoutedHandler` / `Remove` | Inspect every service call |
+| `XblDisableAssertsForXboxLiveThrottlingInDevSandboxes` | Quieter dev experience |
+
+**Structs:** `XblInitArgs`, `XblServiceCallRoutedArgs`. **Enums:** `XblApiType`, `XblConfigSetting`.
+
+## HTTP call helpers (`http_call_c`)
+
+Build authenticated REST calls outside the typed XSAPI surface.
+
+- Create / clean up: `XblHttpCallCreate`, `XblHttpCallCloseHandle`
+- Build the request: `XblHttpCallRequestSet*` family
+- Perform: `XblHttpCallPerformAsync`
+- Inspect the response: `XblHttpCallGetResponse*` family
+
+**Handle:** `XblHttpCallHandle`. **Enum:** `XblHttpCallResponseBodyType`.
+
+## Platform hooks (`platform_c`)
+
+Allow the host to provide local storage on platforms without a default implementation.
+
+`XblLocalStorageSetHandlers` plus the `XblLocalStorage*` callbacks: `ReadHandler`, `WriteHandler`, `ClearHandler`, `ReadComplete`, `WriteComplete`, `ClearComplete`.
+
+**Handle:** `XblClientOperationHandle`. **Enums:** `XblClientOperationResult`, `XblLocalStorageWriteMode`.
+
+## Errors (`errors_c`)
+
+`XblGetErrorCondition` and enum `XblErrorCondition` map HRESULT codes to broad conditions (auth, rate-limited, transient, etc.).
+
+## See also
+
+- [libHttpClient API reference](/reference/httpclient)
+- [XSAPI REST API overview](/reference/xsapi-rest-overview)

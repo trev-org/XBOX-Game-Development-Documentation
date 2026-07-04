@@ -1,0 +1,78 @@
+#content-area {
+  max-width: unset;
+}
+
+/* Diagonal gradient overlay from bottom-right to top-left, using primary color #7CC400 */
+#background-color::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    to top left,
+    rgba(124, 196, 0, 0.18) 0%,
+    rgba(124, 196, 0, 0.08) 5%,
+    rgba(124, 196, 0, 0.02) 15%,
+    rgba(124, 196, 0, 0) 50%
+  );
+}
+
+/* Slightly softer overlay in light mode for readability */
+html.light #background-color::after {
+  background: linear-gradient(
+    to top left,
+    rgba(124, 196, 0, 0.10) 0%,
+    rgba(124, 196, 0, 0.05) 5%,
+    rgba(124, 196, 0, 0.02) 15%,
+    rgba(124, 196, 0, 0) 50%
+  );
+}
+
+/* Soft gradient accent under the top navbar to separate it from content */
+#navbar {
+  background: linear-gradient(
+    to bottom,
+    rgba(124, 196, 0, 0.08) 0%,
+    rgba(124, 196, 0, 0.03) 15%,
+    rgba(124, 196, 0, 0) 50%
+  );
+  border-bottom: 1px solid rgba(124, 196, 0, 0.15);
+  backdrop-filter: blur(6px);
+}
+
+html.light #navbar {
+  background: linear-gradient(
+    to bottom,
+    rgba(124, 196, 0, 0.05) 0%,
+    rgba(124, 196, 0, 0.02) 15%,
+    rgba(124, 196, 0, 0) 50%
+  );
+  border-bottom: 1px solid rgba(124, 196, 0, 0.12);
+}
+
+/* Soft gradient accent on the sidebar to separate it from content */
+#sidebar {
+  background: linear-gradient(
+    to right,
+    rgba(124, 196, 0, 0.08) 0%,
+    rgba(124, 196, 0, 0.03) 15%,
+    rgba(124, 196, 0, 0) 50%
+  );
+  border-right: 1px solid rgba(124, 196, 0, 0.15);
+}
+
+html.light #sidebar {
+  background: linear-gradient(
+    to right,
+    rgba(124, 196, 0, 0.05) 0%,
+    rgba(124, 196, 0, 0.02) 15%,
+    rgba(124, 196, 0, 0) 50%
+  );
+  border-right: 1px solid rgba(124, 196, 0, 0.12);
+}
+
+/* Slightly larger banner text */
+#banner {
+  font-size: 1rem;
+}

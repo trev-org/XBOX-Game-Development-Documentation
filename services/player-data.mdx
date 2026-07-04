@@ -1,0 +1,94 @@
+---
+title: "Player data"
+sidebarTitle: "Player data"
+description: "Where player profile, stats, leaderboards, storage, and progress data live on XBOX."
+icon: "database"
+---
+
+Player data on XBOX is split across multiple services depending on use case:
+
+- **Profile** — gamertag, gamerpic, real name, account tier ([XSAPI Profile](/reference/xsapi-profile)).
+- **Stats** — event-based and title-managed numeric / string stats ([XSAPI Stats](/reference/xsapi-stats)).
+- **Leaderboards** — ranked stat queries ([XSAPI Leaderboard](/reference/xsapi-leaderboard)).
+- **Title Storage** — per-user blobs ([XSAPI Title Storage](/reference/xsapi-title-storage)).
+- **Connected Storage** — cross-device game saves ([XGameSave](/reference/xgamesave)).
+- **Achievements** — per-user progress and unlock state.
+
+## When to use PlayFab instead
+
+For complex live-service data (custom segments, economy, A/B tests, custom analytics) use [PlayFab](/playfab/overview).
+
+## Stats: event-based vs title-managed
+
+Just like achievements, stats come in two flavours:
+
+| Model | How stats update | When to choose |
+| --- | --- | --- |
+| **Event-based (EB)** | Service derives stats from events you send | Default for new titles; supports leaderboards and EB achievements |
+| **Title-managed (TM)** | Title pushes stat values directly | Legacy titles; very-low-volume stats; per-session counters |
+
+### Authoring event-based stats
+
+1. Author **events** in Partner Center (event name, fields, types)
+2. Author **stat rules** that reduce events into stats (sum, max, last value, count distinct)
+3. Author **leaderboards** that order users by a stat
+4. Send events from the title via `XGameEventWrite`; the service updates stats and any dependent leaderboards within seconds
+
+### Authoring title-managed stats
+
+- Update with `XblTitleManagedStatsUpdateStatsAsync` (numeric and string stats)
+- Read with `XblTitleManagedStatsGetStatsAsync`
+- TM stats can also back leaderboards configured in Partner Center
+
+### Featured stats
+
+**Featured stats** show on the player's XBOX profile in the shell. Author them in Partner Center alongside regular stats:
+
+- Up to a small fixed number of featured stats per title
+- Choose stats that are meaningful at a glance ("Win %", "Hours played")
+- Featured stats are available in both EB and TM models
+
+### Stat configuration tips
+
+- **Stat name / value** — names are case-sensitive and immutable post-publish
+- **User stat rules** — published configuration is shipped with your service config; review with QA before promoting to RETAIL
+- **Stat change notifications** — subscribe via RTA to react to your own stat changes (e.g. instant UI updates)
+- **Stat scenarios** — many titles publish per-mode variants (e.g. `KillsRanked`, `KillsCasual`) rather than a single combined stat
+
+## Leaderboards
+
+Leaderboards rank users by a configured stat:
+
+- **Event-based leaderboards** — derived from EB stats; updated automatically
+- **Title-managed leaderboards** — backed by TM stats; updated when your title writes the stat
+- **Social leaderboards** — pre-filtered to the caller's friend graph
+- Author up to a configurable number of leaderboards per stat in Partner Center
+- Query with `XblLeaderboardGetLeaderboardAsync`; specify ordering, view (global/social), and page size
+
+## How the data platform works
+
+The XBOX data platform is event-sourced:
+
+1. Title sends typed events to ingest
+2. Ingest validates schema and persists raw events
+3. Stat rules execute on the event stream to produce stats
+4. Leaderboards index stats and serve ranked reads
+5. RTA pushes stat-change notifications to subscribed clients
+
+Latency from event send to leaderboard update is typically seconds, sometimes longer under load. Surface a "syncing…" affordance instead of assuming an instant write.
+
+## Game events
+
+`XGameEvent` is the typed event channel:
+
+- Author schemas in Partner Center; the title uses generated header constants for type-safe sends
+- Pair with stats and achievements as above
+- Also used by the broader data platform for opt-in telemetry and partner analytics
+
+## Related
+
+- [XBOX services overview](/services/overview)
+- [Achievements](/services/achievements)
+- [Cloud storage](/services/cloud-storage)
+- [XSAPI Stats reference](/reference/xsapi-stats) · [XSAPI Leaderboard reference](/reference/xsapi-leaderboard)
+- [XGameEvent reference](/reference/xgameevent)

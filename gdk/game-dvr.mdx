@@ -1,0 +1,50 @@
+---
+title: "Game DVR"
+sidebarTitle: "Game DVR"
+description: "Trigger and tag Game DVR clips, screenshots, and broadcasts from your title."
+icon: "video"
+---
+
+Game DVR records gameplay clips and screenshots on XBOX and PC. Use [XAppCapture](/reference/xappcapture) to trigger captures and tag metadata.
+
+## Capture types
+
+- **Manual** — player triggers via the XBOX shell or share button.
+- **Title-initiated** — your title programmatically captures a clip or screenshot at a key moment.
+- **Broadcasting** — live streaming to Twitch / supported services.
+
+## Metadata tagging
+
+Tag captures with `XAppCapture` metadata so highlights are easier to find in the player's gallery (boss kills, achievements, milestones).
+
+## Broadcasting
+
+Broadcasting captures and streams gameplay live to supported services (e.g., Twitch) through the XBOX shell:
+
+- Players start a broadcast from the **share** button or guide
+- Your title cannot start or stop a broadcast directly; the shell owns the user-facing flow
+- Use `XGameUserPresenceWriter` and the broadcast state APIs to detect when a broadcast is in progress and adjust telemetry, voice chat exclusion, and HUD privacy as needed
+- Privacy: chat-only HUD elements (player names, sensitive UI) should respect the broadcast state and hide identifying content where appropriate
+
+## Excluding voice chat from captures
+
+User voice chat must never be captured into clips or broadcasts. Set the `AudioCategory_GameChat` category on any XAudio2 source voice or WASAPI render stream that carries microphone audio so the capture pipeline excludes it automatically. See [Audio](/gdk/audio) for the integration pattern.
+
+## Capture restrictions
+
+Capture is gated by several user and content controls. Always check before assuming a capture will land:
+
+- **User privilege** — `XPRIVILEGE_GAME_DVR`. Children, restricted accounts, and guests may not capture
+- **Title metadata** — your `MicrosoftGame.config` can disable capture per-segment for cutscenes or pre-rendered content that should not be re-shared
+- **Storage** — the player may be out of space on the share device; surface a friendly notification rather than silently failing
+- **Concurrency** — only one broadcast or one explicit clip can be in flight at a time; queue subsequent requests
+
+## Related API documentation
+
+- [XAppCapture API reference](/reference/xappcapture)
+
+## See also
+
+- [Game streaming overview](/gdk/game-streaming-overview)
+- [ATG engagement](/gdk/atg-engagement)
+- [Audio](/gdk/audio) — game chat exclusion

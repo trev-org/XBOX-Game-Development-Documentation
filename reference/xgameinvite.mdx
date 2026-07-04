@@ -1,0 +1,91 @@
+---
+title: "XGameInvite API reference"
+sidebarTitle: "XGameInvite"
+description: "Receive multiplayer game invites delivered via the shell while the title is running."
+icon: "envelope-open-text"
+---
+
+The **XGameInvite** API delivers multiplayer game-invite activations to a running title. When a player accepts an invite (from XBOX shell, Game Bar, or via deep-link), the platform routes the invite payload to your title via this API.
+
+For invites that **launch** your title cold, the same payload is delivered via [XGameActivation](/reference/xgameactivation). XGameInvite handles the **"already running"** case so you don't need to relaunch the process.
+
+**Header:** `XGameInvite.h`\
+**Library:** `xgameruntime.lib`
+
+## XGameInviteRegisterForEvent
+
+Register a callback that fires when an invite is delivered to the running title.
+
+```cpp
+HRESULT XGameInviteRegisterForEvent(
+    XTaskQueueHandle queue,
+    void* context,
+    XGameInviteEventCallback* callback,
+    XTaskQueueRegistrationToken* token);
+```
+
+- `queue` — task queue that dispatches the callback (must remain valid).
+- `callback` — invoked with the invite URI; parse for `connectionString`, `inviteHandleId`, and the inviting user's XUID.
+- `token` — used later with `XGameInviteUnregisterForEvent` to detach the callback.
+
+### XGameInviteEventCallback
+
+```cpp
+typedef void XGameInviteEventCallback(
+    void* context,
+    const char* inviteUri);
+```
+
+The `inviteUri` follows the **`ms-xbl-multiplayer://`** scheme and contains the invited user's XUID, the invite handle ID, and the source session's connection string. Parse it to:
+
+1. Identify which signed-in user the invite is for (`invitedXuid`).
+2. Resolve the target multiplayer session from `inviteHandleId` via MPSD or PlayFab Lobby.
+3. Hand off to your matchmaking/lobby code to join the session.
+
+## XGameInviteUnregisterForEvent
+
+```cpp
+bool XGameInviteUnregisterForEvent(
+    XTaskQueueRegistrationToken token,
+    bool wait);
+```
+
+Detach the callback. Pass `wait = true` during shutdown to block until any in-flight callback has returned.
+
+## Usage pattern
+
+```cpp
+XTaskQueueRegistrationToken s_inviteToken {};
+
+HRESULT RegisterInviteHandler(XTaskQueueHandle queue)
+{
+    return XGameInviteRegisterForEvent(
+        queue,
+        /*context*/ nullptr,
+        [](void*, const char* inviteUri) {
+            // Parse the URI, look up the target user, and join the session.
+            HandleInviteUri(inviteUri);
+        },
+        &s_inviteToken);
+}
+
+void ShutdownInviteHandler()
+{
+    XGameInviteUnregisterForEvent(s_inviteToken, /*wait*/ true);
+}
+```
+
+## Cold-launch vs. running-title invites
+
+| State at invite time | API |
+| --- | --- |
+| Title not running, shell launches it | [XGameActivation](/reference/xgameactivation) (event type `MultiplayerInvite`) |
+| Title already running | **XGameInvite** callback |
+
+Register handlers for both: cold-launch in `WinMain` after `XGameRuntimeInitialize`, running-title before the user reaches the main menu.
+
+## Related
+
+- [XGameActivation](/reference/xgameactivation) — cold-launch activation events including invites, protocol URIs, and toasts
+- [XGameProtocol](/reference/xgameprotocol) — generic protocol activations beyond invites
+- [Multiplayer](/services/multiplayer) — session models, invite UI, and join flows

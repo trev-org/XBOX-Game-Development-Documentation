@@ -1,0 +1,75 @@
+---
+title: "XAppCapture API reference"
+description: "Game DVR recording, screenshots, broadcasting, and metadata tagging for XBOX and PC."
+icon: "video"
+sidebarTitle: "XAppCapture"
+---
+
+`XAppCapture` exposes Game DVR recording, screenshots, broadcasting UI, and metadata tagging.
+
+**Header:** `XAppCapture.h` · **Library:** `xgameruntime.lib`
+
+## Capability gating
+
+- `XAppCaptureEnableRecord` / `XAppCaptureDisableRecord` toggle per-player
+- `XAppCaptureGetVideoCaptureSettings` reports encoding, color format, resolution, max length
+
+## Recording
+
+### Game DVR recordings
+
+| Function | Purpose |
+| --- | --- |
+| `XAppCaptureRecordTimespan` | Make a Game DVR recording of a timespan |
+| `XAppCaptureReadLocalStream` | Read the .mp4 |
+| `XAppCaptureCloseLocalStream` | Close and delete the stream |
+
+### User-initiated recordings
+
+| Function | Purpose |
+| --- | --- |
+| `XAppCaptureStartUserRecord` | Start a recording |
+| `XAppCaptureStopUserRecord` | Stop and save |
+| `XAppCaptureCancelUserRecord` | Stop and delete |
+
+## Screenshots
+
+| Function | Purpose |
+| --- | --- |
+| `XAppCaptureTakeScreenshot` | Take a screenshot |
+| `XAppCaptureOpenScreenshotStream` | Open a screenshot stream |
+| `XAppCaptureReadScreenshotStream` | Read a screenshot stream |
+
+## Broadcasting
+
+| Function | Purpose |
+| --- | --- |
+| `XAppBroadcastGetStatus` | Current broadcasting status |
+| `XAppBroadcastIsAppBroadcasting` | Bool — is the app broadcasting? |
+| `XAppBroadcastShowUI` | Show broadcasting UI |
+
+## Metadata tagging
+
+### Add events
+
+| Function | Purpose |
+| --- | --- |
+| `XAppCaptureMetadataAddDoubleEvent` | Double event |
+| `XAppCaptureMetadataAddInt32Event` | Int32 event |
+| `XAppCaptureMetadataAddStringEvent` | String event |
+
+### Track states
+
+| Function | Purpose |
+| --- | --- |
+| `XAppCaptureMetadataStartDoubleState` | Begin a double state |
+| `XAppCaptureMetadataStartInt32State` | Begin an int32 state |
+| `XAppCaptureMetadataStartStringState` | Begin a string state |
+| `XAppCaptureMetadataStopState` | Stop a named state |
+| `XAppCaptureMetadataStopAllStates` | Stop everything currently active |
+
+## Related conceptual documentation
+
+- [Game DVR and broadcasting](/gdk/game-dvr) — capture types, metadata tagging, broadcasting, voice-chat exclusion, and capture restrictions.
+- [What is the GDK?](/gdk/what-is-gdk) — overview of the runtime modules including app capture.
+- [Threading](/gdk/threading) — invoking screenshot and broadcast APIs off time-sensitive threads.

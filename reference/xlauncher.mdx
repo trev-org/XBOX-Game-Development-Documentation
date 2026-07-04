@@ -1,0 +1,23 @@
+---
+title: "XLauncher API reference"
+sidebarTitle: "XLauncher"
+icon: "link"
+description: "Launch external URIs from your title."
+---
+
+`XLauncher` is the GDK's gate for opening URIs (`https:`, `ms-windows-store:`, partner protocols) from within a game.
+
+## Functions
+
+| Function | Description |
+| --- | --- |
+| `XLaunchUri` | Launch a URI — the system may prompt the user before opening |
+
+## Related conceptual documentation
+
+- [Platform integration](/gdk/platform-integration) — protocol activation and OAuth flows that use `XLaunchUri`.
+- [Threading](/gdk/threading) — invoking `XLaunchUri` off the game-loop thread.
+
+## See also
+
+- [XGame](/reference/xgame) for launching another game or restarting your own

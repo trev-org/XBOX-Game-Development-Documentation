@@ -1,0 +1,232 @@
+---
+title: "Implement game saves with XGameSave Connected Storage"
+sidebarTitle: "Game saves"
+description: "Learn how to use the XGameSave API for fault-tolerant, cross-device roaming game saves with Connected Storage in the XBOX Game Development Kit."
+icon: "floppy-disk"
+---
+
+Connected Storage is the GDK's per-user game save system. It is designed to be fault-tolerant — writes are atomic, so a crash or power loss during a save will never corrupt existing data. Save data automatically roams across all of a player's XBOX devices through the cloud, and your game can read and write save data offline, with synchronization happening transparently when connectivity is restored. The `XGameSave` API is the primary interface for working with Connected Storage in GDK titles.
+
+<Note>
+  Connected Storage (`XGameSave`) is distinct from **Title Storage**, which is used for global per-title data shared across all users (e.g., leaderboards, shared game state). `XGameSave` stores per-user data that roams with the player's account.
+</Note>
+
+## Key concepts
+
+<CardGroup cols={2}>
+  <Card title="Provider" icon="server" href="/reference/xgamesave">
+    An `XGameSaveProviderHandle` represents an open connection to a user's Connected Storage space. You initialize one per user at game start by calling `XGameSaveInitializeProvider`.
+  </Card>
+
+  <Card title="Container" icon="folder" href="/reference/xgamesave">
+    An `XGameSaveContainerHandle` is a named logical grouping of blobs (save data chunks) within a provider. Think of a container as a save slot. You create or open one with `XGameSaveCreateContainer`.
+  </Card>
+
+  <Card title="Blob" icon="file" href="/reference/xgamesave">
+    A blob is an individual binary data chunk within a container. You read and write blobs by name. A single container can hold multiple blobs (e.g., one for world state, one for player stats).
+  </Card>
+
+  <Card title="Update" icon="pencil" href="/reference/xgamesave">
+    You stage blob changes with `XGameSaveSubmitBlobWrite` and commit them atomically with `XGameSaveSubmitUpdate`. Either all changes in an update succeed, or none of them do.
+  </Card>
+</CardGroup>
+
+## Saving and loading data
+
+### Initialize a provider
+
+Before reading or writing any save data, initialize a provider for the signed-in user:
+
+```cpp
+XGameSaveProviderHandle providerHandle = nullptr;
+
+XAsyncBlock* asyncBlock = new XAsyncBlock{};
+asyncBlock->queue    = m_taskQueue;
+asyncBlock->context  = this;
+asyncBlock->callback = [](XAsyncBlock* async)
+{
+    auto* game = static_cast<Game*>(async->context);
+    HRESULT hr = XGameSaveInitializeProviderResult(async, &game->m_providerHandle);
+    if (SUCCEEDED(hr))
+    {
+        game->OnProviderReady();
+    }
+    delete async;
+};
+
+// configurationId is your game's Service Configuration ID (SCID)
+XGameSaveInitializeProvider(m_userHandle, "00000000-0000-0000-0000-000000000000",
+                             false, asyncBlock);
+```
+
+### Write save data
+
+```cpp
+// Open or create a container named "slot1"
+XGameSaveContainerHandle container = nullptr;
+HRESULT hr = XGameSaveCreateContainer(m_providerHandle, "slot1", &container);
+
+if (SUCCEEDED(hr))
+{
+    // Stage a blob update (second param is the container display name)
+    XGameSaveUpdateHandle update = nullptr;
+    hr = XGameSaveCreateUpdate(container, "slot1", &update);
+
+    if (SUCCEEDED(hr))
+    {
+        const uint8_t* saveData   = reinterpret_cast<const uint8_t*>(&m_worldState);
+        const size_t   saveLength = sizeof(m_worldState);
+
+        XGameSaveSubmitBlobWrite(update, "worldState", saveData, saveLength);
+
+        // Commit atomically — either all blobs in the update are written or none are
+        XAsyncBlock* writeAsync = new XAsyncBlock{};
+        writeAsync->queue    = m_taskQueue;
+        writeAsync->context  = container;
+        writeAsync->callback = [](XAsyncBlock* async)
+        {
+            HRESULT result = XGameSaveSubmitUpdateResult(async);
+            if (FAILED(result))
+            {
+                // Handle save failure
+            }
+            delete async;
+        };
+
+        XGameSaveSubmitUpdateAsync(update, writeAsync);
+        XGameSaveCloseUpdate(update);
+    }
+}
+```
+
+### Read save data
+
+```cpp
+XGameSaveContainerHandle container = nullptr;
+HRESULT hr = XGameSaveCreateContainer(m_providerHandle, "slot1", &container);
+
+if (SUCCEEDED(hr))
+{
+    const char* blobNames[] = { "worldState" };
+    const uint32_t blobCount = 1;
+
+    XAsyncBlock* readAsync = new XAsyncBlock{};
+    readAsync->queue    = m_taskQueue;
+    readAsync->context  = this;
+    readAsync->callback = [](XAsyncBlock* async)
+    {
+        auto* game = static_cast<Game*>(async->context);
+
+        // Determine how much memory is needed for the result
+        size_t allocSize = 0;
+        HRESULT hr = XAsyncGetResultSize(async, &allocSize);
+        if (SUCCEEDED(hr) && allocSize > 0)
+        {
+            XGameSaveBlob* blobData = reinterpret_cast<XGameSaveBlob*>(malloc(allocSize));
+            if (blobData != nullptr)
+            {
+                uint32_t returnedBlobCount = 0;
+                hr = XGameSaveReadBlobDataResult(async, allocSize, blobData, &returnedBlobCount);
+                if (SUCCEEDED(hr) && returnedBlobCount > 0)
+                {
+                    // Copy blob data into game state
+                    memcpy(&game->m_worldState, blobData[0].data,
+                           min(blobData[0].info.size, sizeof(game->m_worldState)));
+                }
+                free(blobData);
+            }
+        }
+        delete async;
+    };
+
+    XGameSaveReadBlobDataAsync(container, blobNames, blobCount, readAsync);
+}
+```
+
+## Handling sync results
+
+When a player signs in or your game initializes a provider, Connected Storage may need to sync data from the cloud. You should handle `XGameSaveContainerSyncResult` to understand the outcome:
+
+| Sync result | Meaning |
+| --- | --- |
+| `Succeeded` | Data is up to date. |
+| `Abort` | Sync was cancelled. Proceed with local data. |
+| `ConflictError` | A conflict was detected between local and cloud data. Prompt the player to choose which version to keep. |
+| `OutOfLocalStorage` | Not enough local storage to sync. |
+| `UserCanceled` | The player dismissed the sync UI. |
+
+<Warning>
+  Always check the sync result before presenting save data to the player. Ignoring sync errors can result in the player seeing stale or conflicting save data.
+</Warning>
+
+## Best practices
+
+<Accordion title="Save frequently and incrementally">
+  Connected Storage is designed for frequent small writes. Save at natural checkpoints — after completing a level, entering a new area, or after any significant player action. Avoid saving only at explicit "save game" prompts; players expect their progress to be preserved even if the game crashes.
+</Accordion>
+
+<Accordion title="Use multiple containers for different save types">
+  Separate your save data into logical containers: one for the player's character progression, one for world state, one for settings. This allows you to update individual pieces of data without rewriting everything, and makes conflict resolution simpler.
+</Accordion>
+
+<Accordion title="Handle offline scenarios gracefully">
+  Connected Storage works offline. Writes go to local storage and are synced when connectivity is restored. Design your save flow to work without a network connection and surface connectivity issues only when they affect gameplay (e.g., when you need to resolve a cloud conflict).
+</Accordion>
+
+<Accordion title="Reserve quota appropriately">
+  Each user has a finite Connected Storage quota. Use `XGameSaveGetRemainingQuota` (or its async variant) to check available space before large writes. Inform players gracefully if their quota is exhausted.
+</Accordion>
+
+## Built-in dialogues
+
+XGameSave can drive system UI for common save scenarios — no need to roll your own. Available dialogues include:
+
+- **Container picker** — let the user select an existing save slot
+- **Conflict resolution** — the player chooses between the local and cloud copy when a sync conflict is detected
+- **Out-of-quota** — system prompt asking the user to free Connected Storage space
+- **No connection** — surfaces sync failure to the player without blocking gameplay
+
+Always prefer the system dialogue over a custom UI; it stays consistent with the shell, is fully localized, and is required for some certification scenarios.
+
+## Storage systems and where saves live
+
+Connected Storage save data lives in several places at once:
+
+- **Local cache** — on the console or PC for fast read/write and offline play
+- **Cloud (XBOX Live Title Storage)** — the source of truth that roams between devices
+- **System reserve** — a small per-user budget separate from the device's free space
+
+Writes are first persisted locally, then uploaded asynchronously. Reads come from the local cache when available; the runtime invalidates and re-syncs entries when the cloud copy changes.
+
+## Debugging game saves
+
+Useful tools when something goes wrong:
+
+- **Game Saves Manager** (in XBOX Manager / Dev Home) — list, export, import, and delete containers per signed-in user and SCID
+- **`xbgamesave` command-line tool** — script container inspection and bulk save export from CI
+- **PIX timing capture** — `XGameSave*` calls emit events that show up on the timing track
+- **Headless tests** — run save flows under `xbapp` headless launches to validate first-boot, mid-game, and resume scenarios
+- **Sync logging** — enable verbose Connected Storage logging via Dev Home to capture the sync state machine
+
+Common issues:
+
+| Symptom | Likely cause |
+| --- | --- |
+| `E_GS_PROVIDER_NOT_INITIALIZED` | Provider closed or user signed out before the async call resolved |
+| Stale data after roaming | `XGameSaveContainerSyncResult` was ignored — re-run sync and check the result |
+| Quota exhausted | Old containers not pruned; use `XGameSaveDeleteContainer` to clean up |
+| Saves not roaming | Wrong SCID, or title not yet published to a sandbox the signed-in account can access |
+
+## Walkthroughs and samples
+
+The GDK samples ship several reference implementations you can crib from:
+
+- **GameSaveSimpleCombo** — minimal end-to-end provider, container, blob write/read
+- **GameSaveFiles** — file-style API on top of `XGameSaveFiles` for porting code that already speaks `fopen`/`fwrite`
+- **GameSaveCombo** — full provider \+ conflict resolution UI \+ roaming validation
+
+## Related API documentation
+
+- [XGameSave API reference](/reference/xgamesave) — `XGameSaveInitializeProvider`, `XGameSaveInitializeProviderAsync`, `XGameSaveCloseProvider`, `XGameSaveGetRemainingQuota`, `XGameSaveSubmitUpdate`
+- [XGameSaveFiles API reference](/reference/xgamesavefiles) — `XGameSaveFilesGetFolderWithUiAsync`, `XGameSaveFilesGetRemainingQuota`
+- [XAsync API reference](/reference/xasync) — `XAsyncGetResultSize`

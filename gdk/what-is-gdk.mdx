@@ -1,0 +1,35 @@
+---
+title: "What is the GDK?"
+sidebarTitle: "What is the GDK"
+description: "Overview of the XBOX Game Development Kit — components, runtime, and how it relates to XDK and UWP."
+icon: "circle-question"
+---
+
+The **XBOX Game Development Kit (GDK)** is Microsoft's unified toolchain for building games that target XBOX consoles and Windows PC from a single codebase.
+
+The GDK provides:
+
+- **Gaming Runtime** — the core platform APIs (`XGameRuntime`, `XGameSave`, `XStore`, `XUser`, `XPackage`, ...).
+- **Platform Extensions** — console-specific features for XBOX Series X|S and XBOX One.
+- **Visual Studio integration** — the `Gaming.Desktop.x64` and `Gaming.Xbox.Scarlett.x64` platforms.
+- **Command-line tools** — `makepkg`, `xbapp`, `wdapp`, `SubmissionValidator`, and the MicrosoftGame.config editor.
+- **Samples** — reference titles for graphics, audio, networking, and store integration.
+
+The GDK supersedes the legacy XDK and replaces UWP as the recommended way to ship Microsoft Store games.
+
+## Related API documentation
+
+- [XGameRuntime API reference](/reference/xgameruntime) — `XGameRuntimeInitialize`, `XGameRuntimeUninitialize`
+- [XGameRuntime features](/reference/xgameruntime-features) — `XGameRuntimeIsFeatureAvailable`
+- [XGameRuntime types](/reference/xgameruntimetypes) — common runtime types
+- [XGameUI API reference](/reference/xgameui) — standard system UI surfaces
+- [XAppCapture API reference](/reference/xappcapture) — broadcast and clip APIs
+- [XMem API reference](/reference/xmem) — `XMemAlloc`
+- [XPackage API reference](/reference/xpackage) — package introspection
+- [XStore API reference](/reference/xstore) — commerce APIs
+
+## See also
+
+- [Download and install](/gdk/download-install)
+- [Dev PC setup](/gdk/dev-pc-setup)
+- [SDK & tools](/gdk/sdk-and-tools)

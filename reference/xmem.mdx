@@ -1,0 +1,30 @@
+---
+title: "XMem API reference"
+sidebarTitle: "XMem"
+description: "Low-level memory allocator with attribute hints for GPU, audio, and physical memory."
+icon: "memory"
+---
+
+Low-level memory allocation helpers for the GDK. `XMem` lets you allocate memory with explicit attribute hints — alignment, page type, cacheability — useful for graphics and audio scratch buffers.
+
+## Functions
+
+- `XMemAllocDefault` — generic system allocation.
+- `XMemFreeDefault` — release memory returned by `XMemAllocDefault`.
+- Attribute-based allocator hooks for graphics, audio, and physical memory subsystems.
+
+## When to use XMem
+
+- Large GPU-visible heaps where you want explicit control over physical attributes.
+- Audio offload buffers (Shape DMA / XMA / DSP contexts).
+- Custom allocators that need to honor platform alignment rules.
+
+## Related conceptual documentation
+
+- [Memory](/gdk/memory) — memory manager, virtual memory allocator, diagnostics, and porting guidance.
+- [What is the GDK?](/gdk/what-is-gdk) — overview of GDK runtime modules.
+
+## See also
+
+- [Audio APIs](/reference/audio-apis)
+- [XAsync](/reference/xasync)

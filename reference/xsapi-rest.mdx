@@ -1,0 +1,29 @@
+---
+title: "XSAPI REST API reference"
+sidebarTitle: "REST API"
+description: "Direct REST endpoints behind XSAPI for backend and tooling scenarios."
+icon: "link"
+---
+
+Direct REST endpoints behind XSAPI, for server-to-service scenarios where the XSAPI client library isn't available.
+
+## When to use REST
+
+- Backend services (dedicated game servers, custom matchmakers, web companion apps).
+- Tooling and dashboards that consume XBOX Live data.
+- Languages without an XSAPI binding.
+
+## Calling pattern
+
+1. Acquire an **XSTS token** for the user (client) or an **XBLS token** (server-to-service via business partner credentials).
+2. Set the standard XBOX Live headers: `Authorization: XBL3.0 x=<userhash>;<token>`, `x-xbl-contract-version`, `Content-Type: application/json`.
+3. Issue the REST call to the per-service endpoint.
+
+## Per-service REST docs
+
+See per-service references for endpoint catalogs and [XSAPI REST overview](/reference/xsapi-rest-overview).
+
+## Related
+
+- [XSAPI overview](/reference/xsapi-overview)
+- [XSAPI JSON objects](/reference/xsapi-json)

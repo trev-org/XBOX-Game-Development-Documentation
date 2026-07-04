@@ -1,0 +1,44 @@
+---
+title: "Social"
+sidebarTitle: "Social"
+description: "XBOX social graph, friends, recent players, and the Social Manager for UI."
+icon: "user-group"
+---
+
+Build friends, followers, and recent-players features on top of the XBOX social graph.
+
+## APIs
+
+- [XSAPI Social](/reference/xsapi-social) — query relationships and submit reputation feedback.
+- [Social Manager](/reference/social-manager) — cached, do-work-driven social user groups for UI.
+- [XSAPI Privacy](/reference/xsapi-privacy) — check mute / avoid lists and permission gates.
+- [Multiplayer Activity](/reference/xsapi-multiplayer-activity) — recent players.
+
+## Patterns
+
+- Use **Social Manager** for friends list UI — it batches changes and surfaces them as events.
+- Always check [Privacy permissions](/services/gamertags-and-privacy) before sending communications.
+
+## Reputation
+
+XBOX players have a **reputation score** maintained by the platform from player feedback. Your title participates by submitting reputation events when players exhibit good or bad behavior.
+
+- **Submit feedback** through `XblSocialSubmitReputationFeedbackAsync` or the REST equivalent
+- Use the documented feedback types (`Cheater`, `UnsportingConduct`, `Quitter`, `FairPlay`, `HelpfulPlayer`)
+- Submit feedback from your dedicated server when possible — client-only submission is more easily abused
+- Do not show raw reputation scores to users; the platform UI surfaces them through standard shell affordances
+- Throttle submissions — one event per match per target user is plenty
+
+## Localized strings
+
+Many community-facing surfaces (presence templates, achievement descriptions, gamertag rules) accept localized strings:
+
+- Author per-locale variants in Partner Center; the platform serves the right one based on the requesting user's locale
+- Provide a **language fallback chain** so missing locales degrade to a sensible neighbour (e.g. `fr-CA` → `fr-FR` → `en-US`)
+- The XSAPI library handles fallback automatically when the caller passes a locale; you only need to author the per-locale strings
+
+## Related
+
+- [People system](/services/people-system)
+- [Gamertags and privacy](/services/gamertags-and-privacy)
+- [Rich presence](/services/rich-presence)

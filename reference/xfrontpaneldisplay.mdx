@@ -1,0 +1,27 @@
+---
+title: "XFrontPanelDisplay API reference"
+sidebarTitle: "XFrontPanelDisplay"
+description: "Devkit front-panel LCD framebuffer, buttons, and LEDs."
+icon: "display"
+---
+
+Devkit-only API for driving the small LCD on the front of XBOX One X Devkit hardware. Useful for debug telemetry, build IDs, and stats that don't fit on the TV.
+
+## What you can do
+
+- Push a framebuffer to the front-panel LCD.
+- Read button events from the panel's hardware buttons.
+- Control the LEDs surrounding the panel.
+
+## Availability
+
+The front-panel display only exists on certain dev hardware — always check feature availability before use, and don't take a runtime dependency in retail builds.
+
+## Related conceptual documentation
+
+- [Console overview](/gdk/console-overview) — including Scorpio devkit tips and the front-panel display.
+
+## See also
+
+- [WDP extended](/reference/wdp-extended)
+- [XSystem](/reference/xsystem)

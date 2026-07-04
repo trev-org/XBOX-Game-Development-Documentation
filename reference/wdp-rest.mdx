@@ -1,0 +1,26 @@
+---
+title: "Windows Device Portal REST reference"
+sidebarTitle: "WDP REST"
+description: "Standard Windows Device Portal REST endpoints for XBOX dev kits."
+icon: "server"
+---
+
+The Windows Device Portal (WDP) on XBOX dev kits exposes REST endpoints for remote control — deploy packages, manage users, take screenshots, query system info, and reboot.
+
+## Endpoint categories
+
+- **Packages** — install / uninstall / launch GDK packages.
+- **Users** — sign in test accounts, switch users.
+- **System** — console identity, OS version, sandbox.
+- **Capture** — screenshots, video, ETW traces.
+- **Networking** — wired / wireless configuration.
+- **File I/O** — read / write developer-scratch files.
+
+## Authentication
+
+WDP uses HTTPS with a developer-set username and password configured per console.
+
+## Related
+
+- [WDP extended](/reference/wdp-extended)
+- [Remote iteration](/reference/remote-iteration)

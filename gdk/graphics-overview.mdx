@@ -1,0 +1,115 @@
+---
+title: "Graphics overview"
+sidebarTitle: "Graphics overview"
+description: "Overview of GDK graphics features — mesh shaders, VRS, raytracing, sampler feedback, DirectStorage, and XBTC."
+icon: "image"
+---
+
+XBOX GDK titles render through **DirectX 12 Ultimate** with platform-specific extensions for XBOX Series X|S.
+
+## Core features
+
+- **Mesh shaders** — amplification \+ mesh stages replacing the legacy geometry pipeline. See [Mesh shaders](/gdk/mesh-shaders).
+- **Variable Rate Shading (VRS)** — per-region pixel shader rate control. See [VRS](/gdk/vrs).
+- **Hardware raytracing** — DXR 1.1 on XBOX Series X|S. See [Raytracing](/gdk/raytracing).
+- **Sampler Feedback Streaming (SFS)** — GPU-reported texture residency. See [Sampler feedback](/gdk/sampler-feedback).
+- **DirectStorage** — NVMe-class asset streaming. See [DirectStorage](/gdk/directstorage).
+- **XBOX Texture Compressor (XBTC)** — BCPack and Zlib GPU decompression. See [Texture compressor](/gdk/xbox-texture-compressor).
+
+## Direct3D 12 on Xbox (D3D12X)
+
+D3D12X is the XBOX dialect of Direct3D 12 — same core API surface as PC, with platform extensions for the console hardware. Read this section before writing any rendering code:
+
+- **Differences from PC** — explicit ESRAM management (Xbox One), monolithic command lists, and a richer set of placement and aliasing rules. The PC D3D12 validation layer will not catch XBOX-specific misuse.
+- **Creation flags** — `D3D12XBOX_CREATE_DEVICE_PARAMETERS` controls behaviour like graphics analysis hooks, the title's process model, and the in-band debug layer. Pick the right flags at startup; you cannot change most after device creation.
+- **Native resource management** — `XMemAlloc` exposes platform-native heap types (write-combined, host-visible, GPU-local, ESRAM). Use the right object type for each resource; default heap is GPU-local and fastest.
+- **D3D12 XMemAlloc object types** — Buffer, Texture, RTV/DSV, sampler, and command-allocator types each have distinct alignment and aliasing rules
+- **Suspend and resume** — the device survives Quick Resume; resources need a re-init pass to validate state. Always handle the suspend/resume callbacks even if your game has no save flow.
+- **Tessellation** — supported but heavy; prefer mesh shaders for new content. Off-chip tessellation factors are available for content streamed at runtime.
+
+## Frame scheduling and presentation
+
+XBOX uses a fixed-cadence presentation model:
+
+- **Frame intervals** — submit one presentation per refresh, ideally early in the frame
+- **Pacing** — `IDXGISwapChain1::Present1` returns deterministically aligned to the refresh; the platform handles VSync
+- **Quality vs latency** — offer the player a quality / performance / 120Hz toggle; defaults differ per SKU
+- **Hardware overlays and swap resources** — UI plane, HDR metadata, and stereo views are exposed as hardware overlays
+- **120Hz support** — Series X|S can present at 120Hz when the display supports it; render-rate decoupled from present-rate via VRR
+
+## Memory and bandwidth
+
+- **Color and depth compression** — DCC and HiZ run automatically on supported resources; do not disable without measuring
+- **Cross-core memory costs** — see [Memory](/gdk/memory)
+- **Series X|S graphics memory overview** — split-pool memory model; lay out resources to keep render targets in GPU-local memory
+- **Series X|S texture layouts** — author tools should produce the platform-optimal swizzle; let the runtime pick the layout when in doubt
+
+## Display output
+
+- **HDR output** — declare HDR in `MicrosoftGame.config` and present HDR-encoded backbuffer with `DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020`
+- **Dolby Vision for gaming** — Gen9 Xbox consoles support Dolby Vision passthrough for both rendering and video playback
+- **Screen areas** — title-safe and action-safe areas are documented per resolution; respect them for all HUD content
+- **CMask decoding** — coverage masks for MSAA targets decode on the fly during sampling
+
+## GPU synchronization and barriers
+
+- **D3D12 Enhanced Barriers** — the modern barrier API exposes finer-grained state transitions and explicit sync-on-write semantics; prefer over legacy resource barriers
+- **GPU synchronization (Scarlett)** — Series X|S supports tighter sync primitives between async compute and graphics queues; use them to overlap work without CPU-side fences
+- **Pipeline state objects (PSOs)** — author serialised PSOs offline; use **derived PSOs** for variants to keep create-time low
+
+## Image processing
+
+- **Windows Imaging Component (WIC)** — load source assets (PNG, JPEG, EXR) into your authoring path; do not use WIC at runtime in shipping builds — bake to a GPU-friendly format
+
+## Xbox One graphics deep dives
+
+Cross-gen titles still target Xbox One. Key whitepapers and design notes:
+
+- Xbox One GPU overview and compute units — wavefront sizing, occupancy
+- **ONION/GARLIC memory buses** — write to GARLIC for GPU-only data, ONION for shared CPU/GPU
+- ESRAM manager — implementing a tile allocator for ESRAM-resident render targets
+- Caches and coherency on the Xbox One GPU
+- How VMEM instructions work — bandwidth implications of indirect loads
+- Xbox One occupancy quick reference — registers, LDS, threadgroup size limits
+- **Checkerboard rendering** — half-rate shading for Xbox One; automatic shader modification path
+- Xbox One dynamic resolution — render-target sizing knobs for stable framerate
+
+## Xbox Series S optimization
+
+Series S targets 1440p/60 with a smaller GPU and memory bus than Series X. Practical recipes:
+
+- Render at 1080p / 1440p, not 4K
+- Use VRS to skip pixel work in low-frequency regions
+- Lower-resolution shadow maps and screen-space effects on Series S
+- Keep memory budgets explicit — Series S has less GPU memory than Series X
+- Test Series S **first**: if it hits 60, Series X almost certainly will
+
+## DirectX-Specs reference
+
+The open-source `DirectX-Specs` repo is the authoritative source for D3D12 feature behaviour shared with PC. Read it before guessing at edge cases.
+
+## Microsoft graphics presentations
+
+Past XDD and Xfest talks deep-dive specific topics — read the slides and watch the recordings:
+
+- **XDD 2024** — Call of Duty rendering optimization, GPU debugging, raytracing performance, mesh shader case studies, PIX Shader Explorer, GPU Trace, AI-assisted dev workflow
+- **Xfest 2022** — PIX checklist, HDR display hardware, frame pacing & latency, common graphics problems, raytracing best practices
+- **Xfest 2019** — Series X|S GPU overview, responsive gaming, variable-rate shading \+ sparse lighting
+
+## Graphics samples
+
+The GDK ships graphics samples covering ray tracing, mesh shaders, VRS, sampler feedback, DirectStorage, XBTC, HDR, and PIX integration. Start from the sample that matches the technique you want; do not write from scratch.
+
+## Cross-gen
+
+For XBOX One feature parity tradeoffs, see [Cross-gen](/gdk/cross-gen).
+
+## Related API documentation
+
+- [XDisplay API reference](/reference/xdisplay) — HDR support (`XDisplayHdrModeInfo`, `XDisplayHdrModePreference`) and display timeout deferral.
+
+## See also
+
+- [Console overview](/gdk/console-overview)
+- [PIX for XBOX](/tools/pix-for-xbox) · [PIX for Windows](/tools/pix-for-windows)
+- [Shader compiler](/tools/shader-compiler)

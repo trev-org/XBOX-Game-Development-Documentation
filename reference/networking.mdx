@@ -1,0 +1,24 @@
+---
+title: "Networking API reference"
+sidebarTitle: "Networking (overview)"
+description: "Umbrella reference for GDK networking surfaces — sockets, XNetworking, XCurl, and Party."
+icon: "wifi"
+---
+
+Umbrella reference for GDK networking surfaces — standard Win32 sockets, XBOX-specific networking APIs, the HTTP stack, and PlayFab Party.
+
+## APIs covered elsewhere
+
+- [XNetworking](/reference/xnetworking) — connectivity hints, preferred UDP ports, cert verification.
+- [XCurl](/reference/xcurl) — libcurl-compatible HTTP client.
+- [libHttpClient](/reference/httpclient) — underlying HTTPS / WebSocket transport.
+- [PlayFab Party](/reference/playfab-party) — voice \+ data plane.
+
+## Standard sockets
+
+Winsock is supported on XBOX with constraints — certain endpoints, ports, and configurations require [XBOX requirements](/publishing/xbox-requirements) compliance and may need explicit cert review.
+
+## Related
+
+- [Networking](/gdk/networking)
+- [Game streaming overview](/gdk/game-streaming-overview)

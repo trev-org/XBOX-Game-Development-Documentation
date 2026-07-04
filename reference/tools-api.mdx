@@ -1,0 +1,95 @@
+---
+title: "GDK Tools API reference"
+sidebarTitle: "Tools"
+description: "Reference for GDK command-line tools that can be invoked from build scripts: makepkg, xbapp, wdapp, SubmissionValidator, MicrosoftGame.config editor."
+icon: "screwdriver-wrench"
+---
+
+The GDK ships a set of command-line tools you can call from your build pipeline. Each tool also has a richer documentation page under the GDK installation; this page summarizes the surface and links the conceptual guides under the [Tools](/tools/overview) section.
+
+## Packaging and deployment
+
+| Tool | Platform | Purpose |
+| --- | --- | --- |
+| `makepkg` | PC \+ XBOX | Build MSIXVC packages from a loose-file layout |
+| `xbapp` | XBOX console | Install, launch, terminate, and enumerate packages on a devkit |
+| `wdapp` | PC | Register and launch PC titles for development; PC equivalent of `xbapp` |
+| `submissionvalidator` | PC \+ XBOX | Run the same cert pre-check Microsoft runs at ingest |
+
+Typical packaging pipeline:
+
+```bat
+rem 1. Build loose-file layout (engine-specific)
+rem 2. Generate MSIXVC
+makepkg pack /v /f chunks.xml /lt /d "out\loose" /pd "out\pkg" /pc
+
+rem 3. Validate before upload
+submissionvalidator out\pkg\MyGame_1.0.0.0_neutral_x64.msixvc
+```
+
+## Identity and configuration
+
+| Tool | Purpose |
+| --- | --- |
+| MicrosoftGame.config editor | GUI for editing the title manifest — ships in the Visual Studio extension |
+| `XblConfig` | Pull / push XBOX services config (achievements, stats, presence) as JSON in source control |
+
+Using `XblConfig` lets you treat your XBOX services config as source code rather than clicking through Partner Center.
+
+## Service diagnostics
+
+| Tool | Purpose |
+| --- | --- |
+| Trace Analyzer | Visualize XSAPI / libHttpClient traffic from a captured ETL |
+| Multiplayer Session History Viewer | Inspect MPSD session state changes over time |
+| Fiddler with XBOX services certificate | Inspect HTTPS traffic from devkits during dev |
+| Player Data Reset | Wipe stats / achievements / presence for a test account in a sandbox |
+
+## Sandbox and account management
+
+| Tool | Purpose |
+| --- | --- |
+| PC Sandbox Switcher | Move a PC between XBOX services sandboxes |
+| Developer Account Tool | Mint and manage test accounts in a sandbox |
+| XBOX Live Account Tool (XAL) | Sign-in flow testing and token inspection |
+| Developer Entitlements Tool | Grant test entitlements (DLC, consumables) for QA |
+
+## Common invocations from CI
+
+```bat
+rem Build, validate, and upload as part of CI
+call makepkg pack /v /f chunks.xml /lt /d "out\loose" /pd "out\pkg" /pc
+if errorlevel 1 exit /b 1
+
+call submissionvalidator out\pkg\*.msixvc
+if errorlevel 1 exit /b 1
+
+rem Upload via Partner Center API…
+```
+
+Wire `submissionvalidator` into PR checks to catch cert violations before they reach Microsoft.
+
+## PackagingServices — programmatic packaging inspection
+
+The **PackagingServices** library (`PackagingServices.h`, `PackagingServices.lib`) lets your build pipeline inspect packages, manifests, and `MicrosoftGame.config` without shelling out to `makepkg`. Useful for CI sanity checks, custom tooling, and editor integrations.
+
+| Function | Purpose |
+| --- | --- |
+| `GetIsGameCorePartition` | Is the given path on the GameCore (XBOX) partition? |
+| `GetIsTitlePartition` | Is the given path inside the title's install root? |
+| `GetPackageFamilyNameFromManifest` | Extract PFN from `AppxManifest.xml`. |
+| `GetPackageFullNameFromManifest` | Extract Package Full Name (PFN \+ version \+ arch \+ publisher) from manifest. |
+| `GetPackageFullNameFromInfo` | Build a Package Full Name from a parsed info struct. |
+| `GetPackageVersionFromManifest` | Read the four-part version from manifest. |
+| `GetPackageInfoFromGameConfig` | Parse `MicrosoftGame.config` and return identity, executable, entry points, and resources. |
+| `PackagingValidateGameConfig` | Validate `MicrosoftGame.config` against the schema — same checks as `makepkg pack` does up-front. |
+| `ValidateSchemaForManifest` | Validate `AppxManifest.xml` against the GDK manifest schema. |
+
+Wire these into a custom MSBuild task or CI step so config-schema drift is caught before packaging.
+
+## See also
+
+- [PC Tools](/tools/pc-tools)
+- [XBOX Service Tools](/tools/xbox-service-tools)
+- [Visual Studio integration](/tools/visual-studio)
+- [Tools API reference (Microsoft Learn)](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/gc-reference-tools-toc) — full per-tool documentation

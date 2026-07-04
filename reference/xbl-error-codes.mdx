@@ -1,0 +1,173 @@
+---
+title: "XBOX Live HRESULT error codes"
+sidebarTitle: "XBOX Live error codes"
+icon: "circle-exclamation"
+description: "FACILITY_XBOX and FACILITY_HTTP HRESULTs returned by XSAPI and the XBOX services REST surface."
+---
+
+XSAPI returns HRESULTs in the `FACILITY_XBOX` and `FACILITY_HTTP` ranges. Use [`XblGetErrorCondition`](/reference/xsapi-context-and-globals) to map an HRESULT into a coarse condition (`XblErrorCondition`) for retry policy decisions.
+
+Each table is sorted by increasing `HRESULT` value to make numeric lookup easier.
+
+## Common condition buckets
+
+| Condition | When you see it |
+| --- | --- |
+| **Auth** | XBL token expired or refused |
+| **Network** | TLS, socket, DNS failures |
+| **Rate-limited** | Service throttling |
+| **HTTP client** | 4xx — the call is malformed; fix and retry |
+| **HTTP server** | 5xx — transient; back off and retry |
+| **Generic error** | Other |
+
+## Decoding HRESULTs
+
+- `FACILITY_HTTP` HRESULTs encode the HTTP status code directly: `HRESULT_FROM_WIN32(HTTP_E_STATUS_BAD_REQUEST)`, etc.
+- `FACILITY_XBOX` HRESULTs carry XSAPI-specific service errors.
+
+## Diagnosing failures
+
+1. Call `HCHttpCallResponseGetNetworkErrorCode` and `HCHttpCallResponseGetStatusCode` on the failed [HTTP call handle](/reference/xsapi-rest).
+2. If you have an XSAPI HRESULT, run it through `XblGetErrorCondition` for the bucket.
+3. Use [`XblHttpCallSetTracing`](/reference/xsapi-rest) on individual calls to log full request / response data.
+
+## Global
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `S_OK` | `0x00000000` | Operation completed successfully. | No action required. |
+| `E_PENDING` | `0x8000000A` | The operation has started but has not completed yet. | Wait for completion, then query the async result again. |
+| `E_BOUNDS` | `0x8000000B` | A supplied index or range is outside valid bounds. | Validate index and range bounds before retrying. |
+| `E_NOTIMPL` | `0x80004001` | This functionality is not implemented. | Use a supported API path for this platform and runtime. |
+| `E_NOINTERFACE` | `0x80004002` | The requested interface is not available on this object. | Verify interface availability/version before querying this interface. |
+| `E_POINTER` | `0x80004003` | A required pointer is null or invalid. | Validate all pointers/handles and object lifetimes before calling. |
+| `E_ABORT` | `0x80004004` | The operation was aborted before completion. | Check cancellation/shutdown state and rerun when stable. |
+| `E_FAIL` | `0x80004005` | The operation failed with an unspecified error. | Review logs for the preceding failure and retry after correcting inputs/state. |
+| `E_UNEXPECTED` | `0x8000FFFF` | An unexpected internal error occurred. | Capture diagnostics, restart the scenario, and escalate if reproducible. |
+| `E_ACCESSDENIED` | `0x80070005` | Access to the requested resource or operation is denied. | Verify permissions, capabilities, and user/account context, then retry. |
+| `E_OUTOFMEMORY` | `0x8007000E` | The operation failed because memory allocation could not be satisfied. | Reduce memory pressure, free allocations, and retry. |
+| `E_NOT_SUPPORTED` | `0x80070032` | This operation is not supported in the current context. | Use a supported operation for the current context. |
+| `E_INVALIDARG` | `0x80070057` | One or more arguments are invalid. | Validate argument values and required combinations before retrying. |
+| `E_NOT_SUFFICIENT_BUFFER` | `0x8007007A` | The provided buffer is too small for the requested data. | Query required size, resize the buffer, and retry. |
+| `E_TIME_CRITICAL_THREAD` | `0x800701A0` | The call is not allowed on a time-critical thread. | Move this call off time-critical threads; use async patterns when available. |
+| `E_NO_TASK_QUEUE` | `0x800701AB` | No task queue was provided or available for the operation. | Provide a valid task queue before invoking this operation. |
+
+## HTTP Client
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `HTTP_E_STATUS_UNEXPECTED` | `0x80190001` | HTTP client encountered an unexpected protocol/status condition. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_UNEXPECTED_SERVER_ERROR` | `0x80190005` | Server returned an unexpected error condition. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_AMBIGUOUS` | `0x8019012C` | HTTP response indicates an ambiguous resource match. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_MOVED` | `0x8019012D` | HTTP redirect indicates the resource has moved. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_REDIRECT` | `0x8019012E` | HTTP redirect response received. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_REDIRECT_METHOD` | `0x8019012F` | HTTP redirect that requires a method change. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_NOT_MODIFIED` | `0x80190130` | HTTP 304: resource has not changed since conditional request. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_USE_PROXY` | `0x80190131` | HTTP request must be made through a proxy. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_REDIRECT_KEEP_VERB` | `0x80190133` | HTTP redirect that preserves the original method/verb. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_BAD_REQUEST` | `0x80190190` | HTTP 400: the request is malformed or invalid. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_DENIED` | `0x80190191` | HTTP 401: request is unauthorized or denied. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_PAYMENT_REQ` | `0x80190192` | HTTP 402: payment is required for this request. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_FORBIDDEN` | `0x80190193` | HTTP 403: access is forbidden for this resource. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_NOT_FOUND` | `0x80190194` | HTTP 404: requested resource was not found. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_BAD_METHOD` | `0x80190195` | HTTP method is not valid for this endpoint. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_NONE_ACCEPTABLE` | `0x80190196` | HTTP 406: no acceptable representation available. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_PROXY_AUTH_REQ` | `0x80190197` | HTTP 407: proxy authentication is required. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_REQUEST_TIMEOUT` | `0x80190198` | HTTP 408: server timed out waiting for the request. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_CONFLICT` | `0x80190199` | HTTP 409: request conflicts with current server state. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_GONE` | `0x8019019A` | HTTP 410: requested resource is no longer available. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_LENGTH_REQUIRED` | `0x8019019B` | HTTP 411: Content-Length is required. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_PRECOND_FAILED` | `0x8019019C` | HTTP 412: request precondition failed. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_REQUEST_TOO_LARGE` | `0x8019019D` | HTTP 413: request payload is too large. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_URI_TOO_LONG` | `0x8019019E` | HTTP 414: request URI is too long. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_UNSUPPORTED_MEDIA` | `0x8019019F` | HTTP 415: media type is not supported. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_RANGE_NOT_SATISFIABLE` | `0x801901A0` | HTTP 416: requested range cannot be satisfied. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_EXPECTATION_FAILED` | `0x801901A1` | HTTP 417: the server could not meet request expectations. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `FGRL (Rate Limit) Exceeded` | `0x801901AD` | Request was throttled because the rate limit was exceeded. | Reduce request rate and retry after cooldown with exponential backoff. |
+| `HTTP_E_STATUS_SERVER_ERROR` | `0x801901F4` | HTTP 500: server encountered an internal error. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_NOT_SUPPORTED` | `0x801901F5` | HTTP capability requested is not supported. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_BAD_GATEWAY` | `0x801901F6` | HTTP 502: received an invalid response from an upstream server. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_SERVICE_UNAVAIL` | `0x801901F7` | HTTP 503: service is temporarily unavailable. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_GATEWAY_TIMEOUT` | `0x801901F8` | HTTP 504: upstream server timed out. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `HTTP_E_STATUS_VERSION_NOT_SUP` | `0x801901F9` | HTTP version is not supported by the server. | Inspect HTTP status/response body, fix request/auth/config, and retry with backoff for transient failures. |
+| `ONL_E_ACTION_REQUIRED` | `0x8086000C` | User or title action is required before the operation can continue. | Complete the required user/title action indicated by the service, then retry. |
+| `WEB_E_UNEXPECTED_CONTENT` | `0x83750005` | The response content did not match the expected format. | Validate response format/content-type and service contract, then retry. |
+| `WEB_E_INVALID_JSON_STRING` | `0x83750007` | The JSON payload is invalid or malformed. | Validate JSON payload schema/encoding before sending or parsing. |
+| `E_HC_NOT_INITIALISED` | `0x89235001` | HTTP Client runtime is not initialized. | Initialize HTTP Client runtime before issuing requests. |
+| `E_HC_PERFORM_ALREADY_CALLED` | `0x89235003` | This HTTP operation has already been executed. | Create a new request object for another perform call. |
+| `E_HC_ALREADY_INITIALISED` | `0x89235004` | HTTP Client runtime is already initialized. | Avoid duplicate initialization; initialize once per process lifecycle. |
+| `E_HC_CONNECT_ALREADY_CALLED` | `0x89235005` | Connect has already been called for this WebSocket/session. | Reuse active connection/session or create a new one instead of reconnecting. |
+| `E_HC_NO_NETWORK` | `0x89235006` | No network connectivity is currently available. | Restore network connectivity and retry. |
+
+## Auth Manager (AM)
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `AM_E_XSTS_UNEXPECTED` | `0x87DD0006` | The NSAL target is configured, but the relying-party certificate is not yet trusted by XBOX services. | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+| `AM_E_NOT_AUTHORIZED` | `0x87DD0009` | The user is not authorized to request an XSTS token for the current TitleId and SandboxId configuration. | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+| `AM_E_UNKNOWN_TARGET` | `0x87DD000B` | The requested token target was not found in the title's NSAL configuration. | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+| `AM_E_TITLE_NOT_AUTHENTICATED` | `0x87DD000D` | The title is not authenticated for the current service configuration (for example, TitleId, SCID, or sandbox setup issues). | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+| `AM_E_USER_NOT_FOUND` | `0x87DD0013` | User object is no longer signed in or is unknown. | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+| `AM_E_XSTS_TIMEOUT` | `0x87DD0019` | Timeout limit hit when trying to retrieve the X-token. | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+| `AM_E_NO_TOKEN_REQUIRED` | `0x87DD0021` | No token is required for the requested endpoint because it is not configured as a token target in NSAL. | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+| `AM_E_XTITLE_TIMEOUT` | `0x87DD0022` | Timeout limit hit when trying to retrieve the title token. | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+| `AM_E_XSTS_SERVICE_UNAVAILABLE` | `0x87DD0033` | The X token service is unavailable. | Verify sandbox, NSAL target, TitleId/SCID config, and reacquire token. |
+
+## XUser token and signature
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `WININET_E_NAME_NOT_RESOLVED` | `0x80072EE7` | The server name or address couldn't be resolved. | Check network/DNS/proxy connectivity and retry token acquisition. |
+| `WININET_E_CANNOT_CONNECT` | `0x80072EFD` | A connection with the server couldn't be established. | Check network/DNS/proxy connectivity and retry token acquisition. |
+| `WININET_E_CONNECTION_ABORTED` | `0x80072EFE` | The connection with the server was terminated abnormally. | Check network/DNS/proxy connectivity and retry token acquisition. |
+| `WININET_E_DECODING_FAILED` | `0x80072F8F` | Content decoding failed. | Check network/DNS/proxy connectivity and retry token acquisition. |
+| `XO_E_GAME_USAGE_BY_USER_EXCEEDED` | `0x8015DBFF` | User exceeded their allotted time allowed to play the game (parental controls). | Resolve account/system policy restrictions, then retry token acquisition. |
+| `XO_E_SYSTEM_UPDATE_REQUIRED` | `0x8015DC01` | System must be updated before being allowed to grant X-tokens. | Resolve account/system policy restrictions, then retry token acquisition. |
+| `XO_E_ACCOUNT_COUNTRY_NOT_AUTHORIZED` | `0x8015DC0B` | Title trying to be used in a country/region it isn't authorized for. | Resolve account/system policy restrictions, then retry token acquisition. |
+| `XO_E_DEVICE_COUNT_FOR_TITLE_EXCEEDED` | `0x8015DC1E` | You are already playing this game on another device. Close that game to play it here. Single Point of Presence (SPoP / XR-115) enforcement. | Resolve account/system policy restrictions, then retry token acquisition. |
+| `ONL_E_FORCESIGNIN` | `0x80860006` | To help protect the account, the user must sign in again. | Prompt user to sign in again, then retry the request. |
+
+## XAL
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_XAL_NOTINITIALIZED` | `0x89235001` | XAL is not initialized. | Initialize XAL before using XAL-dependent APIs. |
+| `E_XAL_ALREADYINITIALIZED` | `0x89235101` | XAL has already been initialized. | Avoid duplicate XAL initialization in the same lifecycle. |
+| `E_XAL_USERSETNOTEMPTY` | `0x89235102` | The target user set is not empty. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_USERSETFULL` | `0x89235103` | The user set has reached its maximum capacity. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_USERSIGNEDOUT` | `0x89235104` | The target user is signed out. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_DUPLICATEDUSER` | `0x89235105` | The user is already present in the user set. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_NETWORK` | `0x89235106` | A network error occurred while processing the request. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_CLIENTERROR` | `0x89235107` | A client-side error occurred in XAL. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_UIREQUIRED` | `0x89235108` | User interaction is required to complete the operation. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_HANDLERALREADYREGISTERED` | `0x89235109` | A required handler was already registered. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_UNEXPECTEDUSERSIGNEDIN` | `0x8923510A` | A different or unexpected user signed in during the operation. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_NOTATTACHEDTOJVM` | `0x8923510B` | XAL is not attached to the Java VM when required. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_DEVICEUSER` | `0x8923510C` | The operation is not valid for the current device user context. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_DEFERRALNOTAVAILABLE` | `0x8923510D` | A deferral cannot be requested at this time. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_MISSINGPLATFORMEVENTHANDLER` | `0x8923510E` | A required platform event handler is missing. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_USERNOTFOUND` | `0x8923510F` | The specified user could not be found. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_NOTOKENREQUIRED` | `0x89235110` | No token is required for this request. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_NODEFAULTUSER` | `0x89235111` | No default user is currently available. | Validate XAL user-set/session state and retry in the expected call sequence. |
+| `E_XAL_FAILEDTORESOLVE` | `0x89235112` | XAL could not resolve the requested privilege or identity state. | Validate XAL user-set/session state and retry in the expected call sequence. |
+
+## XSAPI
+
+| Code | Value | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `E_XBL_RUNTIME_ERROR` | `0x89235200` | A generic XBOX Live runtime error occurred. | Verify XSAPI initialization, auth token availability, and service state, then retry. |
+| `E_XBL_RTA_GENERIC_ERROR` | `0x89235201` | A generic Real-Time Activity (RTA) error occurred. | Verify XSAPI initialization, auth token availability, and service state, then retry. |
+| `E_XBL_RTA_SUBSCRIPTION_LIMIT_REACHED` | `0x89235202` | The RTA subscription limit was reached. | Verify XSAPI initialization, auth token availability, and service state, then retry. |
+| `E_XBL_RTA_ACCESS_DENIED` | `0x89235203` | Access to RTA functionality was denied. | Verify XSAPI initialization, auth token availability, and service state, then retry. |
+| `E_XBL_AUTH_UNKNOWN_ERROR` | `0x89235204` | An unknown authentication error occurred. | Verify XSAPI initialization, auth token availability, and service state, then retry. |
+| `E_XBL_AUTH_RUNTIME_ERROR` | `0x89235205` | Authentication failed due to a runtime error. | Verify XSAPI initialization, auth token availability, and service state, then retry. |
+| `E_XBL_AUTH_NO_TOKEN` | `0x89235206` | No authentication token is available. | Verify XSAPI initialization, auth token availability, and service state, then retry. |
+| `E_XBL_ALREADY_INITIALIZED` | `0x89235207` | XBOX Live services are already initialized. | Avoid duplicate XBOX services initialization calls. |
+| `E_XBL_NOT_INITIALIZED` | `0x89235208` | XBOX Live services are not initialized. | Call `XblInitialize` before invoking XBOX services APIs. |
+| `E_XBL_RTA_NOT_ACTIVATED` | `0x89235209` | The Real-Time Activity service isn't activated. Call `XblRealTimeActivityActivate` to activate the Real-Time Activity service. | Call `XblRealTimeActivityActivate` to activate the Real-Time Activity service. |
+
+## See also
+
+- [GDK error codes (XGameErr.h)](/reference/error-codes)
+- [Error handling](/gdk/error-handling)
+- [XSAPI Context, Settings, and Globals](/reference/xsapi-context-and-globals)

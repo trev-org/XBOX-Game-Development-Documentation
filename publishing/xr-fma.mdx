@@ -1,0 +1,64 @@
+---
+title: "XR Failure Mode Analysis"
+sidebarTitle: "XR FMA"
+description: "How to read and resolve XBOX certification Failure Mode Analyses."
+icon: "triangle-exclamation"
+---
+
+When your submission fails certification, the test team delivers a **Failure Mode Analysis (FMA)** that lists each failing XR with reproduction steps, expected behavior, and severity.
+
+## How to read an FMA
+
+- **XR number** — maps to the catalog in [XBOX requirements](/publishing/xbox-requirements).
+- **Severity** — ship-blocker vs. recommendation.
+- **Repro** — exact device, build, sandbox, and steps.
+- **Expected behavior** — what the title should do instead.
+
+## Resubmission workflow
+
+1. Fix each ship-blocker XR.
+2. Note recommendations to address in the next update.
+3. Reproduce locally on a retail-equivalent kit before resubmitting.
+4. Upload the new package via [Packages](/publishing/packages) referencing the FMA ID.
+
+## Common XR FMA categories
+
+Certification frequently delivers FMAs against the same XR families. Use this list as a triage checklist:
+
+| XR | Family | Most common failure |
+| --- | --- | --- |
+| **XR-001** | Title Stability | TCRs around crash-free hours, recovery from console reboot, suspend/resume correctness |
+| **XR-003** | Title Quality for Submission | Build cleanliness, debug strings/symbols left in retail, missing localization fallback |
+| **XR-013** | Linking Microsoft Accounts with Publisher Accounts | Account-link UX must allow unlinking, no PII leakage, must not break sign-in |
+| **XR-014** | Personal Information | PII handling, privacy disclosures, no PII in telemetry, GDPR alignment |
+| **XR-015** | Managing Player Communication | Mute/block enforcement, text-chat filters, voice chat privilege checks |
+| **XR-018** | User-Generated Content | UGC reporting flow, moderation queue, take-down compliance |
+| **XR-022** | Official Naming Standards | Correct Xbox/Windows/Microsoft naming and casing in store copy and in-game UI |
+
+If your FMA cites an XR not in this list, look it up directly in [XBOX requirements](/publishing/xbox-requirements) for the canonical TCR text.
+
+## Beta and Game Preview submissions
+
+Beta and **Game Preview** titles use a **reduced XR set** vs. full retail. Key differences:
+
+- A subset of XRs is enforced; the remainder are evaluated as **recommendations**.
+- Submissions still require an age rating and store listing, but content can change more often without re-cert if the title's **Game Preview** flag is set.
+- Once you exit Game Preview, the full XR catalog applies — plan to address recommendation-level findings before the 1.0 submission to avoid a long FMA at launch.
+
+See **Certification Requirements for Beta and Game Preview titles** in the source for the exact reduced XR list per generation.
+
+## Console certification terminology
+
+| Term | Meaning |
+| --- | --- |
+| **TCR** | Technical Certification Requirement — the underlying technical rule. XRs reference TCRs. |
+| **FMA** | Failure Mode Analysis — the per-submission report you receive. |
+| **TRC pass** | A clean cert pass against the active TCR/XR set. |
+| **Cert sandbox** | The sandbox in which the test team runs your submission. |
+| **TFB** | Test Failure Bug — a single repro logged against one XR within an FMA. |
+
+## Related
+
+- [Certification](/publishing/certification)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [Top failing tests](/publishing/xr-top-failing)

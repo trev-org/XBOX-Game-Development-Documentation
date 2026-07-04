@@ -1,0 +1,158 @@
+---
+title: "XBOX services overview — features and XSAPI"
+sidebarTitle: "Overview"
+description: "Discover XBOX services: cloud micro-services for achievements, multiplayer, social, and cloud storage on XBOX and Windows PC using XSAPI or REST endpoints."
+icon: "compass"
+keywords: ["XBOX services", "XSAPI", "XBOX Live", "achievements", "multiplayer", "social", "cloud storage", "XBOX One PC services"]
+related: ["/services/multiplayer", "/services/game-chat", "/services/multiplayer-activity", "/services/develop-and-test"]
+---
+
+XBOX services is Microsoft's cloud gaming network — a collection of micro-services that expose features such as player profiles, friends and presence, stats, leaderboards, achievements, multiplayer session management, matchmaking, and cloud storage. When you integrate XBOX services into your title, you instantly connect your players to a network of over **55 million active users** across XBOX One family consoles, XBOX Series X|S, and Windows 10/11 PC.
+
+XBOX services data is stored in the cloud and accessed through REST endpoints secured with XBOX Live authentication. For GDK titles, Microsoft provides the **XBOX Services API (XSAPI)** client library, which wraps the REST layer and handles authentication, JSON serialization, async patterns, and retry logic for you.
+
+## How XBOX services work
+
+```text
+Your Title
+    │
+    ├── XSAPI C API  (recommended)
+    │       └── libHttpClient
+    │               └── REST / WebSocket endpoints ──► XBOX services cloud
+    │
+    └── Direct REST calls (advanced / web services)
+                └── REST / WebSocket endpoints ──► XBOX services cloud
+```
+
+XSAPI handles the complexity of OAuth token management, endpoint discovery, and asynchronous HTTP so you can focus on integrating features rather than networking plumbing. For GDK titles, you must use the **XSAPI C-based API** exclusively — the WinRT and C\+\+11 XSAPI variants are for the legacy XDK only.
+
+<Tip>
+  Some XBOX services functionality — such as writing game events — is **only** available through XSAPI and has no direct REST equivalent. Always prefer XSAPI for GDK titles.
+</Tip>
+
+## Feature areas
+
+<CardGroup cols={2}>
+  <Card title="Multiplayer" icon="users" href="/services/multiplayer">
+    MPSD session management, SmartMatch matchmaking, Multiplayer Manager, Game Chat 2, and PlayFab Party.
+  </Card>
+
+  <Card title="Game Chat 2" icon="microphone" href="/services/game-chat">
+    In-game voice chat with channel routing, TTS, STT, and platform mute enforcement.
+  </Card>
+
+  <Card title="Multiplayer Activity" icon="person-running" href="/services/multiplayer-activity">
+    Publish joinable sessions for the XBOX guide, party invites, and cross-platform join flows.
+  </Card>
+
+  <Card title="Develop & Test" icon="flask" href="/services/develop-and-test">
+    Sandboxes, test accounts, fine-grained rate limiting, offline play, and troubleshooting.
+  </Card>
+</CardGroup>
+
+## XBOX services feature summary
+
+| Feature area | Key capabilities |
+| --- | --- |
+| **Player Data** | Stats, leaderboards, achievements, Gamerscore, Featured Stats |
+| **Social** | Friends list (People system), Rich Presence, activity feed, Game Hubs, reputation |
+| **Multiplayer** | MPSD, Multiplayer Manager, SmartMatch matchmaking, Looking for Group, MPA |
+| **Chat** | Game Chat 2 (voice \+ text), PlayFab Party (cross-platform) |
+| **Cloud Storage** | Connected Storage (roaming saves), Title Storage (global/per-user blobs) |
+| **Identity** | Sign-in, profile, gamertag, gamerpic, account management |
+
+## Sandboxes: RETAIL vs. test sandboxes
+
+XBOX services uses a **sandbox** model to separate live production data from developer test data. Every title is associated with a sandbox ID:
+
+- **RETAIL** — the live, player-facing environment. Real Gamerscore, real achievements, and real leaderboards live here.
+- **Developer test sandboxes** — isolated environments (for example, `XDKS.1`) where you can configure services, unlock test achievements, and reset player data without affecting real players.
+
+Your development kit and test accounts must be configured to point at the correct sandbox. Use **XBOX Device Portal** or the `XblPlayerDataReset` tool to manage test data. You configure sandbox settings and XBOX services features in **Partner Center** under your title's XBOX services configuration.
+
+<Warning>
+  Changing your Stats or Achievements configuration model (event-based ↔ title-managed) **while in a sandbox clears all existing data for that system**. Make this decision early and do not switch models after you have meaningful test data you want to keep.
+</Warning>
+
+## XSAPI C-based API
+
+The XSAPI C-based API is the recommended client library for all GDK titles. It offers:
+
+- **Memory control** — titles can supply custom allocators for all XSAPI heap operations.
+- **Thread control** — titles control which threads XSAPI uses for callbacks and work items.
+- **libHttpClient** — a game-developer-focused HTTP library with configurable retry, timeout, and mock support.
+- **PC and XBOX** — the same API surface works on both Windows PC and XBOX console GDK targets.
+
+To get started, include the XSAPI headers and link against the XSAPI library provided in the GDK:
+
+```cpp
+#include <xsapi-c/services_c.h>
+
+// Initialize XSAPI with your title's service configuration ID (SCID)
+XblInitArgs args = {};
+args.queue = /* your XTaskQueue */;
+HRESULT hr = XblInitialize(&args);
+```
+
+For full API reference, see the [XSAPI C reference](https://learn.microsoft.com/en-us/gaming/gdk/docs/reference/live/xsapi-c/atoc-xsapi-c).
+
+## Partner Center configuration
+
+You configure all XBOX services features — including achievements, stats events, Rich Presence strings, and multiplayer session templates — in the **XBOX services** section of your title's Partner Center submission. Changes made here are published to your development sandbox immediately and to RETAIL only when you promote a submission.
+
+Key configuration areas:
+
+<Accordion title="Achievements and Stats">
+  Define achievement definitions (name, description, gamerscore value, artwork), configure unlock rules for event-based achievements, and set up stat rules for event-based stats aggregation.
+</Accordion>
+
+<Accordion title="Multiplayer Session Templates">
+  Define MPSD session templates that describe the rules for your multiplayer sessions: player counts, timeout values, visibility, join restrictions, and capabilities.
+</Accordion>
+
+<Accordion title="Rich Presence Strings">
+  Author the presence string templates that appear in the XBOX shell and friends list — for example, "Playing Ranked Match on Arcadia Station (12 of 15 rounds)".
+</Accordion>
+
+<Accordion title="Title Storage">
+  Configure the storage types (global blob, per-user blob, JSON, binary config) and access permissions for Title Storage containers.
+</Accordion>
+
+## XBOX Creators Program vs. ID@XBOX
+
+Some XBOX services features are available only to titles in a **managed developer program** such as ID@XBOX:
+
+| Feature | Creators Program | ID@XBOX |
+| --- | --- | --- |
+| Title-Managed Stats | ✅ | ✅ |
+| Event-Based Stats | ❌ | ✅ |
+| Achievements & Gamerscore | ❌ | ✅ |
+| Rich Presence | ❌ | ✅ |
+| Connected Storage | ✅ | ✅ |
+| Title Storage | ✅ | ✅ |
+| Multiplayer / MPSD | Limited | ✅ |
+
+If you need achievements or event-based stats, apply to [ID@XBOX](https://www.xbox.com/Developers/id).
+
+## Best practices for calling XBOX services
+
+- **Batch writes** — collapse multiple stat updates or achievement unlocks into a single call where the API supports it.
+- **Cache reads** — friends lists, presence, and achievements change slowly. Cache the response for at least a few minutes and refresh on a Real-Time Activity (RTA) notification, not a poll.
+- **Respect Fine-Grained Rate Limiting** — XBOX services enforce per-title, per-user, and per-endpoint rate limits. Inspect `X-Rate-Limit-Remaining` / `X-Rate-Limit-Reset` and back off when you approach the budget; do not retry-spam.
+- **Handle 429 with exponential backoff** — when you do get throttled, honor the `Retry-After` header before the next attempt.
+- **Move chatty calls off the gameplay hot path** — defer writes to a background `XTaskQueue` so a slow server response cannot stall the render thread.
+
+## Offline play
+
+XBOX services are designed assuming a connected console, but every shipping title must degrade gracefully when the player is offline:
+
+- Continue gameplay; do not block on a service call from the title boot path.
+- Queue writes locally (achievements unlocked offline, stats deltas, save data) and replay them on reconnect.
+- Show a non-modal banner the first time a feature is unavailable; do not pop a modal every time the player tries to view leaderboards offline.
+- Test the offline path in CI by deploying with the dev kit's NIC unplugged or by using the **Network** page in Dev Home to simulate disconnection.
+
+## See also
+
+- [XBOX services API overview](https://learn.microsoft.com/en-us/gaming/gdk/docs/services/fundamentals/xbox-services-api/live-introduction-to-xbox-live-apis)
+- [XSAPI C reference](https://learn.microsoft.com/en-us/gaming/gdk/docs/reference/live/xsapi-c/atoc-xsapi-c)
+- [Getting started with XBOX services](https://learn.microsoft.com/en-us/gaming/gdk/docs/archive/services-archive/live-getstarted-nav)

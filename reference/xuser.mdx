@@ -1,0 +1,113 @@
+---
+title: "XUser API reference"
+sidebarTitle: "XUser"
+description: "Reference for the XUser API: add users, resolve sign-in issues, query gamertags and XUIDs, listen for user state changes, and clean up handles."
+icon: "user"
+---
+
+The **XUser** API is the GDK surface for player identity. Every signed-in player is represented by an `XUserHandle` that you use to call user-scoped APIs across XBOX services, Connected Storage, Store, and Game Chat. This page is a quick reference; the conceptual walkthrough lives in [User Model](/gdk/user-model).
+
+## Header and library
+
+```cpp
+#include <XUser.h>
+// Link: GameRuntime.lib (already pulled by XGameRuntime)
+```
+
+## Sign-in functions
+
+| Function | Purpose |
+| --- | --- |
+| `XUserAddAsync` | Asynchronously add (sign in) a user. Honors `XUserAddOptions` for default-user vs. picker. |
+| `XUserAddResult` | Complete `XUserAddAsync` and receive an `XUserHandle`. |
+| `XUserResolveIssueWithUiAsync` | Surface platform UI to resolve sign-in issues (privacy, parental controls, etc.). |
+| `XUserResolveIssueWithUiResult` | Complete the issue-resolution flow. |
+| `XUserCloseHandle` | Release a user handle. Pair with every `XUserAddResult`. |
+
+## User properties
+
+| Function | Returns |
+| --- | --- |
+| `XUserGetId` | The 64-bit XUID for the user. |
+| `XUserGetGamertag` | The classic, modern, or unique modern gamertag string. |
+| `XUserGetState` | `XUserState`: `SignedIn`, `SigningIn`, `SignedOut`, `Unknown`. |
+| `XUserGetAgeGroup` | `Child`, `Teen`, or `Adult`. Honor for privacy and chat rules. |
+| `XUserGetIsGuest` | Whether the user is a guest profile. |
+| `XUserGetLocalId` | Stable opaque local identifier for the user on this console. |
+
+## Tokens and authentication
+
+| Function | Purpose |
+| --- | --- |
+| `XUserGetTokenAndSignatureAsync` | Acquire an XSTS token and request signature for an XBOX services REST call. |
+| `XUserGetTokenAndSignatureResult` | Complete the token request and read the token / signature buffers. |
+
+The XSAPI C library calls this internally; you typically use it directly only when calling XBOX services REST endpoints from your own code.
+
+## Change notifications
+
+| Function | Purpose |
+| --- | --- |
+| `XUserRegisterForChangeEvent` | Register a callback for any user state change on any user. |
+| `XUserUnregisterForChangeEvent` | Remove the callback registration. |
+| `XUserRegisterForDefaultUserChangeEvent` | Specifically observe when the default user changes (controller-driven). |
+
+Process change events on the task queue you registered — they fire when a user signs in, signs out, or transitions between states.
+
+## Sign-in code skeleton
+
+```cpp
+XAsyncBlock* async = new XAsyncBlock{};
+async->context = this;
+async->callback = [](XAsyncBlock* a) {
+    XUserHandle user = nullptr;
+    HRESULT hr = XUserAddResult(a, &user);
+    if (SUCCEEDED(hr)) {
+        // Cache 'user', call other XUser_* APIs to read gamertag, XUID, etc.
+        XUserCloseHandle(user);
+    } else if (hr == E_GAMEUSER_RESOLVE_USER_ISSUE_REQUIRED) {
+        // Call XUserResolveIssueWithUiAsync
+    }
+    delete a;
+};
+
+XUserAddAsync(XUserAddOptions::AddDefaultUserSilently, async);
+```
+
+## Modern gamertags
+
+XBOX supports two gamertag formats. Your title's UI must handle both correctly:
+
+- **Classic gamertags** — ASCII-only, up to 15 characters, globally unique. Every existing gamertag prior to 2019.
+- **Modern gamertags** — UTF-8 display name plus a discriminator suffix (`Gamertag#1234`) for uniqueness. Supports non-Latin scripts, allowing players to use their real-language identity.
+
+Implementation guidance:
+
+- Use `XUserGetGamertag` with the **modern** option to retrieve the display gamertag including suffix.
+- Never split the gamertag and discriminator in UI without testing your font's Unicode coverage — modern gamertags include CJK, Cyrillic, Arabic, and more.
+- Treat the discriminator as part of the displayed identity in disambiguation flows; do not show it as a separate field.
+- For analytics and matchmaking keys, use the **XUID**, never the gamertag string.
+
+See the modern gamertags unicode reference for the exact allowed UTF-8 ranges and backwards-compatibility rules.
+
+## Related conceptual documentation
+
+- [PlayFab player sign-in steps](/playfab/player-sign-in) — authenticate players with Microsoft accounts before granting PlayFab access.
+- [Game Chat](/services/game-chat) — user identity, privilege checks, and issue resolution for voice chat.
+- [Multiplayer](/services/multiplayer) — user tokens for MPSD, invites, and matchmaking.
+- [Networking](/gdk/networking) — `XUserGetTokenAndSignatureUtf16Async` for authenticated web requests.
+- [Asynchronous programming model](/gdk/async-programming) — canonical async examples (`XUserAddAsync`, `XUserGetGamerPictureAsync`).
+- [XStore on PC](/publishing/xstore-pc) — detecting the store user and mismatched account handling.
+- [Threading](/gdk/threading) — user handle, sign-in deferral, and change-event callbacks on the right thread.
+
+- [PlayFab player sign-in steps](/playfab/player-sign-in) — authenticate players with Microsoft accounts before granting PlayFab access.
+- [Game Chat](/services/game-chat) — user identity, privilege checks, and issue resolution for voice chat.
+- [Multiplayer](/services/multiplayer) — user tokens for MPSD, invites, and matchmaking.
+- [Networking](/gdk/networking) — `XUserGetTokenAndSignatureUtf16Async` for authenticated web requests.
+- [Asynchronous programming model](/gdk/async-programming) — canonical async examples (`XUserAddAsync`, `XUserGetGamerPictureAsync`).
+- [XStore on PC](/publishing/xstore-pc) — detecting the store user and mismatched account handling.
+
+## See also
+
+- [User Model](/gdk/user-model) — conceptual overview and best practices
+- [Error handling](/gdk/error-handling) — XUser HRESULT codes

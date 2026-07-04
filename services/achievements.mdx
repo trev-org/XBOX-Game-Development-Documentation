@@ -1,0 +1,130 @@
+---
+title: "XBOX Achievements"
+sidebarTitle: "Achievements"
+description: "Configure and unlock XBOX achievements with XSAPI Achievements and Achievements Manager."
+icon: "trophy"
+---
+
+Design, configure, and unlock XBOX achievements in your GDK title using the XSAPI Achievements API.
+
+## How achievements work
+
+- Achievements are defined in **Partner Center** and tied to your service configuration (SCID).
+- Players progress and unlock them via [event-based stats](/reference/xsapi-stats) or direct progress calls.
+- Cached, event-driven state is available via the [Achievements Manager](/reference/xsapi-achievements-manager).
+
+## Implement achievements
+
+- Use [`XblAchievements*`](/reference/xsapi-achievements) APIs to read and update progress.
+- Use the [Achievements Manager](/reference/xsapi-achievements-manager) when supporting multiple local users.
+- Write game events with [`XGameEvent`](/reference/xgameevent) for event-based achievements.
+
+## Event-based (EB) vs Title-managed (TM) achievements
+
+XBOX supports two distinct achievement models. Choose one per title — mixing both for the same achievement is not supported.
+
+| Model | Where progress is calculated | When to choose |
+| --- | --- | --- |
+| **Event-based** | Service-side, via stats and rules authored in Partner Center | New titles, GaaS, anything with leaderboards. Default recommendation. |
+| **Title-managed** | Client-side; title writes progress with `XblAchievementsUpdateAchievementAsync` | Existing TM achievements, simple titles, or titles needing very-low-latency unlock feedback |
+
+### Event-based achievements
+
+EB achievements are calculated from **events** your title sends and **stats** the service derives:
+
+- Author event schema in Partner Center (event name, fields, types)
+- Send events from the title with `XGameEventWrite`
+- Author stat rules (e.g. `KillsWithSniper = sum(event.KillCount where event.WeaponType=='Sniper')`)
+- Author achievement rules referencing those stats (e.g. unlock when `KillsWithSniper >= 100`)
+- The service unlocks the achievement and pushes a real-time-activity notification back to the title
+
+EB achievements roam automatically: progress sums correctly across consoles and is bulletproof against a tampered client.
+
+### Title-managed achievements
+
+TM achievements have the title push progress directly:
+
+- Read current progress with `XblAchievementsGetAchievementAsync`
+- Update with `XblAchievementsUpdateAchievementAsync` — send the new percentage; the service unlocks at 100
+- Pair with **achievement rewards** authored in Partner Center to grant gamerscore, art, or in-game items at unlock
+
+### Achievements Manager
+
+Use the **Achievements Manager** wrapper for cached, do-work-driven access:
+
+- One `XblAchievementsManagerHandle` per local user
+- Call `XblAchievementsManagerDoWork` once per frame to drain events
+- Subscribes to RTA under the hood — no manual polling
+- Best fit for multi-user titles (split-screen co-op, party play) where you want one place to read all achievements
+
+## Rewards
+
+Achievement rewards are configured in Partner Center alongside the achievement:
+
+- **Gamerscore** — the platform default; appears on the player's profile
+- **Reward art** — image shown in the unlock toast and gallery
+- **In-game rewards** — your title reads the unlocked achievement list and grants the corresponding item; the platform does not deliver it directly
+
+Localize reward titles and descriptions for every shipping language.
+
+## Challenges
+
+**Challenges** are time-bound achievement variants:
+
+- Author start and end times in Partner Center
+- Reward art and unlock criteria configurable per-challenge
+- Use for seasonal events, partner promos, and limited-time campaigns
+- Mix freely with EB and TM achievements in the same title
+
+## Common scenarios
+
+| Scenario | Pattern |
+| --- | --- |
+| Cumulative ("Kill 1000 enemies") | EB stat \+ EB achievement; rule sums events |
+| One-shot ("Beat the final boss") | EB event \+ EB achievement with `value >= 1` |
+| Per-difficulty variants | One stat per difficulty; one achievement per stat |
+| Hidden achievement | Mark hidden in Partner Center; surfaces only after unlock |
+| Multi-player co-op unlock | All participating players unlock; service handles deduplication |
+| Seasonal challenge | Challenge with start/end timestamps |
+
+## Reading achievement state
+
+```cpp
+// Fetch the full achievement list for a user
+XAsyncBlock* async = new XAsyncBlock{};
+async->queue = queue;
+async->callback = [](XAsyncBlock* a) {
+    XblAchievementsResultHandle result = nullptr;
+    if (SUCCEEDED(XblAchievementsGetAchievementsForTitleIdResult(a, &result))) {
+        const XblAchievement* items = nullptr;
+        size_t count = 0;
+        XblAchievementsResultGetAchievements(result, &items, &count);
+        // Render in UI...
+        XblAchievementsResultCloseHandle(result);
+    }
+    delete a;
+};
+
+XblAchievementsGetAchievementsForTitleIdAsync(
+    xblContext, xuid, titleId,
+    XblAchievementType::All,
+    /* unlockedOnly */ false,
+    XblAchievementOrderBy::DefaultOrder,
+    /* skipItems */ 0, /* maxItems */ 100,
+    async);
+```
+
+## Configuration tips
+
+- Use the **CERT** sandbox to validate the full unlock pipeline before promoting to RETAIL
+- The **Player Data Reset** tool wipes achievements per test account so you can re-run unlocks
+- Achievement schema is immutable post-publish — version your title carefully if you need to retire achievements
+- Localize achievement names and descriptions; cert blocks shipping with missing locales
+
+## Related
+
+- [XBOX services overview](/services/overview)
+- [Develop & test](/services/develop-and-test)
+- [Player data](/services/player-data) — stats and leaderboards
+- [XSAPI Achievements reference](/reference/xsapi-achievements) · [Achievements Manager reference](/reference/xsapi-achievements-manager)
+- [XGameEvent reference](/reference/xgameevent)

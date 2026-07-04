@@ -1,0 +1,31 @@
+---
+title: "Sandboxes"
+sidebarTitle: "Sandboxes"
+description: "Isolate pre-release XBOX services state from retail using sandboxes."
+icon: "box-archive"
+---
+
+Sandboxes isolate your development build's XBOX services state from retail. Every dev kit and every XSAPI / PlayFab call is scoped to a sandbox ID.
+
+## How sandboxes work
+
+- Each Partner Center product has a default sandbox (`XDKS.1` style) and you can create additional sandboxes.
+- Test accounts are added to a sandbox to access pre-release content.
+- The retail sandbox is `RETAIL` — only published packages reach it.
+
+## Switching sandboxes
+
+- **Dev kit:** `xbconfig Sandbox=<id> /reboot`.
+- **PC:** sandbox switcher in the GDK tools and via the registry.
+
+## Common uses
+
+- Run private flights against an unreleased Title Storage layout.
+- Test new achievements before they're public.
+- Validate XStore add-on purchase flows.
+
+## Related
+
+- [Game setup](/publishing/game-setup)
+- [Develop & test](/services/develop-and-test)
+- [XStore on PC](/publishing/xstore-pc)

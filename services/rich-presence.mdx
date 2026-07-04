@@ -1,0 +1,97 @@
+---
+title: "Rich presence"
+sidebarTitle: "Rich presence"
+description: "Publish per-user rich presence strings so friends see what players are doing in your title."
+icon: "signal"
+---
+
+Publish a per-user **rich presence** string so friends see what the player is doing inside your title.
+
+## How it works
+
+- Rich presence strings are configured in **Partner Center** with token placeholders.
+- The title sets the active presence ID and supplies token values at runtime.
+- The XBOX shell and friends list display the localized string.
+
+## Implement
+
+- Use [`XblPresenceSetPresenceAsync`](/reference/xsapi-presence) to set the current presence.
+- Combine with [Multiplayer Activity](/reference/xsapi-multiplayer-activity) so friends can join.
+
+## Concepts
+
+- **Presence record** — the platform stores one presence record per (user, title) pair. Setting a new value overwrites the previous one.
+- **Device presence** — a user can be present on multiple devices at once (console, PC, mobile companion). Each device's presence is tracked independently.
+- **Title presence** — your title's presence string is a subset of the user's device presence; it appears under the title node in the shell.
+- **APX vs APX-less** — modern titles use the **Activity Presence eXchange (APX)** schema. Older titles can still publish raw strings; new code should use APX.
+
+## Configuring presence strings
+
+In Partner Center:
+
+1. Open your service config and add presence strings
+2. Define token placeholders (e.g. `{mapName}`, `{score}`) and supply localized variants per supported language
+3. Group presence strings by activity (lobby, in-match, in-cutscene) so friends-list UX reads cleanly
+4. Publish to the **DEV** sandbox first; only promote to **RETAIL** after presence has been validated against the shell
+
+## How to update presence
+
+```cpp
+// Set the user's current presence to "InMatch" with a token value
+XblPresenceRichPresenceIds ids{};
+ids.scid = SCID;
+ids.presenceId = "InMatch";
+
+XblPresenceTokenIds tokens[] = {
+    { "mapName", "AbandonedFactory" },
+    { "score",   "12" }
+};
+
+XAsyncBlock* asyncBlock = new XAsyncBlock{};
+asyncBlock->queue = queue;
+XblPresenceSetPresenceAsync(xblContext, true /* isUserActive */, &ids,
+                            tokens, _countof(tokens), asyncBlock);
+```
+
+For service-driven scenarios, the same call is available over REST — update presence from your dedicated server when the client cannot.
+
+## Handling presence changes
+
+Subscribe to other users' presence to drive HUD state and friends UI:
+
+- `XblPresenceSubscribeToDevicePresenceChange` — device-level presence (online / offline / away)
+- `XblPresenceSubscribeToTitlePresenceChange` — title-level presence (started, stopped)
+- Both fire over Real-Time Activity (RTA); make sure your RTA channel is healthy before subscribing
+- Throttle handlers — presence changes can burst when many friends sign in at once
+
+## Best practices
+
+- Update presence at meaningful state changes only — every match start, every map change. Not every frame.
+- Keep localised strings short; the shell truncates long values
+- Always include a fallback presence (`Default`, `MainMenu`) so the player never appears as a blank
+- Test presence in every supported language before cert; truncation differs per UI surface
+
+## Limits
+
+The platform enforces presence call limits:
+
+- A small number of presence updates per minute per user
+- Per-title rate ceiling across all users (telemetry-style bulk updates are not allowed)
+- Token strings have a length cap; the schema rejects oversized values
+
+Exceeding limits causes `HTTP 429` responses; back off and retry — do not change titles to spin presence faster.
+
+## REST and how-tos
+
+For service-driven flows the same operations are available over the XBOX services REST surface:
+
+- Get a user's presence (single user, batch by XUID list)
+- Update a user's presence (server-to-server with a title's claim token)
+- Subscribe to presence over RTA
+
+## Related
+
+- [Social](/services/social)
+- [Multiplayer](/services/multiplayer)
+- [XSAPI Presence reference](/reference/xsapi-presence)
+- [XSAPI Real-Time Activity reference](/reference/xsapi-real-time-activity)

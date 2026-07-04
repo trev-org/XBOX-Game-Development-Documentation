@@ -1,0 +1,30 @@
+---
+title: "XGame API reference"
+sidebarTitle: "XGame"
+icon: "gamepad"
+description: "Title ID, launching a new game, and restarting on crash."
+---
+
+`XGame` is the small surface for cross-title transitions and crash recovery.
+
+## Functions
+
+| Function | Description |
+| --- | --- |
+| `XGameGetXboxTitleId` | Get the current title's XBOX Title ID |
+| `XLaunchNewGame` | Launch a different game on the device (closes the current game) |
+| `XLaunchRestartOnCrash` | Configure automatic restart behavior on crash |
+
+## Related conceptual documentation
+
+- [Packaging](/gdk/packaging) — cross-title transitions with `XLaunchNewGame` and Games-as-a-Service scenarios.
+- [Cloud saves (PC E2E)](/pc-e2e/optional-services) — cross-title flows for cloud-backed saves.
+- [Threading](/gdk/threading) — invoking cross-title transitions off frame-critical threads.
+
+- [Packaging](/gdk/packaging) — cross-title transitions with `XLaunchNewGame` and Games-as-a-Service scenarios.
+- [Cloud saves (PC E2E)](/pc-e2e/optional-services) — cross-title flows for cloud-backed saves.
+
+## See also
+
+- [XLauncher](/reference/xlauncher) for URI activation
+- [XGameActivation](/reference/xgameactivation) for invites and protocol activations

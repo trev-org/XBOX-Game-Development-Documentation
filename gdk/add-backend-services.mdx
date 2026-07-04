@@ -1,0 +1,43 @@
+---
+title: "Add backend services with PlayFab"
+sidebarTitle: "Add PlayFab backend services"
+description: "Pair your GDK title with PlayFab early to get identity, multiplayer, leaderboards, economy, and live-ops without standing up your own servers."
+icon: "server"
+---
+
+Pair your GDK title with [**PlayFab**](/playfab/overview) early. It's Microsoft's backend-as-a-service for games and gives you identity, multiplayer, leaderboards, economy, and live-ops without standing up your own servers.
+
+## Why add PlayFab now
+
+- **Cross-platform identity** — link XBOX, Steam, PSN, mobile, and custom logins under a single PlayFab player account.
+- **Live game services** — leaderboards, statistics, player segments, scheduled tasks, A/B experiments.
+- **Multiplayer infrastructure** — PlayFab [Lobby, Matchmaking, and Party](/playfab/multiplayer-lobby) for cross-platform play.
+- **Economy** — Catalog v2, Inventory v2, and Microsoft Store reconciliation through [Economy v2](/playfab/economy).
+- **Analytics** — PlayStream events, dashboards, and Insights through [Analytics](/playfab/analytics).
+
+## Get started
+
+<Steps>
+  <Step title="Create a PlayFab title">
+    Sign in at [developer.playfab.com](https://developer.playfab.com) and create a title. Note the **Title ID** — you'll pass it to the SDK.
+  </Step>
+  <Step title="Install the PlayFab GDK SDK">
+    Add the [PlayFab GDK SDK](https://github.com/PlayFab/XPlatCppSdk) to your project. It links cleanly alongside XSAPI and shares libHttpClient.
+  </Step>
+  <Step title="Sign in players with XBOX identity">
+    Call `LoginWithXbox` from the PlayFab Authentication API using the XSTS token your title already acquires via [`XUser`](/reference/xuser). PlayFab creates or links a master account on first call.
+  </Step>
+  <Step title="Pick the services you need">
+    Add Economy, Lobby/Matchmaking, Leaderboards, or Analytics as your design requires. Each one is opt-in.
+  </Step>
+</Steps>
+
+## When PlayFab is optional
+
+If your title only needs XBOX-side features — achievements, presence, social, MPSD multiplayer, Game Chat 2 — you can ship without PlayFab using [XBOX services](/services/overview) directly. Most live, cross-platform titles benefit from PlayFab even so.
+
+## See also
+
+- [PlayFab overview](/playfab/overview)
+- [PlayFab identity](/playfab/identity)
+- [Integrate Microsoft Store purchases with PlayFab Economy](/playfab/microsoft-store)
