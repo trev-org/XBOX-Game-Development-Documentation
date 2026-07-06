@@ -29,7 +29,7 @@
   "navbar": {
     "links": [
       {
-        "href": "https://github.com/edigonzales-microsoft/mintlify-docs",
+        "href": "https://github.com/microsoft/XBOX-Game-Development-Documentation",
         "label": "Collaborate with us in GitHub"
       }
     ],
