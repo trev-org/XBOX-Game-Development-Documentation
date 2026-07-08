@@ -35,25 +35,41 @@ The XBOX Game Development Kit (GDK) is a unified, comprehensive SDK that gives y
   </Card>
 </CardGroup>
 
-## How to get up and running
+## Your path from zero to shipping
 
-Getting from zero to a running GDK project takes just four steps. Follow them in order and you'll have a working development environment — ready to build for XBOX or Windows — in a single session.
+Getting a GDK title from zero to submission is a linear process. Follow it in order — later steps depend on earlier ones. Plan for **~2 weeks minimum** before you can download the GDK, because onboarding is gated by contract and concept-review cycles.
 
 <Steps>
-  <Step title="Join a developer program">
-    Register at [XBOX Developers](https://www.xbox.com/Developers/) to gain access to the GDK, Partner Center, secure downloads, and XBOX developer forums. PC-only titles can use the public GDK, but console development and XBOX services require program membership.
+  <Step title="Complete ID@XBOX onboarding">
+    Sign the NDA, get your concept approved, sign the Title Licensing Agreement, and register in Partner Center. This unlocks the GDK download, XBOX services, and publishing.
+
+    <Card title="Start onboarding" icon="arrow-right" href="/onboarding">
+      Step-by-step ID@XBOX workflow.
+    </Card>
   </Step>
-  <Step title="Download and install the GDK">
-    Download the latest GDK release from [aka.ms/gdkdl](https://aka.ms/gdkdl) (secure, requires program membership) or clone the [public GDK on GitHub](https://aka.ms/gdk). Run the installer on a 64-bit Windows 10 (May 2019 Update or later) or Windows 11 machine that has Visual Studio 2019 or 2022 installed.
+  <Step title="Set up your dev PC and install the GDK">
+    Install Visual Studio, the Windows SDK, and the GDK on a 64-bit Windows 10 (May 2019 Update or later) or Windows 11 machine. Confirm you can build a sample.
+
+    <Card title="Setup & install" icon="arrow-right" href="/gdk/get-started">
+      Environment setup and GDK install.
+    </Card>
   </Step>
-  <Step title="Configure MicrosoftGame.config">
-    Every GDK title is identified by a `MicrosoftGame.config` file. Create a product in [Partner Center](https://partner.microsoft.com/dashboard/windows/overview), then copy the Title ID, Identity Name, Publisher, and MSAAppId values into your project's `MicrosoftGame.config` so your game can authenticate with XBOX services and be submitted to the Microsoft Store.
+  <Step title="Build your first title">
+    Pick a Visual Studio project template (`Gaming.Desktop.x64` for PC, `Gaming.Xbox.Scarlett.x64` for Series X|S, or `Gaming.Xbox.XboxOne.x64` for XBOX One), reserve a product in Partner Center, and fill in your `MicrosoftGame.config`.
+
+    <Card title="Build your first title" icon="arrow-right" href="/gdk/developing-new-titles">
+      Project templates and first build.
+    </Card>
   </Step>
-  <Step title="Build and run your game">
-    Choose the right Visual Studio project template for your target platform (`Gaming.Desktop.x64` for PC, `Gaming.Xbox.Scarlett.x64` for XBOX Series X|S, or `Gaming.Xbox.XboxOne.x64` for XBOX One), build your project, and deploy. Switch your sandbox to your development sandbox ID and sign in with a test account to validate XBOX services features end-to-end.
+  <Step title="Pick your Getting Started Guide">
+    Choose the curated path that matches your target device, engine, or porting scenario. Each guide points you to the exact deeper docs you need.
+
+    <Card title="Getting Started Guides" icon="arrow-right" href="/paths/porting/overview">
+      7 curated paths.
+    </Card>
   </Step>
 </Steps>
 
-<Card title="Next: What is the GDK?" icon="arrow-right" href="/gdk/what-is-gdk">
-  Learn the GDK's components, programming model, and what shipping on PC vs. XBOX actually means.
+<Card title="Next: ID@XBOX onboarding" icon="arrow-right" href="/onboarding">
+  Start here — you cannot download the GDK or publish anything until this is complete.
 </Card>

@@ -161,13 +161,13 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Get Started",
+        "tab": "Home",
         "groups": [
           {
-            "group": "Get Started",
+            "group": "Welcome!",
             "pages": [
               {
-                "group": "Welcome & Introduction",
+                "group": "Introduction",
                 "icon": "hand-wave",
                 "pages": [
                   "index",
@@ -186,12 +186,7 @@
                 ]
               }
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Build & Develop",
-        "pages": [
+          },
           {
             "group": "Setup & Install",
             "icon": "download",
@@ -212,7 +207,12 @@
               "gdk/add-backend-services",
               "gdk/porting-guides"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Build & Develop",
+        "pages": [
           {
             "group": "GDK and Game Engines Integration",
             "icon": "rocket",
@@ -283,54 +283,7 @@
                 ]
               }
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Services",
-        "groups": [
-          {
-            "group": "XBOX Services",
-            "pages": [
-              "services/overview",
-              "services/multiplayer",
-              "services/game-chat",
-              "services/multiplayer-activity",
-              "services/develop-and-test",
-              "services/achievements",
-              "services/cloud-storage",
-              "services/player-data",
-              "services/social",
-              "services/people-system",
-              "services/rich-presence",
-              "services/gamertags-and-privacy"
-            ]
           },
-          {
-            "group": "PlayFab",
-            "pages": [
-              "playfab/overview",
-              "playfab/microsoft-store",
-              "playfab/economy",
-              "playfab/multiplayer-lobby",
-              "playfab/leaderboards-stats",
-              "playfab/party-voice",
-              "playfab/analytics",
-              "playfab/identity",
-              "playfab/live-service-management",
-              "playfab/player-progression",
-              "playfab/multiplayer-servers.mdx",
-              "playfab/party",
-              "playfab/sign-in-concepts",
-              "playfab/player-sign-in",
-              "playfab/insights-analytics"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Console Features",
-        "groups": [
           {
             "group": "Console Features",
             "pages": [
@@ -383,6 +336,64 @@
                   "gdk/dynamic-lighting"
                 ]
               }
+            ]
+          },
+          {
+            "group": "Game Principles",
+            "icon": "compass",
+            "pages": [
+              "principles/localization-globalization",
+              "principles/security-overview",
+              "principles/accessibility-overview",
+              "principles/speech-accessibility",
+              "principles/xbox-accessibility-guidelines",
+              "principles/accessibility-resources",
+              "principles/mgats",
+              "principles/sustainability-overview",
+              "principles/energy-efficiency-essentials",
+              "principles/sustainability-case-studies"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Services",
+        "groups": [
+          {
+            "group": "XBOX Services",
+            "pages": [
+              "services/overview",
+              "services/multiplayer",
+              "services/game-chat",
+              "services/multiplayer-activity",
+              "services/develop-and-test",
+              "services/achievements",
+              "services/cloud-storage",
+              "services/player-data",
+              "services/social",
+              "services/people-system",
+              "services/rich-presence",
+              "services/gamertags-and-privacy"
+            ]
+          },
+          {
+            "group": "PlayFab",
+            "pages": [
+              "playfab/overview",
+              "playfab/microsoft-store",
+              "playfab/economy",
+              "playfab/multiplayer-lobby",
+              "playfab/leaderboards-stats",
+              "playfab/party-voice",
+              "playfab/analytics",
+              "playfab/identity",
+              "playfab/live-service-management",
+              "playfab/player-progression",
+              "playfab/multiplayer-servers.mdx",
+              "playfab/party",
+              "playfab/sign-in-concepts",
+              "playfab/player-sign-in",
+              "playfab/insights-analytics"
             ]
           }
         ]
@@ -440,27 +451,6 @@
               "tools/console-command-line-tools",
               "tools/shader-compiler",
               "tools/profile-guided-optimization"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Principles",
-        "groups": [
-          {
-            "group": "Game Principles",
-            "icon": "compass",
-            "pages": [
-              "principles/localization-globalization",
-              "principles/security-overview",
-              "principles/accessibility-overview",
-              "principles/speech-accessibility",
-              "principles/xbox-accessibility-guidelines",
-              "principles/accessibility-resources",
-              "principles/mgats",
-              "principles/sustainability-overview",
-              "principles/energy-efficiency-essentials",
-              "principles/sustainability-case-studies"
             ]
           }
         ]

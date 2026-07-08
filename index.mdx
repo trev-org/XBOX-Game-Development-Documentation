@@ -6,120 +6,89 @@ icon: "house"
 keywords: ["XBOX", "GDK", "Game Development Kit", "Microsoft Game Dev", "XBOX Series X|S", "XBOX One", "Windows PC games", "game development documentation"]
 ---
 
-## Quick Access
+Welcome. This is the home for developing and publishing games on XBOX Series X|S, XBOX One, and Windows PC with the Microsoft Game Development Kit (GDK).
 
-Jump into the guides most teams use first, from environment setup to release notes and reference material.
+If you're new here, follow the path below in order — it's designed to take you from zero to a running project without missing anything critical.
+
+## Start here — the guided path
+
+<Steps>
+  <Step title="Onboard with ID@XBOX" icon="id-card">
+    Before you can download the GDK or publish anything, your studio must complete ID@XBOX onboarding — NDA, concept approval, and Partner Center. Plan for ~2 weeks minimum.
+
+    <Card title="Begin onboarding" icon="arrow-right" href="/onboarding">
+      Step-by-step ID@XBOX workflow with realistic timing.
+    </Card>
+  </Step>
+  <Step title="Set up and install" icon="download">
+    Install Visual Studio, the Windows SDK, and the GDK. Configure your dev PC and confirm you can build a sample.
+
+    <Card title="Setup & install" icon="arrow-right" href="/gdk/get-started">
+      Environment setup, GDK install, dev PC config, and samples.
+    </Card>
+  </Step>
+  <Step title="Build your first title" icon="play">
+    Create a new GDK project from a Visual Studio template, or begin porting an existing title.
+
+    <Card title="Build your first title" icon="arrow-right" href="/gdk/developing-new-titles">
+      Pick a project template and get your first build running.
+    </Card>
+  </Step>
+  <Step title="Choose your Getting Started Guide" icon="compass">
+    Pick the path that matches your target — a device (Play Anywhere, Series X|S, Windows & ROG Ally), an engine (Unreal, Unity, Godot & community), or porting a shipped title.
+
+    <Card title="Getting Started Guides" icon="arrow-right" href="/paths/porting/overview">
+      7 curated paths covering every common starting point.
+    </Card>
+  </Step>
+</Steps>
+
+<Note>
+  Already onboarded and set up? Skip ahead to the [Getting Started Guides](/paths/porting/overview) and pick your path.
+</Note>
+
+## Where each path leads next
+
+After you pick a Getting Started Guide, it will hand you off to the deeper sections of the docs:
 
 <Columns cols={2}>
-  <Card title="Onboard with ID@XBOX" icon="id-badge" href="/onboarding">
-    Complete the NDA, concept approval, and Partner Center setup that unlock GDK access.
+  <Card title="Build & Develop" icon="code" href="/gdk/what-is-gdk">
+    Deep dives on the GDK — game config, packaging, saves, input, networking, and cross-device development.
   </Card>
 
-  <Card title="Get started with the GDK" icon="rocket" href="/gdk/get-started">
-    Pick a development path, install the toolchain, and build your first console or PC project.
+  <Card title="Services" icon="server" href="/services/overview">
+    XBOX Services and PlayFab — identity, achievements, multiplayer, economy, and live-ops.
   </Card>
 
-  <Card title="Download & install" icon="download" href="/gdk/download-install">
-    Grab the latest GDK release and configure Visual Studio for XBOX and Windows targets.
+  <Card title="Console Features" icon="tv" href="/gdk/console-features">
+    Quick Resume, DirectStorage, Smart Delivery, and other console-only capabilities.
   </Card>
 
-  <Card title="API reference" icon="brackets-curly" href="/reference/system-overview">
-    Browse Gaming Runtime, XBOX Services, and platform APIs across the full GDK surface.
-  </Card>
-</Columns>
-
-## Build Paths
-
-Choose the entry point that matches your platform, engine, and stage of development.
-
-<Columns cols={2}>
-  <Card title="Console & PC with the GDK" icon="gamepad" href="/gdk/get-started">
-    Write once with the shared Game Core model and target XBOX Series X|S, XBOX One, and Windows PC.
+  <Card title="Tools" icon="screwdriver-wrench" href="/tools/overview">
+    Visual Studio setup, XBOX service tools, profilers, and diagnostics.
   </Card>
 
-  <Card title="Backend with PlayFab" icon="server" href="/playfab/overview">
-    Add player accounts, economy, multiplayer, and live ops with PlayFab managed services.
+  <Card title="Publishing & Commerce" icon="store" href="/publishing/overview">
+    Certification, XR requirements, store listing, pricing, and submission.
   </Card>
 
-  <Card title="XBOX Services integration" icon="trophy" href="/services/overview">
-    Wire up achievements, leaderboards, multiplayer, cloud saves, and social features.
-  </Card>
-
-  <Card title="Publish to the Store" icon="store" href="/publishing/overview">
-    Package your title, meet certification, and ship to the Microsoft Store and XBOX.
+  <Card title="API Reference" icon="brackets-curly" href="/reference/system-overview">
+    Gaming Runtime, XBOX Services, and platform APIs.
   </Card>
 </Columns>
 
-## Core Topics
-
-The features most teams reach for while building a title.
+## Just need a quick link?
 
 <Columns cols={3}>
-  <Card title="Game configuration" icon="file-code" href="/gdk/game-config">
-    Define identity, capabilities, and packaging metadata in `MicrosoftGame.config`.
-  </Card>
-
-  <Card title="Packaging" icon="box" href="/gdk/packaging">
-    Build MSIXVC and loose packages for testing, submission, and distribution.
-  </Card>
-
-  <Card title="Game saves" icon="floppy-disk" href="/gdk/game-saves">
-    Persist progress with connected storage that roams across devices.
-  </Card>
-
-  <Card title="Input" icon="gamepad" href="/gdk/input">
-    Handle gamepads, keyboard, and mouse with the GameInput API.
-  </Card>
-
-  <Card title="Networking" icon="network-wired" href="/gdk/networking">
-    Connect players with secure sockets, peer-to-peer, and service traffic.
-  </Card>
-
-  <Card title="Storage" icon="hard-drive" href="/gdk/storage">
-    Manage local and connected storage across console and PC.
-  </Card>
-</Columns>
-
-## Resources
-
-Tools, samples, and references to keep you moving.
-
-<Columns cols={3}>
-  <Card title="Tools overview" icon="screwdriver-wrench" href="/tools/overview">
-    Profilers, deployment, and diagnostics for console and PC development.
-  </Card>
-
-  <Card title="Visual Studio" icon="code" href="/tools/visual-studio">
-    Set up project templates, debugging, and deployment for GDK titles.
-  </Card>
-
-  <Card title="XBOX service tools" icon="terminal" href="/tools/xbox-service-tools">
-    Configure sandboxes, test accounts, and service-side settings.
-  </Card>
-
-  <Card title="API reference" icon="brackets-curly" href="/reference/system-overview">
-    Gaming Runtime, XBOX Services, and platform API documentation.
-  </Card>
-
-  <Card title="Error codes" icon="circle-exclamation" href="/reference/error-codes">
-    Look up GDK and XBOX Services error codes and how to resolve them.
+  <Card title="Download the GDK" icon="download" href="/gdk/download-install">
+    Requires ID@XBOX access.
   </Card>
 
   <Card title="GDK samples" icon="github" href="https://github.com/microsoft/Xbox-GDK-Samples">
-    Browse official, buildable samples on GitHub for every major feature.
+    Buildable samples on GitHub.
+  </Card>
+
+  <Card title="Error codes" icon="circle-exclamation" href="/reference/error-codes">
+    GDK and XBOX Services error lookup.
   </Card>
 </Columns>
-
-## Start building with the GDK
-
-Use the getting started guides to set up your environment, choose a platform path, and move into samples.
-
-<div className="not-prose mt-6 flex flex-wrap gap-3">
-  <a className="inline-flex items-center justify-center rounded-lg bg-[#107C10] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0D660D] dark:bg-[#10B25C] dark:text-zinc-950 dark:hover:bg-[#0FA454]" href="/gdk/get-started">
-    Open Quickstart
-  </a>
-
-  <a className="inline-flex items-center justify-center rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-[#107C10] hover:text-[#107C10] dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-[#10B25C] dark:hover:text-[#10B25C]" href="/onboarding">
-    Onboarding
-  </a>
-</div>

@@ -5,11 +5,54 @@ description: "Start here for XBOX GDK development — overview, dev PC setup, SD
 icon: "rocket"
 ---
 
-Get started with the XBOX Game Development Kit (GDK) — install the toolchain, set up your dev PC, and build your first title for XBOX and Windows PC.
+This is **step 2 of the guided path**. You should have completed [ID@XBOX onboarding](/onboarding) before you begin — you cannot download the GDK without it.
 
-## Next steps
+By the end of this section you will have Visual Studio, the Windows SDK, and the GDK installed on a properly configured dev PC, and you will have built and run a sample.
 
-- [Dev PC setup](/gdk/dev-pc-setup)
-- [Install the Windows SDK, Visual Studio, and the GDK](/gdk/sdk-and-tools)
-- [What is the GDK](/gdk/what-is-gdk)
-- [Download and install](/gdk/download-install)
+## Do these in order
+
+<Steps>
+  <Step title="Understand what the GDK is" icon="circle-question">
+    Read the GDK overview so you know what you're installing and what shipping on PC vs. XBOX actually means.
+
+    <Card title="What is the GDK?" icon="arrow-right" href="/gdk/what-is-gdk">
+      Components, runtime, and relationship to XDK and UWP.
+    </Card>
+  </Step>
+  <Step title="Set up your dev PC" icon="desktop">
+    Confirm your machine meets the hardware and OS requirements. Windows 10 (May 2019 Update or later) or Windows 11 is required.
+
+    <Card title="Dev PC setup" icon="arrow-right" href="/gdk/dev-pc-setup">
+      Hardware and OS requirements.
+    </Card>
+  </Step>
+  <Step title="Install Visual Studio, the Windows SDK, and the GDK" icon="wrench">
+    Install the toolchain in the correct order — Visual Studio first, Windows SDK, then the GDK.
+
+    <Card title="SDK & tools" icon="arrow-right" href="/gdk/sdk-and-tools">
+      Install order and version requirements.
+    </Card>
+  </Step>
+  <Step title="Download & install the GDK" icon="download">
+    Download the latest GDK release from the secure download site (requires ID@XBOX access) or clone the public GDK on GitHub.
+
+    <Card title="Download & install" icon="arrow-right" href="/gdk/download-install">
+      Get the GDK on your machine.
+    </Card>
+  </Step>
+  <Step title="Build a sample" icon="code">
+    Open one of the shipped GDK samples in Visual Studio and confirm your environment builds and deploys cleanly. This validates every step above.
+
+    <Card title="GDK samples" icon="arrow-right" href="/gdk/samples">
+      Reference samples that ship with the GDK.
+    </Card>
+  </Step>
+</Steps>
+
+## Next: build your first title
+
+Once a sample builds and runs, move on to creating your own project.
+
+<Card title="Build your first title" icon="arrow-right" href="/gdk/developing-new-titles">
+  Pick a Visual Studio template and get your own GDK project running.
+</Card>
