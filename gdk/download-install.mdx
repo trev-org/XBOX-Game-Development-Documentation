@@ -1,32 +1,98 @@
 ---
-title: "Download and install the GDK"
-sidebarTitle: "Download & install"
-description: "Download the latest GDK release and install it on your Windows dev PC."
+title: "Install the GDK toolchain"
+sidebarTitle: "Install the GDK"
+description: "Requirements, prerequisites, and step-by-step install for the Windows SDK, Visual Studio, and the GDK."
 icon: "download"
 ---
 
-Download the latest XBOX Game Development Kit (GDK) release and install it on your Windows development PC.
+Set up your dev PC, install the toolchain, and download the GDK. Do the steps in order — later steps depend on earlier ones.
 
-## Prerequisites
+## 1. Dev PC requirements
 
-- Windows 11 (latest update)
-- Visual Studio 2022 with the C\+\+ workload
-- Windows 10/11 SDK
+### Operating system
 
-See [SDK & tools](/gdk/sdk-and-tools) for the full install matrix.
+<Warning>
+  GDK Visual Studio (VSIX) components are **not supported on ARM devices**. Install the GDK on an **x64** development PC.
+</Warning>
 
-## Download
+| Purpose | Supported |
+| --- | --- |
+| Developing XBOX titles (clients) | Windows 10 / 11 (64-bit) — Home, Pro, Enterprise |
+| Developing XBOX titles (build servers) | Windows Server 2019 (1809\+) — Standard, Datacenter |
+| Developing Windows titles (Gaming Runtime) | Windows 10 May 2019 Update or later (64-bit), Windows 11 (64-bit) |
+| Testing MSIXVC-packaged PC games | Windows 10 May 2019 Update or later (64-bit) \+ Gaming Services Runtime |
 
-Get the GDK and Game Core for XBOX from the [Microsoft GDK download page](https://aka.ms/gdkdl).
+### Hardware
 
-## Install
+- A fast, modern x64 PC with **30 GB free** for the GDK install.
+- For XBOX-targeted development, we recommend an **NVMe SSD (with heatsink)**, a **10 GbE NIC** on the dev PC, a **10 GbE switch** with **Cat 6a cables** (dev PC \+ dev kit on the same subnet), and a Thunderbolt 3-capable motherboard.
+- **4K / UHD \+ HDR** displays to validate display features.
 
-1. Run the GDK installer as Administrator.
-2. Accept the license terms.
-3. Choose the GDK and (optionally) the Game Core for XBOX components.
-4. Wait for the installer to complete and reboot if prompted.
+<Accordion title="Validated 10 GbE hardware reference">
+  - Netgear XS708T 8-port switch
+  - AQuantia Aqtion AQN-107 PCIe 10GBase-T adapter
+  - Intel Ethernet Converged Network Adapter X540-T1
+  - Samsung SSD 970 EVO NVMe M.2 1 TB
+  - Category 6a Ethernet cables
+</Accordion>
+
+## 2. Install the Windows SDK
+
+GDK titles are Win32-based, so the [Windows SDK](https://developer.microsoft.com/windows/downloads/windows-sdk/) is core to the developer experience. It provides Direct3D, XAudio, PIX for Windows APIs, core OS services, the `WINAPI_FAMILY_GAMES` partition, `xgameplatform.lib`, the unified [GameInput](/gdk/input) API, and PLM.
+
+**Minimum: Windows SDK 22000\+** (Windows 11 SDK). Install it standalone or as an optional Visual Studio Installer component.
+
+## 3. Install Visual Studio
+
+**Recommended:** Visual Studio 2022 or 2026 with the **C\+\+ workload**.
+
+<Note>
+  If you install a new edition of Visual Studio **after** the GDK, **repair the GDK** so it integrates with the new edition. If you need to uninstall Visual Studio, **uninstall the GDK first**.
+</Note>
+
+<Tip>
+  Create a system restore point before installing the GDK.
+</Tip>
+
+## 4. Download and install the GDK
+
+1. Download the GDK and (optionally) Game Core for XBOX from the [Microsoft GDK download page](https://aka.ms/gdkdl). Requires ID@XBOX access.
+2. Run the installer as **Administrator**.
+3. Accept the license terms.
+4. Choose the GDK and (optionally) the Game Core for XBOX components.
+5. Wait for the installer to complete and reboot if prompted.
 
 After install, open Visual Studio and verify the **Gaming.Desktop.x64** and **Gaming.Xbox.Scarlett.x64** platforms appear in the Configuration Manager.
+
+### What ships in the GDK
+
+- **Gaming Runtime** — MSIXVC packaging, TCUI, Connected Storage, async blocks, device association, user, TTS, accessibility, Screen Time.
+- **Gaming Cloud Services** — XSAPI, XAL, multiplayer networking, PlayFab, Store \+ IAP.
+- **Gaming device extensions** — DirectX 12.x, Audio.x, PIX.x, `XMemAlloc` and other console-specific memory APIs.
+
+## PC vs. XBOX tools
+
+**PC games:** iterate, test, and debug locally with standard Visual Studio tooling and PIX for Windows. Optionally configure VS Remote Tools to repro on a lab PC.
+
+**XBOX games:** iterate remotely on Series X|S or XBOX One family dev kits, using PIX for XBOX, the `xb*` command-line tools, XBOX Manager, Dev Home, and the XBOX Device Portal (XDP).
+
+## Microsoft Symbol Servers
+
+Enable Microsoft Symbol Servers to get Gaming Runtime symbols: Visual Studio → **Debug** → **Options** → **Symbols** → check **Microsoft Symbol Servers**. See the [Microsoft public symbol server](https://learn.microsoft.com/windows-hardware/drivers/debugger/microsoft-public-symbols) docs.
+
+## Build Without Install (BWOI)
+
+BWOI lets your build servers consume the GDK without running the installer — critical for CI and locked-down build environments. Extract the GDK setup payload to a known directory, point your build environment variables at it, and build with `msbuild` or your toolchain.
+
+- BWOI does not install the Visual Studio VSIX integration.
+- Some tools need a one-time extraction step (XBTC, makepkg payloads).
+- Per-developer dev kits and PIX still install normally on workstations.
+
+BWOI is the recommended way to run GDK builds in containerized CI.
+
+## Remote Windows game development
+
+For multi-PC dev pipelines (artist on Win10, build on Server 2019, target on a separate test PC): use the remote game-dev tools to deploy and debug to a remote Windows PC over the dev network. Hyper-V or VMware work for ephemeral test images.
 
 ## Next: build a sample
 

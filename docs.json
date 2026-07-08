@@ -153,6 +153,26 @@
       "source": "/reference/xsapi-social-manager",
       "destination": "/reference/social-manager",
       "permanent": true
+    },
+    {
+      "source": "/gdk/welcome",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/gdk/what-is-gdk",
+      "destination": "/gdk/get-started",
+      "permanent": true
+    },
+    {
+      "source": "/gdk/sdk-and-tools",
+      "destination": "/gdk/download-install",
+      "permanent": true
+    },
+    {
+      "source": "/gdk/dev-pc-setup",
+      "destination": "/gdk/download-install",
+      "permanent": true
     }
   ],
   "metadata": {
@@ -171,7 +191,6 @@
                 "icon": "hand-wave",
                 "pages": [
                   "index",
-                  "gdk/welcome",
                   "gdk/glossary"
                 ]
               },
@@ -191,11 +210,8 @@
             "group": "Setup & Install",
             "icon": "download",
             "pages": [
-              "gdk/what-is-gdk",
               "gdk/get-started",
               "gdk/download-install",
-              "gdk/sdk-and-tools",
-              "gdk/dev-pc-setup",
               "gdk/samples"
             ]
           },
@@ -211,7 +227,88 @@
         ]
       },
       {
-        "tab": "Build & Develop",
+        "tab": "Getting Started Guides",
+        "groups": [
+          {
+            "group": "Bring Your Game to XBOX",
+            "icon": "arrow-right-arrow-left",
+            "pages": [
+              "paths/porting/overview",
+              "paths/porting/guides",
+              "paths/porting/engines",
+              "paths/porting/publishing"
+            ]
+          },
+          {
+            "group": "XBOX Play Anywhere",
+            "icon": "globe",
+            "pages": [
+              "paths/play-anywhere/overview",
+              "paths/play-anywhere/get-started",
+              "paths/play-anywhere/build",
+              "paths/play-anywhere/services",
+              "paths/play-anywhere/publishing"
+            ]
+          },
+          {
+            "group": "XBOX Series X|S",
+            "icon": "microchip",
+            "pages": [
+              "paths/series-xs/overview",
+              "paths/series-xs/get-started",
+              "paths/series-xs/build",
+              "paths/series-xs/console-features",
+              "paths/series-xs/publishing"
+            ]
+          },
+          {
+            "group": "Windows & ROG Ally",
+            "icon": "desktop",
+            "pages": [
+              "paths/windows/overview",
+              "paths/windows/get-started",
+              "paths/windows/build",
+              "paths/windows/services",
+              "paths/windows/publishing"
+            ]
+          },
+          {
+            "group": "Unreal Engine",
+            "icon": "gamepad",
+            "pages": [
+              "paths/unreal/overview",
+              "paths/unreal/get-started",
+              "paths/unreal/build",
+              "paths/unreal/services",
+              "paths/unreal/publishing"
+            ]
+          },
+          {
+            "group": "Unity",
+            "icon": "cube",
+            "pages": [
+              "paths/unity/overview",
+              "paths/unity/get-started",
+              "paths/unity/build",
+              "paths/unity/services",
+              "paths/unity/publishing"
+            ]
+          },
+          {
+            "group": "Godot & Community Engines",
+            "icon": "code",
+            "pages": [
+              "paths/community-engines/overview",
+              "paths/community-engines/get-started",
+              "paths/community-engines/build",
+              "paths/community-engines/services",
+              "paths/community-engines/publishing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Build",
         "pages": [
           {
             "group": "GDK and Game Engines Integration",
@@ -357,7 +454,7 @@
         ]
       },
       {
-        "tab": "Services",
+        "tab": "Optimize",
         "groups": [
           {
             "group": "XBOX Services",
@@ -399,7 +496,7 @@
         ]
       },
       {
-        "tab": "Optimize & Validate",
+        "tab": "Tools",
         "groups": [
           {
             "group": "Tools",
@@ -456,7 +553,7 @@
         ]
       },
       {
-        "tab": "Publishing & Commerce",
+        "tab": "Publishing",
         "groups": [
           {
             "group": "Publishing & Commerce",

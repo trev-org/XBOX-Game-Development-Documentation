@@ -1,38 +1,36 @@
 ---
 title: "Build with community engines"
 sidebarTitle: "Build & Develop"
-description: "Godot, GameMaker, and custom engine development."
+description: "Integrate the GDK from Godot, GameMaker, or a custom engine."
 icon: "code"
 ---
 
+<Note>
+  Community and custom engines integrate the GDK directly. You'll typically wrap GDK APIs behind an engine plugin or native module.
+</Note>
+
+## Development workflow
+
 <CardGroup cols={2}>
-  <Card title="Godot" icon="code" href="/pc-e2e/engines/godot">
-    Godot on XBOX.
+  <Card title="GDK setup" icon="screwdriver-wrench" href="/build-and-develop/development-environment/gdk-setup">
+    Install the GDK and configure your build system.
   </Card>
 
-  <Card title="GameMaker" icon="gamepad-modern" href="/pc-e2e/engines/gamemaker">
-    GameMaker on XBOX.
+  <Card title="Custom engine integration" icon="code-branch" href="/build-and-develop/engines-and-tools/custom-engines">
+    Bind GDK APIs from Godot, GameMaker, or your own engine.
   </Card>
 
-  <Card title="Custom engine" icon="code-branch" href="/pc-e2e/engines/custom-engine">
-    Direct GDK integration.
+  <Card title="Packaging" icon="box" href="/build-and-develop/packaging-and-deployment/packaging">
+    Package your title for XBOX and Windows.
   </Card>
 
-  <Card title="GDK & Engines" icon="cubes" href="/pc-e2e/gdk-and-engines">
-    Integration overview.
-  </Card>
-
-  <Card title="Packaging" icon="box" href="/gdk/packaging">
-    Package for XBOX \+ PC.
-  </Card>
-
-  <Card title="Platform features" icon="puzzle-piece" href="/gdk/platform-features">
-    Achievements, input, saves.
+  <Card title="Debugging" icon="bug" href="/build-and-develop/development-environment/debugging">
+    Debug across engine boundaries.
   </Card>
 </CardGroup>
 
-## Next: wire up services
+## Next
 
-<Card title="Services" icon="arrow-right" href="/paths/community-engines/services">
-  Services integration for community engines.
+<Card title="Add services" icon="arrow-right" href="/paths/community-engines/services">
+  Sign-in, achievements, and cloud saves from any engine.
 </Card>

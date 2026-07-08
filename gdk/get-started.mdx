@@ -7,37 +7,32 @@ icon: "rocket"
 
 This is **step 2 of the guided path**. You should have completed [ID@XBOX onboarding](/onboarding) before you begin — you cannot download the GDK without it.
 
-By the end of this section you will have Visual Studio, the Windows SDK, and the GDK installed on a properly configured dev PC, and you will have built and run a sample.
+By the end of this section you will know what the GDK is, have Visual Studio \+ the Windows SDK \+ the GDK installed on a properly configured dev PC, and have built and run a sample.
+
+## What is the GDK?
+
+The **XBOX Game Development Kit (GDK)** is Microsoft's unified toolchain for building games that target XBOX Series X|S, XBOX One, and Windows PC from a single codebase. It supersedes the legacy XDK and replaces UWP as the recommended way to ship Microsoft Store games.
+
+The GDK provides:
+
+- **Gaming Runtime** — the core platform APIs (`XGameRuntime`, `XGameSave`, `XStore`, `XUser`, `XPackage`, ...).
+- **Platform Extensions** — console-specific features for XBOX Series X|S and XBOX One.
+- **Visual Studio integration** — the `Gaming.Desktop.x64` and `Gaming.Xbox.Scarlett.x64` platforms.
+- **Command-line tools** — `makepkg`, `xbapp`, `wdapp`, `SubmissionValidator`, and the MicrosoftGame.config editor.
+- **Samples** — reference titles for graphics, audio, networking, and store integration.
+
+<Tip>
+  See the [GDK glossary](/gdk/glossary) for terms and acronyms, and the [API reference](/reference/system-overview) for XGameRuntime, XGameUI, XAppCapture, XMem, XPackage, XStore, and more.
+</Tip>
 
 ## Do these in order
 
 <Steps>
-  <Step title="Understand what the GDK is" icon="circle-question">
-    Read the GDK overview so you know what you're installing and what shipping on PC vs. XBOX actually means.
+  <Step title="Install the GDK toolchain" icon="download">
+    Confirm your dev PC meets requirements, then install the Windows SDK, Visual Studio, and the GDK in order.
 
-    <Card title="What is the GDK?" icon="arrow-right" href="/gdk/what-is-gdk">
-      Components, runtime, and relationship to XDK and UWP.
-    </Card>
-  </Step>
-  <Step title="Set up your dev PC" icon="desktop">
-    Confirm your machine meets the hardware and OS requirements. Windows 10 (May 2019 Update or later) or Windows 11 is required.
-
-    <Card title="Dev PC setup" icon="arrow-right" href="/gdk/dev-pc-setup">
-      Hardware and OS requirements.
-    </Card>
-  </Step>
-  <Step title="Install Visual Studio, the Windows SDK, and the GDK" icon="wrench">
-    Install the toolchain in the correct order — Visual Studio first, Windows SDK, then the GDK.
-
-    <Card title="SDK & tools" icon="arrow-right" href="/gdk/sdk-and-tools">
-      Install order and version requirements.
-    </Card>
-  </Step>
-  <Step title="Download & install the GDK" icon="download">
-    Download the latest GDK release from the secure download site (requires ID@XBOX access) or clone the public GDK on GitHub.
-
-    <Card title="Download & install" icon="arrow-right" href="/gdk/download-install">
-      Get the GDK on your machine.
+    <Card title="Install the GDK" icon="arrow-right" href="/gdk/download-install">
+      Requirements, prerequisites, and step-by-step install.
     </Card>
   </Step>
   <Step title="Build a sample" icon="code">
