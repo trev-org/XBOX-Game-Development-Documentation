@@ -6,50 +6,83 @@ icon: "house"
 keywords: ["XBOX", "GDK", "Game Development Kit", "Microsoft Game Dev", "XBOX Series X|S", "XBOX One", "Windows PC games", "game development documentation"]
 ---
 
-Welcome. This is the home for developing and publishing games on XBOX Series X|S, XBOX One, and Windows PC with the Microsoft Game Development Kit (GDK).
+Welcome! This is where you learn how to make and ship games for **XBOX Series X|S**, **XBOX One**, and **Windows PC**.
 
-If you're new here, follow the path below in order — it's designed to take you from zero to a running project without missing anything critical.
+If this is your first time here, don't worry — you don't need to know anything about XBOX development yet. This page is your map. Follow the four steps below in order and you'll go from "I want to make an XBOX game" to a real game running on real hardware.
 
-## Start here — the guided path
+<Note>
+  **New to XBOX development?** A quick vocabulary primer:
+
+  - **GDK** — the _Game Development Kit_. Microsoft's free toolkit for making XBOX and Windows games. You'll install it in step 2.
+  - **ID@XBOX** — the program that lets independent studios get GDK access and publish on XBOX. You'll join it in step 1.
+  - **Partner Center** — Microsoft's website where you register your studio and eventually submit your finished game.
+  - **Dev kit** — a special XBOX console used for development. You don't need one to start.
+
+  Any term you don't recognize? Check the [Glossary](/gdk/glossary).
+</Note>
+
+## Start here — the four-step path
 
 <Steps>
-  <Step title="Onboard with ID@XBOX" icon="id-card">
-    Before you can download the GDK or publish anything, your studio must complete ID@XBOX onboarding — NDA, concept approval, and Partner Center. Plan for ~2 weeks minimum.
+  <Step title="Join ID@XBOX (get permission to build)" icon="id-card">
+    Before you can download the GDK or publish a game, Microsoft needs to know who you are. You'll fill out a short application, sign a confidentiality agreement, and get your game concept approved. This is free.
 
-    <Card title="Begin onboarding" icon="arrow-right" href="/onboarding">
-      Step-by-step ID@XBOX workflow with realistic timing.
+    **Plan for ~2 weeks** — most of it is Microsoft's review time, not paperwork on your end.
+
+    <Card title="Start ID@XBOX onboarding" icon="arrow-right" href="/onboarding">
+      Every step, in order, with realistic timing.
     </Card>
   </Step>
-  <Step title="Set up and install" icon="download">
-    Install Visual Studio, the Windows SDK, and the GDK. Configure your dev PC and confirm you can build a sample.
+  <Step title="Install the tools" icon="download">
+    Set up your Windows PC with the three things you need: **Visual Studio** (the code editor), the **Windows SDK** (Windows programming APIs), and the **GDK** (XBOX programming APIs). Then build one of the sample games to prove everything works.
 
-    <Card title="Setup & install" icon="arrow-right" href="/gdk/get-started">
-      Environment setup, GDK install, dev PC config, and samples.
+    <Card title="Set up your dev PC" icon="arrow-right" href="/gdk/get-started">
+      What the GDK is \+ step-by-step install.
     </Card>
   </Step>
-  <Step title="Build your first title" icon="play">
-    Create a new GDK project from a Visual Studio template, or begin porting an existing title.
+  <Step title="Build your first project" icon="play">
+    Open Visual Studio, pick an XBOX project template, and get your own game running — even if it's just a blank window. This is your "hello world" for XBOX.
 
     <Card title="Build your first title" icon="arrow-right" href="/gdk/developing-new-titles">
-      Pick a project template and get your first build running.
+      Project templates and your first build.
     </Card>
   </Step>
-  <Step title="Choose your Getting Started Guide" icon="compass">
-    Pick the path that matches your target — a device (Play Anywhere, Series X|S, Windows & ROG Ally), an engine (Unreal, Unity, Godot & community), or porting a shipped title.
+  <Step title="Pick your Getting Started Guide" icon="compass">
+    Now choose the guide that matches what you're actually building — a device you want to target (Series X|S, Windows & ROG Ally, or both via Play Anywhere), an engine you already use (Unreal, Unity, Godot, GameMaker, custom), or porting a game you've already shipped elsewhere.
 
-    <Card title="Getting Started Guides" icon="arrow-right" href="/paths/porting/overview">
-      7 curated paths covering every common starting point.
+    <Card title="Browse Getting Started Guides" icon="arrow-right" href="/paths/porting/overview">
+      Seven curated paths — pick the one that fits your project.
     </Card>
   </Step>
 </Steps>
 
-<Note>
-  Already onboarded and set up? Skip ahead to the [Getting Started Guides](/paths/porting/overview) and pick your path.
-</Note>
+<Tip>
+  **Already onboarded and set up?** Jump straight to the [Getting Started Guides](/paths/porting/overview) and pick your path.
+</Tip>
 
-## Where each path leads next
+## Not sure if this is the right place?
 
-After you pick a Getting Started Guide, it will hand you off to the deeper sections of the docs:
+<AccordionGroup>
+  <Accordion title="I'm a solo dev / hobbyist — is XBOX development for me?">
+    Yes. ID@XBOX is specifically designed for indie studios and solo developers. There's no cost to join, and the same tools (GDK, Visual Studio, PlayFab) are what large studios use. You can develop entirely on a Windows PC — dev kits are only needed when you're ready to test on real XBOX hardware.
+  </Accordion>
+
+  <Accordion title="I use Unity / Unreal / Godot — do I still need the GDK?">
+    Yes, but you won't touch most of it directly. Your engine talks to the GDK for you. The GDK still needs to be installed on your PC so the engine can package your game for XBOX and use XBOX features like achievements and cloud saves. Pick your engine's [Getting Started Guide](/paths/porting/overview) in step 4.
+  </Accordion>
+
+  <Accordion title="I already have a PC or Steam game — can I port it?">
+    Yes, and there's a whole path dedicated to it. Porting is often faster than starting from scratch because your gameplay code is already written. See the [Porting path](/paths/porting/overview).
+  </Accordion>
+
+  <Accordion title="What OS and hardware do I need?">
+    A **Windows 10 or 11 PC (64-bit)** is required. You'll need about **30 GB of free space** for the GDK. No XBOX console is required to start — you can build and test PC (Play Anywhere) builds locally. When you're ready to test on XBOX hardware, you'll order a dev kit through Partner Center.
+  </Accordion>
+</AccordionGroup>
+
+## What you'll find in the rest of the docs
+
+Once your Getting Started Guide points you deeper into the docs, here's what each section covers:
 
 <Columns cols={2}>
   <Card title="Build & Develop" icon="code" href="/gdk/get-started">

@@ -5,24 +5,34 @@ description: "Start here for XBOX GDK development — overview, dev PC setup, SD
 icon: "rocket"
 ---
 
-This is **step 2 of the guided path**. You should have completed [ID@XBOX onboarding](/onboarding) before you begin — you cannot download the GDK without it.
+This is **step 2 of the guided path**. Before you start, you'll need to have completed [ID@XBOX onboarding](/onboarding) — Microsoft's approval process is what gives you access to download the GDK.
 
-By the end of this section you will know what the GDK is, have Visual Studio \+ the Windows SDK \+ the GDK installed on a properly configured dev PC, and have built and run a sample.
+By the end of this page you'll know what the GDK actually is, have all the tools installed on your PC, and have built one of Microsoft's sample games to prove your setup works.
 
 ## What is the GDK?
 
-The **XBOX Game Development Kit (GDK)** is Microsoft's unified toolchain for building games that target XBOX Series X|S, XBOX One, and Windows PC from a single codebase. It supersedes the legacy XDK and replaces UWP as the recommended way to ship Microsoft Store games.
+The **Game Development Kit (GDK)** is the free bundle of tools, code libraries, and documentation that Microsoft ships for making XBOX and Windows games. You install it on your Windows PC the same way you'd install any other program.
 
-The GDK provides:
+Think of it as three things stacked together:
 
-- **Gaming Runtime** — the core platform APIs (`XGameRuntime`, `XGameSave`, `XStore`, `XUser`, `XPackage`, ...).
-- **Platform Extensions** — console-specific features for XBOX Series X|S and XBOX One.
-- **Visual Studio integration** — the `Gaming.Desktop.x64` and `Gaming.Xbox.Scarlett.x64` platforms.
-- **Command-line tools** — `makepkg`, `xbapp`, `wdapp`, `SubmissionValidator`, and the MicrosoftGame.config editor.
-- **Samples** — reference titles for graphics, audio, networking, and store integration.
+<CardGroup cols={3}>
+  <Card title="Code libraries" icon="cube">
+    Ready-made C\+\+ APIs for saves, sign-in, achievements, controllers, and audio. You call these from your game.
+  </Card>
+
+  <Card title="Visual Studio integration" icon="code">
+    Templates and build targets so making a new "XBOX game" project is as familiar as making any other Visual Studio project.
+  </Card>
+
+  <Card title="Command-line tools" icon="terminal">
+    Small utilities for packaging your game, deploying to a dev kit, and validating your build before submission.
+  </Card>
+</CardGroup>
+
+The GDK is the modern way to ship games on XBOX and the Microsoft Store — it replaces the older XDK and UWP toolchains you may have heard of.
 
 <Tip>
-  See the [GDK glossary](/gdk/glossary) for terms and acronyms, and the [API reference](/reference/system-overview) for XGameRuntime, XGameUI, XAppCapture, XMem, XPackage, XStore, and more.
+  **Curious about specific pieces?** The [GDK glossary](/gdk/glossary) explains every acronym you'll run into, and the [API reference](/reference/system-overview) documents every function once you're ready to code.
 </Tip>
 
 ## Do these in order

@@ -182,28 +182,23 @@
     "tabs": [
       {
         "tab": "Home",
-        "groups": [
+        "pages": [
           {
-            "group": "Welcome!",
+            "group": "Introduction",
+            "icon": "hand-wave",
             "pages": [
-              {
-                "group": "Introduction",
-                "icon": "hand-wave",
-                "pages": [
-                  "index",
-                  "gdk/glossary"
-                ]
-              },
-              {
-                "group": "Onboarding & Access",
-                "icon": "id-card",
-                "pages": [
-                  "onboarding",
-                  "gdk/access-resources",
-                  "gdk/setup-organization",
-                  "gdk/security-requirements"
-                ]
-              }
+              "index",
+              "gdk/glossary"
+            ]
+          },
+          {
+            "group": "Onboarding & Access",
+            "icon": "id-card",
+            "pages": [
+              "onboarding",
+              "gdk/access-resources",
+              "gdk/setup-organization",
+              "gdk/security-requirements"
             ]
           },
           {
@@ -227,7 +222,7 @@
         ]
       },
       {
-        "tab": "Getting Started Guides",
+        "tab": "Get Started",
         "groups": [
           {
             "group": "Bring Your Game to XBOX",
@@ -556,7 +551,7 @@
         "tab": "Publishing",
         "groups": [
           {
-            "group": "Publishing & Commerce",
+            "group": "Publishing",
             "icon": "shield-check",
             "pages": [
               "publishing/overview",
