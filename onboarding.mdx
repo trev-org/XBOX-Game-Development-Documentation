@@ -1,9 +1,9 @@
 ---
 title: "Onboard with ID@XBOX for GDK access and publishing"
 sidebarTitle: "ID@XBOX onboarding"
-description: "Step-by-step ID@XBOX onboarding workflow: NDA, concept approval, TLA and GDK agreements, Partner Center registration, Entra ID, roles, and GDK access."
+description: "Step-by-step ID@XBOX onboarding workflow: business introduction, NDA, concept approval, TLA and GDK License Agreement, Partner Center registration, Entra ID, Microsoft supplier (SupplierWeb) setup, and EDS access for dev kits."
 icon: "id-card"
-keywords: ["ID@XBOX", "XBOX onboarding", "NDA", "concept approval", "Partner Center registration", "GDK access", "TLA", "Entra ID", "Microsoft publisher"]
+keywords: ["ID@XBOX", "XBOX onboarding", "NDA", "concept approval", "Partner Center registration", "GDK access", "TLA", "GDK License Agreement", "Entra ID", "SupplierWeb", "Microsoft supplier", "Entertainment Developer Store", "EDS", "dev kits", "Seller ID", "DUNS"]
 related: ["/gdk/access-resources", "/gdk/setup-organization", "/gdk/security-requirements", "/publishing/developer-account"]
 ---
 
@@ -12,7 +12,7 @@ related: ["/gdk/access-resources", "/gdk/setup-organization", "/gdk/security-req
 This page walks through every step in order, flags what blocks GDK access, and sets realistic expectations for how long it takes.
 
 <Note>
-  **What you're actually signing up for.** You'll do four things: (1) create a fresh Microsoft account for your studio, (2) sign a confidentiality agreement (NDA), (3) tell Microsoft what game you want to make so they can approve the concept, and (4) register your studio in Partner Center. Most of this is filling out short forms — the wait time is Microsoft reviewing your submissions, not paperwork on your end.
+  **What you're actually signing up for.** Seven ordered steps: (1) register in the XBOX Onboarding Hub and provide your business introduction, (2) sign the NDA, (3) submit a game concept for approval, (4) sign the Title Licensing Agreement and GDK License Agreement, (5) register in Partner Center, (6) complete Microsoft supplier (SupplierWeb) setup, and (7) get Entertainment Developer Store (EDS) access for dev kits. Most of this is filling out short forms — the wait time is Microsoft reviewing your submissions, not paperwork on your end.
 </Note>
 
 <Warning>
@@ -23,77 +23,131 @@ This page walks through every step in order, flags what blocks GDK access, and s
 
 <CardGroup cols={2}>
   <Card title="Where you start" icon="door-open">
-    The [ID@XBOX onboarding hub](https://www.xbox.com/en-US/developers/id) — not Partner Center, not the Microsoft Store.
+    The [XBOX Onboarding Hub](https://developer.microsoft.com/games/publish) — not Partner Center, not the Microsoft Store.
   </Card>
 
   <Card title="What you unlock" icon="key">
-    GDK documentation, GDK software downloads (SDS site), Partner Center publishing, and XBOX services.
+    GDK documentation, GDK software downloads (SDS site), Partner Center publishing, XBOX services, and Entertainment Developer Store (EDS) access to order dev kits.
   </Card>
 
   <Card title="Why order matters" icon="list-ol">
     Skipping the ID@XBOX flow (for example, creating Partner Center independently) breaks role assignment and blocks GDK access.
   </Card>
 
-  <Card title="Time to GDK access" icon="clock">
-    ~2 weeks minimum from first registration to a fully provisioned dev environment.
+  <Card title="Time to full onboarding" icon="clock">
+    ~2 weeks minimum from first registration to a fully provisioned dev environment with dev kit access.
   </Card>
 </CardGroup>
 
 ## Before you start
 
-Prepare a **fresh Personal Microsoft Account (MSA)** that is not tied to any existing XBOX console, Windows device, or Microsoft Store activity. This keeps publishing credentials separate from anyone's personal XBOX or Windows login.
+Prepare a **new personal Microsoft Account (MSA)** created specifically for ID@XBOX registration. Choose an email address that your studio keeps access to long term — such as a **shared studio mailbox** — rather than a personal address tied to one team member. You **can't** use a company MSA to register for ID@XBOX, and you shouldn't reuse an existing personal MSA used for other Microsoft services.
 
 - Create at [account.microsoft.com](https://account.microsoft.com) — use a **private browser session** if you're already signed in elsewhere
 - Enable **two-factor authentication** immediately
 
+Also have the following handy to keep the application moving:
+
+- Your **studio details**, including your legally registered business name and any _doing business as_ (DBA) or trading name
+- Your **Dun & Bradstreet (DUNS) Number**, if you have one — it speeds up business verification and unblocks the Partner Center identity check later
+- A **shipping address** for XBOX development kits
+- **Public contact information** (optional at first, but required if you release in European markets)
+
 ## The end-to-end workflow
 
 <Steps>
-  <Step title="Register in ID@Xbox">
-    Start in the [ID@XBOX onboarding hub](https://www.xbox.com/en-US/developers/id) or [XBOX Developer Programs](https://developer.microsoft.com/games/publish). Sign in with your new MSA, confirm the account in the welcome banner, then select **ID@XBOX → Apply Now**.
+  <Step title="Register for ID@XBOX and submit your business introduction">
+    Start in the [XBOX Onboarding Hub](https://developer.microsoft.com/games/publish). Select **Get started**, sign in with your new MSA, and on the **Choose a program** page select **ID@XBOX**.
 
-    Complete the contact details form, fill in studio information, and **Submit Introduction**. The hub generates a **Non-Disclosure Agreement (NDA)** for you to sign and creates your account in the onboarding system.
+    On the **Welcome** page, confirm that **ID@XBOX** is the selected program (use **Change program** if not), then select **Get started** to open the business introduction form. Provide:
+
+    - Your **contact details** — name, business title, shipping address for dev kits, and optional public contact info
+    - Your **studio information** — studio name (may be your DBA/trading name), legally registered business name, and links to your studio presence
+    - Whether you're joining as a **developer** or a **publisher**
+    - Your **DUNS Number**, if you have one (recommended — see below)
+
+    When you're done, select **Submit your introduction**.
+
+    <Tip>
+      Providing a DUNS Number now speeds up business verification and skips the extra identification step during Partner Center registration later. If you don't have one, you can upload a business document at the Partner Center step instead.
+    </Tip>
+
+    **Output:** business introduction submitted, onboarding account created. The ID@XBOX team sends a **welcome email** and a separate email with the mutual **Non-Disclosure Agreement (NDA)** for signature.
+  </Step>
+  <Step title="Sign the Non-Disclosure Agreement (NDA)">
+    Open the NDA email and follow the instructions to review and sign. You must sign the NDA before you can continue your ID@XBOX registration and submit a game concept.
 
     **NDA delivery:** typically within **~20 minutes**, up to **3 business days**.
 
-    **Output:** signed NDA, onboarding account created. You only complete the contact, studio, and NDA steps once.
+    **Output:** signed NDA. You can now return to the XBOX Onboarding Hub to submit your game concept — or optionally start exploring the GDK with limited capabilities (see [Start exploring the GDK early](#start-exploring-the-gdk-early) below).
   </Step>
   <Step title="Submit your game concept">
-    Every game requires concept approval before development and publishing.
+    Every XBOX game requires an approved game concept before development and publishing.
 
-    1. **New Application** under **Game Concepts**
-    2. Fill in the form (tooltips guide individual fields)
-    3. **Submit Application**
+    1. In the XBOX Onboarding Hub, under **My Game Concepts**, select **New application**
+    2. Complete the **Game Concept** form in full — including developer/publisher, key features, target release date, platforms, market availability and pricing, XBOX network functionality, and UGC capabilities
+    3. If available, provide a **link to a game build** or keys to acquire a build
+    4. Submit the concept form
 
-    This enters the **Trust & Safety / ID Games review queue**, reviewed on a weekly cadence.
+    Concepts enter the **ID Games** review queue. Reviews run every business day (Monday–Friday), but a decision can take up to **3 weeks** — typically **10–15 business days**.
 
-    **Typical approval time:** **10–15 business days**. Multiple concepts can be submitted in parallel.
+    <Tip>
+      You can submit up to **10 concepts in parallel** — you don't need to wait for the first decision before submitting the next.
+    </Tip>
 
-    **Output:** concept approved or rejected. You must have an approved concept to proceed. If rejected, resubmit when the build materially changes.
+    **Output:** an approval email (with the agreements you need to sign next), or a request for more information. You must have an approved concept to unlock full GDK capabilities and publish.
   </Step>
-  <Step title="Sign the Title Licensing Agreement (TLA)">
-    Once your concept is approved, you receive the **Title Licensing Agreement (TLA)**. The TLA establishes your publishing rights and commercial terms for shipping the title on Xbox.
+  <Step title="Sign your Title Licensing and GDK License Agreements">
+    When your concept is approved, the approval email includes two agreements to review and sign:
 
-    **Output:** signed TLA. Microsoft's counter-signature is automated in most modern cases.
-  </Step>
-  <Step title="Sign the GDK Agreement (if required)">
-    First-time partners — and older partners onboarded before 2020 — must additionally sign the **GDK Agreement** to gain access to XBOX development resources.
+    - **Title Licensing Agreement (TLA)** — establishes the terms of your concept approval under your licensing agreement with Microsoft
+    - **XBOX Game Development Kit (GDK) License Agreement** — covers your use of GDK hardware and software
 
-    **Output:** eligibility for GDK documentation and the software download site.
+    Sign each agreement using the instructions provided in the approval email. Both must be **fully executed** before you can open your Partner Center account in the next step.
+
+    **Output:** signed TLA and signed GDK License Agreement. Your Entertainment Developer Store (EDS) account for dev kit ordering is provisioned off the signed GDK License Agreement.
   </Step>
   <Step title="Register in Microsoft Partner Center">
-    With agreements complete, the onboarding hub unlocks Partner Center registration. You must enroll in the **Windows and XBOX program** in Partner Center.
+    With agreements complete, return to the [XBOX Onboarding Hub](https://developer.microsoft.com/games/publish/id/welcome) and continue your application to open your Partner Center account. You'll enroll in the **Windows and XBOX** program.
 
     <Warning>
-      Register from the link in the ID@XBOX onboarding flow — not by going to Partner Center directly. The onboarding flow applies a **"5x5" token** that links your Partner Center account to ID@Xbox, applies the correct permissions and roles, and waives the registration fee in some cases.
+      Register from the link in the ID@XBOX onboarding flow — not by going to Partner Center directly. The onboarding flow links your Partner Center account to your ID@XBOX registration and applies the correct permissions and roles automatically.
 
       Registering Partner Center outside the onboarding flow leads to missing roles and no GDK access — see [Common pitfalls](#common-pitfalls) below.
     </Warning>
 
-    ### Choose your account type carefully
+    ### 1. Accept the App Developer Agreement (ADA)
+
+    On the **Welcome** page, review the **App Developer Agreement (ADA)** in full, select the checkbox to accept it, and then select **Start enrollment**.
+
+    ### 2. Verify your business identity
+
+    [On the next screen you'll see the DUNS Number you provided during ID@XBOX registration, or a prompt to upload a business document:](https://learn.microsoft.com/windows/apps/publish/partner-center/partner-center-developer-account)
+
+    - If you **provided a DUNS Number**, confirm the details
+    - If you **didn't**, select and upload a **business document** for business identity verification
+
+    Select **Send information** to submit.
+
+    <Note>
+      Business verification typically takes **3–5 business days**. Track it in Partner Center under **Account settings → Legal info**. Microsoft may email your primary contact for more information during this process.
+    </Note>
+
+    ### 3. Complete account setup — automatic or manual
+
+    What you see next depends on whether XBOX can create your Partner Center account for you:
+
+    - **Automatic:** if XBOX can create your account from the information you provided, your **Seller ID** is displayed. You don't need to send anything to the ID@XBOX team — you're ready to create your first product.
+    - **Manual:** if not, select **Go to Partner Center**, choose **Company** as the account type, and complete the wizard. Then email your **Seller ID** to **ID Setup** so they can apply the permissions required for XBOX game development.
+
+    <Tip>
+      You can find your Seller ID in Partner Center under **Account settings → Legal info → Developer**.
+    </Tip>
+
+    ### Choose your account type carefully (manual creation only)
 
     <Warning>
-      **You cannot change your account type after creation.**
+      **You cannot change your account type after creation.** For studios registering under ID@XBOX, this should almost always be **Company**.
     </Warning>
 
     | Individual | Company |
@@ -112,20 +166,20 @@ Prepare a **fresh Personal Microsoft Account (MSA)** that is not tied to any exi
     - **Authority to sign legal agreements**
     - **Legal business name \+ address** matching official record (use Western European characters)
 
-    Account verification typically takes **3–5 business days**.
-
-    **Output:** Partner Center account, linked to your ID@XBOX onboarding record.
+    **Output:** Partner Center account linked to your ID@XBOX onboarding record, with your **Seller ID** on file.
   </Step>
-  <Step title="Connect your Entra ID tenant">
-    Associate your studio's **Entra ID** (formerly Azure AD) tenant with your Partner Center account. This gives you organization-level identity management for your dev team.
+  <Step title="Connect your Entra ID tenant (optional but recommended)">
+    Associate your studio's **Microsoft Entra ID** (formerly Azure Active Directory) tenant with your Partner Center account. This gives you organization-level identity management for your dev team, and is required before other studio members can access secure XBOX resources — including private documentation and secure GDK downloads.
 
-    1. **Settings → Account settings → Tenants**
-    2. **Associate Microsoft Entra ID** — either:
-       - **Use existing tenant** — sign in as Global/Account admin → **Confirm**
-       - **Create free tenant** — follow the wizard, then confirm
-    3. **Settings → Account settings → Users** — add an Entra user, assign the global admin role
-    4. Sign back in via **Account Settings → User management → Sign in with Microsoft Entra ID**
-    5. Use this Entra account going forward
+    1. Sign in to [Partner Center](https://partner.microsoft.com/dashboard), select the **gear** icon, and select **Account settings**
+    2. On the **Settings** menu, select **Tenants**
+    3. Select **Associate Microsoft Entra ID** (existing tenant) or **Create Microsoft Entra ID** (new tenant):
+       - **Existing tenant** — sign in with the tenant credentials → review the domain on the confirmation page → **Confirm**
+       - **New tenant** — enter the email address to use, complete the wizard, and note the sign-in email and tenant ID shown on the confirmation dialog
+    4. On the **Settings** menu, select **Users** and add Entra users, assigning appropriate roles
+    5. Sign back in through **Account Settings → User management → Sign in with Microsoft Entra ID** and use this Entra account going forward
+
+    For more information, see [Manage users in your Partner Center account](https://learn.microsoft.com/windows/apps/publish/partner-center/manage-users-in-partner-center).
 
     **Result:** any user added to your tenant and granted Partner Center permissions automatically inherits access to the linked XBOX resources.
   </Step>
@@ -137,7 +191,42 @@ Prepare a **fresh Personal Microsoft Account (MSA)** that is not tied to any exi
     - GDK Hardware
     - XBOX One permissions (in many cases)
 
-    These roles are guaranteed _only_ if you followed the ID@XBOX onboarding flow end-to-end. If you created Partner Center independently and then tried to link back, you will likely need to file a manual request to get the roles assigned.
+    These roles are guaranteed _only_ if you followed the ID@XBOX onboarding flow end-to-end. If you created Partner Center independently and then tried to link back, you will likely need to file a manual request to **ID Setup** to get the roles assigned.
+  </Step>
+  <Step title="Complete your Microsoft supplier setup (SupplierWeb)">
+    Before you can receive payouts for XBOX products, your studio must be registered as a Microsoft supplier (payee). After you register for ID@XBOX, the ID@XBOX team sends an email inviting you to **complete your supplier registration**.
+
+    1. Go to [Microsoft SupplierWeb](https://supplier.microsoft.com/) and select **Sign in**
+    2. Sign in with the **email address that received the invitation** — ID@XBOX configures this address as your studio's SupplierWeb admin
+    3. Provide the required information and select **Submit**
+       - Select **USD** (US Dollars) as the currency type
+       - If you're not the right contact for tax or bank information, you can add another user to complete the process
+    4. After account creation, you receive a confirmation email with your supplier account number
+
+    <Note>
+      Account creation takes **24–48 hours**.
+    </Note>
+
+    <Warning>
+      Sign in to SupplierWeb at least once every **60 days** to avoid your account being deactivated.
+    </Warning>
+
+    If you never received the supplier registration invitation, contact **ID Setup** — they can send you a new invitation.
+
+    **Output:** active Microsoft supplier account, enabling royalty payouts on your XBOX products.
+  </Step>
+  <Step title="Get Entertainment Developer Store (EDS) access to order dev kits">
+    To order XBOX development kits, you need an account on the [**Entertainment Developer Store (EDS)**](https://gamedevstore.partners.extranet.microsoft.com/).
+
+    Your EDS account is created by the ID@XBOX team after you sign the **GDK License Agreement**, using the business address you provided as the primary bill/ship-to. After the account opens, the team makes your first kits available to order.
+
+    <Note>
+      Opening the EDS account takes **about a week**. If you need more kits than are available initially, contact **ID Setup**.
+    </Note>
+
+    Place your dev kit order in EDS. When your order ships, you receive a tracking number, and delivery normally follows within a week of payment processing. If it doesn't, contact ID Setup so they can investigate.
+
+    **Output:** ability to order and receive XBOX Series X|S and XBOX One development kits.
   </Step>
   <Step title="Access the GDK documentation and downloads">
     Once every prior step is complete, you can:
@@ -160,18 +249,18 @@ Prepare a **fresh Personal Microsoft Account (MSA)** that is not tied to any exi
 
     See [Developer account](/publishing/developer-account) for the full product workflow.
   </Step>
-  <Step title="Request manual enablement for XBOX services">
-    XBOX services are **disabled** by default on new products. Enable them early so you can test in your dev cycle.
+  <Step title="Request product onboarding to enable full XBOX services">
+    XBOX services are **disabled** by default on new products. Before you can enable them, you need to request **product onboarding** from the XBOX team.
 
-    Email your Microsoft representative with your **Microsoft Store ID** (from **Game setup → Identity details**):
+    Send your game's **Microsoft Store ID** (from **Game setup → Identity details**) to your XBOX support team:
 
     > **Subject:** Need to enable game for XBOX services
     >
-    > **Body:** Please enable XBOX services compatibility for my Partner Center product. The Microsoft Store ID is `<your-store-id>`.
+    > **Body:** Please onboard my Partner Center product for full XBOX services. The Microsoft Store ID is `<your-store-id>`.
 
-    Once enabled, return to **Game setup** and choose **Use full XBOX services feature set**.
+    Once your product is onboarded, return to **Game setup** and choose **Use full XBOX services feature set**.
 
-    Without this step, XBOX services APIs (for example, XBOX Live initialization) will fail at runtime.
+    Without this step, XBOX services APIs (for example, XBOX Live initialization, achievements, and gamerscore) will fail at runtime. For a step-by-step walkthrough of Game setup, see [Developer account](/publishing/developer-account).
   </Step>
 </Steps>
 
@@ -179,19 +268,58 @@ Prepare a **fresh Personal Microsoft Account (MSA)** that is not tied to any exi
 
 | Phase | Typical time |
 | --- | --- |
-| NDA and account setup | Same day |
-| Concept approval | ~1–2 weeks |
-| Contracts (TLA \+ GDK Agreement) | Variable |
-| Partner Center setup | 1 to a few days |
-| **Total to full GDK access** | **~2\+ weeks minimum** |
+| Receive and sign the NDA | Usually within 20 minutes, up to 3 business days |
+| Game concept review and decision | Reviewed every business day; up to 3 weeks (10–15 business days) for a decision |
+| Contracts (TLA \+ GDK License Agreement) | Signature cycles vary |
+| Partner Center account creation | Instant if XBOX creates it for you; variable if manual |
+| Partner Center account verification | Usually 3–5 business days |
+| Microsoft supplier (SupplierWeb) account | 24–48 hours |
+| Entertainment Developer Store (EDS) account setup | About one week (usually 5 business days) |
+| **Total to full GDK access \+ dev kit ordering** | **~2\+ weeks minimum** |
 
 Plan the onboarding window as part of pre-production. Concept approval alone is the longest gating item for most studios.
+
+## Start exploring the GDK early
+
+You don't have to wait for concept approval to start development. **At any time after you sign the NDA and provide your business information** — including while your concept is under review — you can select **Get started** in the **Start exploring the Game Development Kit (GDK)** section of the [XBOX Onboarding Hub](https://developer.microsoft.com/games/publish/id/welcome).
+
+Selecting this option creates your Partner Center account before you sign the GDK License Agreement and TLA, and unlocks the GDK with **limited XBOX services**.
+
+**What you can do with limited GDK access**
+
+- Build and test only in XBOX development [sandboxes](/publishing/sandboxes)
+- Use XBOX identity and basic player features (sign-in, presence, some social features)
+- Use XBOX cloud storage for game saves
+- Use XBOX multiplayer sessions and networking APIs
+
+**What you can't do**
+
+- Publish or submit for certification
+- Use XBOX achievements or gamerscore
+- Use the full XBOX services feature set
+
+**Steps to enroll**
+
+1. Return to the [XBOX Onboarding Hub](https://developer.microsoft.com/games/publish/id/welcome)
+2. In the **Start exploring the Game Development Kit (GDK)** section, select **Get started**
+3. Review the guidance about the GDK limitations
+4. Review and accept the **App Developer Agreement**, then select **Enroll**
+
+The Onboarding Hub triggers Partner Center enrollment. Once complete, you can view your Partner Center account details (including your **Seller ID**), visit [Partner Center](https://partner.microsoft.com/dashboard), and [download the GDK](https://github.com/microsoft/gdk) to start building.
+
+<Tip>
+  You can complete your full ID@XBOX application at any time to unlock full GDK capabilities. Your development progress is preserved — nothing you set up in Partner Center is lost.
+</Tip>
 
 ## Common pitfalls
 
 <AccordionGroup>
   <Accordion title="Creating Partner Center outside the ID@XBOX flow">
-    The number-one cause of missing GDK access. A Partner Center account created directly — not via the onboarding hub link — will not have the 5x5 token applied, the role assignments will not happen automatically, and you will not be able to download the GDK. Recovering from this requires a manual support request to link the accounts and assign roles. **Always register Partner Center through the link in the onboarding hub.**
+    The number-one cause of missing GDK access. A Partner Center account created directly — not via the XBOX Onboarding Hub link — won't be linked to your ID@XBOX registration, role assignments won't happen automatically, and you won't be able to download the GDK.
+
+    **Recovery:** don't create a second account, even if the Onboarding Hub prompts you to. Instead, contact **ID Setup** with your existing Partner Center account's **Seller ID** (find it under **Account settings → Legal info → Developer**). ID Setup can link the account to your ID@XBOX registration and apply the correct permissions.
+
+    **Prevention:** always register Partner Center through the link in the XBOX Onboarding Hub.
   </Accordion>
 
   <Accordion title="Expecting immediate access">
@@ -202,8 +330,16 @@ Plan the onboarding window as part of pre-production. Concept approval alone is 
     The dependency chain (concept approval, contracts, Partner Center, roles, Entra ID, XBOX Live enablement) is largely gated until you already have access. Bookmark this page and use it as the checklist while you wait.
   </Accordion>
 
-  <Accordion title="Forgetting the manual XBOX Live enablement step">
-    Even after the GDK is downloaded and Partner Center is configured, XBOX Live features and some service configurations require a manual activation by Microsoft. If your XBOX services initialization calls fail with a "not enabled" error after a clean onboarding, this is almost always the cause. Contact your Microsoft point of contact to request enablement.
+  <Accordion title="Forgetting the manual product onboarding step for XBOX services">
+    Even after the GDK is downloaded and Partner Center is configured, new games start with XBOX services **disabled**. Before you can flip on the full feature set, you need to request **product onboarding** by sending your game's **Microsoft Store ID** to your XBOX support team. If your XBOX services initialization calls fail with a "not enabled" error after a clean onboarding, this is almost always the cause.
+  </Accordion>
+
+  <Accordion title="Skipping the Microsoft supplier (SupplierWeb) setup">
+    Getting the GDK and shipping a game aren't the same thing. You must complete Microsoft supplier registration in [SupplierWeb](https://supplier.microsoft.com/) before Microsoft can pay you for XBOX products, and you must sign in at least once every 60 days to keep the account active. If you didn't receive the supplier invitation email or can't find it, contact **ID Setup** to resend it.
+  </Accordion>
+
+  <Accordion title="Missing the DUNS Number and getting stuck at Partner Center verification">
+    If you don't provide a DUNS Number during your business introduction, Partner Center will require you to upload a business document for identity verification instead. Adding the DUNS Number up front avoids that extra step and speeds up the 3–5 business day verification window. If your account verification takes longer than 5 business days, or your verification is rejected and you want to appeal, contact **ID Account Management**.
   </Accordion>
 </AccordionGroup>
 
