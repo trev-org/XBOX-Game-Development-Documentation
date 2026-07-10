@@ -20,10 +20,6 @@
     "color": {
       "light": "#FFFFFF",
       "dark": "#09090b"
-    },
-    "image": {
-      "light": "/images/xbox_logo_transparent_6_25-10.png",
-      "dark": "/images/xbox_logo_transparent_6_25-10.png"
     }
   },
   "navbar": {
