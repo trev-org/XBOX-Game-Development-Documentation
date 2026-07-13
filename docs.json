@@ -253,7 +253,7 @@
             ]
           },
           {
-            "group": "Windows & ROG Ally",
+            "group": "Windows & ROG XBOX Ally",
             "icon": "desktop",
             "pages": [
               "paths/windows/overview",
