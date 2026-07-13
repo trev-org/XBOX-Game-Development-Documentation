@@ -451,14 +451,14 @@
             "group": "XBOX Services",
             "pages": [
               "services/overview",
+              "services/achievements",
               "services/multiplayer",
               "services/game-chat",
+              "services/social",
               "services/multiplayer-activity",
               "services/develop-and-test",
-              "services/achievements",
               "services/cloud-storage",
               "services/player-data",
-              "services/social",
               "services/people-system",
               "services/rich-presence",
               "services/gamertags-and-privacy"
