@@ -7,8 +7,7 @@ icon: "users"
 
 The Social Manager API efficiently manages and caches the local user's friends and social graph. Rather than making individual service calls to query presence and profile data for each friend, Social Manager maintains an in-memory snapshot of the social graph and delivers incremental updates through a polling model. Call `XblSocialManagerDoWork` once per game frame to receive a list of change events, then update your UI accordingly.
 
-**Header:** `social_manager_c.h`\
-**Library:** `Microsoft.Xbox.Services.14x.GDK.C.lib`
+**Header:** `social_manager_c.h`<br />**Library:** `Microsoft.Xbox.Services.14x.GDK.C.lib`
 
 ---
 
@@ -270,6 +269,12 @@ Filter or fix the cached graph into reusable groups.
 
 **Enums:** `XblPresenceFilter`, `XblRelationshipFilter`, `XblSocialManagerEventType`, `XblSocialManagerExtraDetailLevel`, `XblSocialUserGroupType`.
 
+## Related conceptual documentation
+
+- [Social](/services/social) — how the social graph, friends, followers, and reputation feedback flow through XBOX Live.
+- [People system](/services/people-system) — the unified social graph that Social Manager caches and filters for in-game UI.
+- [Rich presence](/services/rich-presence) — the presence and rich-presence signals surfaced by Social Manager's presence records.
+
 ## See also
 
 - [XSAPI Social API reference](/reference/xsapi-social)
@@ -314,6 +319,12 @@ Filter or fix the cached graph into reusable groups.
 **Handle:** `XblSocialManagerUserGroupHandle`.
 
 **Enums:** `XblPresenceFilter`, `XblRelationshipFilter`, `XblSocialManagerEventType`, `XblSocialManagerExtraDetailLevel`, `XblSocialUserGroupType`.
+
+## Related conceptual documentation
+
+- [Social](/services/social) — how the social graph, friends, followers, and reputation feedback flow through XBOX Live.
+- [People system](/services/people-system) — the unified social graph that Social Manager caches and filters for in-game UI.
+- [Rich presence](/services/rich-presence) — the presence and rich-presence signals surfaced by Social Manager's presence records.
 
 ## See also
 

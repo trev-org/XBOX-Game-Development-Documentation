@@ -86,6 +86,10 @@ For live ops:
 - Aggregate by `(facility, code)` to spot regressions.
 - Watch `XblErrorCondition` distributions for XSAPI — a spike in `Auth` means token refresh broke; a spike in `Network` means a partner CDN is in trouble.
 
+## Related conceptual documentation
+
+- [Error handling](/gdk/error-handling) — how HRESULTs, XSAPI error conditions, and PlayFab error codes are surfaced and recovered in a GDK title.
+
 ## See also
 
 - [XError](/reference/xerror) — install a process-wide error callback

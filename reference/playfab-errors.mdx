@@ -55,6 +55,10 @@ Every PlayFab response includes a `code`, an `errorCode` enum value, and a strin
 4. **400 / 403 / 404 / 409** — do not retry; fix the input or surface to the player.
 5. **HTTP timeout / no response** — retry idempotent operations only.
 
+## Related conceptual documentation
+
+- [PlayFab overview](/playfab/overview) — how error handling and retries fit into PlayFab client and server integrations.
+
 ## See also
 
 - [HTTP response status codes (source)](https://learn.microsoft.com/gaming/playfab/api-references/http-response-status-codes)
