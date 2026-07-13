@@ -345,8 +345,7 @@
                   "gdk/async-programming",
                   "gdk/async-task-queues",
                   "gdk/memory",
-                  "gdk/error-handling",
-                  "gdk/threading.mdx"
+                  "gdk/error-handling"
                 ]
               },
               {
