@@ -648,7 +648,17 @@
               "publishing/supplemental-info",
               "publishing/cert-beta-game-preview",
               "publishing/xr-change-history",
-              "publishing/console-cert-terminology"
+              "publishing/console-cert-terminology",
+              {
+                "group": "XR reference",
+                "icon": "clipboard-list",
+                "pages": []
+              },
+              {
+                "group": "FMA reference",
+                "icon": "triangle-exclamation",
+                "pages": []
+              }
             ]
           },
           {
