@@ -1,0 +1,69 @@
+---
+title: "XBOX services"
+sidebarTitle: "XBOX services"
+description: "Configure Xbox Live services for your product: achievements, stats, leaderboards, multiplayer, Rich Presence, and privileges."
+icon: "cloud"
+keywords: ["Xbox Live", "XBOX services", "achievements", "stats", "multiplayer", "Rich Presence", "MPSD"]
+---
+
+**XBOX services** are the platform-level online capabilities Xbox Live provides to your title: identity, presence, social, achievements, stats, leaderboards, multiplayer sessions, matchmaking, and privileges. Configuration happens in Partner Center; runtime integration happens in your game code via the GDK.
+
+## What you configure in Partner Center
+
+### Achievements
+
+- Declare each achievement with ID, name, description, image, and gamerscore value.
+- Total gamerscore for a base title is capped (typically 1000G at launch, with 250–1000G additions per DLC).
+- Localize every achievement's name and description per supported language.
+
+### Stats and leaderboards
+
+- **Stats** are per-player values you write from game code (kills, distance, high score).
+- **Featured stats** appear on the player's Xbox profile.
+- **Leaderboards** are stat-backed and can be global, social (friends), or scoped by segment.
+
+### Multiplayer
+
+- **Session templates** describe the shape of your multiplayer sessions (max players, join rules, arbitration).
+- **Matchmaking hoppers** define how players are matched into sessions.
+- Both must be published to the target sandbox before the game can create sessions there.
+
+### Rich Presence
+
+- Localized strings that describe what a player is currently doing ("Racing on Silverstone", "Fighting the Ender Dragon").
+- Referenced from game code by string ID; edits in Partner Center flow to clients without a game update.
+
+### Privileges and privacy
+
+- Declare which Xbox Live privileges the game requires (multiplayer, communications, UGC, cross-network play).
+- Runtime checks against these privileges are gated by [XR-113 Privilege checks](/publishing/xbox-requirements) at cert.
+
+## Publish to a sandbox
+
+All XBOX services configuration lives in a **sandbox** and must be published to that sandbox before it becomes active.
+
+<Steps>
+  <Step title="Edit in your dev sandbox">
+    Author achievements, stats, session templates, and Rich Presence strings.
+  </Step>
+  <Step title="Publish to dev sandbox">
+    Publish services to your dev sandbox and test end-to-end with test accounts.
+  </Step>
+  <Step title="Promote to RETAIL for Final Cert">
+    Before Final Cert, promote the identical services config to the **RETAIL** sandbox. See [Sandboxes](/publishing/sandboxes).
+  </Step>
+  <Step title="Validate on RETAIL post-publish">
+    After the product publishes, verify achievements unlock, stats write, and multiplayer sessions form on RETAIL.
+  </Step>
+</Steps>
+
+## Data Platform 2013 vs 2017
+
+Older titles use **Data Platform 2013** (the classic Xbox 360 / Xbox One services model). New titles use **Data Platform 2017** with the modern GDK services. The two are configured through different Partner Center modules and use different runtime APIs. If you're building a new title, use Data Platform 2017; the Xbox services documentation in the [GDK](/gdk/what-is-gdk) tab covers the runtime side.
+
+## Related
+
+- [Sandboxes](/publishing/sandboxes)
+- [Gaming metadata](/publishing/gaming-metadata)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [Achievements (GDK)](/gdk/xbl-achievements)
