@@ -1,0 +1,75 @@
+---
+title: "Set up trials: curated, time-limited, and usage-limited"
+sidebarTitle: "Trials"
+description: "Offer a free trial of your game: curated demo, time-limited free trial, or usage-limited free trial."
+icon: "hourglass"
+keywords: ["trial", "demo", "free trial", "time-limited trial", "usage-limited trial", "free to use"]
+---
+
+A **trial** is a free version of your game that upsells to the full product. Partner Center supports three trial models plus a free-to-use scenario for entirely free products.
+
+## Trial types
+
+| Type | Access | Upsell |
+| --- | --- | --- |
+| **Curated demo** | A trimmed, standalone build with only the content you choose to include. Runs as its own package. | Store link back to the full product. |
+| **Time-limited trial** | The full game, playable for a fixed duration (typically 1–2 hours). | In-game and Store upsell to convert to the full product. |
+| **Usage-limited trial** | The full game, playable up to a fixed usage count (levels, matches, hours). | Same. |
+| **Free-to-use** | Entire game is free. No upsell; monetized via add-ons, ads, or Game Pass. | N/A. |
+
+## Curated demo
+
+<Steps>
+  <Step title="Create the demo as a separate product">
+    A curated demo is a distinct product with its own package, its own Store listing, and its own cert pass. See [Create products](/publishing/how-to-create-products).
+  </Step>
+  <Step title="Link to the full product">
+    Set a [Product relationship](/publishing/product-relationships) linking the demo to the full product for upsell.
+  </Step>
+  <Step title="Price at $0">
+    Set price to 0 in every market via [Pricing](/publishing/pricing).
+  </Step>
+  <Step title="Ensure demo content is safe to ship">
+    The demo passes the same [Certification](/publishing/certification) bar as the full game. Age rating must cover demo content.
+  </Step>
+</Steps>
+
+## Time-limited trial
+
+<Steps>
+  <Step title="Enable trial in Game setup">
+    In [Game setup](/publishing/game-setup), enable the trial capability and select **Time-limited**.
+  </Step>
+  <Step title="Set the duration">
+    Typical durations are 60, 90, or 120 minutes. Choose long enough to represent the game fairly, short enough to prompt conversion.
+  </Step>
+  <Step title="Handle trial state in game code">
+    Your game must query the trial state via XStore APIs and respect the countdown. See [XStore deep dive](/publishing/xstore-deep-dive).
+  </Step>
+  <Step title="Present an upsell">
+    When the trial expires, present a clear Store upsell path in-game.
+  </Step>
+</Steps>
+
+## Usage-limited trial
+
+Same as time-limited but the limit is game-defined (5 matches, 3 levels, 3 chapters):
+
+- Your code tracks the usage count and calls XStore APIs to check trial state.
+- Store the count in cloud-synced save so it survives reinstalls (customers exploiting reinstalls to bypass limits is a cert consideration).
+- Present clear countdown UI so customers know their remaining usage.
+
+## Free-to-use
+
+A free-to-use title has no trial. Configure:
+
+- **Pricing**: \$0 in every market.
+- **Monetization**: via [Add-ons](/publishing/add-ons), ads (if applicable), or subscription (through Microsoft's subscription infrastructure).
+- **XR compliance**: free-to-use games still pass Final Cert with all XRs applicable.
+
+## Related
+
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [Product relationships](/publishing/product-relationships)
+- [Pricing](/publishing/pricing)
+- [Certification](/publishing/certification)
