@@ -1,0 +1,92 @@
+---
+title: "PC and mobile certification: requirements, tests, terminology, and top failures"
+sidebarTitle: "PC certification"
+icon: "windows"
+description: "XBOX Requirements and Microsoft Store policies for PC and mobile games: PC-specific tests, terminology, top failing test cases, and the Xbox Network Services data-processing addendum."
+keywords: ["PC certification", "PC XR", "live policies pc", "pc top failing tests", "pc terminology", "data processing addendum", "mobile certification"]
+---
+
+PC and mobile titles that use Xbox Live services on the Microsoft Store go through **a PC-specific variant of certification**. The XR bar shares most of its DNA with console, but there are PC-only tests, PC-only terminology, and additional legal disclosures like the Xbox Network Services data-processing addendum.
+
+For console-side cert see [Certification](/publishing/certification) and [XBOX requirements](/publishing/xbox-requirements). For PC-only XStore runtime concerns see [XStore on PC](/publishing/xstore-pc).
+
+## Where PC differs from console
+
+| Area | Console | PC / mobile |
+| --- | --- | --- |
+| Package format | XVC | MSIXVC |
+| Install / uninstall paths | Platform-managed | Windows Store install with Windows-specific uninstall XRs |
+| Input | Controller-first | Mouse \+ keyboard, controller, or touch — all can be primary |
+| DRM | Hardware-anchored | Basic DRM \+ license tokens (see [XStore on PC](/publishing/xstore-pc)) |
+| Sign-in | Xbox account is the identity | Microsoft Store account and Xbox Live sign-in can diverge — mismatched-account handling XR |
+| Sandbox switch | `xbconnect` on a devkit | PC sandbox switcher tool — must be handled cleanly (see [XStore on PC](/publishing/xstore-pc)) |
+| Cross-network play | XR-007 (console) | XR-007 PC variant with different data-usage guidance |
+| BVT | [Console BVT](/publishing/console-bvt-guide) | [PC BVT](/publishing/pc-bvt-guide) |
+
+## PC-specific XRs (highlights)
+
+The full XR catalog is in [XBOX requirements](/publishing/xbox-requirements). These are the ones that apply differently or exist only on PC:
+
+- **XR-007 PC variant** — cross-network play \+ data usage disclosures for the PC / mobile surface. Different acceptance criteria than the console XR-007.
+- **Basic DRM & license checks** — verifies your PC build validates the customer's Store license correctly, including offline license caching and graceful behavior when the Store isn't signed in.
+- **Mismatched Store account handling** — verifies your title correctly detects when the Windows Microsoft Store account and the current Xbox sign-in belong to different users, and presents an unambiguous message.
+- **Sandbox switching correctness** — verifies that switching PC sandboxes at runtime doesn't corrupt in-progress commerce state.
+- **Windows install / uninstall hygiene** — uninstall must leave no orphaned registry keys, files outside save/config locations, background services, or scheduled tasks. See [PC BVT](/publishing/pc-bvt-guide).
+
+## PC certification terminology
+
+| Term | Definition |
+| --- | --- |
+| **PC certification** | The cert pass that validates a title's PC build against the PC XR set. Runs alongside Console cert for Play Anywhere titles. |
+| **MSIXVC** | Windows PC package format. Analogue of XVC on console. |
+| **Basic DRM** | The Store-provided license check every PC title must exercise. See [XStore on PC](/publishing/xstore-pc). |
+| **License token** | A short-lived JWT the client can pass to your services so the service can validate the customer's PC license without hitting Store APIs directly. |
+| **Sandbox switcher (PC)** | The PC-side tool that switches the local Store client into a specific sandbox. |
+| **Mismatched Store account** | The state where the Microsoft Store app is signed in as one user and the game is running as another. |
+| **Xbox network for PC** | The subset of Xbox Live services available to titles running on PC. Some services (Rich Presence, multiplayer session directory) work identically; others have PC-specific caveats. |
+
+## Top failing PC test cases
+
+| Test | Common failure | Fix |
+| --- | --- | --- |
+| **Uninstall hygiene** | Files, registry keys, or background services left behind after uninstall | Audit installer scope; ensure everything installed under the AppX / MSIXVC container is removed |
+| **Cold boot with Store signed out** | Title crashes or hangs indefinitely when the Microsoft Store app isn't signed in | Detect the signed-out state and either present a sign-in prompt or run in a degraded offline mode |
+| **Sandbox switch mid-session** | In-flight commerce operations complete against the wrong sandbox | Abort in-flight XStore calls on sandbox change and re-issue |
+| **Mismatched Store account** | Title silently uses the wrong account for entitlements | Detect via `XStoreGetGamingUserId` mismatch and surface UI |
+| **Alt-Tab from exclusive fullscreen** | Title crashes on window mode transition | Test alt-tab under every declared display mode |
+| **Controller hot-swap with M\+KB** | Input state corrupts when swapping controller → M\+KB mid-session | Wire input abstraction to handle simultaneous input devices without state loss |
+| **Multiplayer with Xbox Live down** | Multiplayer UI hangs indefinitely when Xbox Live is unreachable | Time-bound network calls and present a graceful "can't connect" UI |
+| **Minimum-spec GPU coverage** | Title doesn't hit declared min-spec framerate on the actual min-spec GPU | Test on physical minimum-spec hardware, not equivalent-on-paper |
+
+For the console equivalent see [Top failing tests](/publishing/xr-top-failing).
+
+## Xbox Network Services data-processing addendum (PC and mobile)
+
+PC and mobile titles that use Xbox Live services process personal data through the Xbox Network. The **Xbox Network Services data-processing addendum** is the standing legal instrument that governs this processing. It:
+
+- Applies **automatically** to every publisher agreement that covers PC / mobile releases using Xbox Live services — you don't have to sign it separately for each title.
+- Documents the data categories processed (gamertag, Xbox User ID, achievement state, presence, communications metadata, telemetry) and the retention periods.
+- Establishes Microsoft as the data processor for that data with your publisher entity as controller for gameplay-generated data.
+- Aligns with GDPR (EU/UK), CCPA/CPRA (California), and PIPL (China) obligations where applicable.
+
+### What you must do
+
+- Reference the addendum by name in your **privacy policy** for any PC / mobile title using Xbox Live services. See [Properties: Basic info](/publishing/properties-basic-info) for the privacy policy URL requirement.
+- Ensure your **support contact** (also in [Properties: Basic info](/publishing/properties-basic-info)) is monitored and can respond to data-subject requests forwarded from Microsoft.
+- Do not export Xbox Network personal data to third-party analytics or ad networks without an explicit customer opt-in.
+- Do not attempt to re-identify Xbox users by cross-referencing gamertag with other data sets.
+
+### Change history and versioning
+
+The addendum is versioned. Material changes flow through your Microsoft representative before they take effect. If the addendum version updates in a way that affects your title, you may need to update your privacy policy language accordingly.
+
+## Related
+
+- [Certification](/publishing/certification)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [Top failing tests](/publishing/xr-top-failing)
+- [XR change history](/publishing/xr-change-history)
+- [Console certification terminology](/publishing/console-cert-terminology)
+- [Beta and Game Preview certification](/publishing/cert-beta-game-preview)
+- [XStore on PC](/publishing/xstore-pc)
+- [PC BVT guide](/publishing/pc-bvt-guide)

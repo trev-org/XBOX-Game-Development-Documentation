@@ -1,0 +1,113 @@
+---
+title: "Microsoft Store REST API reference (v8 / v9)"
+sidebarTitle: "Store REST API reference"
+icon: "code"
+description: "Reference index for the Microsoft Store service-to-service REST endpoints: collections, purchase, clawback, grant, recurrences, and consume."
+keywords: ["Microsoft Store API", "REST API", "collections.mp.microsoft.com", "purchase.mp.microsoft.com", "S2S REST", "clawback API", "consume API", "grant API"]
+---
+
+The [XStore S2S APIs](/publishing/xstore-server-to-service) page covers the model. This page is the endpoint-by-endpoint reference. Use it to look up the exact URL, verb, required scope, and payload shape for each Microsoft Store service-to-service call.
+
+<Note>
+  All endpoints require an Azure AD app token acquired via the client-credentials flow. See [XStore S2S APIs](/publishing/xstore-server-to-service).
+</Note>
+
+## Base hosts
+
+| Host | Purpose |
+| --- | --- |
+| `collections.mp.microsoft.com` | Query and manage the current customer's collection (owned products and consumable balances). |
+| `purchase.mp.microsoft.com` | Grant, refund, clawback, and subscription lifecycle operations. |
+| `login.microsoftonline.com` | Azure AD token endpoint used to authenticate all calls above. |
+
+## Collections endpoints
+
+### Publisher query for products
+
+- **Endpoint**: `POST https://collections.mp.microsoft.com/v9.0/collections/publisherQuery`
+- **Purpose**: Enumerate the products the given user owns, filtered by your publisher scope. This is the modern v9 replacement for `b2bLicensePreview`.
+- **Body**: JSON with `beneficiaries` (User Store IDs), `productSkuIds` (optional filter), and `entitlementFilters`.
+- **Response**: List of `Item` objects describing product IDs, SKU IDs, acquisition source, and entitlement state.
+- **Scope**: `https://onestore.microsoft.com/b2b/keys/create/collections.readonly`
+
+### B2B license preview (v8, legacy)
+
+- **Endpoint**: `POST https://collections.mp.microsoft.com/v8.0/collections/b2bLicensePreview`
+- **Purpose**: Legacy license-check endpoint. New integrations should use `v9.0/publisherQuery` instead.
+- **Response**: License descriptors including `productKind`, `licenseId`, and expiry.
+
+### Consume a consumable
+
+- **Endpoint**: `POST https://collections.mp.microsoft.com/v8.0/collections/consume`
+- **Purpose**: Server-side fulfillment of a Store-managed consumable. Reduces the customer's Store-tracked balance by the requested amount.
+- **Body**: `beneficiary` (User Store ID), `productId`, `quantity`, `trackingId` (GUID for idempotency).
+- **Response**: New balance and the accepted quantity.
+- **Idempotency**: If the same `trackingId` is submitted twice, the second call is a no-op and returns the original result. Log tracking IDs on your side so retries are safe.
+- **Scope**: `https://onestore.microsoft.com/b2b/keys/create/collections`
+
+## Purchase endpoints
+
+### Query orders (clawback v1)
+
+- **Endpoint**: `POST https://purchase.mp.microsoft.com/v8.0/b2b/orders/query`
+- **Purpose**: Query the customer's order history for refunds and chargebacks that affect entitlements you granted them. Legacy clawback flow.
+- **Body**: `beneficiary`, date range, `productIds` optional filter.
+- **Response**: Order line items with lifecycle state (`Purchased`, `Refunded`, `Chargeback`, `Revoked`).
+- **Scope**: `https://onestore.microsoft.com/b2b/keys/create/purchase`
+
+### Clawback v2 (SAS token)
+
+- **Endpoint**: `POST https://purchase.mp.microsoft.com/v8.0/b2b/clawback/sastoken`
+- **Purpose**: Modern clawback flow. Request a SAS token to read a per-publisher clawback event queue. Recommended over v1 for high-volume live-service titles.
+- **Response**: Short-lived SAS token URL pointing at your Azure Storage queue with the clawback events.
+- **Consumption pattern**: Poll the queue, process each event idempotently against your entitlement store, then acknowledge.
+
+### Grant a product
+
+- **Endpoint**: `POST https://purchase.mp.microsoft.com/v7.0/purchases/grant`
+- **Purpose**: Grant a product to a customer server-side (promotional grants, customer support corrections).
+- **Body**: `beneficiary`, `productId`, `sku`, and `pricingContext` (typically zero-cost promotional).
+- **Response**: Order ID for the granted product.
+- **Scope**: `https://onestore.microsoft.com/b2b/keys/create/purchase`
+
+### Query subscription recurrences
+
+- **Endpoint**: `POST https://purchase.mp.microsoft.com/v8.0/b2b/recurrences/query`
+- **Purpose**: Enumerate the customer's subscription recurrences (auto-renew state, next billing date, cancellation status).
+- **Body**: `beneficiary`, `productId` optional filter.
+- **Response**: One recurrence descriptor per active subscription.
+
+### Change a subscription recurrence
+
+- **Endpoint**: `POST https://purchase.mp.microsoft.com/v8.0/b2b/recurrences/{recurrenceId}/change`
+- **Purpose**: Modify subscription state — cancel, extend, pause, resume — from your service.
+- **Body**: `changeType` (`Cancel`, `Extend`, `Refund`, etc.) and change-specific parameters.
+
+## Fine-grained rate limiting
+
+All Microsoft Store REST APIs enforce **fine-grained rate limits (FGRL)** per publisher and per endpoint. The service returns `429 Too Many Requests` with a `Retry-After` header when you exceed the limit.
+
+Best practices:
+
+- Respect `Retry-After` exactly. Don't retry sooner.
+- Batch queries where the endpoint supports it (`publisherQuery` accepts multiple `beneficiaries` per call).
+- For high-volume clawback processing, use the SAS-token queue rather than repeatedly querying orders.
+- Cache read-heavy results (subscription state, product ownership) with a short TTL rather than requerying on every gameplay event.
+
+## Error handling
+
+| Status | Meaning | Action |
+| --- | --- | --- |
+| `400 BadRequest` | Malformed request body or invalid parameter | Fix the payload; do not retry |
+| `401 Unauthorized` | Token missing, expired, or wrong audience/scope | Re-acquire the token, verify scope |
+| `403 Forbidden` | App doesn't have permission on the referenced beneficiary or product | Check Partner Center scoping |
+| `404 NotFound` | Beneficiary or product doesn't exist | Verify the User Store ID and product ID |
+| `409 Conflict` | Idempotency conflict (typical: consume with reused tracking ID) | Return the original result; do not double-fulfill |
+| `429 TooManyRequests` | Rate limited | Honor `Retry-After` |
+| `5xx` | Transient service error | Retry with exponential backoff |
+
+## Related
+
+- [XStore S2S APIs](/publishing/xstore-server-to-service)
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [XStore troubleshooting](/publishing/xstore-troubleshooting)
