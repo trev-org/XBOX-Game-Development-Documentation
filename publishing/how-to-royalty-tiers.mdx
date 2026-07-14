@@ -1,0 +1,76 @@
+---
+title: "Submit royalty tiers for disc SKUs"
+sidebarTitle: "Submit royalty tiers"
+description: "Declare the wholesale price band for a disc SKU per region so Microsoft can calculate platform royalty and place the SKU with retailers."
+icon: "file-invoice"
+keywords: ["royalty tier", "disc royalty", "wholesale price", "royalty configuration", "disc pricing"]
+---
+
+A **royalty tier** is the wholesale price band you declare for a disc SKU in a specific region. Microsoft uses the tier to:
+
+- Calculate the platform royalty per unit sold.
+- Position the SKU with retail partners at the correct wholesale price band.
+- Feed into your commercial reporting and payout reconciliation.
+
+See [Order discs](/publishing/order-discs) for the broader disc order flow.
+
+## Before you start
+
+- Confirm you have an executed **disc addendum** with the current tier table. If you don't have the tier table, request it from your Microsoft representative.
+- Confirm the target retail price band per region so you can pick the appropriate tier.
+- Confirm you're the correct approver — tier submissions typically require a signer on your Partner Center account with Manager or Publisher role.
+
+## Submit a tier per region
+
+<Steps>
+  <Step title="Open Discs → Royalty configuration">
+    In your product's Discs module, open Royalty configuration.
+  </Step>
+  <Step title="Select regions">
+    You'll set a tier per region you plan to ship discs into. Common groupings: North America, EU, UK, Australia/NZ, Japan, Korea, LATAM.
+  </Step>
+  <Step title="Pick a tier per region">
+    Choose from the tier options in your addendum. Tiers typically map to standard retail wholesale bands (e.g. tier `A` = $59.99 SRP wholesale band, tier `B` = $49.99, etc.). Names and values are specific to your contract.
+  </Step>
+  <Step title="Attach justification (if required)">
+    Some addendums require justification text for premium tier selection. Provide the rationale.
+  </Step>
+  <Step title="Submit for review">
+    Submit. Microsoft reviews within a few business days for consistency with your addendum and market norms.
+  </Step>
+  <Step title="Address feedback if needed">
+    If Microsoft requests a change (typical: adjust tier to match a specific market's floor), update and resubmit.
+  </Step>
+</Steps>
+
+## Tier changes after approval
+
+After initial approval, tier changes are possible but require re-submission:
+
+- **Region price adjustment** (e.g. moving a market between tier bands) requires a fresh submission and can take 5–10 business days.
+- **Cross-region uniform change** is faster (single submission covering multiple regions at once).
+- Changes typically **cannot be applied retroactively** to already-shipped inventory; they take effect on the next manufacturing order.
+
+## Impact on payout
+
+Royalty tier feeds into per-unit publisher payout:
+
+- **Wholesale price** × quantity sold at retail = gross publisher revenue.
+- Microsoft's per-unit royalty (per your addendum) is deducted.
+- Chargebacks and returns adjust downward.
+- Net publisher payout appears in the monthly payout report. See [Pricing models](/publishing/pricing-models).
+
+## Common issues
+
+| Issue | Resolution |
+| --- | --- |
+| Tier selection rejected as too high for market | Adjust to the tier Microsoft indicates; check your addendum's market-tier bindings. |
+| Tier submission blocked | Usually a prerequisite is missing (disc addendum not on file, product not yet configured for discs). Contact your Microsoft representative. |
+| Different tier needed for a specific retailer | Retailer-specific tiers are not supported in Partner Center; work with the retailer on end-consumer pricing under the region tier you've selected. |
+
+## Related
+
+- [Discs](/publishing/discs)
+- [Order discs](/publishing/order-discs)
+- [Request & manage discs](/publishing/how-to-request-discs)
+- [Pricing models](/publishing/pricing-models)

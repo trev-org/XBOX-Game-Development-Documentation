@@ -1,0 +1,70 @@
+---
+title: "DP 2013: Achievements"
+sidebarTitle: "Achievements"
+description: "Author achievements in the Data Platform 2013 model — gamerscore, unlock conditions, images, and locked/unlocked descriptions."
+icon: "trophy"
+keywords: ["achievements", "DP 2013 achievements", "gamerscore", "unlock condition", "legacy achievements"]
+---
+
+**Achievements** in DP 2013 are the legacy achievement model. New titles use the modern DP 2017 achievements API (documented in the GDK). Legacy titles maintained on DP 2013 continue to use this editor.
+
+## Achievement anatomy
+
+- **Achievement ID** — numeric identifier written from game code.
+- **Name** — short customer-facing title.
+- **Description (locked)** — what the player sees before earning. Often a hint.
+- **Description (unlocked)** — what the player sees after earning. Reveals the accomplishment.
+- **Gamerscore value** — 5, 10, 15, 20, 25, 50, 75, or 100 G. Sum across a title must not exceed the cap.
+- **Achievement image** — unlocked-state artwork. Displayed in the Achievements panel.
+- **Secret** — hidden until unlocked (locked name and description are blurred).
+- **Unlock condition** (optional) — bind to a stat threshold for auto-unlock; alternatively unlock explicitly from game code.
+
+## Gamerscore rules
+
+| Title type | Total gamerscore cap |
+| --- | --- |
+| Base game | 1000 G |
+| Small DLC pack | 100–250 G |
+| Large DLC pack | Up to 500 G |
+| Season Pass (cumulative across DLC) | Typically 750–1000 G |
+| Free-to-play title | Up to 1000 G, subject to review |
+
+Exceeding the cap requires business approval from your Microsoft representative.
+
+## Authoring an achievement
+
+<Steps>
+  <Step title="Open the Achievements editor">
+    Under Xbox services (DP 2013), open Achievements.
+  </Step>
+  <Step title="Add a new achievement">
+    Provide ID, name, locked/unlocked descriptions, gamerscore, and image.
+  </Step>
+  <Step title="Set unlock condition">
+    Bind to a stat threshold ("unlock when stat `TotalKills` \>= 100") or leave for explicit game-code unlock.
+  </Step>
+  <Step title="Localize">
+    Provide name and descriptions per supported language.
+  </Step>
+  <Step title="Publish to sandbox and validate">
+    Publish to dev sandbox. Trigger the unlock condition (either by writing the stat or calling the unlock API) and confirm the achievement fires on a test account.
+  </Step>
+  <Step title="Promote to RETAIL before Final Cert">
+    Achievements are validated by cert against the RETAIL sandbox schema — promote before submission.
+  </Step>
+</Steps>
+
+## Achievement guidelines
+
+- **Cover the game's play surface** — story completions, mode variety, difficulty tiers, collectibles. Avoid every achievement being "kill N enemies."
+- **Not every achievement should be secret.** Secret achievements should be actual surprises — story endings, hidden bosses — not obvious progression.
+- **Reachable, but not trivial.** Achievements that unlock on the first launch feel worthless.
+- **Localize carefully.** "Achievement unlocked" is a customer-facing moment; typos and awkward translations get called out on social media.
+- **Consider DLC ahead of time.** Reserve some of your 1000 G cap if you plan post-launch achievements via DLC.
+
+## Related
+
+- [DP 2013 overview](/publishing/dp2013-overview)
+- [Player stats](/publishing/dp2013-stats)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [Modern achievements in GDK](/gdk/what-is-gdk)

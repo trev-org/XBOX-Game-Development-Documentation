@@ -1,0 +1,62 @@
+---
+title: "DP 2013: Challenges"
+sidebarTitle: "Challenges"
+description: "Author time-boxed player challenges in the DP 2013 model — daily quests, weekly events, and community goals."
+icon: "flag-checkered"
+keywords: ["challenges", "DP 2013 challenges", "daily quest", "weekly event", "community goal"]
+---
+
+**Challenges** in DP 2013 are time-boxed player objectives with progression, rewards, and community aggregation. Common uses: daily quests, weekly events, seasonal goals, and community-wide targets.
+
+## Challenge types
+
+| Type | Scope | Duration |
+| --- | --- | --- |
+| **Daily challenge** | Per-player | 24 hours |
+| **Weekly challenge** | Per-player | 7 days |
+| **Seasonal challenge** | Per-player | Full season / event window |
+| **Community challenge** | Aggregated across all players | Days to weeks |
+| **Friend-group challenge** | Aggregated across a friend group | Days |
+
+## Anatomy
+
+- **Challenge ID** — identifier queried at runtime.
+- **Objective** — backed by one or more [Player stats](/publishing/dp2013-stats) with a threshold (`TotalKills` reaches 50).
+- **Time window** — start and end UTC.
+- **Reward** — stat grant, in-game currency (via consumables), cosmetic unlock (via durables), or gamerscore-adjacent recognition.
+- **Localization** — challenge name and description per supported language.
+
+## Authoring a challenge
+
+<Steps>
+  <Step title="Author the backing stat">
+    Every challenge needs a stat that measures progress. See [Player stats](/publishing/dp2013-stats).
+  </Step>
+  <Step title="Open the Challenges editor">
+    Under Xbox services (DP 2013), open Challenges.
+  </Step>
+  <Step title="Create the challenge">
+    Provide ID, name, description, backing stat, target value, time window, and reward mechanism.
+  </Step>
+  <Step title="Publish to sandbox">
+    Publish and run test accounts through the challenge to confirm progression updates and reward grants.
+  </Step>
+  <Step title="For live-ops: schedule ahead">
+    Daily and weekly challenges are typically authored in bulk ahead of the event, then activated on schedule.
+  </Step>
+</Steps>
+
+## Community challenges
+
+Community challenges aggregate progress across all players. Example: "The community must complete 1 million missions this week to unlock a global reward."
+
+- Community challenges use the same event pipeline as per-player stats, aggregated server-side.
+- Latency is subject to the DP 2013 pipeline (hours), so avoid using them for real-time competitive countdowns.
+- Reward grants at completion require your game to poll the community-challenge state and grant on next launch.
+
+## Related
+
+- [DP 2013 overview](/publishing/dp2013-overview)
+- [Player stats](/publishing/dp2013-stats)
+- [Stat change notifications](/publishing/dp2013-stat-notifications)
+- [Achievements](/publishing/dp2013-achievements)

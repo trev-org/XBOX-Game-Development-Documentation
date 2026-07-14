@@ -662,9 +662,14 @@
                 "group": "Data Platform 2013 services",
                 "icon": "database",
                 "pages": [
-                  "publishing/dp2013-overview"
+                  "publishing/dp2013-overview",
+                  "publishing/dp2013-achievements",
+                  "publishing/dp2013-challenges",
+                  "publishing/dp2013-events-manifest"
                 ]
-              }
+              },
+              "publishing/how-to-request-discs",
+              "publishing/how-to-royalty-tiers"
             ]
           },
           {

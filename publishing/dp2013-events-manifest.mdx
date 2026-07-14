@@ -1,0 +1,63 @@
+---
+title: "DP 2013: Download the Events Manifest file"
+sidebarTitle: "Events manifest"
+description: "Download the current events manifest from Partner Center and integrate it into your game package."
+icon: "file-arrow-down"
+keywords: ["events manifest", "DP 2013 manifest", "download manifest", "XML manifest", "events schema"]
+---
+
+The **events manifest** is the XML file that describes your DP 2013 event schema. Your game package must ship with the correct manifest for the target sandbox — without it, event writes fail silently.
+
+## When to download
+
+- After **any change** to events, stat rules, or featured stats in the Partner Center editor.
+- Before **cutting a build** that will be uploaded to a sandbox.
+- When **promoting** services from one sandbox to another (dev → RETAIL) so the packaged manifest matches the target sandbox.
+
+## Download procedure
+
+<Steps>
+  <Step title="Publish all pending service changes">
+    Confirm every event, stat, and featured stat change is published to the target sandbox. Unpublished changes are not in the downloadable manifest.
+  </Step>
+  <Step title="Open the Events manifest download">
+    In Partner Center under Xbox services (DP 2013), open the Events section and click **Download manifest**.
+  </Step>
+  <Step title="Choose the sandbox">
+    Select the sandbox whose manifest you want (dev, RETAIL, or a specific development sandbox). Manifests differ by sandbox.
+  </Step>
+  <Step title="Download the XML file">
+    A versioned manifest file downloads. File name is typically `events.man` or `events.xml`.
+  </Step>
+  <Step title="Integrate into your build">
+    Place the manifest in the location your build system expects. See the GDK / Xbox Live SDK documentation for the exact path per platform.
+  </Step>
+  <Step title="Rebuild the package">
+    Recreate your package with the updated manifest. See [Packages](/publishing/packages).
+  </Step>
+</Steps>
+
+## Sandbox / manifest matching
+
+A build compiled with the dev-sandbox manifest **cannot** be certified for retail — the manifest mismatch causes event writes to be rejected. Before Final Cert:
+
+1. Promote all XBOX services state to RETAIL sandbox.
+2. Download the RETAIL manifest.
+3. Rebuild the Final Cert candidate package with the RETAIL manifest.
+4. Submit that package.
+
+## Common failures
+
+| Symptom | Likely cause |
+| --- | --- |
+| Events don't appear in telemetry | Manifest doesn't match the target sandbox's schema |
+| Some events work, some don't | Manifest is out of date for the recent events you added |
+| Achievements don't unlock in RETAIL | Achievements schema wasn't promoted to RETAIL, or dev manifest is in the RETAIL package |
+| Featured stats don't appear on profile | Featured stats not published to RETAIL, or manifest mismatch |
+
+## Related
+
+- [DP 2013 overview](/publishing/dp2013-overview)
+- [Events](/publishing/dp2013-events)
+- [Sandboxes](/publishing/sandboxes)
+- [Packages](/publishing/packages)
