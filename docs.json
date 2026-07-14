@@ -611,7 +611,10 @@
           {
             "group": "Publish & post-release",
             "icon": "arrow-up-from-bracket",
-            "pages": []
+            "pages": [
+              "publishing/readiness-checklist",
+              "publishing/publish-to-retail"
+            ]
           }
         ]
       },

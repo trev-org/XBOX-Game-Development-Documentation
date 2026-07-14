@@ -1,0 +1,63 @@
+---
+title: "Publish to RETAIL and test the live product"
+sidebarTitle: "Publish to RETAIL"
+description: "Move a passing Final Cert submission to the live Microsoft Store and validate the retail product post-publish."
+icon: "tower-broadcast"
+keywords: ["publish to retail", "go live", "retail sandbox testing", "post publish smoke test"]
+---
+
+After a passing Final Cert, the product is staged in the **Ready to publish** state (or auto-publishes, if you chose that option). This page covers publish and the immediate post-publish smoke tests.
+
+## Publish options
+
+The publish option you selected at [Submit to certification](/publishing/submit-to-certification) determines what happens next:
+
+| Option | Behavior |
+| --- | --- |
+| **Auto-publish** | The product goes live immediately on Final Cert pass. Use only when the launch time is not date-sensitive. |
+| **Hold for manual publish** | The product waits in Partner Center. You click **Publish** in the Review and publish module when ready. Recommended for coordinated launches. |
+| **Scheduled** | The product auto-publishes at the configured UTC date/time. Recommended for global simultaneous launches with a firm street date. |
+
+<Note>
+  For a scheduled publish, the release date is in **UTC**. Convert carefully for your target markets — confusing UTC with a local time zone is a common cause of missed street dates.
+</Note>
+
+## Manual publish
+
+<Steps>
+  <Step title="Confirm all modules are green">
+    Open **Review and publish**. Every sub-module must be green. If a module regressed (for example a Store listing edit made after cert), fix it before publishing.
+  </Step>
+  <Step title="Click Publish">
+    The product moves to `Publishing → In the Store`. Propagation across the Microsoft Store CDN takes 15–60 minutes for search discoverability and up to a few hours for all regional storefronts.
+  </Step>
+  <Step title="Verify the store listing">
+    Load the store PDP on retail Xbox hardware and PC. Confirm price, imagery, ratings, and add-on availability.
+  </Step>
+</Steps>
+
+## Post-publish retail smoke test
+
+Do not consider the launch complete until you have verified the product on retail hardware in the RETAIL sandbox. This is the same environment your customers see, so any issue you find here is a customer-facing issue.
+
+<Steps>
+  <Step title="Purchase and install from retail">
+    Buy a copy from the retail Store using a real customer-style account (not your dev sandbox account). Confirm download completes, install succeeds, and the game boots.
+  </Step>
+  <Step title="Validate entitlements and DLC">
+    Verify each add-on grants the correct entitlements. Test any pre-order bonuses, editions, and bundle contents. See [XStore deep dive](/publishing/xstore-deep-dive).
+  </Step>
+  <Step title="Validate XBOX services on RETAIL">
+    Confirm achievements unlock, stats write, multiplayer sessions matchmake, and Rich Presence updates — all against the RETAIL sandbox.
+  </Step>
+  <Step title="Monitor telemetry">
+    Watch crash rate, sign-in failures, and multiplayer join success in the first 24–72 hours. Have a first-day patch ready via [Packages](/publishing/packages) or [Cert Bypass](/publishing/cert-bypass-program) if you find a launch blocker.
+  </Step>
+</Steps>
+
+## Related
+
+- [Readiness checklist](/publishing/readiness-checklist)
+- [Submit to certification](/publishing/submit-to-certification)
+- [Content updates and post-release](/publishing/content-updates)
+- [Cert bypass program](/publishing/cert-bypass-program)

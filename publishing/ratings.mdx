@@ -5,22 +5,82 @@ description: "Submit age ratings via IARC and region-specific bodies before publ
 icon: "scale-balanced"
 ---
 
-Age ratings (ESRB, PEGI, USK, CERO, ACB, IARC) are required before your title can publish to retail in each region.
+Every XBOX product on the Microsoft Store must carry a valid age rating for every region it releases in. There are **two rating tracks** and most disc titles need both:
 
-## How it works
+- **Digital ratings** issued through the **IARC questionnaire** in Partner Center — required for the digital SKU on the Microsoft Store.
+- **Physical longform ratings** issued directly by the physical rating body in a region — required for the disc SKU where the region regulates physical product separately from digital.
 
-1. Complete the **IARC questionnaire** in Partner Center.
-2. IARC issues provisional ratings for most regions (PEGI, ESRB, ClassInd, USK, ACB, GRAC).
-3. Some regions (CERO Japan) still require a separate submission.
-4. Update the questionnaire when adding new content (UGC, gambling-like mechanics, etc.).
+<Warning>
+  For a disc release, IARC alone is not always sufficient. Regions like Germany (USK), Japan (CERO), and Korea (GRAC) require a separate **longform rating** on the physical product before you can release a disc in that market. Miss this and the title will be blocked at customs / at retail, even if the digital SKU is live.
+</Warning>
 
-## Tips
+## Digital: the IARC questionnaire
 
-- Be accurate — misrepresenting content causes resubmission and possible delisting.
-- DLC must align with the base-game rating or get its own rating.
-- UGC titles default to the most permissive rating in many regions.
+IARC (International Age Rating Coalition) is a single questionnaire in Partner Center that produces provisional ratings across participating bodies simultaneously.
+
+<Steps>
+  <Step title="Open Age ratings in Partner Center">
+    Navigate to **Product → Age ratings**. Start a new IARC questionnaire per product.
+  </Step>
+  <Step title="Answer accurately">
+    IARC asks about violence, sex, controlled substances, gambling, user-generated content, in-game purchases, and communication features. Answer for the **finished shipping content**, not the current build.
+  </Step>
+  <Step title="Receive provisional ratings">
+    On submit, IARC issues provisional ratings for **ESRB (US/Canada), PEGI (Europe), ClassInd (Brazil), USK (Germany — digital only), ACB (Australia — digital only), GRAC (Korea — digital only)**, and IARC-generic for other markets.
+  </Step>
+  <Step title="Ratings appear on Store listing">
+    Once the questionnaire is complete, the ratings appear on the Store listing automatically. You can now progress to [Submit to certification](/publishing/submit-to-certification).
+  </Step>
+</Steps>
+
+## Regions that require a separate submission
+
+Even with an IARC issuance, these regions require a separate direct submission for the physical SKU and, in some cases, for the digital SKU too:
+
+| Region | Body | When required | How to submit |
+| --- | --- | --- | --- |
+| Japan | **CERO** | Always — digital and disc | Direct submission to CERO. IARC does not cover Japan. |
+| Germany | **USK longform** | Disc SKUs. Digital IARC USK issuance is sufficient for digital only. | Submit build and materials directly to USK for a longform certificate. |
+| Korea | **GRAC longform** | Disc SKUs and some digital categories. | Direct submission to GRAC. |
+| Australia | **ACB longform** | Disc SKUs and any title with a projected R18\+ classification. | Direct submission to ACB. |
+| Mainland China | **NPPA / regulator approval** | All commercial titles. | Handled through your Chinese publishing partner. |
+
+<Note>
+  These bodies charge fees and have their own review timelines (2–8 weeks is typical). Budget for this alongside cert planning — a missed longform submission is one of the most common causes of a slipped disc street date.
+</Note>
+
+## How to use physical longform ratings for discs
+
+For any region that requires a longform physical rating:
+
+<Steps>
+  <Step title="Start the longform submission early">
+    Begin the longform submission **as soon as your Final Cert candidate is stable** — do not wait for cert to pass. Longform review can run in parallel with cert.
+  </Step>
+  <Step title="Provide the finished build and materials">
+    Most bodies require a playable build plus supporting materials: script, cinematics reel, a description of every gameplay scenario that touches age-sensitive content, and any UGC / online features disclosures.
+  </Step>
+  <Step title="Receive the longform certificate">
+    On approval you receive a physical rating certificate with an official rating icon and, in some regions, mandatory content descriptors.
+  </Step>
+  <Step title="Upload to Partner Center">
+    In **Age ratings → Physical rating certificates**, upload the certificate for each region. Partner Center will then unlock the region on the disc SKU and let the certificate flow into your [Disc packaging requirements](/publishing/disc-packaging) artwork review.
+  </Step>
+  <Step title="Use the longform icon on packaging">
+    Use the full longform rating icon (with content descriptors where applicable) on the front cover, back cover, and spine of the retail packaging. The digital shorthand icon is not sufficient for the physical box.
+  </Step>
+</Steps>
+
+## Add-ons, DLC, and content updates
+
+- **DLC** and add-ons must not push content above the base-game rating, or they need their own IARC issuance. See [Add-ons](/publishing/add-ons).
+- **Any content update** that introduces new age-sensitive content (a new mission with graphic violence, added chat features, new gambling-like mechanics, or added UGC) requires a re-submission of the IARC questionnaire and, potentially, a re-submission to longform bodies for disc SKUs already in-market.
+- Titles with **user-generated content** or open communication features are typically rated to the most permissive age tier in many regions unless you gate communication behind Xbox family privacy settings.
 
 ## Related
 
+- [Discs](/publishing/discs)
+- [Disc packaging requirements](/publishing/disc-packaging)
 - [Properties](/publishing/properties)
 - [Store listing](/publishing/store-listing)
+- [Submit to certification](/publishing/submit-to-certification)
