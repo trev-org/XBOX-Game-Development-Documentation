@@ -553,19 +553,6 @@
             ]
           },
           {
-            "group": "Plan your release",
-            "icon": "map",
-            "pages": [
-              "publishing/game-concepts",
-              "publishing/sku-planning",
-              "publishing/xbox-game-preview",
-              "publishing/wishlist-pages",
-              "publishing/promo-codes",
-              "publishing/sub-publishing",
-              "publishing/managed-programs"
-            ]
-          },
-          {
             "group": "Set up your product",
             "icon": "gear",
             "pages": [
@@ -586,6 +573,19 @@
               "publishing/franchise-hubs",
               "publishing/licensing",
               "publishing/availability-schedule"
+            ]
+          },
+          {
+            "group": "Plan your release",
+            "icon": "map",
+            "pages": [
+              "publishing/game-concepts",
+              "publishing/sku-planning",
+              "publishing/xbox-game-preview",
+              "publishing/wishlist-pages",
+              "publishing/promo-codes",
+              "publishing/sub-publishing",
+              "publishing/managed-programs"
             ]
           },
           {
