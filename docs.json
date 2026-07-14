@@ -581,13 +581,13 @@
               "publishing/pricing-models",
               "publishing/price-adjustment-preference",
               "publishing/sale-pricing",
-              "publishing/licensing",
               "publishing/availability-overview",
-              "publishing/availability-schedule",
               "publishing/preorder-overview",
+              "publishing/licensing",
               "publishing/modular-submission",
               "publishing/add-ons",
               "publishing/franchise-hubs",
+              "publishing/availability-schedule",
               "publishing/gaming-metadata",
               "publishing/publisher-insights"
             ]
