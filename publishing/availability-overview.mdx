@@ -1,0 +1,54 @@
+---
+title: "Pricing and availability overview"
+sidebarTitle: "Availability overview"
+description: "How Partner Center models pricing and availability: the axes of price, market, visibility, purchasability, schedule, and audience."
+icon: "sliders"
+keywords: ["availability", "pricing overview", "market availability", "visibility axis", "purchase axis"]
+---
+
+Partner Center's **Pricing and availability** module coordinates every commercial dimension of your product. There are more axes than most teams realize, and understanding them up front prevents launch-day mistakes.
+
+## The six axes
+
+| Axis | Controls | Documented at |
+| --- | --- | --- |
+| **Price** | Base price per market, with sale overrides | [Pricing](/publishing/pricing) |
+| **Market** | Which countries the product is offered in | [Pricing](/publishing/pricing) |
+| **Visibility** | Whether the product appears in Store search / browse | [Visibility & audiences](/publishing/how-to-visibility) |
+| **Purchasability** | Whether the buy button is enabled (independent from visibility) | [Visibility & audiences](/publishing/how-to-visibility) |
+| **Schedule** | Time-based transitions for the axes above | [Availability schedule](/publishing/availability-schedule) |
+| **Audience** | Which customers see the product (Insider ring, private account list) | [Visibility & audiences](/publishing/how-to-visibility) |
+
+Every product has values on every axis, always. The default state is `Price=X, all markets, Visible, Purchasable, no schedule, all audiences` — the normal retail configuration.
+
+## Common configurations
+
+| Config | Price | Market | Visibility | Purchase | Schedule | Audience |
+| --- | --- | --- | --- | --- | --- | --- |
+| Standard retail | \$X | All | Visible | Yes | None | All |
+| Coming soon / wishlist | — | All | Visible | No | Purchase enabled on release date | All |
+| Pre-order | \$X | All | Visible | Pre-order only | Full purchase on release date | All |
+| Regional soft launch | \$X | Australia only | Visible | Yes | Full market on later date | All |
+| Reviewer build | \$0 | Global | Hidden | Yes (via code) | None | Named accounts |
+| Delisted | — | All | Hidden | No | None | All (owners keep entitlement) |
+
+## The order of operations
+
+When submitting a launch, Partner Center evaluates axes in this order:
+
+1. Is the product **published** at all? (packages certified and staged)
+2. Is the current UTC time inside the **schedule** window?
+3. Is the accessing customer in an included **market**?
+4. Is the accessing customer in an included **audience**?
+5. Is the product **visible** in Store search?
+6. Is the product **purchasable**?
+7. What **price** does this customer see?
+
+Each gate has to be open. A common launch bug is having the schedule set correctly but the product still marked as `Not visible` — the schedule never flips visibility to `Visible` unless you configure that transition.
+
+## Related
+
+- [Pricing](/publishing/pricing)
+- [Availability schedule](/publishing/availability-schedule)
+- [Visibility & audiences](/publishing/how-to-visibility)
+- [Pre-orders](/publishing/how-to-pre-orders)

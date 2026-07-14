@@ -578,7 +578,8 @@
               "publishing/add-on-bundles",
               "publishing/supported-languages",
               "publishing/packages-classic",
-              "publishing/publisher-insights"
+              "publishing/publisher-insights",
+              "publishing/availability-overview"
             ]
           },
           {
