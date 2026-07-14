@@ -565,7 +565,6 @@
               "publishing/store-listing",
               "publishing/ratings",
               "publishing/product-relationships",
-              "publishing/pricing",
               "publishing/pricing-models",
               "publishing/price-adjustment-preference",
               "publishing/bundles",
@@ -587,6 +586,7 @@
               "publishing/publisher-insights",
               "publishing/availability-overview",
               "publishing/preorder-overview",
+              "publishing/pricing",
               "publishing/properties-basic-info",
               "publishing/properties-technical-capabilities"
             ]
