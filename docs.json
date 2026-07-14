@@ -592,7 +592,8 @@
             "group": "Disc releases",
             "icon": "compact-disc",
             "pages": [
-              "publishing/discs"
+              "publishing/discs",
+              "publishing/approve-discs-for-manufacture"
             ]
           },
           {
@@ -604,13 +605,6 @@
               "publishing/xbox-insider-program",
               "publishing/branches",
               "publishing/sandboxes"
-            ]
-          },
-          {
-            "group": "Publishing",
-            "icon": "shield-check",
-            "pages": [
-              "publishing/pre-release"
             ]
           },
           {

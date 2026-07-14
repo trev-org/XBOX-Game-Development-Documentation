@@ -1,0 +1,60 @@
+---
+title: "Approve discs for manufacture (RTM)"
+sidebarTitle: "Approve discs (RTM)"
+description: "The Release To Manufacture (RTM) step: how to sign off the final disc image and artwork so the replicator can begin pressing."
+icon: "circle-check"
+keywords: ["RTM", "release to manufacture", "disc approval", "XBOX disc sign off", "gold master"]
+---
+
+**Release To Manufacture (RTM)** is the point of no return for a physical XBOX product. When you RTM, you are contractually approving the exact disc image and packaging artwork that will be pressed at the replicator. Any change after RTM requires a full re-cert and re-manufacture at your cost.
+
+## Prerequisites
+
+RTM is only enabled once **all** of the following are true for the product:
+
+- Disc image has passed **Disc Certification** — see [Submit to certification](/publishing/submit-to-certification).
+- Digital base package has passed **Final Certification** and matches the disc image manifest.
+- Age ratings are issued (including physical longform ratings) for every region on the disc SKU plan — see [Ratings](/publishing/ratings).
+- Disc artwork is approved in the Discs module — see [Disc packaging requirements](/publishing/disc-packaging).
+- Royalty tier is submitted and approved — see [Order discs](/publishing/order-discs).
+- Day-one update package (if any) is uploaded and staged in [Packages](/publishing/packages).
+
+## RTM sign-off in Partner Center
+
+<Steps>
+  <Step title="Open the Discs module for your product">
+    Navigate to **Product → Discs → RTM approval**.
+  </Step>
+  <Step title="Confirm the manifest">
+    Verify the disc image build number, package hash, and the linked cert submission ID. Verify the artwork version listed matches the approved artwork.
+  </Step>
+  <Step title="Sign the RTM attestation">
+    An authorized signer on your Partner Center account (a role with **Manager** or **Publisher** rights, not just Developer) must attest that this build is the intended shipping build. This is a legal sign-off — treat it accordingly.
+  </Step>
+  <Step title="Submit RTM">
+    Once submitted, the disc image and artwork are released to Microsoft's replication partner. Manufacturing begins on their schedule; typical lead time from RTM to first-copies-off-the-line is 4–8 weeks depending on order size and season.
+  </Step>
+</Steps>
+
+## Common RTM blockers
+
+| Blocker | Fix |
+| --- | --- |
+| Disc cert not passed | Complete disc cert first. See [Submit to certification](/publishing/submit-to-certification). |
+| Artwork not approved | Address feedback in the Discs module. See [Disc packaging requirements](/publishing/disc-packaging). |
+| Missing physical longform ratings | Submit longform ratings to the physical rating body for that region. See [Ratings](/publishing/ratings). |
+| Mismatched manifest between digital and disc | Re-align packages so day-one update applies cleanly on top of the disc image. |
+| Royalty tier not filed | Submit royalty tiers before RTM. See [Order discs](/publishing/order-discs). |
+
+## After RTM
+
+- Track manufacturing progress and expected in-market dates in the Discs module.
+- Coordinate the **street date** with your Microsoft representative — the digital release and disc release usually go live together.
+- Prepare a day-one update in [Packages](/publishing/packages) and schedule its publish to align with the disc street date.
+
+## Related
+
+- [Discs](/publishing/discs)
+- [Disc packaging requirements](/publishing/disc-packaging)
+- [Order discs](/publishing/order-discs)
+- [Submit to certification](/publishing/submit-to-certification)
