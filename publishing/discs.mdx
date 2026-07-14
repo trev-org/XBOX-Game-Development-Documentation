@@ -1,26 +1,98 @@
 ---
-title: "Discs"
+title: "Discs overview"
 sidebarTitle: "Discs"
-description: "Physical XBOX disc fulfillment alongside your digital Microsoft Store release."
+description: "End-to-end physical XBOX disc release: contract requirements, disc image spec, packaging materials, certification, RTM, and manufacturing."
 icon: "compact-disc"
 ---
 
-Physical XBOX retail discs are produced through a separate **disc fulfillment** process in Partner Center, in addition to the digital Microsoft Store release.
+Physical XBOX discs sit on top of your digital Microsoft Store release. Everything you need for the digital release still applies — packages, certification, ratings, Store listing — plus a separate contractual, packaging, and manufacturing workflow for the disc SKU.
 
-## Disc package
+<Warning>
+  Discs require an **executed disc addendum** with Microsoft on top of your standard publisher agreement. If your product does not show a **Discs** module in Partner Center, contact your Microsoft representative — the addendum is not yet in place.
+</Warning>
 
-- Built from your standard Game Core for XBOX package.
-- Includes mandatory day-one update planning if package size exceeds the disc.
-- Must pass the same [certification](/publishing/certification) as the digital build.
+## What a disc release requires
 
-## Workflow
+A physical release is not just "check a box on the digital SKU." You must complete each of these:
 
-1. Plan disc package SKUs in [Game setup](/publishing/game-setup).
-2. Upload the disc image alongside the digital package.
-3. Coordinate with your publisher for replication and distribution.
-4. Ship a day-one update via [Packages](/publishing/packages).
+<CardGroup cols={2}>
+  <Card title="Disc packaging requirements" icon="box-open" href="/publishing/disc-packaging">
+    Contract requirements, disc image spec, artwork per region, and packaging materials.
+  </Card>
+
+  <Card title="Approve discs for manufacture" icon="circle-check" href="/publishing/approve-discs-for-manufacture">
+    Release To Manufacture (RTM) sign-off on the final image and artwork.
+  </Card>
+
+  <Card title="Order discs" icon="boxes-stacked" href="/publishing/order-discs">
+    Submit royalty tier, place per-region manufacturing orders, and reprints.
+  </Card>
+
+  <Card title="Ratings for physical" icon="scale-balanced" href="/publishing/ratings">
+    Physical longform ratings — separate from IARC digital issuance in some regions.
+  </Card>
+</CardGroup>
+
+## The disc SKU compared to a digital SKU
+
+| Concern | Digital | Disc |
+| --- | --- | --- |
+| Contract | Standard publisher agreement | Publisher agreement **\+ disc addendum** |
+| Certification | Final Cert on the base package | Final Cert on the base package **\+ Disc Cert on the exact disc image** |
+| Age ratings | IARC issuance covers most regions | May also need **physical longform ratings** — see [Ratings](/publishing/ratings) |
+| Artwork | Store listing screenshots and hero art | Print-ready front / back / spine per region |
+| Manufacturing | None | Replicator lead time typically 4–8 weeks after RTM |
+| Update flow | Package update via [Packages](/publishing/packages) | Same digital update flow, plus disc release requires reprint if disc image itself needs to change |
+| Royalty | Digital revenue share per your agreement | Per-disc royalty tier submitted in Partner Center |
+| Reversibility | Delist any time | Once you RTM, discs are pressed — you cannot recall in-market inventory |
+
+## Disc image essentials
+
+- **Format** — Xbox Optical Disc (BD-XL). Current generation ships on **BD-100** (Series X) or **BD-50** (Xbox One / cross-gen).
+- **Locked layout** — the streaming install order and chunk manifest on the disc must exactly match what you certify.
+- **Offline boot** — the disc must boot to a playable state with no internet connection. Parts of the game that require the day-one update must fail gracefully with a clear update-required message.
+- **Day-one update** — planning a day-one update is normal, but the fully-cert-approved offline experience is what determines whether the disc passes cert.
+
+## End-to-end disc workflow
+
+<Steps>
+  <Step title="Confirm contract">
+    Verify the disc addendum is executed and the Discs module is enabled in Partner Center for your product.
+  </Step>
+  <Step title="Plan disc SKUs and regions">
+    In [Game setup](/publishing/game-setup) declare the disc SKU. Confirm the region SKU plan with your Microsoft representative.
+  </Step>
+  <Step title="Produce and validate the disc image">
+    Build the disc-layout package using the same toolchain as your digital release. Validate the manifest, install order, and offline boot experience locally.
+  </Step>
+  <Step title="Produce packaging artwork">
+    Per-region artwork with correct rating icons, legal marks, and platform lockup. See [Disc packaging requirements](/publishing/disc-packaging).
+  </Step>
+  <Step title="Submit for Disc Certification">
+    In parallel with Final Cert on the digital SKU, submit the disc image for Disc Cert. See [Submit to certification](/publishing/submit-to-certification).
+  </Step>
+  <Step title="Submit ratings and royalty tier">
+    Confirm physical longform ratings (see [Ratings](/publishing/ratings)) and submit royalty tiers (see [Order discs](/publishing/order-discs)).
+  </Step>
+  <Step title="RTM">
+    Sign off the disc image and artwork. See [Approve discs for manufacture](/publishing/approve-discs-for-manufacture).
+  </Step>
+  <Step title="Order manufacturing">
+    Submit per-region manufacturing quantities. Lead time is typically 4–8 weeks.
+  </Step>
+  <Step title="Stage day-one update">
+    Upload and schedule the day-one update in [Packages](/publishing/packages) to publish alongside the disc street date.
+  </Step>
+  <Step title="Street date">
+    Digital and disc release publish together. Monitor early telemetry and be ready to publish a first patch via [Packages](/publishing/packages) or [Cert Bypass](/publishing/cert-bypass-program).
+  </Step>
+</Steps>
 
 ## Related
 
+- [Disc packaging requirements](/publishing/disc-packaging)
+- [Approve discs for manufacture](/publishing/approve-discs-for-manufacture)
+- [Order discs](/publishing/order-discs)
+- [Ratings](/publishing/ratings)
+- [Submit to certification](/publishing/submit-to-certification)
 - [Packages](/publishing/packages)
-- [Pre-release](/publishing/pre-release)
