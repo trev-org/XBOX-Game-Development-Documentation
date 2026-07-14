@@ -567,9 +567,12 @@
               "publishing/add-ons",
               "publishing/durable-add-ons",
               "publishing/consumable-add-ons",
+              "publishing/add-on-bundles",
               "publishing/packages",
               "publishing/packages-classic",
               "publishing/properties",
+              "publishing/properties-basic-info",
+              "publishing/properties-technical-capabilities",
               "publishing/ratings",
               "publishing/store-listing",
               "publishing/pricing",
@@ -583,13 +586,10 @@
               "publishing/licensing",
               "publishing/availability-schedule",
               "publishing/sale-pricing",
-              "publishing/add-on-bundles",
               "publishing/supported-languages",
               "publishing/publisher-insights",
               "publishing/availability-overview",
-              "publishing/preorder-overview",
-              "publishing/properties-basic-info",
-              "publishing/properties-technical-capabilities"
+              "publishing/preorder-overview"
             ]
           },
           {
