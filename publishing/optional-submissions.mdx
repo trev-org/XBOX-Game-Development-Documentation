@@ -1,0 +1,50 @@
+---
+title: "Optional certification submissions"
+sidebarTitle: "Optional submissions"
+description: "Use Optional Certification to get an advisory XR pass against a near-final build without publishing."
+icon: "clipboard-question"
+keywords: ["optional certification", "advisory cert", "pre-cert", "cert dry run"]
+---
+
+**Optional Certification** is an advisory XR pass Microsoft's test team runs against a near-final build. It surfaces the same failures you'd see in Final Cert but does **not publish** and does **not block your Final Cert submission** if it fails.
+
+## When to use Optional Cert
+
+- **Confidence check** 4–6 weeks before your Final Cert target when the build feels close but you want an outside test pass.
+- **New team's first submission** — flush out the process end-to-end without launch pressure.
+- **Cross-platform coverage** — confirm PC and Console pass the same XR bar with the same build.
+- **After a major refactor** — validate no regressions before betting a Final Cert slot on the change.
+- **Ahead of a large content update** — catch regressions in a shipping title's live-ops update before committing to a recert or [Cert Bypass](/publishing/cert-bypass-program) submission.
+
+## When Optional Cert is **not** worth it
+
+- The build has known BVT failures — fix those first (see [Console BVT](/publishing/console-bvt-guide) and [PC BVT](/publishing/pc-bvt-guide)).
+- You have less than one full cert cycle before your Final Cert deadline — the Optional Cert result won't come back in time to act on.
+- You've already passed a recent Final Cert and are shipping a small metadata-only change.
+
+## How Optional Cert differs from Final Cert
+
+| Aspect | Optional Cert | Final Cert |
+| --- | --- | --- |
+| Sandbox | Development sandbox | RETAIL sandbox |
+| Publishes on pass | No | Yes (or holds for manual publish) |
+| XR bar | Full XR suite | Full XR suite (same tests) |
+| Cost / queue slot | Consumes a cert slot | Consumes a cert slot |
+| SLA | 3–7 business days typical | 5–14 business days typical |
+| FMA delivered on fail | Yes | Yes |
+| Blocks your title on fail | No | Yes |
+
+## Submitting an Optional Cert
+
+The submission flow is identical to [Submit to certification](/publishing/submit-to-certification) — you just choose **Optional Certification** as the submission type in Partner Center. Everything else (Supplemental Info, Packages, Branches, sandbox choice) works the same.
+
+<Note>
+  Treat the Optional Cert [Supplemental info](/publishing/supplemental-info) as seriously as a Final Cert one. Missing information causes the same intake returns and eats your Optional Cert window.
+</Note>
+
+## Related
+
+- [Certification](/publishing/certification)
+- [Submit to certification](/publishing/submit-to-certification)
+- [Console BVT guide](/publishing/console-bvt-guide)
+- [PC BVT guide](/publishing/pc-bvt-guide)

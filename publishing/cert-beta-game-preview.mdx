@@ -1,0 +1,85 @@
+---
+title: "Certification for Beta and XBOX Game Preview titles"
+sidebarTitle: "Beta & Game Preview cert"
+description: "The reduced XR set used to certify Beta and XBOX Game Preview titles, and how it differs from the standard Final Cert bar."
+icon: "flask"
+keywords: ["beta cert", "Game Preview cert", "reduced XR set", "preview certification", "advisory XRs"]
+---
+
+Beta and XBOX Game Preview titles ship publicly while they're still in development. To make that possible, they're certified against a **reduced XR set** that acknowledges the in-development nature of the title while still enforcing the safety, stability, and privacy XRs that customers depend on.
+
+For the Beta / Preview commercial model see [XBOX Game Preview](/publishing/xbox-game-preview). For the standard cert bar see [Certification](/publishing/certification) and [XBOX requirements](/publishing/xbox-requirements).
+
+## What "reduced" means
+
+- A **subset** of the full XR catalog is enforced as ship-blocker.
+- The **remainder** are evaluated as recommendations — you'll see them in the FMA but they don't block publish.
+- The **age rating** requirement is unchanged (see [Ratings](/publishing/ratings)).
+- The **Store listing** requirement is unchanged — but its **description block must clearly communicate the Beta / Preview status**.
+- Cert **turnaround time** is comparable to Final Cert.
+
+## Which XRs are always enforced
+
+Even under Beta / Preview, these XR families are ship-blockers:
+
+- **XR-001 Title Stability** — no crashes, hangs, or freezes on baseline flows.
+- **XR-003 Title Quality for Submission** — build must be clean of debug UI, PII in telemetry, and left-over test paths.
+- **XR-014 Personal Information / privacy** — full privacy compliance regardless of dev status.
+- **XR-015 Managing Player Communication** — mute / block / moderation must work correctly.
+- **XR-018 User-Generated Content** — UGC reporting and moderation must be present.
+- **XR-045 Xbox network and Account Privileges** — privilege checks respected.
+- **XR-046 Display Name and Gamerpic** — correct handling of platform identity surfaces.
+- **XR-047 User-Profile Access** — respect for privacy-scoped profile data.
+- **XR-048 Profile Settings Usage** — respect current settings.
+- **XR-052 User State and Title-Save Location** — no data loss on suspend/resume, sign-out, account switch.
+- **XR-055 / XR-057 Achievements** — achievements that ship must unlock correctly.
+- **XR-074 Loss of Connectivity to Xbox and Partner Services** — graceful behavior when the network drops.
+- **XR-112 / XR-115 User and Controller flows** — correct handling of sign-in, controller-add / remove, and Quick Resume.
+- **XR-130 Xbox Console Families and Generations** — correct behavior across Series X, Series S, Xbox One.
+- **XR-132 Service Access Limitations** — throttling and quota respect.
+- **XR-133 Local Storage Write Limitations** — no unbounded local writes.
+
+<Note>
+  This list is directional and evolves. Check the current "Certification Requirements for Beta and Game Preview titles" in Partner Center for the authoritative reduced XR set.
+</Note>
+
+## Which XRs are typically advisory in Beta / Preview
+
+- **XR-006 Title Assets and Metadata** — placeholder / incomplete art callouts allowed.
+- **XR-007 Cross-Network Play** — partial cross-network implementations are acceptable in Preview.
+- **XR-022 Official Naming Standards** — minor naming / casing inconsistencies flagged but don't block.
+- **XR-034 Streaming Install Initial-Play Marker** — not required if the Preview build is a single-chunk install.
+- **XR-062 Achievement Names and Descriptions** — localization gaps for languages you haven't shipped yet aren't blocking.
+- **XR-064 / XR-067 Multiplayer session state** — basic multiplayer must work; every edge case doesn't have to be ironed out.
+- **XR-070 Xbox Friends List** — partial social integration allowed.
+- **XR-117 Demos, Trials, and Betas** — self-referential; treated as documentation compliance.
+- **XR-129 Intelligent Delivery Content Management** — if the Preview build ships without chunked delivery, this is advisory.
+
+All advisory findings in Beta / Preview become **ship-blockers** the moment you transition to Final Cert.
+
+## Beta vs Game Preview — they're different
+
+| Aspect | Beta | Game Preview |
+| --- | --- | --- |
+| Purpose | Public test of a near-complete title | Sell an in-development title on the Store |
+| Sold on Store? | Sometimes (paid beta) | Yes — with clear Preview labeling |
+| Duration | Short (days / weeks) | Long (months / years) |
+| Marketing | "Public beta test" framing | "Buy now, in development" framing |
+| Product type in Partner Center | Standard product with beta flag | **Game Preview** product type |
+| Cert bar | Beta-reduced XR set | Preview-reduced XR set (typically identical) |
+| Exit path | Ends when the full title ships | Transition to full product type when 1.0 cert passes |
+
+See [XBOX Game Preview](/publishing/xbox-game-preview) for the Preview commercial model.
+
+## Transitioning out of Beta / Preview
+
+<Steps>
+</Steps>
+
+## Related
+
+- [XBOX Game Preview](/publishing/xbox-game-preview)
+- [Certification](/publishing/certification)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [XR change history](/publishing/xr-change-history)
+- [Submit to certification](/publishing/submit-to-certification)
