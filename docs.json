@@ -553,6 +553,11 @@
             ]
           },
           {
+            "group": "Plan your release",
+            "icon": "map",
+            "pages": []
+          },
+          {
             "group": "Set up your product",
             "icon": "gear",
             "pages": [
