@@ -1,0 +1,56 @@
+---
+title: "Content updates and post-release lifecycle"
+sidebarTitle: "Content updates"
+description: "Ship patches, add DLC, delist products, and manage your XBOX product after launch."
+icon: "rotate"
+keywords: ["content update", "patch", "post release", "delist", "reparent", "live ops"]
+---
+
+After launch, most changes to your product still go through Partner Center and — with a few exceptions — still go through certification.
+
+## What triggers a recert
+
+| Change | Requires recert? |
+| --- | --- |
+| Package update | Yes — Final Cert against the delta, or [Cert Bypass](/publishing/cert-bypass-program) if qualifying |
+| New add-on / DLC | Yes — cert against the add-on package |
+| Store listing copy or screenshots | No cert, but Store team re-review |
+| Pricing / availability change | No cert; Partner Center applies a propagation delay |
+| Age rating change (new IARC answers) | Yes — re-issue IARC; for discs, re-submit longform where affected |
+| Delist a market | No cert |
+
+## Shipping a patch
+
+<Steps>
+</Steps>
+
+## Recommendations for testing in RETAIL
+
+- Reserve retail-provisioned Xbox devices for post-launch validation. Never touch a dev sandbox.
+- Keep a canary account in every major region for region-specific validation.
+- Load-test multiplayer in RETAIL before and after every major content drop.
+- Watch for `403` / `401` from XBOX services after a sandbox refresh — the most common early-life failure mode.
+
+## Delisting
+
+To remove a product from sale:
+
+1. Open **Pricing and availability**.
+2. Set visibility to **Hidden** or set availability to end.
+3. Publish. Existing owners keep the product.
+
+A delist is not a full removal. To fully remove re-download ability, contact your Microsoft representative.
+
+## Reparenting and product transfers
+
+Move a product between publisher entities via [Reparenting](/publishing/reparenting) — self-service reparenting is not available.
+
+## Related
+
+- [Publish to RETAIL](/publishing/publish-to-retail)
+- [Packages](/publishing/packages)
+- [Cert bypass program](/publishing/cert-bypass-program)
+- [Branches](/publishing/branches)
+- [XBOX Insider Program](/publishing/xbox-insider-program)
+- [Submit to certification](/publishing/submit-to-certification)
+- [Reparenting](/publishing/reparenting)

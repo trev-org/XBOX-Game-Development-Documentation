@@ -1,0 +1,52 @@
+---
+title: "DP 2013: Leaderboards"
+sidebarTitle: "Leaderboards"
+description: "Author global, social, and segmented leaderboards from stats in the Data Platform 2013 model."
+icon: "ranking-star"
+keywords: ["leaderboards", "DP 2013 leaderboards", "global leaderboard", "social leaderboard", "friends leaderboard"]
+---
+
+**Leaderboards** rank players by a stat value. DP 2013 supports global leaderboards, friends-scoped leaderboards, and segmented leaderboards (per-mode, per-map, per-difficulty).
+
+## Leaderboard types
+
+| Type | Scope | Common use |
+| --- | --- | --- |
+| **Global** | Every player on the platform | "Top 100 high scores worldwide." |
+| **Social / Friends** | Player \+ their friends only | "Fastest lap among your friends." |
+| **Segmented** | Filtered by dimension (map, mode, difficulty) | "Fastest completion on 'The Nether' map, on Hard." |
+
+## Anatomy
+
+- **Leaderboard ID** — identifier queried at runtime.
+- **Backing stat** — the stat that drives ranking. See [Player stats](/publishing/dp2013-stats).
+- **Sort order** — descending (higher is better) or ascending (lower is better — time).
+- **Segments** (optional) — dimensions that split the leaderboard into per-segment rankings.
+- **Display formatting** — how the stat value is rendered (`{value} pts`, `{value:mm:ss}`).
+
+## Authoring
+
+<Steps>
+</Steps>
+
+## Runtime queries
+
+Game code queries leaderboards via the Xbox Live SDK legacy leaderboard API:
+
+- **Query by rank** — top N, or pages starting at a specific rank.
+- **Query around player** — current player \+ neighbors.
+- **Query friends** — only the current player's friends.
+
+DP 2013 leaderboard freshness is subject to pipeline latency.
+
+## Anti-cheat considerations
+
+- Global leaderboards are prime targets for cheat / exploit reports.
+- Consider server-side validation of stat updates before they enter the pipeline for competitive titles.
+- Have a moderation process to remove clearly cheated entries.
+
+## Related
+
+- [DP 2013 overview](/publishing/dp2013-overview)
+- [Player stats](/publishing/dp2013-stats)
+- [Featured stats](/publishing/dp2013-featured-stats)

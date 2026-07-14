@@ -1,0 +1,61 @@
+---
+title: "Submit to XBOX Certification"
+sidebarTitle: "Submit to certification"
+description: "Step-by-step: how to prepare, submit, monitor, and resubmit an XBOX certification submission in Partner Center."
+icon: "paper-plane"
+keywords: ["submit certification", "how to submit", "Partner Center certify", "final certification"]
+---
+
+This is the practical, end-to-end guide for submitting an XBOX title to certification. For the conceptual overview see [Certification](/publishing/certification).
+
+<Note>
+  Every game published to the Microsoft Store on XBOX must pass **Final Certification** in the RETAIL sandbox before it can go live. Updates to a live product also require a certification pass (or a [Cert Bypass](/publishing/cert-bypass-program) submission if the title qualifies).
+</Note>
+
+## Choose the right submission type
+
+| Submission type | When to use | Blocks release? |
+| --- | --- | --- |
+| **Optional Certification** | Advisory XR run against a near-final build. Runs in your dev sandbox. See [Optional submissions](/publishing/optional-submissions). | No |
+| **Final Certification** | Mandatory pass required to publish to RETAIL. Uses the locked release-candidate package. | Yes |
+| **Disc Certification** | Certifies the exact image sent to the disc replicator. Runs alongside Final Cert. | Yes for physical release |
+| **Content Update / Recert** | Any change to a published product. | Yes |
+| [**Cert Bypass**](/publishing/cert-bypass-program) | Live-service update on a qualifying title. | No cert queue |
+
+## Before you submit
+
+Work through each item. Nearly every avoidable Failure Mode Analysis (FMA) traces back to one of these being skipped. Full version at [Readiness checklist](/publishing/readiness-checklist).
+
+<Steps>
+</Steps>
+
+## Submit in Partner Center
+
+<Steps>
+</Steps>
+
+## If your submission fails
+
+1. Open the FMA. See [XR FMA](/publishing/xr-fma).
+2. Triage each failure: fix, request a deviation, or challenge through your Microsoft representative.
+3. Rebuild affected packages, re-run the readiness checklist.
+4. Upload new packages and click **Resubmit**. Reference the original submission ID in [Supplemental info](/publishing/supplemental-info).
+
+<Warning>
+  Do not resubmit without addressing every failing XR from the FMA.
+</Warning>
+
+## After a passing submission
+
+- **Auto-publish / scheduled** — the title moves to `In the Store` at the release time.
+- **Manual publish** — click **Publish** in Review and publish.
+- Kick off retail sandbox smoke tests. See [Publish to RETAIL](/publishing/publish-to-retail).
+
+## Related
+
+- [Certification](/publishing/certification)
+- [Readiness checklist](/publishing/readiness-checklist)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [Top failing tests](/publishing/xr-top-failing)
+- [XR FMA](/publishing/xr-fma)
+- [Supplemental info](/publishing/supplemental-info)

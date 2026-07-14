@@ -1,0 +1,59 @@
+---
+title: "DP 2013: Events"
+sidebarTitle: "Events"
+description: "Author events in the Data Platform 2013 events manifest and consume them from your game code."
+icon: "tower-cell"
+keywords: ["events", "DP 2013 events", "event manifest", "telemetry events", "Xbox Live events"]
+---
+
+**Events** in Data Platform 2013 are the custom telemetry hooks your game emits at gameplay moments. Events feed stats, leaderboards, challenges, and analytics.
+
+## Event model
+
+Each event has:
+
+- **Event name** — short identifier (`PlayerKilled`, `LevelCompleted`).
+- **Event ID** — numeric ID used at runtime.
+- **Parameters** — typed fields (int, string, double, guid) capturing what happened.
+- **Version** — events are versioned; changing parameters ships as a new version.
+
+## Authoring events
+
+<Steps>
+  <Step title="Open the Events editor">
+    In Partner Center under Xbox services (Data Platform 2013), open the Events editor.
+  </Step>
+  <Step title="Add a new event">
+    Provide event name, ID, and parameter schema. Choose parameter types that match how your game code will write them.
+  </Step>
+  <Step title="Publish to a sandbox">
+    Publish the event definition to your dev sandbox. Runtime writes to events not defined in the current sandbox schema are dropped silently.
+  </Step>
+  <Step title="Emit from game code">
+    Call the Xbox Live SDK event-write API with the event ID and parameter values.
+  </Step>
+  <Step title="Validate ingest">
+    Confirm the event lands in your telemetry within the DP 2013 latency window (typically hours). If not, the sandbox schema and code likely disagree.
+  </Step>
+  <Step title="Promote to RETAIL for Final Cert">
+    Promote the events schema to the RETAIL sandbox as part of cert-ready sandbox promotion. See [Sandboxes](/publishing/sandboxes).
+  </Step>
+</Steps>
+
+## Event conventions
+
+- Prefer **short, high-signal events**. Do not log every frame or every input.
+- Version events when parameters change; do not repurpose an existing event with different semantics.
+- Use consistent naming.
+- Include a `sessionId` parameter where relevant so events can be joined across a play session.
+
+## Downloading the events manifest
+
+The event schema is bundled into an **events manifest** that ships with the game package. See [Download Events Manifest](/publishing/dp2013-events-manifest).
+
+## Related
+
+- [DP 2013 overview](/publishing/dp2013-overview)
+- [Player stats](/publishing/dp2013-stats)
+- [Leaderboards](/publishing/dp2013-leaderboards)
+- [Events manifest](/publishing/dp2013-events-manifest)

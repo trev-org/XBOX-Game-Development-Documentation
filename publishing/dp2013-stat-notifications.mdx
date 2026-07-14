@@ -1,0 +1,33 @@
+---
+title: "DP 2013: Stat change notifications"
+sidebarTitle: "Stat notifications"
+description: "Push notifications to players when their stats cross thresholds — milestone alerts, achievement adjacencies, and social sharing hooks."
+icon: "bell"
+keywords: ["stat notifications", "threshold alerts", "milestone notifications", "DP 2013 notifications"]
+---
+
+**Stat change notifications** fire when a player's stat crosses a defined threshold. Common uses: "You've reached 100 wins!" milestone toasts, achievement-adjacent nudges, and social sharing prompts.
+
+## How they work
+
+- Each notification declares a **stat** to watch and a **threshold expression** (`value >= 100`, `delta > 1000`).
+- When the stat updates and crosses the threshold, the DP 2013 pipeline triggers the notification.
+- Notifications can be surfaced as **toasts**, **push notifications** (to the Xbox app), or **in-game hooks** (the game queries pending notifications on next launch and displays its own UI).
+
+## Authoring a notification
+
+<Steps>
+</Steps>
+
+## Best practices
+
+- **Don't spam.** Reserve notifications for genuine milestones (10, 100, 1000).
+- **Respect user preferences.** Xbox family settings and per-title notification opt-outs disable notifications for opted-out accounts.
+- **Consider timing.** For in-game hooks, buffer and display at natural break points.
+- **Provide localization** for every supported language.
+
+## Related
+
+- [DP 2013 overview](/publishing/dp2013-overview)
+- [Player stats](/publishing/dp2013-stats)
+- [Achievements](/publishing/dp2013-achievements)

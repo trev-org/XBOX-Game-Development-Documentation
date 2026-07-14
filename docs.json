@@ -567,6 +567,7 @@
               "publishing/pricing",
               "publishing/bundles",
               "publishing/gaming-metadata",
+              "publishing/modular-submission",
               "publishing/xbox-services",
               "publishing/reparenting",
               "publishing/relationship-management",
@@ -617,6 +618,7 @@
             "icon": "clipboard-check",
             "pages": [
               "publishing/certification",
+              "publishing/submit-to-certification",
               "publishing/xr-fma",
               "publishing/xbox-requirements",
               "publishing/xr-top-failing",
@@ -671,7 +673,11 @@
                 "icon": "database",
                 "pages": [
                   "publishing/dp2013-overview",
+                  "publishing/dp2013-events",
                   "publishing/dp2013-stats",
+                  "publishing/dp2013-featured-stats",
+                  "publishing/dp2013-stat-notifications",
+                  "publishing/dp2013-leaderboards",
                   "publishing/dp2013-achievements",
                   "publishing/dp2013-challenges",
                   "publishing/dp2013-events-manifest"
@@ -687,6 +693,7 @@
             "pages": [
               "publishing/glossary",
               "publishing/useful-links",
+              "publishing/contacts",
               "publishing/branding-assets",
               "publishing/test-vendors"
             ]
@@ -696,7 +703,8 @@
             "icon": "arrow-up-from-bracket",
             "pages": [
               "publishing/readiness-checklist",
-              "publishing/publish-to-retail"
+              "publishing/publish-to-retail",
+              "publishing/content-updates"
             ]
           }
         ]
