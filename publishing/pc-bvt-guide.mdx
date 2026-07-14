@@ -1,0 +1,62 @@
+---
+title: "PC Build Verification Test (BVT) guide"
+sidebarTitle: "PC BVT guide"
+description: "Run PC BVT locally against Windows PC hardware before certifying a PC or cross-platform title."
+icon: "windows"
+keywords: ["PC BVT", "Windows PC certification", "MSIXVC", "Play Anywhere", "PC test"]
+---
+
+The **PC BVT** is the Windows-PC counterpart to the [Console BVT](/publishing/console-bvt-guide). It exercises the PC-specific failure modes that break titles at cert: installer / uninstaller behavior, MSIXVC packaging, PC store licensing, GPU vendor coverage, mouse and keyboard input, and Windows-specific system events.
+
+## What PC BVT covers
+
+### Install / uninstall
+
+- Install from the Microsoft Store to the default drive.
+- Install to a **non-default drive** and a **non-default folder** where the platform allows.
+- Move an installed title between drives via Windows Settings.
+- Uninstall and verify **no leftover files, registry keys, or services** other than sanctioned save/config folders.
+- Reinstall and verify saved state is preserved from cloud saves.
+
+### Licensing and DRM
+
+- Launch with a valid Store license — must succeed offline once the license token is cached.
+- Launch with a mismatched Store account (Store signed in as A, game running as B) — must handle per [XStore on PC](/publishing/xstore-pc).
+- Sign out of the Store mid-session — verify graceful behavior.
+- Sandbox switch from RETAIL to a development sandbox and back.
+
+### Hardware coverage
+
+- Minimum-spec CPU and GPU per your declared **system requirements** in [Properties](/publishing/properties).
+- Cover both **NVIDIA** and **AMD** GPUs at the minimum spec. Where declared, also cover **Intel Arc**.
+- Cover integrated graphics if you declare support.
+- **Windows 10 22H2** and **Windows 11 23H2** at minimum. Titles targeting current-gen only can declare Windows 11 as the minimum.
+
+### Input
+
+- Xbox Wireless Controller over Bluetooth and Xbox Wireless dongle.
+- Mouse and keyboard — fully remappable if declared.
+- Multiple input devices attached simultaneously.
+- Hot-swap input mid-session (unplug controller, keep playing with M\+KB).
+
+### System events
+
+- Alt-Tab out and back with different window modes (fullscreen exclusive, borderless windowed, windowed).
+- Sleep and resume the PC.
+- Change primary display / refresh rate mid-session.
+- Multi-monitor setups — fullscreen on non-primary display.
+
+## Running PC BVT
+
+See the GDK-provided PC BVT scripts. Run against your MSIXVC output before every cert pass. Cover at minimum: minimum-spec NVIDIA, minimum-spec AMD, and one high-end configuration to catch scaling regressions.
+
+## Play Anywhere titles
+
+If your title is [Play Anywhere](/publishing/managed-programs), run both **Console BVT** on Xbox devkits and **PC BVT** on Windows PC. Cross-buy and cross-save behavior must be validated on both surfaces before you submit.
+
+## Related
+
+- [Console BVT guide](/publishing/console-bvt-guide)
+- [XStore on PC](/publishing/xstore-pc)
+- [Top failing tests](/publishing/xr-top-failing)
+- [Submit to certification](/publishing/submit-to-certification)

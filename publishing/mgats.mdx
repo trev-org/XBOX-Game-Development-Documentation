@@ -1,0 +1,46 @@
+---
+title: "Microsoft Gaming Accessibility Testing (MGATS)"
+sidebarTitle: "MGATS"
+description: "Optional accessibility test pass from Microsoft's accessibility team. Advisory only — does not block cert, but produces a detailed report and public accessibility signals."
+icon: "universal-access"
+keywords: ["MGATS", "accessibility", "gaming accessibility", "a11y", "accessibility testing"]
+---
+
+**Microsoft Gaming Accessibility Testing (MGATS)** is an optional advisory test pass performed by Microsoft's accessibility team. The output is a detailed accessibility report on your build plus, for titles that request it, the public **Accessibility features** callouts on the Store listing.
+
+## What MGATS covers
+
+| Category | Examples |
+| --- | --- |
+| **Vision** | Colorblind safety, contrast ratios, text scaling, screen reader / narrator support, motion sickness options. |
+| **Hearing** | Subtitle presence and quality, closed captions for non-speech audio, visual alternatives for critical audio cues. |
+| **Motor** | Fully remappable controls, hold-to-toggle options, aim / turn assist, difficulty and assist modes, Xbox Adaptive Controller support. |
+| **Cognitive** | Difficulty options, save frequency, checkpointing, tutorial replay, clear objective communication. |
+| **Speech** | Speech-to-text and text-to-speech, alternatives to voice-chat requirements. |
+
+## What you get
+
+- A **detailed report** listing every issue observed, severity, and specific repro steps.
+- Guidance on remediation — not just "this failed" but concrete design and implementation suggestions.
+- On request, **Accessibility features** entries on your Store listing that are verified by Microsoft (rather than self-declared), which some customers filter on.
+
+## What MGATS is not
+
+- **Not a cert gate.** MGATS results do not block Final Cert. It's advisory.
+- **Not a legal accessibility audit.** MGATS is not a substitute for regulatory accessibility compliance (for example the European Accessibility Act) that your legal team is responsible for.
+- **Not a substitute for internal accessibility work.** MGATS is most valuable when you've already done a first pass and want expert review.
+
+## When to submit
+
+- **8–12 weeks before launch** if you want time to address findings and re-verify.
+- **Ahead of a major content update** that materially changes accessibility surface area (new game mode, new tutorial, new UI system).
+
+## Submission
+
+MGATS is submitted through Partner Center as a submission type distinct from Final Cert or Optional Cert. You provide the build, a description of the accessibility features you've implemented, and any specific areas you want the team to focus on. Standard turnaround is **7–14 business days**.
+
+## Related
+
+- [Gaming metadata](/publishing/gaming-metadata)
+- [Properties](/publishing/properties)
+- [Certification](/publishing/certification)

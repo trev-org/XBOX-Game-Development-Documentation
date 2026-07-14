@@ -1,0 +1,55 @@
+---
+title: "Create and manage sandboxes and test accounts"
+sidebarTitle: "Sandboxes & test accounts"
+description: "Create additional development sandboxes, provision Xbox Live test accounts, and manage access."
+icon: "user-plus"
+keywords: ["create sandbox", "test account", "Xbox Live test account", "provisioning"]
+---
+
+For conceptual background on what sandboxes do, see [Sandboxes](/publishing/sandboxes).
+
+## Create a sandbox
+
+<Steps>
+  <Step title="Open Account settings → Sandboxes">
+    Sandbox management is at the account level, not per-product.
+  </Step>
+  <Step title="Create a new sandbox">
+    Provide a short name (letters and digits, `PUBLISHER.NN` style). This name is what devkits will target.
+  </Step>
+  <Step title="Grant access to team members">
+    Only Partner Center users you explicitly add to the sandbox can publish services state to it or provision test accounts within it.
+  </Step>
+  <Step title="Publish XBOX services">
+    Publish achievements, stats, session templates, and Rich Presence strings to the new sandbox from your services configuration. See [XBOX services](/publishing/xbox-services).
+  </Step>
+</Steps>
+
+## Provision test accounts
+
+Test accounts are Xbox Live accounts scoped to a sandbox. Purchases made by a test account are simulated — no real money changes hands.
+
+<Steps>
+  <Step title="Open Account settings → Test accounts">
+    Choose the target sandbox.
+  </Step>
+  <Step title="Create the account">
+    Provide a gamertag prefix, region, and age (adult, teen, child — age gates trigger different privacy defaults).
+  </Step>
+  <Step title="Grant entitlements">
+    From the account's detail view, grant the base game and any add-ons you want the account to own for testing. This is the equivalent of a promo code redemption in the sandbox.
+  </Step>
+  <Step title="Sign in on a devkit">
+    Sign the test account in on a devkit pointed at the same sandbox to validate behavior.
+  </Step>
+</Steps>
+
+## Multiplayer test account sets
+
+For multiplayer titles, create a **friend cluster** of 4–8 accounts pre-friended to each other. Include these in [Supplemental Info](/publishing/supplemental-info) when submitting to cert so the tester can run multiplayer scenarios without spending 30 minutes setting up friend graphs.
+
+## Related
+
+- [Sandboxes](/publishing/sandboxes)
+- [XBOX services](/publishing/xbox-services)
+- [Supplemental info](/publishing/supplemental-info)

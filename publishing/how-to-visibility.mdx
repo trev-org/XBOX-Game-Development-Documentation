@@ -1,0 +1,63 @@
+---
+title: "Configure product visibility and audience"
+sidebarTitle: "Visibility & audiences"
+description: "Control which customers can discover and purchase your product: visible, hidden, token-only, in-game store only, and audience-scoped releases."
+icon: "eye"
+keywords: ["visibility", "hidden product", "token only", "visible non-purchasable", "audience", "in-game store"]
+---
+
+Every Partner Center product has two orthogonal controls:
+
+- **Visibility** — can a customer discover the product in the Microsoft Store search / browse?
+- **Purchase availability** — can a customer buy the product if they land on the page?
+
+Combining them gives you the release shapes below.
+
+## Release shapes
+
+| Shape | Visibility | Purchasable | Use case |
+| --- | --- | --- | --- |
+| **Standard release** | Visible | Purchasable | Normal launch. |
+| **Wishlist / coming soon** | Visible | Not purchasable | Announce a title before pre-orders open. See [Wishlist pages](/publishing/wishlist-pages). |
+| **Hidden token-only** | Hidden | Purchasable via promo code only | Retailer pre-order bonuses, contest prizes. |
+| **Hidden and purchasable** | Hidden | Purchasable if you know the URL | Private-beta paid access, industry demos. |
+| **In-game store only add-on** | Hidden on Microsoft Store | Purchasable only from inside the game | Consumables and add-ons where the game's own UI is the storefront. |
+| **Delisted** | Hidden | Not purchasable | Retired product. Existing owners retain the entitlement. |
+
+## Configure visibility
+
+<Steps>
+  <Step title="Open Pricing and availability → Visibility">
+    In the product, open the Visibility section.
+  </Step>
+  <Step title="Choose Visible or Hidden">
+    Hidden products are not returned in Store search, do not appear in browse categories, and do not surface in recommendations. They are still reachable by direct URL and by promo code.
+  </Step>
+  <Step title="Choose Purchasable or Not">
+    Independent from visibility. A visible \+ not purchasable product shows a "Coming soon" state.
+  </Step>
+  <Step title="Publish">
+    Visibility changes propagate through [Review and publish](/publishing/modular-submission) within minutes to a few hours.
+  </Step>
+</Steps>
+
+## Audience scoping
+
+For **audience-scoped** availability (only Xbox Insiders in a specific ring, only accounts in a specific region), configure the audience in **Pricing and availability → Audiences**. Audiences work in combination with visibility — a visible product scoped to "Insiders only" is invisible to non-Insiders.
+
+## In-game store only add-ons
+
+Add-ons that only make sense inside the game (a coin pack, a cosmetic bought from an in-game shop) should not have a Store listing that duplicates the in-game merchandising. Configure them with:
+
+- **Visibility**: Hidden
+- **Purchasable**: Yes
+- **Store listing**: minimal (title only, no imagery or description)
+
+The game then invokes the XStore purchase flow to buy the add-on. See [XStore deep dive](/publishing/xstore-deep-dive).
+
+## Related
+
+- [Wishlist pages](/publishing/wishlist-pages)
+- [Promo codes](/publishing/promo-codes)
+- [Pricing](/publishing/pricing)
+- [XStore deep dive](/publishing/xstore-deep-dive)

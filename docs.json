@@ -604,7 +604,11 @@
               "publishing/xbox-requirements",
               "publishing/xr-top-failing",
               "publishing/cert-bypass-program",
-              "publishing/console-bvt-guide"
+              "publishing/console-bvt-guide",
+              "publishing/pc-bvt-guide",
+              "publishing/mgats",
+              "publishing/media-validation",
+              "publishing/supplemental-info"
             ]
           },
           {
@@ -630,7 +634,12 @@
           {
             "group": "Partner Center how-to",
             "icon": "wrench",
-            "pages": []
+            "pages": [
+              "publishing/how-to-create-products",
+              "publishing/how-to-sandboxes-test-accounts",
+              "publishing/how-to-package-management",
+              "publishing/how-to-visibility"
+            ]
           },
           {
             "group": "Resources & terminology",

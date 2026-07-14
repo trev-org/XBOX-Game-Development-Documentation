@@ -1,0 +1,71 @@
+---
+title: "Supplemental info"
+sidebarTitle: "Supplemental info"
+description: "Everything the Microsoft test team needs from you to certify your title efficiently: test accounts, DLC grants, repro steps, known issues, and deviation requests."
+icon: "file-lines"
+keywords: ["supplemental info", "cert notes", "test accounts", "deviations", "known issues"]
+---
+
+**Supplemental Info** is the free-form and structured information you attach to every cert submission to help the test team run your title efficiently. It's the single most common cause of returned-before-testing submissions when it's missing or vague.
+
+<Warning>
+  A returned submission for missing Supplemental Info consumes your cert slot for the day. Treat this form with the same rigor as your code.
+</Warning>
+
+## What to include
+
+### Test accounts
+
+- At least **two** provisioned test accounts on the target sandbox.
+- One account should have every DLC / add-on entitled; one should have none.
+- For multiplayer titles, provide **4–8 accounts** and note which are friended to which.
+- Include the account's declared region and language.
+- Include which privileges each account has (adult, teen, child) if you support family scenarios.
+
+### DLC and add-on entitlements
+
+- List every add-on that ships with the submission and how the test team can access it.
+- Provide **promo codes** for any add-on that isn't automatically granted to the test accounts.
+- Note any expected out-of-box behavior ("account A owns Season Pass; account B owns no DLC").
+
+### Multiplayer test steps
+
+- Repro instructions for hosting a session, joining a session, matchmaking into a session.
+- Approximate wait times ("matchmaking finds a match in 30–60 seconds during peak hours").
+- Any pre-config the test team needs (create a lobby with these settings, invite this account, etc.).
+
+### Known issues and deviations
+
+- List every known issue you're aware of that the test team may hit, with severity and whether it's a launch blocker.
+- **Deviation requests** — formal requests for the test team to accept a specific XR failure with justification. Deviation requests are reviewed by Microsoft; approved ones don't count as failures in the FMA.
+
+### Sandbox and services state
+
+- Confirm which sandbox the submission targets.
+- Confirm that XBOX services (achievements, stats, session templates, Rich Presence) are published to that sandbox and match the build.
+
+### First-time notes
+
+If this is a new submission (Optional Cert, first Final Cert, or a title from a new team):
+
+- A short **elevator pitch** so the tester knows what kind of game they're running.
+- The **fastest path to gameplay** from title screen — skip cutscenes, load a specific save, etc.
+- Any **tutorial** the tester should complete before running open-world tests.
+
+### Resubmission notes
+
+For a resubmission:
+
+- Reference the **original submission ID**.
+- For every failing XR in the original FMA, note **what you changed** and where in the build to verify the fix.
+- Confirm nothing else changed that would require a full XR pass.
+
+## Attaching Supplemental Info in Partner Center
+
+Supplemental Info is attached in the Packages module at submission time. It can be updated after submission through your Microsoft representative if you spot something missing — but do this before the tester starts, not after they've run into it.
+
+## Related
+
+- [Submit to certification](/publishing/submit-to-certification)
+- [Certification](/publishing/certification)
+- [XR FMA](/publishing/xr-fma)

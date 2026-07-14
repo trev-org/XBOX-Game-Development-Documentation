@@ -1,0 +1,85 @@
+---
+title: "Advanced package management: flights, rollback, and settings"
+sidebarTitle: "Package management"
+description: "Configure package flights, roll back a bad update, and use advanced package settings for XVC and MSIXVC packages."
+icon: "box-taped"
+keywords: ["package flight", "package rollback", "XVC advanced settings", "MSIXVC", "gradual rollout"]
+---
+
+For the core Packages workflow see [Packages](/publishing/packages). This page covers the three advanced operations most teams need after their first launch: **package flights**, **rollback**, and **advanced settings**.
+
+## Package flights
+
+A **package flight** ships a specific package to a defined audience rather than all owners.
+
+### Common flight audiences
+
+| Audience | Use |
+| --- | --- |
+| **Internal team** | Dogfood a build before rolling out. |
+| **Xbox Insider ring** | Public beta / soft launch. See [XBOX Insider Program](/publishing/xbox-insider-program). |
+| **Region-scoped** | Regional soft launch, or region-specific fix. |
+| **Percentage rollout** | Gradual rollout: 1% → 10% → 50% → 100% over hours or days. |
+
+### Configure a flight
+
+<Steps>
+  <Step title="Open Packages → Flights">
+    In your product's Packages module, open the Flights section.
+  </Step>
+  <Step title="Create a flight group">
+    Define the audience: specific accounts, an Insider ring, a region, or a percentage.
+  </Step>
+  <Step title="Upload the flight package">
+    Upload the package intended for that audience. It runs through package processing but does not enter the retail queue.
+  </Step>
+  <Step title="Publish the flight">
+    Flight packages publish to the flight audience only. Retail owners continue to run the retail package.
+  </Step>
+  <Step title="Monitor telemetry">
+    Watch crash rate and engagement telemetry on the flight audience before graduating to retail.
+  </Step>
+  <Step title="Promote to retail">
+    When ready, promote the flight package to a full retail Final Cert (or [Cert Bypass](/publishing/cert-bypass-program) if qualifying).
+  </Step>
+</Steps>
+
+## Package rollback
+
+If a shipped update has a critical regression you cannot hotfix in the cert cycle timeframe, **rollback** re-publishes a previous package as the current retail version.
+
+<Steps>
+  <Step title="Identify the last known good package">
+    Open Packages → History and identify the package version to roll back to.
+  </Step>
+  <Step title="Confirm eligibility">
+    Rollback targets must have previously passed Final Cert. You cannot roll back to a package that only shipped as an internal or Insider flight.
+  </Step>
+  <Step title="Submit the rollback">
+    Partner Center creates a rollback submission. This goes through an expedited review (typically same-day to next-day) but is not automatic.
+  </Step>
+  <Step title="Publish">
+    On approval, the rollback package publishes as the current retail package. Owners already on the bad build download the older package on next update.
+  </Step>
+</Steps>
+
+<Warning>
+  Rollback is a firefighting tool. Overuse damages customer trust and complicates support (customers may see progression reset, saves incompatibility, etc.). Only roll back for genuine launch-blocking regressions.
+</Warning>
+
+## Advanced package settings
+
+Under Packages → Advanced settings you can configure:
+
+- **Auto-install trigger conditions** — always, on next launch, on next network idle.
+- **Chunk streaming order** — which parts of the package install first (splash \+ main menu, then story, then optional content).
+- **Minimum-required version** — refuse to launch below a specific version. Use sparingly; it forces re-download for users out of date.
+- **Delta package tuning** — for XVC packages, control how deltas are generated to minimize update size.
+- **Region-scoped release** — release the package in specific regions on different schedules.
+
+## Related
+
+- [Packages](/publishing/packages)
+- [Cert bypass program](/publishing/cert-bypass-program)
+- [XBOX Insider Program](/publishing/xbox-insider-program)
+- [Content updates](/publishing/content-updates)

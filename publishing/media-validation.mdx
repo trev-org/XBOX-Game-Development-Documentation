@@ -1,0 +1,54 @@
+---
+title: "Media validation test steps"
+sidebarTitle: "Media validation"
+description: "Validate the Store listing screenshots, trailers, and imagery your title ships with against Microsoft Store media requirements."
+icon: "images"
+keywords: ["media validation", "screenshots", "trailer", "hero art", "store media"]
+---
+
+**Media validation** is the test pass that confirms every image, trailer, and asset on your Store listing meets Microsoft's specifications and content rules. Failing media validation blocks Store listing publish (independent of Final Cert on your packages).
+
+## What is validated
+
+| Asset | Checks |
+| --- | --- |
+| **Hero art** | Correct aspect ratio, no logo overlap in safe zones, no age-rating icon burn-in, no store branding, high-resolution. |
+| **Screenshots** | Minimum count (typically 3, target 8\+ for premium presence), correct resolution, actual in-game content (not concept art or bullshots), no HUD debug info, no watermarks. |
+| **Trailers** | Correct codec (H.264 typical), correct resolution (1080p minimum, 4K preferred), correct frame rate, no third-party logos not cleared for use, correct audio levels, no gameplay footage that misrepresents the shipping product. |
+| **Icons and tiles** | Correct sizes per placement, no text overlay unless allowed by the tile spec, no age-rating icons baked in. |
+| **Age rating icons** | Present where required and correct for the target region. Physical longform icon on disc art per [Ratings](/publishing/ratings). |
+| **Localized media** | If you supply per-locale screenshots or trailers, each localized asset must independently pass. |
+
+## Content rules
+
+Media must comply with the Microsoft Store Policies:
+
+- No misleading or misrepresentative content (no CGI passed off as gameplay without a clear label).
+- No competitor branding.
+- No unapproved third-party IP (celebrity likenesses, licensed music without rights, film / TV references).
+- No content above the declared age rating (a M-rated screenshot on an E-rated title's Store page will fail).
+- No copyrighted assets you don't own or license (music, fonts, stock imagery).
+
+## Common failures
+
+- **Compression artifacts** in screenshots — export from the game engine or a lossless capture, not a re-encode.
+- **Debug HUD** left on in a captured screenshot.
+- **Aspect-ratio letterboxing** baked into a widescreen hero image.
+- **Trailer audio** mastered too hot — clipping fails media validation.
+- **Placeholder text** ("Coming Soon", "WIP") in an image caption or screenshot overlay.
+
+## Running validation yourself
+
+Before submission, run through this checklist on every asset:
+
+1. Open the asset at 100% zoom and compare against the current Store media spec sheet from your Microsoft representative.
+2. Verify aspect ratios exactly — do not letterbox to force fit.
+3. Play trailers on real Xbox and PC hardware, not just in a browser.
+4. Have someone outside the dev team review each asset for readability at TV viewing distance.
+5. Re-verify after any post-launch trailer or screenshot swap — the same rules apply to updates.
+
+## Related
+
+- [Store listing](/publishing/store-listing)
+- [Ratings](/publishing/ratings)
+- [Properties](/publishing/properties)
