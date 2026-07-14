@@ -9,17 +9,17 @@ ms.author: lukecr
 ms.topic: article
 description: "Certification tested Xbox requirements for Xbox console games."
 ms.date: 04/03/2026
-edited: 04/03/2026
+edited: 07/01/2026
 permissioned-type: public
 ---
 
 # Certification Tested Xbox Requirements for Xbox Console Games
 
-Version 16.0 - 11/01/2025
+Version 16.3 - 07/01/2026
 
-Xbox Requirements (XRs) consist of the policies, technical requirements, and product component-related requirements to which all developers and publishers of Xbox console games must conform. XRs ensure that products created for Xbox consoles are not only stable and reliable but also provide a user experience that is consistent, safe, secure, and enjoyable.
+Xbox Requirements (XRs) consist of the policies, technical requirements, and product component-related requirements to which all developers and publishers of Xbox console games must conform. XRs ensure that products created for Xbox consoles aren't only stable and reliable but also provide a user experience that's consistent, safe, secure, and enjoyable.
 
-Unless specifically noted, all Xbox Requirements apply to both the Xbox One and Xbox Series X\|S console generations.
+Unless noted, all Xbox Requirements apply to both the Xbox One and Xbox Series X\|S console generations.
 
 * This page defines the XRs for the Xbox console games tested in Xbox Certification. For a list of all XRs, including those not tested in Xbox Certification, go to [Xbox Requirements](certification-requirements.md).
 * For a summary of the changes in this release, see [changes in this release](#changes) at the bottom of this page.
@@ -33,12 +33,12 @@ Unless specifically noted, all Xbox Requirements apply to both the Xbox One and 
 
 Refer to [Xbox Game Life Cycle](../../../gdk-dev/console-dev/overviews/xbox-game-life-cycle.md) for a detailed look at the concepts and events that make up the game life cycle. It demonstrates how to implement game state and state-change events in your game.
  
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
 * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
 * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.
 
-Test cases that suspend a game have been updated to indicate which method should be used.
+Test cases that suspend a game now indicate which method should be used.
 
 ## <a id='base-requirements'></a>Base Requirements
 
@@ -51,7 +51,7 @@ The requirements in this category apply to the general rules for the standards o
 Titles must be compliant with Microsoft Store policies regarding Title Stability. The following policy applies to this Requirement:
 
 [10.4.2](/windows/apps/publish/store-policies#104-usability.md)  
-Products must start up promptly, continue to run and remain responsive to user input. Products must shut down gracefully and not close unexpectedly. The product must handle exceptions raised by any of the managed or native system APIs and remain responsive to user input after the exception is handled.
+Products must start up promptly, continue to run, and remain responsive to user input. Products must shut down gracefully and not close unexpectedly. The product must handle exceptions raised by any of the managed or native system APIs and remain responsive to user input after the exception is handled.
 
 #### 001-01 Title Stability
 
@@ -66,24 +66,24 @@ Products must start up promptly, continue to run and remain responsive to user i
 4. Using a new Xbox profile with no previous save data, repeat steps 1-3 while disconnected from Xbox services.
 
 **Expected Result**  
-game instability refers to any state where user input is not recognized, or the user is blocked from progressing due to a software crash without any user notification.  
+game instability refers to any state where user input isn't recognized, or the user is blocked from progressing due to a software crash without any user notification.  
 
 **Pass Examples**
 
 1. The game is stable.
-2. The game does not cause unintended loss of user data.
+2. The game doesn't cause unintended loss of user data.
 
 **Fail Examples**
 
 1. The game crashes, becomes unresponsive, or causes a console reboot.
 2. The game causes the loss of user data.
 3. A non-interactive pause or static screen is presented lasting over twenty seconds.
-4. The game contains a loading screen which is more than two minutes with no indication of progress.
-5. The game contains a loading screen which is more than three minutes with a progress indicator.
+4. The game contains a loading screen that's more than two minutes with no indication of progress.
+5. The game contains a loading screen that's more than three minutes with a progress indicator.
 
 #### 001-02 Title Stability After Suspend
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -101,10 +101,10 @@ For the purposes of this test case, both methods should be verified at step 3.
 7. Repeat steps 3-6 throughout the game.  
 
 **Expected Result**  
-Title instability refers to any state where user input is not recognized, or the user is blocked from progressing due to a software crash without any user notification. Additionally, users must not lose any save progress after returning to gameplay.
+Title instability refers to any state where user input isn't recognized, or the user is blocked from progressing due to a software crash without any user notification. Additionally, users must not lose any save progress after returning to gameplay.
 
 **Pass Examples**  
-1. The game is stable and does not cause unintended loss of user data.
+1. The game is stable and doesn't cause unintended loss of user data.
 2. The game resumes from suspend and the user can immediately continue from their last gameplay location.
 3. The game resumes from suspend and the user is prompted whether they want to resume from their last gameplay location.
 4. The game resumes from suspend and returns to a previous menu or initial interactive state, however the user can load their last save location.
@@ -178,41 +178,41 @@ All titles must provide users with a reliable, fair, consistent, and complete Xb
 **Fail Examples** 
 
 1.	The title crashes at the end of a level or the user is blocked from progressing in any area of the game.
-2.	Areas of the title cannot be navigated as expected.
-3.	If the user inverts the horizontal or vertical camera controls with the pause menu, the camera controls do not change in-game.
-4.	Users are not able to post to leaderboards as expected.
-5.	A particular game mode cannot be completed if the user has already completed a different mode.
+2.	Areas of the title can't be navigated as expected.
+3.	If the user inverts the horizontal or vertical camera controls with the pause menu, the camera controls don't change in-game.
+4.	Users aren't able to post to leaderboards as expected.
+5.	A particular game mode can't be completed if the user has already completed a different mode.
 6.	Options set during gameplay are reset to default after terminating and re-launching the title. 
 7.	The title is unplayable due to frame rate issues.
 
 #### 003-16 Save-Game Compatibility
     
 **Test Steps**  
-1.    Sign in to an Xbox profile and launch the game without connecting to Xbox.
-2.    Play the game and save your progress and settings. 
-3.    Reboot the game and verify that you can load and resume the saved progress from step 2.
-4.    Connect to Xbox and install the content update for the base title.
-5.    Verify you can still load and continue your saved progress after the update. 
-6.    Reboot the title, start a new game, and save your progress again. 
-7.    Exit and uninstall the game.
-8.    Re-install and launch the base game without a connection to the Xbox network.
-9.    Verify that one of the following occurs:
+1. Sign in to an Xbox profile and launch the game without connecting to Xbox.
+2. Play the game and save your progress and settings. 
+3. Reboot the game and verify that you can load and resume the saved progress from step 2.
+4. Connect to Xbox and install the content update for the base title.
+5. Verify you can still load and continue your saved progress after the update. 
+6. Reboot the title, start a new game, and save your progress again. 
+7. Exit and uninstall the game.
+8. Re-install and launch the base game without a connection to the Xbox network.
+9. Verify that one of the following occurs:
      * You can load and continue your saved progress
      * The game displays a message indicating the save requires a content update to be installed
-     * The game does not display the save made in step 6
-10.    Reboot the title and install the content update.
-11.    Verify you can still load and continue from your saved progress after the update. 
+     * The game doesn't display the save made in step 6
+10. Reboot the title and install the content update.
+11. Verify you can still load and continue from your saved progress after the update. 
 
 **Expected Result**  
 A content-updated version of a game must be able to successfully load a save created using the non-content-updated version of the game.
 
 **Pass Examples**  
-1.    All saves can be loaded successfully by a content-updated version of a title.
-2.    When launching the base version to load an updated save, the user is notified of missing content and given a reason why the save file could not be loaded, or the saves made in the content-updated version are not visible in the base version.
+1. All saves can be loaded successfully by a content-updated version of a title.
+2. When launching the base version to load an updated save, the user is notified of missing content and given a reason why the save file couldn't be loaded, or the saves made in the content-updated version aren't visible in the base version.
 
 **Fail Examples**
-1.    The content-updated version of the game is unable to load a game save created with a previous version of the title. 
-2.    The base version of the game crashes when loading a save made with the content-updated version of the game.
+1. The content-updated version of the game is unable to load a game save created with a previous version of the title. 
+2. The base version of the game crashes when loading a save made with the content-updated version of the game.
 
 #### 003-17 Headset State Change
 
@@ -238,7 +238,7 @@ Audio continues to be heard without issue.
 
 #### 003-18 Headset State Change after Suspend
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -280,13 +280,13 @@ Xbox One games not using Smart Delivery function by default on Xbox Series X|S i
 
 To maintain consistency across console generations, games must:
 
-* Support navigation via gamepad input.  Titles may require additional peripherals for use with prior approval.
+* Support navigation via gamepad input. Titles may require additional peripherals for use with prior approval.
 * Ensure that saved games work across console types within the generation.
-* Ensure that online players are not segmented based on console type within the generation.
+* Ensure that online players aren't segmented based on console type within the generation.
 * Ensure that identical game modes are offered across console types within the generation.
-* Between generations (Xbox One and Xbox Series X\|S), games which share the same TitleID must:
+* Between generations (Xbox One and Xbox Series X\|S), games that share the same TitleID must:
   * Support game save roaming for content available on both generations ([XR-052: User State and Title-Save Location, Roaming and Dependencies](../XR/XR052.md)).
-  * Though not required, it is recommended that scenarios in which multiplayer, cooperative or competitive, experiences are supported offer at least one shared matchmaking hopper and allow for cross generation invite/join for shared content experiences.
+  * Though not required, it's recommended that scenarios in which multiplayer, cooperative or competitive, experiences are supported offer at least one shared matchmaking hopper and allow for cross generation invite/join for shared content experiences.
 
 #### 130-01 Controller Input
 
@@ -331,8 +331,8 @@ The title supports navigation via a controller in all areas of the title and doe
 3. Exit the title.
 4. Sign in on a different device from the same generation with the same profile used in Step 1.
 5. Launch the same title from Step 1 and verify that all saved games and any settings and/or configuration files can be accessed and loaded correctly and they don't have any dependencies on a specific same generation device.
-6. Repeat all steps above across the same generation of devices.
-7. For games which share the same TitleID across generations (Xbox One and Xbox Series X), repeat steps 1-4 for content available on both generations.
+6. Repeat all steps across the same generation of devices.
+7. For games that share the same TitleID across generations (Xbox One and Xbox Series X), repeat steps 1-4 for content available on both generations.
 
 **Expected Result**  
 Save games must work in their entirety across the same generation and save games must work in their entirety for games that share the same TitleID across generations (Xbox One and Xbox Series X) for content available on both generations.
@@ -344,8 +344,8 @@ Save games must work in their entirety across the same generation and save games
 
 **Fail Examples**
 
-1. A game save made in one generation (Xbox One or Xbox Series X) does not fully load across all device types in that generation.
-2. A game save does not fully load for games that share the same TitleID across generations (Xbox One and Xbox Series X) for content available on both generations.
+1. A game save made in one generation (Xbox One or Xbox Series X) doesn't fully load across all device types in that generation.
+2. A game save doesn't fully load for games that share the same TitleID across generations (Xbox One and Xbox Series X) for content available on both generations.
 
 #### 130-03 Online Segmentation
 
@@ -405,7 +405,7 @@ Identical game modes must be offered across the same generation of devices.
 
    * One Xbox Series X Dev Kit (using Xbox Series X\|S retail console mode)  
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -444,10 +444,10 @@ Xbox One games not supporting Smart Delivery must run without functional or perf
 
 1. The title has performance issues when running on Xbox Series X\|S.
 2. The title has functional issues when running on Xbox Series X\|S.
-3. The user cannot enter, play, or finish multiplayer in all modes when running between Xbox Series consoles, or when playing multiplayer between Xbox One and Xbox Series.
-4. The title does not correctly suspend and resume when running on Xbox Series X\|S consoles.
-5. The user's game save(s), or part of the game save, made on Xbox Series X\|S consoles do not persist after a full title reboot.
-6. The user's game save(s) created on Xbox One cannot be roamed to Xbox Series X\|S without progress being lost. Roaming the same game save(s) back to Xbox One also loses some/all progress.
+3. The user can't enter, play, or finish multiplayer in all modes when running between Xbox Series consoles, or when playing multiplayer between Xbox One and Xbox Series.
+4. The title doesn't correctly suspend and resume when running on Xbox Series X\|S consoles.
+5. The user's game save(s), or part of the game save, made on Xbox Series X\|S consoles don't persist after a full title reboot.
+6. The user's game save(s) created on Xbox One can't be roamed to Xbox Series X\|S without progress being lost. Roaming the same game save(s) back to Xbox One also loses some/all progress.
 
 <a id='XR131'></a>
 
@@ -491,7 +491,7 @@ No graphical defects are displayed when the HDR/4K output is switched to SDR.
 
 Titles must use the naming standards defined in the latest release of the [Terminology List](console-certification-terminology.md) for Xbox console and/or Xbox network features.
 
-On Xbox consoles, titles must not display images or refer to components of the console system or components of peripherals using terms that are not specifically included in the terminology list.
+On Xbox consoles, titles must not display images or refer to components of the console system or components of peripherals using terms that aren't specifically included in the terminology list.
 
 #### 022-01 Official Naming Standards
 
@@ -506,7 +506,7 @@ On Xbox consoles, titles must not display images or refer to components of the c
 7. Note all text and images shown.  
 
 **Expected Result**  
-All text adheres to the most recent terminology list. Images must not display components of the console system or components of peripherals using terms that are not specifically included in the terminology list.
+All text adheres to the most recent terminology list. Images must not display components of the console system or components of peripherals using terms that aren't specifically included in the terminology list.
 
 **Pass Examples**  
  None  
@@ -514,20 +514,20 @@ All text adheres to the most recent terminology list. Images must not display co
 **Fail Examples**
 
 1. The title uses a proprietary term or image from a competitive platform.
-2. A title refers to a component of the console system or component of a peripheral using any term that is not included in the terminology list.
+2. A title refers to a component of the console system or component of a peripheral using any term that isn't included in the terminology list.
 
 <a id='XR074'></a>
 
 ### [XR-074: Loss of Connectivity to Xbox and Partner Services](../XR/XR074.md) \*
 
-Titles must gracefully handle errors with Xbox and partner services connectivity. Titles must honor the retry policies set by Xbox when attempting to retry a request to the Xbox service after a failure has occurred. Titles must appropriately manage messaging the user when services are unavailable. If a partner service is not available, the game must not indicate that there is an issue with the Xbox network. Titles must not crash or hang if network services are slowed or intermittently available.
+Titles must gracefully handle errors with Xbox and partner services connectivity. Titles must honor the retry policies set by Xbox when attempting to retry a request to the Xbox service after a failure occurs. Titles must appropriately manage messaging the user when services are unavailable. If a partner service isn't available, the game must not indicate that there's an issue with the Xbox network. Titles must not crash or hang if network services are slowed or intermittently available.
 
 #### 074-01 WAN Disconnection to Xbox Services
 
 **Test Steps**  
 
 1. Sign in to an Xbox profile.
-2. While performing the following actions, disconnect the WAN network. If you are using an Ethernet switch/hub disconnect the uplink cable from the network device. If the device is connected via Wi-Fi, disconnect the uplink cable from the wireless access point connection:
+2. While performing the following actions, disconnect the WAN network. If you're using an Ethernet switch/hub disconnect the uplink cable from the network device. If the device is connected via Wi-Fi, disconnect the uplink cable from the wireless access point connection:
     * Creating a new save point
     * Loading a save point
     * Reaching an auto-save point
@@ -542,7 +542,7 @@ In the event that the console is unable to reach Xbox services, the title should
 
 **Pass Examples**  
  1. The title displays an error message indicating loss of network connection to Xbox services.
-2. The title does not display an error message while playing a local game mode that does not require Xbox services.  
+2. The title doesn't display an error message while playing a local game mode that doesn't require Xbox services.  
 3. A title with `RequireXboxLive` in AppX manifest suspends and then terminates when connectivity is lost.
 
 **Fail Examples**  
@@ -568,7 +568,7 @@ In the event the device loses connection to Xbox services, the title should resp
 
 **Pass Examples**  
 1. The title displays a user-friendly message while in online game mode.
-2. The title does not interrupt gameplay during offline game mode. 
+2. The title doesn't interrupt gameplay during offline game mode. 
 3. A title with `RequireXboxLive` in AppX manifest suspends and then terminates when connectivity is lost. 
 
 **Fail Examples**  
@@ -578,7 +578,7 @@ In the event the device loses connection to Xbox services, the title should resp
 
 #### 074-03 Suspend Disconnection to Xbox Services
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -598,7 +598,7 @@ In the event that the console is unable to reach Xbox services after being suspe
 
 **Pass Examples**  
 1. During an online Xbox multiplayer session, the title displays an error message indicating loss of network connection to Xbox services.
-2. The title does not display an error message while playing a local game mode that does not require Xbox services.  
+2. The title doesn't display an error message while playing a local game mode that doesn't require Xbox services.  
 
 **Fail Examples**  
 1. The user is unable to complete a non-online Xbox game session.
@@ -607,7 +607,7 @@ In the event that the console is unable to reach Xbox services after being suspe
 
 #### 074-04 Xbox Service Re-connection During Suspend
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -630,7 +630,7 @@ In the event that the console is unable to reach Xbox services after being suspe
 
 **Pass Examples**  
 1. The user is able to resume the title and complete an offline Xbox game session without interruption.
-2. The title remains stable and does not crash.  
+2. The title remains stable and doesn't crash.  
 
 **Fail Examples**  
 1. The user is unable to complete a non-online Xbox game session.
@@ -656,7 +656,7 @@ Titles must not crash or cause user data loss when user's internet connection dr
 
 **Pass Examples**  
 1. User-friendly message is displayed indicating possible impact to online play due to low bandwidth.
-2. Title does not crash and does not cause a loss of user data.  
+2. Title doesn't crash and doesn't cause a loss of user data.  
 
 **Fail Examples**  
 1. Title crashes or causes user data loss.  
@@ -681,7 +681,7 @@ Titles must not crash or cause user data loss when user's internet connection dr
 
 **Pass Examples**  
 1. User-friendly message is displayed indicating possible impact to online play due to low bandwidth.
-2. Title does not crash and does not cause a loss of user data.  
+2. Title doesn't crash and doesn't cause a loss of user data.  
 
 **Fail Examples**  
 1. Title crashes or causes user data loss.  
@@ -711,7 +711,7 @@ Titles must not crash or cause user data loss when user's internet connection dr
 >This ensures the title connects to all hosts during normal gameplay.
 >
 >2. In Fiddler, identify which hosts are non-Microsoft services:
->    * Sort the list of sessions by Host and find hosts that DO NOT contain any of the following:
+>    * Sort the list of sessions by Host and find hosts that Don't contain any of the following:
 >      * `microsoft, msft, xboxlive, xboxservices, live, PlayFabApi, msn, bing`
 >
 >3. In Fiddler, add the Non Microsoft hosts to the block list:
@@ -733,13 +733,13 @@ Titles must not crash or cause user data loss when user's internet connection dr
     * Friends List
     * In-title Store
     * Limited time events
-3. Verify the title does not display an error message indicating an issue with the Xbox network.
+3. Verify the title doesn't display an error message indicating an issue with the Xbox network.
 
 **Expected Result**  
 The title gracefully handles disconnections to non-Microsoft services.
 
 **Pass Examples**  
-1. Title does not hang or crash upon loss of connectivity to partner-hosted services.
+1. Title doesn't hang or crash upon loss of connectivity to partner-hosted services.
 
 **Fail Examples**  
 1. Message displayed implies issues with Microsoft services.
@@ -764,10 +764,10 @@ The title gracefully handles disconnections to non-Microsoft services.
 6. Access non-Microsoft online feature.  
 
 **Expected Result**  
-Titles should provide a user-friendly error message indicating that there is a problem reaching the non-Microsoft service and should allow an opportunity to retry connection.  
+Titles should provide a user-friendly error message indicating that there's a problem reaching the non-Microsoft service and should allow an opportunity to retry connection.  
 
 **Pass Examples**  
-1. Title does not hang or crash upon loss of connectivity to the partner-hosted service.  
+1. Title doesn't hang or crash upon loss of connectivity to the partner-hosted service.  
 
 **Fail Examples**  
 1. Error displayed implies issues with Microsoft service.
@@ -776,20 +776,20 @@ Titles should provide a user-friendly error message indicating that there is a p
 
 ### <a id='XR132'></a>[XR-132: Service Access Limitations](../XR/XR132.md) \*
 
-Titles which exceed [title and user based limits](../../../services/develop/best-practices/live-fine-grained-rate-limiting.md) when calling Xbox network services or do not adhere to Xbox network service retry policies may be subjected to rate limiting, which may result in service interruption or deprecation. Failure to adhere to the specified limits may block a title from release, and in-production issues with released titles may result in Xbox network services suspension up to and including title removal.
+Titles which exceed [title and user based limits](../../../services/develop/best-practices/live-fine-grained-rate-limiting.md) when calling Xbox network services or don't adhere to Xbox network service retry policies may be subjected to rate limiting, which may result in service interruption or deprecation. Failure to adhere to the specified limits may block a title from release, and in-production issues with released titles may result in Xbox network services suspension up to and including title removal.
 
 #### 132-01 Service Access Limitations
 
 **Tools Needed**  
 
 * [Fiddler on console](../../../features/console/networking/tools/fiddler-setup-networking.md) or [Fiddler on PC](../../../features/console/networking/tools/fiddler-pc.md)
-* [Xbox services Trace Analyzer](https://aka.ms/xboxlivetoolspackage) from the GDK development tools download package. It is used to review service calls made by a title and to find any violations in calling patterns.  
+* [Xbox services Trace Analyzer](https://aka.ms/xboxlivetoolspackage) from the GDK development tools download package. It's used to review service calls made by a title and to find any violations in calling patterns.  
 
 **Test Steps**  
 
 **Using Fiddler Classic**
 
-1. Prior to launching the title, start Fiddler Classic and ensure it is configured to capture network traffic from the console or Windows 10 PC (wherever the title in question is running from).
+1. Before launching the title, start Fiddler Classic and ensure it's configured to capture network traffic from the console or Windows 10 PC (wherever the title in question is running from).
 2. With Fiddler Classic running and capturing network traffic, launch the title and proceed to move through all areas, including, but not limited to, the following:
    * Create a game save, reboot the console and load the game save
    * Change rich presence states in quick succession (if possible)
@@ -805,7 +805,7 @@ Titles which exceed [title and user based limits](../../../services/develop/best
 5. Open the output directory from step 4 and open the 'index' file (select 'Allow blocked content' if prompted).
 
 **Using _xbtrace.exe_**  
- *xbtrace.exe* cannot start until the title is launched, but it should be started as quickly as possible in order to capture any Xbox service calls the title makes during start up. Due to this, the preferred method for capturing title traffic is Fiddler Classic as it can be started prior to launching the title.
+ *xbtrace.exe* can't start until the title is launched, but it should be started as quickly as possible in order to capture any Xbox service calls the title makes during start up. Due to this, the preferred method for capturing title traffic is Fiddler Classic as it can be started before launching the title.
 
 1. With the title running, run `xbtrace start xboxliveservices` and proceed to move through all areas of the title, including, but not limited to, the following:
    * Create a game save, reboot the console and load the game save
@@ -818,7 +818,7 @@ Titles which exceed [title and user based limits](../../../services/develop/best
    * Create, save and share a game clip
    * Access the in-game store (if applicable)
 2. Once test has concluded, `run xbtrace stop` twice.
-3. Browse your console's files and in SystemScratch > xbtrace you will find the csv. Check the time stamp to make sure it registers the time you stopped recording. Copy it locally.
+3. Browse your console's files and in SystemScratch > xbtrace you'll find the csv. Check the time stamp to make sure it registers the time you stopped recording. Copy it locally.
 4. In the XDK command prompt, run `Xbltraceanalyzer -data filepath -outputdir filepath`.
 5. Open the output directory from step 4 and open the 'index' file (select 'Allow blocked content' if prompted).
 
@@ -829,13 +829,13 @@ The Xbox services Trace Analyzer tool generates a _report.txt_ file which indica
 
 > [!Tip]
 > **Interpreting the Xbox services Trace Analyzer report**
-> * Red - Indicates an issue that is exceeding the point at which fine grained rate limiting takes effect by 10x. This is a serious issue in Certification.
-> * Yellow - Indicates that the service is being rate limited because the title exceeds the frequency with which calls are allowed to the service but does not exceed the threshold that would be a serious issue in Certification. These are something titles should look to resolve.
+> * Red - Indicates an issue that's exceeding the point at which fine grained rate limiting takes effect by 10x. This is a serious issue in Certification.
+> * Yellow - Indicates that the service is being rate limited because the title exceeds the frequency with which calls are allowed to the service but doesn't exceed the threshold that would be a serious issue in Certification. These are something titles should look to resolve.
 > * Green - Indicates that the title is making calls to Xbox services below the frequency at which rate limiting would take effect.
 
 **Pass Examples**
 
-1. The title does not exceed the sustain limit when calling Xbox services.
+1. The title doesn't exceed the sustain limit when calling Xbox services.
 2. The Xbox services Trace Analyzer report only contains yellow and/or green results.
 
 **Fail Examples**
@@ -866,7 +866,7 @@ Games must not trigger the Game Event Limitations system toast.
 
 **Pass Examples**
 
-1. The title does not trigger the Game Event Limitations system toast.
+1. The title doesn't trigger the Game Event Limitations system toast.
 
 **Fail Examples**
 
@@ -876,7 +876,7 @@ Games must not trigger the Game Event Limitations system toast.
 
 ### XR-133: Local Storage Write Limitations \*
 
-Titles which use local storage must not exceed 1 GiB of total writes to persistent local storage or temporary storage in a 5 minute increment of time.
+Titles that use local storage must not exceed 1 GiB of total writes to persistent local storage or temporary storage in a 5-minute increment of time.
 
 For more information on local storage on Xbox consoles with the GDK, read the [Local Storage section](../../../features/console/storage/local-storage.md)
 
@@ -894,7 +894,7 @@ Games must not trigger the Local Storage Write Limitations system toast.
 
 **Pass Examples**
 
-1. The title does not trigger the Local Storage Write Limitations system toast.
+1. The title doesn't trigger the Local Storage Write Limitations system toast.
 
 **Fail Examples**
 
@@ -918,14 +918,14 @@ If publisher account sign in is enabled within the title, the following rules ap
 
 * **Accommodate All Users**  
   If a publisher account sign in is required for game features (single player, multiplayer, cross network gameplay, leader boards), sign in and sign up must support all user types, ages, and regions where the game title is offered and where those features are allowed by local/regional laws irrespective of age rating.
-    * A game publisher may choose not to support a particular region, age, etc. for their publisher account. If a region, age group, or other group of players cannot create or sign into an account the title cannot require those users to sign in with an account for game features.  
-    * If a particular account setting is not supported in a title-based sign-up experience (e.g., age or region) the title must gracefully handle by providing messaging to sign up on an external site or mobile optimized experience where that user is supported.  
+    * A game publisher may choose not to support a particular region, age, etc. for their publisher account. If a region, age group, or other group of players can't create or sign into an account the title can't require those users to sign in with an account for game features.  
+    * If a particular account setting isn't supported in a title-based sign-up experience (for example, age or region) the title must gracefully handle by providing messaging to sign up on an external site or mobile optimized experience where that user is supported.  
 
 * **Gain Consent and Provide Terms for Account Information Usage**  
-  Titles must request to use and gain consent to use information from the player's Microsoft account to auto populate sign up/account creation experiences. Users must be provided with all applicable terms of use, privacy and other policies within the title (or a notice with a link to such information) during a publisher account creation process.  
+  Titles must request to use and gain consent to use information from the player's Microsoft account to auto populate sign up/account creation experiences. Users must be provided with all applicable terms of use, privacy, and other policies within the title (or a notice with a link to such information) during a publisher account creation process.  
 
 * **Disclose Requirements**  
-  If a publisher account is required for gameplay or additional features, it must be disclosed in the title's product description and any physical packaging including any restrictions such as age. In title, the game must define the reason and use of the publisher account. If a publisher account limits or restricts the experience for child accounts, it is suggested to add this text to the store details page for buyer awareness:
+  If a publisher account is required for gameplay or additional features, it must be disclosed in the title's product description and any physical packaging including any restrictions such as age. In title, the game must define the reason and use of the publisher account. If a publisher account limits or restricts the experience for child accounts, it's suggested to add this text to the store details page for buyer awareness:
 > _Certain features of the game, including online multiplayer, communication and other online features, may not be accessible by Xbox child accounts. At Xbox, a child means players under the age of 13, unless local laws specify differently._
 
 **Publisher Account/Microsoft Account Linking**  
@@ -934,13 +934,13 @@ If publisher account sign in is enabled within the title, the following rules ap
   XSTS tokens must be used to provide identity information for authentication when linking the user's publisher account to the user's Microsoft account. For more information about XSTS token authentication see [Xbox services authentication for title services](../../../services/fundamentals/s2s-auth-calls/service-authentication/live-title-service-authentication.md).
   
 * **Gain Consent and Provide Choice**  
-  Users must be notified of the account linking of the user's publisher account to the user's Microsoft account.  The user must be given the choice to opt-out if linking their accounts. Users must have the ability to de-link accounts. 
+  Users must be notified of the account linking of the user's publisher account to the user's Microsoft account. The user must be given the choice to opt-out if linking their accounts. Users must have the ability to de-link accounts. 
   
 * **Accommodate All Users**  
   If a publisher account sign in is required for game features (Single player, multiplayer, cross network gameplay, leader boards), sign in and sign up must support all user types, ages, and regions where the game title is offered and where those features are allowed by local/regional laws irrespective of age rating. 
 
 > [!Note]
-> Publishers may implement additional fraud prevention mechanisms such as two-factor authentication interrupts when a linked account signs in from a new device for the first time. This behavior is not a violation of this XR.
+> Publishers may implement additional fraud prevention mechanisms such as two-factor authentication interrupts when a linked account signs in from a new device for the first time. This behavior isn't a violation of this XR.
 
 #### 013-01 Linking Microsoft Accounts with Publisher Accounts
 
@@ -948,21 +948,21 @@ If publisher account sign in is enabled within the title, the following rules ap
 
 1. Verify the title supports or requires non-Xbox accounts or login for services or functionality.
 2. Using a newly created Xbox profile, use the publisher provided service account or login to enter non-Xbox account credentials during initial setup.
-3. Verify the title allows the user to view the terms of use in the app or informs the user how to view the terms of use, prior to completing the account linking process.
-4. Verify that the user is not prompted to re-enter their non-Xbox account credentials in any location.
+3. Verify the title allows the user to view the terms of use in the app or informs the user how to view the terms of use, before completing the account linking process.
+4. Verify that the user isn't prompted to re-enter their non-Xbox account credentials in any location.
 5. Sign out and sign back in while the title is running.
 6. Repeat Step [4].
 7. Terminate and reactivate the title using the same profile.
 8. Repeat Step [4].
 9. Terminate the title.
-10. Verify that the title does not store non-Xbox account credentials locally by deleting any saved files that may have been created by the title.
+10. Verify that the title doesn't store non-Xbox account credentials locally by deleting any saved files that may have been created by the title.
 11. Reactivate the title and repeat Step [4].
 12. On a different console, launch the title using the same profile and repeat Step [4].
 13. Verify the user can unlink their Xbox profile from the non-Xbox account.
 14. Repeat steps [1]-[13] with an Xbox child account (under the age of 13) that falls within the games' age rating.
 
 **Expected Result**  
-Titles must allow publisher accounts to be created for all users who fall within the games' age rating. The user should only have to provide their credentials once and allows the user to view the terms of use, or informs the user how to view the terms of use, prior to completing the account linking process. Users are provided with a mechanism to unlink their Xbox profile from their non-Xbox account.  
+Titles must allow publisher accounts to be created for all users who fall within the games' age rating. The user should only have to provide their credentials once and allows the user to view the terms of use, or informs the user how to view the terms of use, before completing the account linking process. Users are provided with a mechanism to unlink their Xbox profile from their non-Xbox account.  
 
 **Pass Examples**  
 1. The title never asks the user to re-enter their non-Xbox account or login credentials at any point after they have initially entered them and the title provides a notification of the terms of use both during the linking process and for as long as the accounts are linked.
@@ -971,9 +971,9 @@ Titles must allow publisher accounts to be created for all users who fall within
 **Fail Examples**  
 1. The title requires the user to enter their non-Xbox account or login credentials every time the title is launched.
 2. The title requires the user to enter their non-Xbox account or login credentials when running the title from another console.
-3. The title does not provide a method for viewing the terms of use during the account linking process.
-4. The title does not provide a method for unlinking their Xbox profile from their non-Xbox account.
-5. The title does not allow publisher accounts to be created for all users who fall within the games' age rating.
+3. The title doesn't provide a method for viewing the terms of use during the account linking process.
+4. The title doesn't provide a method for unlinking their Xbox profile from their non-Xbox account.
+5. The title doesn't allow publisher accounts to be created for all users who fall within the games' age rating.
 
 <a id='XR014'></a>
 
@@ -1008,7 +1008,7 @@ When collecting data from accounts in the Child or Teen Age Group, titles may on
 
 #### Definitions
 
-Address is any information that can identify a user's location to the level of city or town. This includes, but is not limited to, the following: 
+Address is any information that can identify a user's location to the level of city or town. This includes, but isn't limited to, the following: 
 
 * Physical address 
 * Mailing address 
@@ -1021,27 +1021,27 @@ Address is any information that can identify a user's location to the level of c
 
 **Test Steps**
 
-1.    Visit all areas of the title, including all possible Xbox multiplayer sessions. 
-2.    Visit all areas where content might be saved or otherwise sent across the Xbox network, or to a title server.
+1. Visit all areas of the title, including all possible Xbox multiplayer sessions. 
+2. Visit all areas where content might be saved or otherwise sent across the Xbox network, or to a title server.
 
 **Expected Result**  
 Titles must never display personal information about another user as detailed in the body of the XR.
 
 **Pass Examples**
 
-1.    The title displays and shares country of residence information with a user on another console.
-2.    The title uses the user's IP address to define the user's general location (no more specific than state or country/region) and displays that location to other users on the leaderboards.
+1. The title displays and shares country of residence information with a user on another console.
+2. The title uses the user's IP address to define the user's general location (no more specific than state or country/region) and displays that location to other users on the leaderboards.
 
 **Fail Examples**
 
-1.    The title transmits and shares a user's personal information with users on other consoles.
+1. The title transmits and shares a user's personal information with users on other consoles.
    _Examples_: Email address, location (anything more specific than state/country/region), name, date of birth, profile passcode, secret question, password(s), credit card details.
 
 #### 014-02 Data Collection
 
 **Test Steps**
 
-1.    Launch the title using a Child or Teen account.
+1. Launch the title using a Child or Teen account.
 2. Visit all areas of the title, including all possible single and Xbox multiplayer game modes.    
 3. Check to see what data is being requested from the user.
 
@@ -1053,29 +1053,29 @@ Titles must not request data from a Child or Teen user beyond what is needed for
 
 **Pass Examples**
 
-1.    The title does not request any data from the Child or Teen user.
-2.    The title requests the birth date of the user and states what the data will be used for.
-3.    The title requests an email address for a parent and states what the data will be used for.
+1. The title doesn't request any data from the Child or Teen user.
+2. The title requests the birth date of the user and states what the data will be used for.
+3. The title requests an email address for a parent and states what the data will be used for.
 4. The title requests an email address for account linking and states what the data will be used for.
 
 **Fail Examples**
 
-1.    The title asks for data that could be used for purposes other than verifying age, acquiring parental consent or publisher account linking.
-2.    The title requests the birth date of the user and does not state what the data will be used for.
-3.    The title requests an email address for a parent and does not state what the data will be used for.
-4. The title requests an email address for account linking and does not state what the data will be used for.
+1. The title asks for data that could be used for purposes other than verifying age, acquiring parental consent or publisher account linking.
+2. The title requests the birth date of the user and doesn't state what the data will be used for.
+3. The title requests an email address for a parent and doesn't state what the data will be used for.
+4. The title requests an email address for account linking and doesn't state what the data will be used for.
 
 <a id='XR015'></a>
 
 ### [XR-015: Managing Player Communication](../XR/XR015.md) \*
 
-Titles must not allow communication over the Xbox network when the user's privacy settings do not allow it. 
+Titles must not allow communication over the Xbox network when the user's privacy settings don't allow it. 
 
-Titles meet this XR by retrieving data from Xbox network services. If the title uses its own services, it must check the user's privacy permissions at the beginning of a session or when a new user joins the session. For user-initiated scenarios outside of sessions, titles meet this requirement by checking privacy prior to displaying the user's data and before performing the action. The following permissions are available for titles to check: 
+Titles meet this XR by retrieving data from Xbox network services. If the title uses its own services, it must check the user's privacy permissions at the beginning of a session or when a new user joins the session. For user-initiated scenarios outside of sessions, titles meet this requirement by checking privacy before displaying the user's data and before performing the action. The following permissions are available for titles to check: 
 
 | Permission name |Description |
 |-------------------|----------|
-|CommunicateUsingText | Check whether the user can send text communications (e.g., text chat, message, etc.) or an invite to the target user.
+|CommunicateUsingText | Check whether the user can send text communications (for example, text chat, message, etc.) or an invite to the target user.
 |CommunicateUsingVoice | Check whether the user can communicate using voice with the target user.
 
 During the gameplay session, titles which offer communication between Xbox network and non-Xbox network players must offer the ability to mute any non-Xbox network players for the duration of the session.
@@ -1101,19 +1101,19 @@ During the gameplay session, titles which offer communication between Xbox netwo
 4. Repeat Steps 1-3 for all profiles from the Configuration step.
 
 **Expected Result**  
-Titles must check the Xbox service for a user's permissions regarding privacy and online safety-related actions and must not transmit user data or allow communication over Xbox when the user's privacy & online safety settings do not allow it.
+Titles must check the Xbox service for a user's permissions regarding privacy and online safety-related actions and must not transmit user data or allow communication over Xbox when the user's privacy & online safety settings don't allow it.
 
 **Pass Examples**
 
 1. The title prevents the user from communicating via voice and text over Xbox when that specific method of communication is configured to be blocked.
 2. The title prevents the user from communicating via voice and text outside of Xbox when that specific method of communication is configured to be blocked.
-3. The title prevents the user from receiving multiplayer game invites on Xbox when that is blocked.
+3. The title prevents the user from receiving multiplayer game invites on Xbox when that's blocked.
 
 **Fail Examples**
 
 1. The user is able to communicate via voice and text over Xbox when that specific method of communication is configured to be blocked.
 2. The user is able to communicate via voice and text outside of Xbox when that specific method of communication is configured to be blocked.
-3. The title allows the user to receive multiplayer game invites on Xbox when that is blocked.
+3. The title allows the user to receive multiplayer game invites on Xbox when that's blocked.
 
 #### 015-02 Muting Support
 
@@ -1129,7 +1129,7 @@ User A must not be able to hear communication from user B.
 
 **Pass Examples**
 
-1. Voice communication from the muted user cannot be heard by the user who initiated the mute.
+1. Voice communication from the muted user can't be heard by the user who initiated the mute.
 
 **Fail Examples**
 
@@ -1150,8 +1150,8 @@ User A must not be able to hear or see communication from user B. User A must no
 
 **Pass Examples**
 
-1. Communication from the blocked user cannot be seen or heard by the user who initiated the block.  
-2. Multiplayer game invitations from the blocked user are not received by the user who initiated the block.
+1. Communication from the blocked user can't be seen or heard by the user who initiated the block.  
+2. Multiplayer game invitations from the blocked user aren't received by the user who initiated the block.
 
 **Fail Examples**
 
@@ -1178,24 +1178,24 @@ This [white paper](../XR/XR017.md) focuses on two essential concepts as they per
 
 1. The title must be a disc submission and test discs must be available to run Test Steps #2 and #3.
    * Final (Base/Content Update) - Certificates are required for all locales that require a certificate.
-   * Out of Scope/No Testing required - DLC, in-game content, titles that cannot launch without a connection to Xbox Live services.
+   * Out of Scope/No Testing required - DLC, in-game content, titles that can't launch without a connection to Xbox Live services.
 2. The Submission Materials (Certificates)
 3. Title's age ratings as declared in Microsoft Partner Center
 
 **Test Steps**
 
 1. Perform a comparison of the ratings values in Microsoft Partner Center against the ratings certificates supplied in the title's submission materials, and vice versa. This is done to make sure that each ratings value has a corresponding certificate and that each certificate is accounted for in Partner Center.
-   * All ratings values in Partner Center should have a matching certificate. If any do not, this possibly highlights a mistake and must therefore be escalated.
-2. TEST DISCS REQUIRED - Insert the disc media into a dedicated offline console set to RETAIL and install the title, ensuring that the console is not connected to Xbox Live services at any point during test.
+   * All ratings values in Partner Center should have a matching certificate. If any don't, this possibly highlights a mistake and must therefore be escalated.
+2. TEST DISCS REQUIRED - Insert the disc media into a dedicated offline console set to RETAIL and install the title, ensuring that the console isn't connected to Xbox Live services at any point during test.
 3. For each ratings body supported by the title: set the offline console to one Location/Country governed by that ratings body within the console Settings, sign into an Xbox profile with the corresponding age restriction enabled, and launch the title to verify that:
    * The system challenges the user if the profile's age rating value is set lower than the title's age rating certificate.
-   * The system does not challenge the user and the title boots beyond the first legal/license screen if the profile's age rating value is equal to the title's age rating certificate.
+   * The system doesn't challenge the user and the title boots beyond the first legal/license screen if the profile's age rating value is equal to the title's age rating certificate.
 
 **Expected Result**  
  With a console Location matching each of the supported age-rating regions of the title:
 
-* The title must challenge the user when launched with a console age rating value that is set lower than the title's age rating certificate value.
-* The title must boot without challenging the user when launched with an age rating value that is set equal to the title's age rating certificate value.
+* The title must challenge the user when launched with a console age rating value that's set lower than the title's age rating certificate value.
+* The title must boot without challenging the user when launched with an age rating value that's set equal to the title's age rating certificate value.
 
 <a id='XR018'></a>
 
@@ -1207,13 +1207,13 @@ If your product contains UGC, you must:
 
 * Provide an in-product means for users to report inappropriate or harmful UGC to the developer for review and removal/disablement (if in violation of content guidelines) and/or implement a method for proactive detection of inappropriate or harmful UGC (for example, text filtering).
 * Publish content guidelines for user generated content (such as a terms of use or code of conduct), available to users either in-product or on the title's website.
-* Be prepared to remove/disable high-risk illegal content at the request of Microsoft in the unlikely event that Microsoft becomes aware of illegal material on the Xbox network that has not been addressed via standard action mechanisms or processes.
-* Respect player UGC settings and gracefully handle scenarios in which a user does not have access to UGC in-game due to restricted privileges.
+* Be prepared to remove/disable high-risk illegal content at the request of Microsoft in the unlikely event that Microsoft becomes aware of illegal material on the Xbox network that hasn't been addressed via standard action mechanisms or processes.
+* Respect player UGC settings and gracefully handle scenarios in which a user doesn't have access to UGC in-game due to restricted privileges.
 
 Additionally, if your product is integrated with a third-party game mod platform, you must:  
 
 * Integrate with the platform's report/complaint API (if available) and moderate content if required by contractual agreement with the third party.
-* Present a disclaimer, dialog, or visual indicator to users when content is not sourced from the developer.
+* Present a disclaimer, dialog, or visual indicator to users when content isn't sourced from the developer.
 
 #### 018-01 Reporting Inappropriate Content and UGC Text-String Verification
 
@@ -1221,40 +1221,40 @@ Additionally, if your product is integrated with a third-party game mod platform
 
 1. Identify any areas of the title where text can be entered between non friends and is then viewable by users on another device.
 2. Verify the title provides an in-product way to report other users' inappropriate or harmful UGC to the developer.
-3. If there is no way to report inappropriate content, in each area, enter a string, sub string, etc. that is in the [Forbidden Terms List](/gaming/xbox-nda-docs/_content/gc/policies/console/certification-forbidden-terms).
+3. If there's no way to report inappropriate content, in each area, enter a string, sub string, etc. that's in the [Forbidden Terms List](/gaming/xbox-nda-docs/_content/gc/policies/console/certification-forbidden-terms).
 
     * Enter the forbidden term directly (i.e. "ForbiddenTerm").
     * Enter a forbidden term with another non-forbidden term separated by a space i.e. ("Good ForbiddenTerm").
 
-4. If the title allows UGC to be created in an offline state, e.g. character names, disconnect the device from the network, enter forbidden term combinations and reconnect to the network.
-5. Verify that the forbidden term is not visible to any other user on another device.
+4. If the title allows UGC to be created in an offline state, for example character names, disconnect the device from the network, enter forbidden term combinations and reconnect to the network.
+5. Verify that the forbidden term isn't visible to any other user on another device.
 6. Repeat Steps 3-5 in each language supported by the title using forbidden terms from the matching locale.  
 
 **Expected Result**  
 The title must provide an in-product way for users to report inappropriate or harmful UGC to the developer and/or implement a method for proactive detection of inappropriate or harmful UGC (for example, text filtering using the [StringService](/dotnet/api/microsoft.xbox.services.system.stringservice) API). Inappropriate or harmful content must either be blocked or obfuscated from non-local players on Xbox services.  
 
-Xbox gamertags are exempt from UGC requirements and should not be subject to text filtration, title-managed report options, or obfuscation due to a restricted UGC privilege.  
+Xbox gamertags are exempt from UGC requirements and shouldn't be subject to text filtration, title-managed report options, or obfuscation due to a restricted UGC privilege.  
 
 Guidelines for UGC, such as a terms of use or code of conduct, are available to users either in-product or on the title's website.
 
 Titles must not block entire game modes or experiences for users with restricted UGC privileges.
 
 **Pass Examples**  
-1. Xbox gamertags are not filtered, obfuscated or subject to in-title reporting.
-2. Cross-network usernames, publisher-managed usernames, custom character names or clan/squad/guild names are not obfuscated.
+1. Xbox gamertags aren't filtered, obfuscated or subject to in-title reporting.
+2. Cross-network usernames, publisher-managed usernames, custom character names or clan/squad/guild names aren't obfuscated.
 3. The title provides an in-product way for users to report inappropriate or harmful UGC to the developer.
 4. The title prevents posting of inappropriate or harmful UGC and notifies the user for the reason the posting failed.
 5. The title replaces inappropriate or harmful text with words or characters, such as _Content Blocked_, or _$!*#&_.
-6. User entered text which is shared real time in game, such as a lobby or in-game text overlay, or only between friends is not filtered. 
-7. Inappropriate or harmful text strings are visible to users on the local console but are not transmitted to other non-friends beyond the local console.
+6. User entered text which is shared real time in game, such as a lobby or in-game text overlay, or only between friends isn't filtered. 
+7. Inappropriate or harmful text strings are visible to users on the local console but aren't transmitted to other non-friends beyond the local console.
 8. Guidelines for UGC, such as a terms of use or code of conduct, are available to users either in-product or on the title's website.
-9. The title does not block entire game modes or experiences for users with restricted UGC privileges.
+9. The title doesn't block entire game modes or experiences for users with restricted UGC privileges.
 
 **Fail Examples**  
 1. Xbox gamertags are filtered or obfuscated.
-2. The title does not provide a way for users to report inappropriate or harmful UGC to the developer or allows inappropriate or harmful UGC to be visible to non-friends on other devices.
+2. The title doesn't provide a way for users to report inappropriate or harmful UGC to the developer or allows inappropriate or harmful UGC to be visible to non-friends on other devices.
 3. The title allows the user to circumvent inappropriate or harmful UGC filtering by creating UGC in an offline state and subsequently sharing it online.
-4. Guidelines for UGC (such as a terms of use or code of conduct), are not available to users either in-product or on the title's website.
+4. Guidelines for UGC (such as a terms of use or code of conduct), aren't available to users either in-product or on the title's website.
 5. The title blocks entire game modes or experiences for users with restricted UGC privileges.
 
 <a id='ContentPackagesAndUpdates'></a>
@@ -1267,7 +1267,7 @@ The requirements in this category specify how Xbox One game titles must be packa
 
 ### XR-034: Streaming Install Initial Play Marker \*
 
-Titles which include an initial play marker must provide a gameplay experience when launched from the initial play marker.
+Titles that include an initial play marker must provide a gameplay experience when launched from the initial play marker.
 
 For more information on Streaming Install or Intelligent Delivery with the GDK, read the [Streaming Install and Intelligent Delivery](../../../features/common/packaging/overviews/streaming_install-intelligent_delivery.md) overview.
 
@@ -1288,7 +1288,7 @@ Initial play marker installation must provide a gameplay experience (such as a t
 
 **Fail Examples**
 
-1. After the initial play marker is installed, the title does not provide a gameplay experience. Failing experiences include:
+1. After the initial play marker is installed, the title doesn't provide a gameplay experience. Failing experiences include:
    * Just showing a progress bar
    * Playing videos and/or a sequence of images
    * Only providing access to the Main Menu
@@ -1298,7 +1298,7 @@ Initial play marker installation must provide a gameplay experience (such as a t
 
 ### [XR-129: Intelligent Delivery Content Management](../XR/XR129.md) \*
 
-Titles that support Intelligent Delivery must handle scenarios gracefully when content that is not currently installed is needed. Titles can accomplish this by calling `PackageInstallChunksAsync` in the GDK or `AddChunkSpecifiersAsync` in the XDK when additional content needs to be installed from disc or the Xbox network.
+Titles that support Intelligent Delivery must handle scenarios gracefully when content that isn't currently installed is needed. Titles can accomplish this by calling `PackageInstallChunksAsync` in the GDK or `AddChunkSpecifiersAsync` in the XDK when additional content needs to be installed from disc or the Xbox network.
 
 For more information on Streaming Install or Intelligent Delivery with the GDK, read the [Streaming Install and Intelligent Delivery overview](../../../features/common/packaging/overviews/streaming_install-intelligent_delivery.md)
 
@@ -1328,12 +1328,12 @@ The expected language packs are installed as expected.
 
 1. The title installs the expected language pack based on the console language setting.
 2. Selecting a different language from a menu option installs the correct language pack.
-3. The title remains stable and does not crash or become un-responsive.  
+3. The title remains stable and doesn't crash or become un-responsive.  
 
 **Fail Examples**
 
-1. The title does not install the expected language pack based on the console language setting.
-2. Selecting a different language from a menu option does not install the correct language pack.
+1. The title doesn't install the expected language pack based on the console language setting.
+2. Selecting a different language from a menu option doesn't install the correct language pack.
 3. The title crashes or becomes un-responsive.  
 
 #### 129-02 Intelligent Delivery of Device specific Content
@@ -1360,11 +1360,11 @@ The expected device specific content is installed as expected.
 **Pass Examples**
 
 1. The title installs the expected device specific content.
-2. The title remains stable and does not crash or become un-responsive.  
+2. The title remains stable and doesn't crash or become un-responsive.  
 
 **Fail Examples**
 
-1. The title does not install the expected device specific content.
+1. The title doesn't install the expected device specific content.
 2. The title crashes or becomes un-responsive.  
 
 #### 129-03 Migration of Device Specific Content
@@ -1395,7 +1395,7 @@ The expected device specific content is installed as expected.
 **Pass Examples**
 
 1. The title installs the expected device specific content.
-2. The title remains stable and does not crash or become un-responsive.  
+2. The title remains stable and doesn't crash or become un-responsive.  
 
 **Fail Examples**
 
@@ -1425,11 +1425,11 @@ The on-demand content is installed as expected.
 **Pass Examples**
 
 1. The title installs the on-demand content as expected.
-2. The title remains stable and does not crash or become un-responsive.  
+2. The title remains stable and doesn't crash or become un-responsive.  
 
 **Fail Examples**
 
-1. The title does not install the on-demand content as expected.
+1. The title doesn't install the on-demand content as expected.
 2. The title crashes or becomes un-responsive.  
 
 #### 129-05 Features and Recipes
@@ -1451,17 +1451,17 @@ The on-demand content is installed as expected.
 6. Ensure that any Features contained within the Recipe are installed and accessible within the title.
 
 **Expected Results**  
-The title remains stable when optional content is not installed and the title allows access to optional content when installed.
+The title remains stable when optional content isn't installed and the title allows access to optional content when installed.
 
 **Pass Examples**
 
-1. The title remains stable when optional content is not installed.
+1. The title remains stable when optional content isn't installed.
 2. The title allows access to optional content when installed.
 
 **Fail Examples**
 
-1. The title crashes or becomes un-responsive when optional content is not installed.
-2. The title does not allow access to optional content when installed.
+1. The title crashes or becomes un-responsive when optional content isn't installed.
+2. The title doesn't allow access to optional content when installed.
 
 <a id='XR123'></a>
 
@@ -1473,7 +1473,7 @@ For more information on accessing and enumerating DLC in game, read the [Downloa
 
 #### 123-01 Installation/Unlock of Game Add-Ons or Consumables During Gameplay
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.
@@ -1485,7 +1485,7 @@ For the purposes of this test case, suspend the game at step 7 by launching the 
 1. Launch the title and proceed into active gameplay.
 2. Initiate a game add-on or consumable purchase from the Xbox Store.
 3. Allow the background download to complete.
-4. Ensure that the user is able to continue with gameplay and the title is not affected by the background download completing.
+4. Ensure that the user is able to continue with gameplay and the title isn't affected by the background download completing.
 5. Ensure that the content can be used without having to terminate and relaunch the game.
 6. Repeat steps 1-5 with the download completing while the title is constrained.
 7. Repeat steps 1-5 with the download completing while the title is suspended.
@@ -1518,35 +1518,35 @@ The user should be able to see that they have access to the game add-on or consu
 **Pass Examples**
 
 1. The user can see they have access to the content.
-2. If the user tries to play the content, they are notified the title is still installing.  
+2. If the user tries to play the content, they're notified the title is still installing.  
 
 **Fail Examples**
 
-1. The content is not visible.
+1. The content isn't visible.
 2. The content is visible but no reason is given when the user tries to play the content.  
 
 <a id='XR037'></a>
 
 #### [XR-037: Dependencies on Content Packages](../XR/XR037.md) \*
 
-Purchase of add-on content (durable or consumable) must not be required for users to complete any of the main features or content of the base game. Optional content packages must not have dependencies on other optional content packages. That is, a user must not be required to download additional content packages in order to use a content package. Game saves with unique content tied to add-on content must still load on the base game or provide clear messaging explaining why it cannot be loaded.
+Purchase of add-on content (durable or consumable) must not be required for users to complete any of the main features or content of the base game. Optional content packages must not have dependencies on other optional content packages. That's, a user must not be required to download additional content packages in order to use a content package. Game saves with unique content tied to add-on content must still load on the base game or provide clear messaging explaining why it can't be loaded.
 
 #### 037-01 No Content Package Save-Game Dependencies for Base Title
 
 **Test Steps**
 
 1. Sign in to an Xbox profile and launch the title.
-2. Attempt to access all features and content of the base title. Verify that the user is not required to download any add-on content.
+2. Attempt to access all features and content of the base title. Verify that the user isn't required to download any add-on content.
 3. Download an available content package that can be used within the title.
 4. Load and use the content package, progressing far enough to create a content-based game save.
 5. Return to Home and delete the content package.
 6. Launch the title again.
-7. Ensure that the game save can be loaded successfully, and that gameplay can continue, or that the user is clearly informed why it cannot continue.
+7. Ensure that the game save can be loaded successfully, and that gameplay can continue, or that the user is clearly informed why it can't continue.
 8. Messaging must be clear and inform the user specifically how to troubleshoot the issue.
 9. Repeat Steps 1-8 with all other supported content packages.
 
 **Expected Result**  
-Users must be able to complete any of the main features and/or content of the base title without needing to purchase add-on content. Titles must function correctly, or clearly inform the user why they cannot function correctly, after a user deletes a content package.  
+Users must be able to complete any of the main features and/or content of the base title without needing to purchase add-on content. Titles must function correctly, or clearly inform the user why they can't function correctly, after a user deletes a content package.  
 
 **Pass Examples**
 
@@ -1558,7 +1558,7 @@ Users must be able to complete any of the main features and/or content of the ba
 **Fail Examples**
 
 1. The user is forced to purchase add-on content in order to complete features or content included in the base title. After the user downloads content package 1 and content package 2 during Step 3, the ability to use content package 2 in-game is lost if content package 1 is then deleted.
-2. If a content save game dependency exists and the content is not installed, the game does not clearly message the user indicating that the content needs to be installed to load the game save.  
+2. If a content save game dependency exists and the content isn't installed, the game doesn't clearly message the user indicating that the content needs to be installed to load the game save.  
 
 #### 037-02 No Dependencies on Other Content Packages
 
@@ -1568,16 +1568,16 @@ Users must be able to complete any of the main features and/or content of the ba
 2. Launch the title.
 3. Download a single piece of add-on content that the title supports.
 4. Attempt to use the content within the title.
-5. Verify that the user is not required to download additional content in order to make use of the content from step 3.
+5. Verify that the user isn't required to download additional content in order to make use of the content from step 3.
 6. Exit the title and delete the content from Step 3.
 7. Repeat Steps 2-6 for each piece of content supported by the title.  
 
 **Expected Result**  
-Users must not be required to download additional content packages in order to use a content package.  Content packages must be usable in their own right.  
+Users must not be required to download additional content packages in order to use a content package. Content packages must be usable in their own right.  
 
 **Pass Examples**
 
-1. The title does not require the user to download additional content in order to use a separate content package.  
+1. The title doesn't require the user to download additional content in order to use a separate content package.  
 
 **Fail Examples**
 
@@ -1604,8 +1604,8 @@ Title gracefully handles the presence of a game save that was created with DLC i
 
 **Fail Examples**
 
-1. Title becomes unusable when the DLC is not present.
-2. User is unable to access saved progress and does not receive notification as to the reason.  
+1. Title becomes unusable when the DLC isn't present.
+2. User is unable to access saved progress and doesn't receive notification as to the reason.  
 
 #### 037-04 Multiplayer DLC
 
@@ -1613,26 +1613,26 @@ Title gracefully handles the presence of a game save that was created with DLC i
 
 1. Sign in to an Xbox profile.
 2. Launch the title.
-3. Console A: Download all available downloadable content that is usable in multiplayer gameplay.
+3. Console A: Download all available downloadable content that's usable in multiplayer gameplay.
 4. Console A: Host an Xbox game session using the downloadable content (levels, characters, cars, tracks, and so on).
 5. Console B: Attempt to join the game session created by Console A using all possible methods.
-6. If it is not possible to join the game session, verify that clear indication is given explaining or easily inferring why it is not possible to join.
+6. If it isn't possible to join the game session, verify that clear indication is given explaining or easily inferring why it isn't possible to join.
 7. Repeat Steps 3-6 for all game modes.
 8. Repeat Steps 3-6 with Console B as the host.  
 
 **Expected Result**  
-Titles that support downloadable content required for multiplayer gameplay must provide a clear indication to users who do not have the downloadable content installed.  
+Titles that support downloadable content required for multiplayer gameplay must provide a clear indication to users who don't have the downloadable content installed.  
 
 **Pass Examples**
 
-1. Users are given proper messaging when attempting to join sessions with DLC requirements if they do not meet the requirements and are provided information on how to resolve the issue (download, re-download, etc.).
-2. Through the use of icons and / or other on-screen elements, users are given clear notification when attempting to join sessions with DLC requirements if they do not meet the requirements and are provided, or can easily infer, information on how to resolve the issue (download, re-download, etc.).
+1. Users are given proper messaging when attempting to join sessions with DLC requirements if they don't meet the requirements and are provided information on how to resolve the issue (download, re-download, etc.).
+2. Through the use of icons and / or other on-screen elements, users are given clear notification when attempting to join sessions with DLC requirements if they don't meet the requirements and are provided, or can easily infer, information on how to resolve the issue (download, re-download, etc.).
 3. Users who meet the DLC requirements for a multiplayer match are able to join the sessions and play.  
 
 **Fail Examples**
 
-1. Users who do not meet the DLC requirements of a multiplayer session are not given clear visual indication of the DLC requirement and how to resolve it.
-2. Users who meet DLC requirements of a multiplayer session are not able to join together.
+1. Users who don't meet the DLC requirements of a multiplayer session aren't given clear visual indication of the DLC requirement and how to resolve it.
+2. Users who meet DLC requirements of a multiplayer session aren't able to join together.
 
 <a id='StorePurchases'></a>
 
@@ -1684,7 +1684,7 @@ Titles must establish one or more active users to function as the primary user o
 
 **GDK Simplified User Model Titles**
 
-The Simplified User Model in the GDK handles default user acquisition on behalf of the title.  The title is still responsible to ensure that a controller is assigned to the user and use that controller for game input.  If no controller is assigned to the default user, the title should use XUserFindControllerForUserWithUiAsync to engage the system dialog to select a controller and begin accepting input from the player.
+The Simplified User Model in the GDK handles default user acquisition on behalf of the title. The title is still responsible to ensure that a controller is assigned to the user and use that controller for game input. If no controller is assigned to the default user, the title should use XUserFindControllerForUserWithUiAsync to engage the system dialog to select a controller and begin accepting input from the player.
 
 **GDK Advanced User Model, ERA, and UWP Multiple User Applications**
 
@@ -1726,8 +1726,8 @@ Titles must set the active user to the controller/user pairing which launched th
 3. The title displays the account picker to sign in.
 
 **Fail Examples**  
-1. The title does not allow the user to control the title with the first controller used.
-2. The title does not prompt the user to establish an active user when launched with no user signed in.
+1. The title doesn't allow the user to control the title with the first controller used.
+2. The title doesn't prompt the user to establish an active user when launched with no user signed in.
 
 #### 112-03 No Signed-In User
 
@@ -1735,40 +1735,40 @@ Titles must set the active user to the controller/user pairing which launched th
 1. Verify that no users are signed in.
 2. Launch the title and enter every mode that supports the saving of user data.
 3. Validate that each mode offers the user the opportunity to sign in before any data loss occurs. 
-4. Cancel the opportunity to sign in, and verify that the title provides a warning indicating that progress will not be saved.  
+4. Cancel the opportunity to sign in, and verify that the title provides a warning indicating that progress won't be saved.  
 
 **Expected Result**  
-Titles must offer users the opportunity to sign in if the title is in a mode that would normally save user data or game state. Titles must notify users that their progress will not be saved if they continue with gameplay without signing in  
+Titles must offer users the opportunity to sign in if the title is in a mode that would normally save user data or game state. Titles must notify users that their progress won't be saved if they continue with gameplay without signing in  
 
 **Pass Examples**  
-1. A user who is not signed in is prompted to sign in when accessing a title mode that would normally save user data or game state.
-2. The user is notified that progress will not be saved if he or she continues in mode without signing in.  
+1. A user who isn't signed in is prompted to sign in when accessing a title mode that would normally save user data or game state.
+2. The user is notified that progress won't be saved if he or she continues in mode without signing in.  
 
 **Fail Examples**  
-1. While in a mode that normally saves user data or game state, users are not notified that progress will not be saved if they continue in that mode without signing in.
-2. Users are notified that they will not be able to save their progress after data loss has already occurred.  
+1. While in a mode that normally saves user data or game state, users aren't notified that progress won't be saved if they continue in that mode without signing in.
+2. Users are notified that they won't be able to save their progress after data loss has already occurred.  
 
 #### 112-04 Active User Indication
 
 **Test Steps**  
-1. Sign into a profile that has not seen the title before and has no associated save data.
+1. Sign into a profile that hasn't seen the title before and has no associated save data.
 2. Launch the title.
-3. Verify that the title identifies the active user within the UI prior to performing any profile-related actions. Examples of "profile-related action" include altering a user's saved game or preferences, saving data to the user's profile, awarding achievements, writing statistics for a user, or any other local or cloud usage or manipulation of user data or state.
+3. Verify that the title identifies the active user within the UI before performing any profile-related actions. Examples of "profile-related action" include altering a user's saved game or preferences, saving data to the user's profile, awarding achievements, writing statistics for a user, or any other local or cloud usage or manipulation of user data or state.
 4. Create a save.
-5. Re-launch the title and verify that the title identifies the active user within the UI prior to performing any profile-related actions.
+5. Re-launch the title and verify that the title identifies the active user within the UI before performing any profile-related actions.
 6. Disconnect from Xbox Live.
-7. Re-launch the title and verify that the title identifies the active user within the UI prior to performing any profile-related actions.  
+7. Re-launch the title and verify that the title identifies the active user within the UI before performing any profile-related actions.  
 
 **Expected Result**  
-Titles must indicate the current user context prior to the first profile-related action.  
+Titles must indicate the current user context before the first profile-related action.  
 
 **Pass Examples**  
 1. The title displays the user's gamertag and/or gamerpic within the title before performing any profile-related actions.
-2. A title that does not use user profiles does not indicate the active user.
+2. A title that doesn't use user profiles doesn't indicate the active user.
 3. A title displays multiple active users for game modes that support multiple users.  
 
 **Fail Examples**  
-1. The title does not indicate the active user of the title prior to performing profile-related actions.  
+1. The title doesn't indicate the active user of the title before performing profile-related actions.  
 
 #### 112-05 Access to Account Picker
 
@@ -1783,7 +1783,7 @@ Titles must allow users to access the account picker in the title to change the 
 1. The title allows the user to access the account picker in the title.  
 
 **Fail Examples**  
-1. The title does not allow the user access to the account picker in the title.  
+1. The title doesn't allow the user access to the account picker in the title.  
 
 #### 112-06 Handling Profile Change
 
@@ -1791,17 +1791,17 @@ Titles must allow users to access the account picker in the title to change the 
 1. Sign into a profile and launch the title.
 2. Access the account picker and select a different profile.
 3. Verify that the title reacts appropriately and switches the context of the active user to the new profile.
-4. Repeat steps 1-4 for every location in the title where there is access to the account picker.
+4. Repeat steps 1-4 for every location in the title where there's access to the account picker.
 
 **Expected Result**  
 Titles must allow users to seamlessly change to another user's context.
 
 **Pass Examples**  
-1. The title notifies the user that changing the active user could result in data loss and prompts the user for confirmation prior to proceeding to the account picker.
+1. The title notifies the user that changing the active user could result in data loss and prompts the user for confirmation before proceeding to the account picker.
 2. The title updates appropriately to the context of the new active user.
 
 **Fail Examples**
-1. The title does not appropriately update to the context of the new active user.
+1. The title doesn't appropriately update to the context of the new active user.
 
 #### 112-07 User Change During Constrained Mode
 
@@ -1820,12 +1820,12 @@ When a title is resumed from constrained mode the title must verify if all previ
 2. A game title automatically removes Profile A from the title or reestablishes a new user and uses that new user's state for gameplay. 
 
 **Fail Examples** 
-1. Titles do not update to remove profile A from the context as the active user. 
+1. Titles don't update to remove profile A from the context as the active user. 
 2. A game continues to use Profile A's state for gameplay after a new profile is selected. 
 
 #### 112-08 User Change During Suspension
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -1847,7 +1847,7 @@ For the purposes of this test case, suspend the game at step 2 by launching the 
 2. The game automatically removes profile A from the game or reestablishes a new user and uses that new user's state for gameplay. 
 
 **Fail Examples** 
-1. The game does not update to remove profile A from the context as the active user. 
+1. The game doesn't update to remove profile A from the context as the active user. 
 2. The game continues to use profile A's state for gameplay after a new profile is selected.
 
 <a id='XR115'></a>
@@ -1857,10 +1857,10 @@ For the purposes of this test case, suspend the game at step 2 by launching the 
 Titles which support multiple users must respond to the addition and removal of users or scenarios in which an active player has no controller assigned or a controller loss during gameplay as follows:
 
 **Controller Addition:**  
-After titles have selected or have been provided the initial user and controller, titles can optionally accept input from other controllers. Titles which support multiplayer experiences should consider how an additional player or controller is added into game play and is bound to a user with `XUserAddAsync`. For example, 'Press A to join' or illustrating a controller silhouette on a player select screen.
+After the title selects or receives the initial user and controller, it can optionally accept input from other controllers. Titles that support multiplayer experiences should consider how an additional player or controller is added into game play and is bound to a user with `XUserAddAsync`. For example, 'Press A to join' or illustrating a controller silhouette on a player select screen.
 
 **Controller Removal:**  
-If the player's controller that is driving gameplay is removed during gameplay, titles must allow reestablishment of a new active controller (for example, "Press A to continue" or receiving a `ControllerPairingChanged` in ERA or `XUserDeviceAssociationChangedCallback` event in the GDK for the active user with a valid controller).  Titles can also invoke system UX using `XUserFindControllerForUserWithUiAsync` to prompt the user to pair a controller to their user and return to gameplay.
+If the player's controller that's driving gameplay is removed during gameplay, titles must allow reestablishment of a new active controller (for example, "Press A to continue" or receiving a `ControllerPairingChanged` in ERA or `XUserDeviceAssociationChangedCallback` event in the GDK for the active user with a valid controller). Titles can also invoke system UX using `XUserFindControllerForUserWithUiAsync` to prompt the user to pair a controller to their user and return to gameplay.
 
 **User Addition:**  
 When using ERA or UWP, if a new user signs in, the title can add the user to the title if the title supports a multi-user experience, but the title must not automatically switch active users to the new user or interrupt the active users' experience based on a new signed-in user event.
@@ -1870,9 +1870,9 @@ When using the GDK (using either Simplified or Advanced User Models), users are 
 **Primary User Removal:**  
 For titles using ERA or the GDK advanced user model, if the primary user is signed out (via the guide, SPOP or other means), the title must either remove the player from the game or reestablish a user and active controller.
 
-For titles using the GDK Simplified User Model, the primary player being removed will result in the title being suspended at the system level.  
+For titles using the GDK Simplified User Model, the primary player being removed results in the title being suspended at the system level.  
 
-In all scenarios, titles handle removal/closure by placing their game in a good state. This includes writing to connected storage, notifying any relevant MPSD sessions that the user has left, and bringing the user to an appropriate place for sign-in if a new user has also not been added.
+In all scenarios, titles handle removal/closure by placing their game in a good state. This includes writing to connected storage, notifying any relevant MPSD sessions that the user left, and bringing the user to an appropriate place for sign-in if no new user was added.
 
 **Additional/Secondary User Removal:**  
 Titles can handle this event in their discretion, usually by removing the player from game play immediately or prompting the player to rejoin in the context of the multiplayer experience being used.
@@ -1886,7 +1886,7 @@ Test Cases | Applicable to GDK Simplified User Model  | Applicable to GDK Advanc
  115-02 Removal of Controllers  | Yes | Yes
  115-03 Removal of Users  | No | Yes
 
-**115-01 Addition of Users** only applies to ERA and UWP Multiple User Applications.  With the GDK, titles are only able to see those users that they have intentionally added. Users added via the shell are unknown to the title.
+**115-01 Addition of Users** only applies to ERA and UWP Multiple User Applications. With the GDK, titles are only able to see those users that they have intentionally added. Users added via the shell are unknown to the title.
 
 #### 115-01 Addition of Users
 
@@ -1902,7 +1902,7 @@ ERA or UWP MUA titles must not automatically interrupt the active user's experie
 
 **Pass Examples**
 
-1. Titles do not automatically switch active users to the new user or interrupt the active user's experience.
+1. Titles don't automatically switch active users to the new user or interrupt the active user's experience.
 2. Game titles may choose to allow Profile B to control the title depending upon the current context.  
 
 **Fail Examples**
@@ -1939,11 +1939,11 @@ Titles must respond to the removal and addition of controllers correctly.
 3. At various points during the title's use, sign out of Profile A.
 4. Verify that the title either invokes the account picker or returns the user to the front end.
 5. Where possible, interact with the title in the following ways:
-   * Sign into Profile A and ensure that the title does not further interrupt the user's experience.
+   * Sign into Profile A and ensure that the title doesn't further interrupt the user's experience.
    * Sign into Profile B and ensure that the title updates to the context of the new user.
 
 **Expected Result**  
-The title must either remove the player from the game or re-establish a user and active controller. If the player is removed from the game, the title should be left in a good state. This includes writing to connected storage, notifying any relevant MPSD sessions that the user has left, and bringing the user to an appropriate place for sign-in if a new user has also not been added.
+The title must either remove the player from the game or re-establish a user and active controller. If the player is removed from the game, the title should be left in a good state. This includes writing to connected storage, notifying any relevant MPSD sessions that the user left, and bringing the user to an appropriate place for sign-in if no new user was added.
 
 **Pass Examples**
 
@@ -1961,18 +1961,18 @@ The title must either remove the player from the game or re-establish a user and
 
 Xbox network provides users with an expected level of privacy and online safety for themselves and their children. In order to deliver on that promise, titles must check the Xbox network service for privileges to complete certain actions on the Xbox network service or in a title experience.
 
-While privilege checking and adherence applies to all accounts, it's important to note the experience and expectations for child accounts specifically. For child accounts, restrictions on certain activities may be blocked due to age-based defaults and/or configurations by the child's family organizer (parent or guardian). Children cannot make changes themselves, however, with certain activities it is possible and expected the title invokes the necessary system UI to allow young players to request an exception via an approval flow for that associated activity. In such circumstances, for instance, a young player may be blocked from multiplayer globally, but the family parent or guardian could approve multiplayer for the specific title via the system UI; then the child would and should be able to access this game mode for that specific title.
+While privilege checking and adherence applies to all accounts, it's important to note the experience and expectations for child accounts specifically. For child accounts, restrictions on certain activities may be blocked due to age-based defaults and/or configurations by the child's family organizer (parent or guardian). Children can't make changes themselves, however, with certain activities it's possible and expected the title invokes the necessary system UI to allow young players to request an exception via an approval flow for that associated activity. In such circumstances, for instance, a young player may be blocked from multiplayer globally, but the family parent or guardian could approve multiplayer for the specific title via the system UI; then the child would and should be able to access this game mode for that specific title.
 
 | **Activity**|**ID**|**Privilege Name**|**Notes**|
 |-|--|--- |---|
-|Playing in a multiplayer game session|254|`XPRIVILEGE_MULTIPLAYER_SESSIONS`|Allows a user to join online multiplayer gameplay sessions with real-world users (not bots) in scenarios such as: Synchronous player-vs-player gameplay in the same session, asynchronous turn-based gameplay, Team-based gameplay, User-initiated matchmaking, Sending or accepting invitations, Join-in-progress sessions. Note this privilege does not pertain to local multiplayer games run on the same device.|
-|Playing in a cross-network game play session|185|`AuthPrivileges.CrossNetworkPlay`|Allows a user to participate in a gameplay session with other real-world players who are not signed into Xbox services in scenarios such as: Synchronous player-vs-player gameplay in the same session, asynchronous turn-based gameplay, Team-based gameplay, User-initiated matchmaking, Sending or accepting invitations, Join-in-progress sessions.|
+|Playing in a multiplayer game session|254|`XPRIVILEGE_MULTIPLAYER_SESSIONS`|Allows a user to join online multiplayer gameplay sessions with real-world users (not bots) in scenarios such as: Synchronous player-vs-player gameplay in the same session, asynchronous turn-based gameplay, Team-based gameplay, User-initiated matchmaking, Sending or accepting invitations, Join-in-progress sessions. Note this privilege doesn't pertain to local multiplayer games run on the same device.|
+|Playing in a cross-network game play session|185|`AuthPrivileges.CrossNetworkPlay`|Allows a user to participate in a gameplay session with other real-world players who aren't signed into Xbox services in scenarios such as: Synchronous player-vs-player gameplay in the same session, asynchronous turn-based gameplay, Team-based gameplay, User-initiated matchmaking, Sending or accepting invitations, Join-in-progress sessions.|
 |Communication with anyone |252|`XPRIVILEGE_COMMUNICATIONS`|Allows a user to communicate with any other Xbox network users through voice or text. |
 |Shared gaming sessions|189|`XPRIVILEGE_SESSIONS`|Allows a user to participate in connected single-player experiences in shared environments or in scenarios where a title is a hybrid free to play and paid multiplayer title and uses this privilege to gate those experiences Xbox consoles. Single player experiences must not have any features covered under privilege 252 or 254 (Communications and Multiplayer, respectively). Use of this privilege is a title capability that requires platform approval.|
-|User-generated content (UGC)|247|`XPRIVILEGE_USER_CREATED_CONTENT`|Allows a user to see other users' UGC online, download other users' UGC, or share their own UGC online. This does not restrict usage of previously downloaded UGC. |
+|User-generated content (UGC)|247|`XPRIVILEGE_USER_CREATED_CONTENT`|Allows a user to see other users' UGC online, download other users' UGC, or share their own UGC online. This doesn't restrict usage of previously downloaded UGC. |
 |Sharing to a social network|220|`XPRIVILEGE_SOCIAL_NETWORK_SHARING`|Xbox consoles Only: Allows a user to share information, including game progress, Kinect-generated content, game clips, and so on outside of the Xbox network.|
 
-Free to play titles, demos, or betas can be configured to allow multiplayer gameplay (ID 254) for players who are not Game Pass subscribers. This is done via a service side configuration and can be initiated by contacting your Microsoft representative. These titles must continue to check for the multiplayer game privilege to ensure that parental controls and player choices are respected.
+Free to play titles, demos, or betas can be configured to allow multiplayer gameplay (ID 254) for players who aren't Game Pass subscribers. This is done via a service side configuration and can be initiated by contacting your Microsoft representative. These titles must continue to check for the multiplayer game privilege to ensure that parental controls and player choices are respected.
 
 #### 045-01 Respect User Privileges
 
@@ -1993,17 +1993,17 @@ Titles must honor the user's privilege settings.
 **Pass Examples**
 
 1. The title respects the user's privilege settings.
-2. The title treats a partial-allow privilege setting as if the privilege is disabled / disallowed (e.g. when the User-generated content (UGC) privilege is set to Friends Only, the title behaves as if the privilege is set to Blocked).
-3. For titles using the XDK, the title invokes the system UI to alert the user of any privilege conflicts (titles must use the `Store::Product::CheckPrivilegeAsync` API). When the system UI cannot be invoked (privileges 252, 189, 247) the title shows an informative message to let the user know they cannot participate.
-4. For titles using the GDK, the title invokes the system UI to alert the user of any privilege conflicts (titles must use the `XUserCheckPrivilege` and `XUserResolvePrivilegeWithUiAsync` APIs). When the system UI cannot be invoked (privileges 252, 189, 247) the title shows an informative message to let the user know they cannot participate.
-5. For titles using XSAPI, the title shows an informative message to let the user know they cannot participate.
+2. The title treats a partial-allow privilege setting as if the privilege is disabled / disallowed (for example when the User-generated content (UGC) privilege is set to Friends Only, the title behaves as if the privilege is set to Blocked).
+3. For titles using the XDK, the title invokes the system UI to alert the user of any privilege conflicts (titles must use the `Store::Product::CheckPrivilegeAsync` API). When the system UI can't be invoked (privileges 252, 189, 247) the title shows an informative message to let the user know they can't participate.
+4. For titles using the GDK, the title invokes the system UI to alert the user of any privilege conflicts (titles must use the `XUserCheckPrivilege` and `XUserResolvePrivilegeWithUiAsync` APIs). When the system UI can't be invoked (privileges 252, 189, 247) the title shows an informative message to let the user know they can't participate.
+5. For titles using XSAPI, the title shows an informative message to let the user know they can't participate.
 
 **Fail Examples**
 
-1. The title persists a user's privilege settings and does not reflect the user's actual privileges after they have been changed.
-2. The title treats a partial-allow privilege setting as if the privilege is set to its least restrictive setting (e.g. when the User-generated content (UGC) privilege is set to Friends Only, the title behaves as if the privilege is set to Allowed).
-3. For titles using the XDK or GDK, the title uses in-game messaging to alert the user of any privilege conflicts and does not display the System UI.
-4. For titles using XSAPI, the title does not show an informative message to let the user know they cannot participate.  
+1. The title persists a user's privilege settings and doesn't reflect the user's actual privileges after they have been changed.
+2. The title treats a partial-allow privilege setting as if the privilege is set to its least restrictive setting (for example when the User-generated content (UGC) privilege is set to Friends Only, the title behaves as if the privilege is set to Allowed).
+3. For titles using the XDK or GDK, the title uses in-game messaging to alert the user of any privilege conflicts and doesn't display the System UI.
+4. For titles using XSAPI, the title doesn't show an informative message to let the user know they can't participate.  
 
 #### 045-02 Respect User Privileges - Xbox Family
 
@@ -2047,30 +2047,30 @@ Titles must respect all Xbox Family member's privilege settings.
 
 1. The title respects a child's privilege settings.
 2. The title allows a child to participate in an activity when the privilege for that activity is allowed.
-3. The title does not allow a child to participate in an activity when the privilege for that activity is blocked.
-4. The title allows a child to participate in an activity that is blocked after permission for that activity is allowed by the parent (via the parental permission UI).
-5. The title does not allow a child to participate in an activity that is blocked and permission for that activity is not allowed by the parent (via the parental permission UI).
-6. The title treats a partial-allow privilege setting as if the privilege is disabled / disallowed (e.g. when the User-generated content (UGC) privilege is set to Friends Only, the title behaves as if the privilege is set to Blocked).
-7. For titles using the XDK, the title invokes the system UI to alert the user of any privilege conflicts (titles must use the `Store::Product::CheckPrivilegeAsync` API). When the system UI cannot be invoked (privileges 252, 189, 247) the title shows an informative message to let the user know they cannot participate.
-8. For titles using the GDK, the title invokes the system UI to alert the user of any privilege conflicts (titles must use the XUserCheckPrivilege and `XUserResolvePrivilegeWithUiAsync` APIs). When the system UI cannot be invoked (privileges 252, 189, 247) the title shows an informative message to let the user know they cannot participate.
-9. For titles using XSAPI, the title shows an informative message to let the user know they cannot participate.
+3. The title doesn't allow a child to participate in an activity when the privilege for that activity is blocked.
+4. The title allows a child to participate in an activity that's blocked after permission for that activity is allowed by the parent (via the parental permission UI).
+5. The title doesn't allow a child to participate in an activity that's blocked and permission for that activity isn't allowed by the parent (via the parental permission UI).
+6. The title treats a partial-allow privilege setting as if the privilege is disabled / disallowed (for example when the User-generated content (UGC) privilege is set to Friends Only, the title behaves as if the privilege is set to Blocked).
+7. For titles using the XDK, the title invokes the system UI to alert the user of any privilege conflicts (titles must use the `Store::Product::CheckPrivilegeAsync` API). When the system UI can't be invoked (privileges 252, 189, 247) the title shows an informative message to let the user know they can't participate.
+8. For titles using the GDK, the title invokes the system UI to alert the user of any privilege conflicts (titles must use the XUserCheckPrivilege and `XUserResolvePrivilegeWithUiAsync` APIs). When the system UI can't be invoked (privileges 252, 189, 247) the title shows an informative message to let the user know they can't participate.
+9. For titles using XSAPI, the title shows an informative message to let the user know they can't participate.
 
 **Fail Examples**
 
-1. The title does not respect the child's privilege settings.
+1. The title doesn't respect the child's privilege settings.
    * Example: The title supports multiplayer and allows the child with multiplayer blocked to access multiplayer game modes.
-2. The title does not invoke the proper UI to alert and inform the child of privilege conflicts.
+2. The title doesn't invoke the proper UI to alert and inform the child of privilege conflicts.
    * Example: The title supports multiplayer, but the child is never prompted for parental permission when the privilege is blocked.
 3. The title allows a child to participate in an activity when the privilege for that activity is blocked.
-4. The title does not allow a child to participate in an activity when the privilege for that activity is allowed.
-5. The title allows a child to participate in an activity that is blocked and permission for that activity is not allowed by the parent (via the parental permission UI).
-6. The title does not allow a child to participate in an activity that is blocked and permission for that activity is allowed by the parent (via the parental permission UI).
-7. The title persists a user's privilege settings and does not reflect the user's actual privileges after they have been changed.
+4. The title doesn't allow a child to participate in an activity when the privilege for that activity is allowed.
+5. The title allows a child to participate in an activity that's blocked and permission for that activity isn't allowed by the parent (via the parental permission UI).
+6. The title doesn't allow a child to participate in an activity that's blocked and permission for that activity is allowed by the parent (via the parental permission UI).
+7. The title persists a user's privilege settings and doesn't reflect the user's actual privileges after they have been changed.
    * Example: The title supports multiplayer. The child account has multiplayer blocked but is granted permission by the parent through the system UI. The title continues to block multiplayer even though the privilege has been granted.
 8. The title treats a partial-allow privilege setting as if the privilege is set to its least restrictive setting. _For Example_: When the user-generated content (UGC) privilege is set to Friends Only, the title behaves as if the privilege is set to Allowed.
-9. For titles using the XDK, the title does not invoke the system UI to alert the user of any privilege conflicts (titles must use the `Store::Product::CheckPrivilegeAsync` API). When the system UI cannot be invoked (privileges 252, 189, 247) the title does not show an informative message to let the user know they cannot participate.
-10. For titles using the GDK, the title does not invoke the system UI to alert the user of any privilege conflicts (titles must use the `XUserCheckPrivilege` and `XUserResolvePrivilegeWithUiAsync` APIs). When the system UI cannot be invoked (privileges 252, 189, 247) the title does not show an informative message to let the user know they cannot participate.
-11. For titles using XSAPI, the title does not show an informative message to let the user know they cannot participate.
+9. For titles using the XDK, the title doesn't invoke the system UI to alert the user of any privilege conflicts (titles must use the `Store::Product::CheckPrivilegeAsync` API). When the system UI can't be invoked (privileges 252, 189, 247) the title doesn't show an informative message to let the user know they can't participate.
+10. For titles using the GDK, the title doesn't invoke the system UI to alert the user of any privilege conflicts (titles must use the `XUserCheckPrivilege` and `XUserResolvePrivilegeWithUiAsync` APIs). When the system UI can't be invoked (privileges 252, 189, 247) the title doesn't show an informative message to let the user know they can't participate.
+11. For titles using XSAPI, the title doesn't show an informative message to let the user know they can't participate.
 
 <a id='XR046'></a>
 
@@ -2078,19 +2078,19 @@ Titles must respect all Xbox Family member's privilege settings.
 
 On Xbox consoles, titles must use the gamertag as their primary display name.
 
-Based on design choice titles can choose between the player's modern gamertag or their classic gamertag. Modern gamertag is available in the GDK and classic gamertag is available in both ERA and the GDK.
+Based on design choice, titles can choose between the player's modern gamertag or their classic gamertag. Modern gamertag is available in the GDK and classic gamertag is available in both ERA and the GDK.
 
 On non-console platforms, while not required, we recommend you use the Xbox network player's gamertag in the appropriate locations within the game title's experience.
 
 The gamertag must be displayed correctly in the title based on the gamertag type used:
 
 **Modern Gamertag**  
-Display all 16 characters of the unique modern gamertag, which includes up to 12 characters of the modern gamertag, followed by # and the suffix number (if present). For example: Major Nelson (no suffix present) or Major Nelson#881. If modern gamertags are used, all Unicode character ranges available for modern gamertags must be supported. For more modern gamertag information and best practices visit the GDK development documentation article 'Overview of modern gamertags'.  
+Display all 16 characters of the unique modern gamertag, which includes up to 12 characters of the modern gamertag, followed by # and the suffix number (if present). For example: Major Nelson (no suffix present) or Major Nelson#881. If modern gamertags are used, all Unicode character ranges available for modern gamertags must be supported. For more modern gamertag information and best practices, visit the GDK development documentation article 'Overview of modern gamertags'.  
 
 **Classic Gamertag**  
 Correctly display all 15 characters of the classic gamertag. Classic gamertags include only ASCII characters a-z, A-Z, 0-9, comma (,), and space (ASCII character 0x20). For example: Major Nelson
 
-In the GDK these items are returned using the [XUserGetGamertag](../../../reference/system/xuser/functions/xusergetgamertag.md) API. In ERA the gamertag is obtained using the `GetUserProfileAsync` API.
+In the GDK, these items are returned using the [XUserGetGamertag](../../../reference/system/xuser/functions/xusergetgamertag.md) API. In ERA, the gamertag is obtained using the `GetUserProfileAsync` API.
 
 #### 046-01 Display Name and Gamerpic
 
@@ -2118,8 +2118,8 @@ The user's gamertag must be displayed correctly.
 2. The gamertag is correctly shown when using Classic Gamertag.
 
 **Fail Examples**
-1. The gamertag is not rendered at all because the Unicode characters are shown as blank characters.
-2. The gamertag is not correctly shown when using Classic Gamertag.
+1. The gamertag isn't rendered at all because the Unicode characters are shown as blank characters.
+2. The gamertag isn't correctly shown when using Classic Gamertag.
 
 <a id='XR047'></a>
 
@@ -2143,7 +2143,7 @@ Titles must give users the option to access other Xbox network users' gamercards
     * Find any other area where gamertags are listed, and attempt to access another Xbox user's gamercard by selecting the user's username or gamertag.
 
 **Expected Result**    
-It is expected that the user will be able to view the other Xbox user's gamercard information.
+It's expected that the user will be able to view the other Xbox user's gamercard information.
 
 **Pass Examples**  
 1. A user is able to access another Xbox user's gamercard in all locations where gamertags are displayed and UI navigation is enabled.
@@ -2170,19 +2170,19 @@ The Xbox network is the source of truth for Xbox user profile information. To su
 1. Select a profile and create a save.
 2. Change user profile data, including updating a gamertag or account name.
 3. Boot the title and load the save made in Step [2].
-4. Verify that the user-profile data visible during gameplay have changed and are not stored in the save game. 
+4. Verify that the user-profile data visible during gameplay have changed and aren't stored in the save game. 
 5. Verify that any reference to the gamertag (created automatically by the title) has been updated. This includes any reference on server-hosted functionality as well as any reference within the title.
 6. Boot the title on a second device and verify the updated gamertag is displayed correctly.
 
 **Expected Result**  
-User-profile data must not be stored. For instance, if the title uses the gamertag in-game (like in a welcome message) or on a non-Xbox server (such as naming uploaded data), it must not persist if the user changes their gamertag. This does not apply if the user has manually entered the gamertag.
+User-profile data must not be stored. For instance, if the title uses the gamertag in-game (like in a welcome message) or on a non-Xbox server (such as naming uploaded data), it must not persist if the user changes their gamertag. This doesn't apply if the user has manually entered the gamertag.
 
 **Pass Examples**  
 1. User-profile data and preference settings are updated in all displays after they have been changed.  
 
 **Fail Examples**  
-1. The title does not display the user's updated gamertag or Microsoft account name either within the title or on Xbox Home for locally stored save data such as replays, saves, options, maps, and teams. 
-2. The title does not update a user's gamertag for persistent posts, such as game clips, replays, leaderboards, or other custom posts, such as messages, bulletin posts, user challenges, costumes, themes, livery, tournaments, and league.
+1. The title doesn't display the user's updated gamertag or Microsoft account name either within the title or on Xbox Home for locally stored save data such as replays, saves, options, maps, and teams. 
+2. The title doesn't update a user's gamertag for persistent posts, such as game clips, replays, leaderboards, or other custom posts, such as messages, bulletin posts, user challenges, costumes, themes, livery, tournaments, and league.
 Note: This applies to both new and previously created posts.
 3. The title stores the user's gamertag for the user's saved data, such as replays, saves, options, maps, and teams, resulting in the save data becoming unusable if the user changes their gamertag or account name.
 
@@ -2190,16 +2190,16 @@ Note: This applies to both new and previously created posts.
 
 ### [XR-052: User State and Title-Save Location, Roaming and Dependencies](../XR/XR052.md) \*
 
-Titles must associate progress, saved state, preferences, achievements, and other rewards with the user(s) who have recorded that progress, chosen the preferences, or earned the rewards. Titles accomplish this by properly handling user-change notifications. Titles must avoid saving state for users who are no longer signed in. Game save data must not have any dependencies on shared content or local storage.
+Titles must associate progress, saved state, preferences, achievements, and other rewards with the user(s) who recorded that progress, chosen the preferences, or earned the rewards. Titles accomplish this by properly handling user-change notifications. Titles must avoid saving state for users who are no longer signed in. Game save data must not have any dependencies on shared content or local storage.
 
 For games that use the same TitleID across platforms, devices and/or console generations, game save progress must roam when the user is signed into the Xbox network as follows:
 
 * Within the same platform (Xbox consoles).
-* Within devices on the same platform (e.g., Xbox One and Xbox One S).
-* Across generations in the device platform (e.g., Xbox One and Xbox Series X\|S).
-* Across PCs in the Windows platform (e.g., between two different PCs).
-* Across PCs in the Windows platform and Xbox console platforms, (e.g., Windows and Xbox Series X\|S) game save roaming is not required but is recommended to support the player's experience.
-* For non-Microsoft platforms (e.g., iOS, Android, Switch, PlayStation&reg;) game save roaming is not required but is recommended to support the player's experience.
+* Within devices on the same platform (for example, Xbox One and Xbox One S).
+* Across generations in the device platform (for example, Xbox One and Xbox Series X\|S).
+* Across PCs in the Windows platform (for example, between two different PCs).
+* Across PCs in the Windows platform and Xbox console platforms, (for example, Windows and Xbox Series X\|S) game save roaming isn't required but is recommended to support the player's experience.
+* For non-Microsoft platforms (for example, iOS, Android, Switch, PlayStation&reg;) game save roaming isn't required but is recommended to support the player's experience.
 
 > [!Note]
 > The following table shows which test cases apply to your title if using the GDK Simplified User Model or the GDK Advanced User Model, ERA and UWP Multiple User Applications. Refer to [XR-112](../XR/XR112.md) for additional details regarding the use of the Simplified User Model versus the Advanced User Model.
@@ -2216,7 +2216,7 @@ Test Cases | Applicable to GDK Simplified User Model  | Applicable to GDK Advanc
 **Test Steps**  
 1. Ensure that Profile A and Profile B have set the console to Home.
 2. Ensure that Profile A has save data including game progress and user preferences.
-3. Ensure that Profile B does not have any save data.
+3. Ensure that Profile B doesn't have any save data.
 4. Sign into Profile A and launch the title. Ensure all save data and preferences have been preserved by visiting all areas of the title, including but not limited to:
    * Single-player or multiplayer game sessions
    * Menus
@@ -2241,7 +2241,7 @@ Changes to the primary user should be treated appropriately by the title.
 
 #### 052-02 User Change During Suspend
   
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -2267,6 +2267,24 @@ Changes to the primary user should be treated appropriately by the title.
 2. The title continues to award save data to the first user.
 3. A new user can alter a prior user's save data, state or profile after they have signed out.
 
+#### 052-05 Correct User Association
+
+**Test Steps**  
+1. Sign in to a profile and Launch the title.
+2. Progress into gameplay and save game progress.
+3. Terminate the title.
+4. Sign out of the profile from Step 1 and sign in to a new profile.
+5. Launch the title and attempt to access saved progress.  
+
+**Expected Result**  
+Progress saved for the original user must not be visible/accessible to the new profile.  
+
+**Pass Examples**  
+1. Only saved progress associated with the new profile in step 4 is shown in step 5.  
+
+**Fail Examples**  
+1. The title allows a new profile to load a different profile's saved progress.  
+
 #### 052-06 Cloud Storage: Roaming
 
 **Devices Needed**  
@@ -2280,42 +2298,42 @@ Changes to the primary user should be treated appropriately by the title.
 1. Sign in to an Xbox profile on device A and launch the title.
 2. Begin gameplay and make save progress (if possible, create a settings save by changing or adding a new setting configuration).
 3. Exit the title.
-4. Sign in on a second device from the same platform/generation (e.g., Xbox Series S and Xbox Series X, Xbox One and Xbox One S and a second PC) that was used in Step 1 with the same profile used in Step 1.
+4. Sign in on a second device from the same platform/generation (for example, Xbox Series S and Xbox Series X, Xbox One and Xbox One S and a second PC) that was used in Step 1 with the same profile used in Step 1.
    * Launch the same title from Step 1 and verify that all saved games and any settings and/or configuration files can be accessed and loaded correctly and they don't have any dependencies on shared content.
-5. For games using the same TitleID on the same platform across generations (e.g., Xbox One and Xbox Series X\|S), repeat step 4.
+5. For games using the same TitleID on the same platform across generations (for example, Xbox One and Xbox Series X\|S), repeat step 4.
 6. For PC games using the same TitleID on the Windows platform, repeat step 4.
-7. If supported, for games using the same TitleID across platforms (e.g., Windows and Xbox Series X\|S):
+7. If supported, for games using the same TitleID across platforms (for example, Windows and Xbox Series X\|S):
    * Launch the same title from Step 1 on the other supported platforms and verify that all saved games and any settings and/or configuration files can be accessed and loaded correctly and they don't have any dependencies on shared content.
 
 **Expected Result**  
 Title-save progress must be associated with a user profile and must roam between like devices/platforms when the user is signed into Xbox services. For games using the same TitleID on the same platform across generations, game save data must roam between these platforms. For PC games using the same TitleID on the Windows platform, game save data must roam between different PCs. Game save data must not have any dependencies on shared content.
 
  **Pass Examples**  
-1. Game saves and associated settings files can be downloaded successfully on a second console on the same console platform/generation (e.g., Xbox Series S and Xbox Series X or Xbox One and Xbox One S).
+1. Game saves and associated settings files can be downloaded successfully on a second console on the same console platform/generation (for example, Xbox Series S and Xbox Series X or Xbox One and Xbox One S).
 2. Game saves and associated settings files can be downloaded successfully on a second PC on the Windows platform.
-3. For console games that share the same TitleID on the same platform across generations (e.g. Xbox One and Xbox Series X\|S), saves and associated settings files can be roamed between these devices.
-4. Game save data does not have any dependencies on shared content.
+3. For console games that share the same TitleID on the same platform across generations (for example Xbox One and Xbox Series X\|S), saves and associated settings files can be roamed between these devices.
+4. Game save data doesn't have any dependencies on shared content.
 
 **Fail Examples**  
-1. Game saves and associated settings files cannot be downloaded successfully on a second console on the same platform/generation (e.g., Xbox Series S and Xbox Series X or Xbox One and Xbox One S).
-2. Game saves and associated settings files cannot be downloaded successfully on a second PC on the Windows platform.
-3. For console games that share the same TitleID on the same platform across generations (e.g. Xbox One and Xbox Series X\|S), saves and associated settings files cannot be roamed between these devices.
-4. The saves in the cloud are not recognized by the title on first launch, and through no user interaction, are subsequently overwritten on the second device.
+1. Game saves and associated settings files can't be downloaded successfully on a second console on the same platform/generation (for example, Xbox Series S and Xbox Series X or Xbox One and Xbox One S).
+2. Game saves and associated settings files can't be downloaded successfully on a second PC on the Windows platform.
+3. For console games that share the same TitleID on the same platform across generations (for example Xbox One and Xbox Series X\|S), saves and associated settings files can't be roamed between these devices.
+4. The saves in the cloud aren't recognized by the title on first launch, and through no user interaction, are subsequently overwritten on the second device.
 5. Game save data has dependencies on shared content.
 
 <a id='AchievementsAndAwards'></a>
 
 ## Achievements and Awards
 
-The following requirements apply to titles that offer achievements on the Xbox network.  All games targeting Xbox consoles are required to have Achievements and meet the following requirements. Demos are not allowed to have achievements; however, they have the option of supporting Hero Stats.
+The following requirements apply to titles that offer achievements on the Xbox network. All games targeting Xbox consoles are required to have Achievements and meet the following requirements. Demos aren't allowed to have achievements; however, they have the option of supporting Hero Stats.
 
 <a id='XR055'>
 
 ### </a>XR-055: Achievements and Gamerscore \*
 
-Titles must provide the required number (minimum and maximum) of achievements and their associated gamerscore at launch. Titles are permitted to add achievements or gamerscore at any time after launch, with or without corresponding new content, but they cannot exceed title-based or calendar-based limits.
+Titles must provide the required number (minimum and maximum) of achievements and their associated gamerscore at launch. Titles are permitted to add achievements or gamerscore at any time after launch, with or without corresponding new content, but they can't exceed title-based or calendar-based limits.
 
-A single achievement cannot exceed 200 gamerscore and all achievements in the title must be achievable.
+A single achievement can't exceed 200 gamerscore and all achievements in the title must be achievable.
 
 Unlocking achievements in the base game or a content update must represent a thorough exploration of or engagement with game content.
 
@@ -2326,7 +2344,7 @@ Maximum achievements | 100 | 100 | 500
 Gamerscore | 1000 | 1000 | 5000
 
 >[!Note]
->"Semi-annual" means January-June, July-December. Base game achievements and Gamerscore do not count towards the semi-annual limits.
+>"Semi-annual" means January-June, July-December. Base game achievements and Gamerscore don't count towards the semi-annual limits.
 
 #### 055-01 Achievements
 
@@ -2351,14 +2369,14 @@ All achievements unlock according to their criteria and the maximum possible Gam
 
 1. An achievement doesn't unlock when the criteria has been met.
 2. An achievement unlocks before the criteria has been met.
-3. Achievements do not represent a thorough exploration of or engagement with game content.
+3. Achievements don't represent a thorough exploration of or engagement with game content.
 4. All achievements can be unlocked within a few minutes of starting the game.
 5. Achievements can be unlocked without any (or minimal) user input unless required as part of the core gameplay loop.
-6. The launch version of the game does not have 1000G.
+6. The launch version of the game doesn't have 1000G.
 7. The launch version of the game has more or fewer than 10-100 achievements.
-8. Achievements do not unlock after resuming from connected-standby.
+8. Achievements don't unlock after resuming from connected-standby.
 9. A single achievement exceeds 200 gamerscore.
-10. Achievements do not unlock after reconnection to Xbox services.
+10. Achievements don't unlock after reconnection to Xbox services.
 
 <a id='XR057'>
 
@@ -2380,7 +2398,7 @@ These options may be used to reduce the difficulty of the gameplay required to u
 **Test Steps**
 
 1. Review the achievement descriptions on the base title.
-2. Verify that they do not require additional purchases or content.
+2. Verify that they don't require additional purchases or content.
 3. Gain all achievements.  
 
 **Expected Result**  
@@ -2417,7 +2435,7 @@ Titles that offer cross platform multiplayer with Xbox consoles from PC devices 
    * Device 1 Profile A - Friends with Profile B
    * Device 2 Profile B - Friends with Profile A
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -2428,26 +2446,26 @@ For the purposes of this test case, suspend the game at step 5 by launching the 
 
 1. Using Profile A, create a joinable game session.
 2. Using Profile B not running the title, access the Friends List via the Xbox shell interface and verify that the Profile A is listed as joinable.
-   * It is possible that some games may only support private multiplayer sessions and therefore not appear as joinable for Profile B, in which case please jump to step 6.
+   * It's possible that some games may only support private multiplayer sessions and therefore not appear as joinable for Profile B, in which case please jump to step 6.
 3. Profile B join Profile A's game.
 4. Confirm that both profiles are placed into the game experience together.
 5. Repeat steps 1-4 with Profile B while the title is in a suspended state.
 6. Repeat steps 1-5 but this time, instead of Profile B joining through the Friends List, have Profile A send a game invite via the system shell to Profile B and make sure Profile B can receive, accept, and join Profile A.
 
 **Expected Result**  
-User B must be able to join user A's game and progress into the game experience together. For games that only support private multiplayer sessions and therefore do not appear as joinable for Profile B, it is acceptable for invites to be the only mechanism to join Profile A. For multiplayer game sessions that only support joining the session via matchmaking (e.g. ranked matches), it is acceptable to not support joining via the Xbox shell interface. For titles that support cross-platform multiplayer, users must be able to join between an Xbox One Console and PC.  
+User B must be able to join user A's game and progress into the game experience together. For games that only support private multiplayer sessions and therefore don't appear as joinable for Profile B, it's acceptable for invites to be the only mechanism to join Profile A. For multiplayer game sessions that only support joining the session via matchmaking (for example ranked matches), it's acceptable to not support joining via the Xbox shell interface. For titles that support cross-platform multiplayer, users must be able to join between an Xbox One Console and PC.  
 
 **Pass Examples**
 
 1. Both profiles are placed into the game experience together.
 2. User B is able to join user A's game and progress into the game experience together.  
-3. User A does not appear as joinable in the Friends List via the Xbox shell interface because the game only supports private multiplayer sessions, however user A can send user B a game invitation via the system shell.
-4. User A does not appear as joinable and is unable to send game invites via the Xbox shell interface whilst participating in a session that only supports joining via matchmaking (e.g. ranked matches).
+3. User A doesn't appear as joinable in the Friends List via the Xbox shell interface because the game only supports private multiplayer sessions, however user A can send user B a game invitation via the system shell.
+4. User A doesn't appear as joinable and is unable to send game invites via the Xbox shell interface whilst participating in a session that only supports joining via matchmaking (for example ranked matches).
 
 **Fail Examples**
 
-1. User B is not able to successfully join User A's game and is not placed in the game experience.  
-2. User A does not appear as joinable in the Friends List via the Xbox shell interface because the game only supports private multiplayer sessions, and user A cannot send user B a game invitation via the system shell.
+1. User B isn't able to successfully join User A's game and isn't placed in the game experience.  
+2. User A doesn't appear as joinable in the Friends List via the Xbox shell interface because the game only supports private multiplayer sessions, and user A can't send user B a game invitation via the system shell.
 
 #### 064-02 Joining a Game Session from the Same Game
 
@@ -2462,24 +2480,24 @@ User B must be able to join user A's game and progress into the game experience 
 1. Using Profile A, launch the title and create a joinable game session within the title.
 2. Using Profile B, launch the same title and enter some experience within the title.
 3. Using Profile B, access the Friends List via the Xbox shell interface  and select to join Profile A's game.
-    * It is possible that some games may only support private multiplayer sessions and therefore do not appear as joinable for Profile B, in which case please jump to step 5.
+    * It's possible that some games may only support private multiplayer sessions and therefore don't appear as joinable for Profile B, in which case please jump to step 5.
 4. Confirm that both profiles are placed into the game experience together.  
 5. Repeat steps 1-4 but this time instead of Profile B joining through the Friends List via the Xbox shell interface, have Profile A send a game invite via the system shell to Profile B and make sure Profile B can receive, accept, and join Profile A.
 
 **Expected Result**  
-User B must be able to join user A's game and progress into the game experience together. For games that only support private multiplayer sessions and therefore do not appear as joinable for Profile B, it is acceptable for invites to be the only mechanism to join Profile A. For multiplayer game sessions that only support joining the session via matchmaking (e.g. ranked matches), it is acceptable to not support joining via the Xbox shell interface. For titles that support cross-platform multiplayer, users must be able to join between an Xbox One Console and PC.
+User B must be able to join user A's game and progress into the game experience together. For games that only support private multiplayer sessions and therefore don't appear as joinable for Profile B, it's acceptable for invites to be the only mechanism to join Profile A. For multiplayer game sessions that only support joining the session via matchmaking (for example ranked matches), it's acceptable to not support joining via the Xbox shell interface. For titles that support cross-platform multiplayer, users must be able to join between an Xbox One Console and PC.
 
 **Pass Examples**
 
 1. Both profiles are placed into the game experience together.
 2. User B is able to join user A's game and progress into the game experience together.
-3. User A does not appear as joinable in the Friends List via the Xbox shell interface because the game only supports private multiplayer sessions, however user A can send user B a game invitation via the system shell.
-4. User A does not appear as joinable and is unable to send game invites via the Xbox shell interface whilst participating in a session that only supports joining via matchmaking (e.g. ranked matches).
+3. User A doesn't appear as joinable in the Friends List via the Xbox shell interface because the game only supports private multiplayer sessions, however user A can send user B a game invitation via the system shell.
+4. User A doesn't appear as joinable and is unable to send game invites via the Xbox shell interface whilst participating in a session that only supports joining via matchmaking (for example ranked matches).
 
 **Fail Examples**
 
-1. User B is not able to successfully join User A's game and is not placed in the game experience.
-2. User A does not appear as joinable in the Friends List via the Xbox shell interface because the game only supports private multiplayer sessions, and user A cannot send user B a game invitation via the system shell.
+1. User B isn't able to successfully join User A's game and isn't placed in the game experience.
+2. User A doesn't appear as joinable in the Friends List via the Xbox shell interface because the game only supports private multiplayer sessions, and user A can't send user B a game invitation via the system shell.
 
 #### 064-05 Non-Joinable Game
 
@@ -2494,7 +2512,7 @@ User B must be able to join user A's game and progress into the game experience 
 
 1. Using Profile A, launch the title and create a joinable game session.
 2. Using Profile A, invite profiles B and C to the game.
-3. Using Profile A, enter a game session so there is only one remaining slot after A joins.
+3. Using Profile A, enter a game session so there's only one remaining slot after A joins.
 4. Using Profile B, accept the invite.
 5. Confirm Profiles A & B are playing together.
 6. Using Profile C, accept the invite and attempt to join the game session.  
@@ -2509,15 +2527,15 @@ Profile C is asked to wait until the next opportunity to jump in or Profile C is
 
 **Fail Examples**
 
-1. Profile C is not asked to wait until the next opportunity to jump in and Profile C is not messaged for the failure to join.  
+1. Profile C isn't asked to wait until the next opportunity to jump in and Profile C isn't messaged for the failure to join.  
 
 <a id='XR067'></a>
 
 ### [XR-067: Maintaining Multiplayer Session State](../XR/XR067.md) \*
 
-On Xbox consoles, titles with online multiplayer functionality must maintain session-state information on the Xbox network.  Titles do this through the Xbox Multiplayer Session Directory (MPSD) or if a title has their own multiplayer session state functionality, they may choose to instead record player interactions using the Multiplayer Activity Recent Player feature.
+On Xbox consoles, titles with online multiplayer functionality must maintain session-state information on the Xbox network. Titles do this through the Xbox Multiplayer Session Directory (MPSD) or if a title has their own multiplayer session state functionality, they may instead choose to record player interactions using the Multiplayer Activity Recent Player feature.
 
-On devices other than Xbox consoles, titles which offer cross platform multiplayer with Xbox consoles must maintain session-state information in the Xbox Multiplayer Session Directory (MPSD).   If they have their own session state functionality,  they may choose to instead record player interactions using the Multiplayer Activity Recent Player feature.
+On devices other than Xbox consoles, titles that offer cross platform multiplayer with Xbox consoles must maintain session-state information in the Xbox Multiplayer Session Directory (MPSD). If they have their own session state functionality,  they may instead choose to record player interactions using the Multiplayer Activity Recent Player feature.
 
 #### 067-01 Maintaining Session State
 
@@ -2539,13 +2557,13 @@ Users must be able to review all players from each and every recently played gam
 **Fail Examples**
 
 1. Not all the profiles are included in the device's Recent Players list.
-2. Users who quit during multiplayer gameplay do not appear in the Recent Players list.  
+2. Users who quit during multiplayer gameplay don't appear in the Recent Players list.  
 
 <a id='XR070'></a>
 
 ### XR-070: Friends Lists \*
 
-Titles must use the Xbox network friends list as the primary list of friends.  Titles must obtain the friends list from Xbox APIs and must not store the friends list in a permanent nature on game servers.
+Titles must use the Xbox network friends list as the primary list of friends. Titles must obtain the friends list from Xbox APIs and must not store the friends list in a permanent nature on game servers.
 
 Titles can display a secondary list of friends from a central title account for players not on the Xbox network or not on the user's Xbox network friends list. Based on design, titles may create a blended friends list experience containing both Xbox network and publisher account friends in a central location; iconography or other clarifying marks must be used to disambiguate Xbox friends from those on other networks.
 
@@ -2556,7 +2574,7 @@ For information on using the friends list using the GDK, read the [People System
 **Test Steps**
 
 1. Locate any lists of people that are displayed within the title and verify they contain the Xbox network Friends list.
-2. If the title supports a blended friends list containing both Xbox network and publisher account friends, verify they are disambiguated with iconography or other clarifying marks.
+2. If the title supports a blended friends list containing both Xbox network and publisher account friends, verify they're disambiguated with iconography or other clarifying marks.
 
 **Expected Result**  
 Titles must use the Xbox network Friends list as the primary list of friends using Xbox APIs and must not store them in a permanent nature on game servers. The title must disambiguate friends when showing a blended friends list containing both Xbox network and publisher account friends.
@@ -2564,15 +2582,15 @@ Titles must use the Xbox network Friends list as the primary list of friends usi
 **Pass Examples**
 
 1. The title uses the Xbox network Friends list as the primary list of friends using Xbox APIs.
-2. The title has an alternate list of people, such as recent players or guild members, who are not positioned as the user's core list.
-3. The title displays a friends list that is filtered to show only friends who have played the title, and, in some situations, to show only friends who are currently online or are currently online and active in the title.
+2. The title has an alternate list of people, such as recent players or guild members, who aren't positioned as the user's core list.
+3. The title displays a friends list that's filtered to show only friends who have played the title, and, in some situations, to show only friends who are currently online or are currently online and active in the title.
 4. The title displays a blended friends list containing both Xbox network and publisher account friends and disambiguates them with iconography or other clarifying marks.
 
 **Fail Examples**
 
-1. The title does not use Xbox APIs to display a list of friends.
+1. The title doesn't use Xbox APIs to display a list of friends.
 2. The title stores the friends list in a permanent nature on game servers.
-3. The title displays a blended friends list containing both Xbox network and publisher account friends and does not disambiguate them.
+3. The title displays a blended friends list containing both Xbox network and publisher account friends and doesn't disambiguate them.
 
 <a id='XR124'></a>
 
@@ -2590,7 +2608,7 @@ For information on game invites using the GDK, read the [Invites overview](../..
    * Device 1 profile A - friends with profile B
    * Device 2 profile B - friends with profile A
 
-On retail consoles, a game will be suspended under the following conditions:
+On retail consoles, a game is suspended under the following conditions:
 
    * When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
    * When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.  
@@ -2601,8 +2619,8 @@ For the purposes of this test case, both methods should be verified at step 5.
 
 1. Sign Users A and B into their respective devices.
 2. Both users launch the title.
-3. User A create a game session and locate the in-game option to send invitations.
-4. User A send a game invite to User B.
+3. User A creates a game session and locate the in-game option to send invitations.
+4. User A sends a game invite to User B.
 5. Profile B accepts an invite from each of the following areas to join Profile A's game session.
    * Anywhere from the initial boot sequence to the initial interactive state
    * The main menu (if featured)
@@ -2619,25 +2637,25 @@ Games that support joinable multiplayer experiences must allow players to send g
 
 Profile B should be able to join the sessions hosted by profile A via invites.
 
-Note it is ok for the game to restrict who can send invites to the session (i.e. just team captains in a team game).
+Note it's ok for the game to restrict who can send invites to the session (i.e. just team captains in a team game).
 
-The title is not required to take a confirmation of destructive actions approach to this situation. Because the title cannot stop the invitation or join action from being taken, it is not required to ask for confirmation, even if the action will have a destructive effect on the title.
+The title isn't required to take a confirmation of destructive actions approach to this situation. Because the title can't stop the invitation or join action from being taken, it isn't required to ask for confirmation, even if the action will have a destructive effect on the title.
 
 For titles that support cross-platform multiplayer, users must be able to join sessions via invites between an Xbox One Console and PC.  
 
 **Pass Examples**
 
 1. The game features an in-game option that allows players to send game invitations for joinable sessions.
-2. The player does not receive a confirmation of destructive action message when accepting a game invitation while in-game.
-3. The invite completes but the session cannot be started/launched when required DLC is not present on the console. This is clearly messaged to the player.
-4. Only the host of the game session can send invitations, if it is clear who the host is.  
+2. The player doesn't receive a confirmation of destructive action message when accepting a game invitation while in-game.
+3. The invite completes but the session can't be started/launched when required DLC isn't present on the console. This is clearly messaged to the player.
+4. Only the host of the game session can send invitations, if it's clear who the host is.  
 
 **Fail Examples**
 
-1. The game does not have an in-game option that allows players to send game invitatations for joinable sessions.
-2. The game provides multiplayer game sessions on Xbox and does not contain any game modes that support game invitations.
-3. After accepting a game invitation the active player is not taken into the game session to which they were invited.
-4. The invite does not complete when required DLC is not present on the console. This is not messaged to the player.  
+1. The game doesn't have an in-game option that allows players to send game invitations for joinable sessions.
+2. The game provides multiplayer game sessions on Xbox and doesn't contain any game modes that support game invitations.
+3. After accepting a game invitation the active player isn't taken into the game session to which they were invited.
+4. The invite doesn't complete when required DLC isn't present on the console. This isn't messaged to the player.  
 
 <a id='BetasAndGamepreviews'></a>
 
@@ -2651,7 +2669,7 @@ Beta and Game Preview titles are subject to a subset of the XRs presented in thi
 
 ### XR-117: Beta/Game Preview Notification \*
 
-Titles that are in beta stage must have a splash screen or message that is displayed within the experience, after it is launched but before gameplay or application usage, communicating that:
+Titles that are in beta stage must have a splash screen or message that's displayed within the experience, after it's launched but before gameplay or application usage, communicating that:
 
 * The title is beta/pre-release software.
 * Some platform features might not work correctly.
@@ -2664,7 +2682,7 @@ The notification must also outline the support boundaries for the title.
 **Test Steps**  
 
 1. Sign in to an Xbox profile and launch the title.
-2. Verify that prior to the user being able to participate in gameplay or application usage that the a message is displayed communicating at a minimum:
+2. Verify that before the user being able to participate in gameplay or application usage that the a message is displayed communicating at a minimum:
    * The title is beta/pre-release software.
    * Some platform features might not work correctly.
    * Some game features might not work correctly and might crash.
@@ -2675,12 +2693,12 @@ Titles must communicate to users that the title is a beta/pre-release and might 
 
 **Pass Examples**
 
-1. The user is notified of the title's beta/pre-release status prior to the user being able to engage with functionality within the title.  
+1. The user is notified of the title's beta/pre-release status before the user being able to engage with functionality within the title.  
 
 **Fail Examples**
 
-1. The title does not display a message notifying the user of the title's beta/pre-release status.
-2. The user is able to access title functionality prior to seeing a notification from the title regarding beta/pre-release status. 
+1. The title doesn't display a message notifying the user of the title's beta/pre-release status.
+2. The user is able to access title functionality before seeing a notification from the title regarding beta/pre-release status. 
 
 <a id='BVTs'></a>
 
@@ -2727,8 +2745,8 @@ The downloadable content submitted with the title must be downloadable using Xbo
 1. Via the Xbox device Settings application, set the language to English.
 2. Progress into the title.
 3. Verify that the title:
-   * Does not crash or enter an unresponsive state.
-   * Does not output any debug on screen.
+   * Doesn't crash or enter an unresponsive state.
+   * Doesn't output any debug on screen.
    * Implements localization in all intended areas.
 4. Repeat steps 1-4 for all languages supported by the title.  
 
@@ -2739,8 +2757,8 @@ The title contains all supported languages. The title should also not contain st
 
 **Test Steps**
 
-1. Launch the title and ensure all BVT feature checks do not require changes to the consoles settings such as Time/Date to work.
-2. Verify that a workaround is not required to reach the main menu of the title.  
+1. Launch the title and ensure all BVT feature checks don't require changes to the consoles settings such as Time/Date to work.
+2. Verify that a workaround isn't required to reach the main menu of the title.  
 
 **Expected Result**  
 Basic functionality is expected to be working when a title is entering Certification.
@@ -2749,7 +2767,7 @@ Basic functionality is expected to be working when a title is entering Certifica
 
 **Tools Needed:**
 
-* Game published to your devloper sandbox.
+* Game published to your developer sandbox.
 * Game published to the CERT and CERT.DEBUG sandboxes.  
 
 **Test Steps**
@@ -2816,7 +2834,7 @@ All partner-hosted services are configured for testing and all features dependen
    * Age Rating certificates.
 2. Open the Submission Validator log file and ensure that no warnings or failures for the `<component>Manifest-Ratings</component>` test are displayed.
    * For all titles certified after May 11, 2020: A ratings element must not be present within the AppxManifest.
-   * For titles certified prior to May 11, 2020: A ratings element is allowed to be present within the AppxManifest.
+   * For titles certified before May 11, 2020: A ratings element is allowed to be present within the AppxManifest.
 3. Open Partner Center to review the product's age rating information
    * For each value displayed verify a corresponding rating certificate has been provided which matches the age rating exactly.
 
@@ -2835,7 +2853,7 @@ Title must be a UWP submission.
 
 **Test Steps**
 
-1. Sign into an Xbox profile that has not previously accessed the title.
+1. Sign into an Xbox profile that hasn't previously accessed the title.
 2. Launch the title.
 3. Ensure that the user is prompted to accept the Xbox account permissions.
 4. At the main menu or front-end menu, run the following command `xbdir "XS:\Program Files\WindowsApps\{XVC}\"` and search for the 'xboxservices.config' file.  
@@ -2849,9 +2867,9 @@ The title's service config must be configured for test.
 
 **Fail Examples**
 
-1. A service config file is not present.
+1. A service config file isn't present.
 2. A service config file is present but is 0 bytes.
-3. New users are not prompted to accept the Xbox account permissions.  
+3. New users aren't prompted to accept the Xbox account permissions.  
 
 #### BVT-15 Intelligent Delivery
 
@@ -2899,4 +2917,4 @@ The table below provides an overview of the various console settings and configu
 
 Date | Version of the document | Description of changes
 -----|------------------|-------------------
-November 1, 2025 | 16.0 | Updated the following test cases that contain steps to suspend the game to use steps only available on Retail consoles.<br><ul><li>001-02 Title Stability After Suspending</li><li>003-18 Headset State Change after Suspend</li><li>074-03 Suspend Disconnection to Xbox Services</li><li>074-04 Xbox Service Re-connection During Suspend</li><li>112-08 User Change During Suspension</li><li>052-02 User Change During Suspend</li><li>064-01 Joining a Game Session from Outside the Game</li><li>123-01 Installation/Unlock of Game Add-Ons or Consumables During Gameplay</li><li>124-01 Game Invitations</li><li>130-05 Compatibility Mode</li></ul>On retail consoles, a game will be suspended under the following conditions:<ul><li>When the console enters Connected Standby by being turned off with the power mode set to Instant-on.</li><li>When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.</li></ul>Test case _003-19 Headset State Change after Connected Standby_ has been retired.
+July 1, 2026 | Console: 16.2 | Removed **XR-083 Submission Validator** and moved the requirement to [XR-003 Title Quality for Submission](../XR/XR003.md). There's no test case for it as a non-tested XR. If an Exception is required for a Submission Validator fail, log it under XR-003.<br><br>Re-added test case [052-05 Correct User Association](#XR052) to the console XR and Test Cases page as it was accidentally removed in the last update.

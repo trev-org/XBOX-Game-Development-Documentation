@@ -26,20 +26,20 @@ Xbox offers the option to test Betas and Game Previews against a reduced set of 
 
 ## Betas
 
-All beta products must be approved by Microsoft and validated for Submission Checks. In addition, products made available to consumers are also subject to and validated against the XRs listed below.
+Microsoft must approve all beta products and validate them for Submission Checks. In addition, products made available to consumers are also subject to and validated against the XRs listed below.
 
-All Open Betas must be certified before they can be released. For Closed Betas, however, the requirement for certification is driven by the distribution type and size of the release:
+All Open Betas must be certified before they can be released. For Closed Betas, however, the distribution type and size of the release determine the certification requirement:
 
-* Closed Betas that have <10,000 users and are managed by the Publisher **are not** subject to a Beta XR review prior to the release but are subject to a review by Microsoft.
-* Closed Betas that have ≥10,000 users and are managed by the Publisher **are** subject to a Beta XR review prior to the release.
+* Closed Betas that have <10,000 users and are managed by the Publisher **are not** subject to a Beta XR review before the release but are subject to a review by Microsoft.
+* Closed Betas that have ≥10,000 users and are managed by the Publisher **are** subject to a Beta XR review before the release.
 * Closed Betas that have <50,000 users and are managed by the Xbox Insiders Program **are not** subject to a Beta XR review but are subject to a review by Microsoft.
-* Closed Betas that have ≥50,000 users and are managed by the Xbox Insiders Program **are** subject to a Beta XR review prior to the release.
+* Closed Betas that have ≥50,000 users and are managed by the Xbox Insiders Program **are** subject to a Beta XR review before the release.
 
-In general, beta products are separate from the full game. All XRs will be applicable when only the full game is prepared for the release. In addition, none of the exceptions filed for the beta release will be applicable to the full game unless also filed under the full game. In limited scenarios (such as Free to Play), when a beta migrates to a full title, it must undergo a full certification pass, and all XRs will be applicable.
+In general, beta products are separate from the full game. All XRs are applicable when only the full game is prepared for the release. In addition, none of the exceptions filed for the beta release are applicable to the full game unless also filed under the full game. In limited scenarios (such as Free to Play), when a beta migrates to a full title, it must undergo a full certification pass, and all XRs are applicable.
 
 ## Game Preview
 
-Game Preview titles require certification and adherence to the XRs listed below. Although the number of requirements is reduced for titles in the Game Preview program, this might not shorten the overall time frame necessary for updates. When a title exits the Game Preview program, it must undergo a full certification pass, and all XRs will be applicable.
+Game Preview titles require certification and adherence to the XRs listed below. Although the number of requirements is reduced for titles in the Game Preview program, this might not shorten the overall time frame necessary for updates. When a title exits the Game Preview program, it must undergo a full certification pass, and all XRs are applicable.
 
 ## Requirements for Betas and Game Preview titles
 
@@ -48,7 +48,6 @@ Beta and Game Preview titles must meet the following XRs for certification:
 Requirement | Xbox Consoles - Betas | Xbox Consoles - Xbox Game Preview | Windows 10 - Betas | Windows 10 - Game Previews
 ------------|-----|------|---------|---
 XR-003: Title Quality for Submission (Submission Validator portions only) | Yes | Yes
-XR-083: XDK/GDK Versions | Yes | Yes
 XR-109: Linking Between Apps | Yes | Yes
 XR-009: Secure Title Development | Yes | Yes
 XR-132: Service Access Limitation | Yes | Yes | Yes | Yes
@@ -73,4 +72,4 @@ Xbox Network Achievement Requirements (if offered) |N/A |Yes| N/A | Yes
 
 Date | Version of the document | Description of changes
 -----|------------------|-------------------
-April 1, 2024 | 12.1 | Removed XR-133 from PC Beta and Game Preview requirements as it does not apply.
+April 1, 2024 | 12.1 | Removed XR-133 from PC Beta and Game Preview requirements as it doesn't apply.

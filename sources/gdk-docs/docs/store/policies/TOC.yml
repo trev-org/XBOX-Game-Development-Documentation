@@ -128,7 +128,7 @@
       href: XR/XR047.md
     - name: "XR-048 Profile Settings Usage"
       href: XR/XR048.md
-    - name: "XR-052 User State and Title-Save Location, Roaming and Dependencies"
+    - name: "XR-052 User State and Title-Save Location, Roaming, and Dependencies"
       href: XR/XR052.md
     - name: "XR-057 Unlocking Achievements"
       href: XR/XR057.md
@@ -140,8 +140,6 @@
       href: XR/XR067.md
     - name: "XR-074 Loss of Connectivity to Xbox and Partner Services"
       href: XR/XR074.md
-    - name: "XR-083 XDK / ADK Versions"
-      href: XR/XR083.md
     - name: "XR-109 Linking Between Apps"
       href: XR/XR109.md
     - name: "XR-112 Establishing a User and Controller During Initial Activation and Resume"

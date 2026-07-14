@@ -5,7 +5,7 @@ kindex:
 - Xbox requirements and policies supporting content
 - requirements and policies supporting content, Xbox
 - policies and requirements supporting content, Xbox
-description: "Additional content to better prepare your game for release."
+description: "Extra content to better prepare your game for release."
 author: M-Stahl
 edited: 00/00/0000
 ms.date: '08/01/2022'
@@ -14,7 +14,7 @@ permissioned-type: public
 
 # Xbox Requirements Supporting Content
 
-To better prepare your game for release, additional content is available for your use.
+To better prepare your game for release, extra content is available for your use.
 
 ## In this section  
   
@@ -52,7 +52,7 @@ To better prepare your game for release, additional content is available for you
   
 [XR-048 Profile Settings Usage](XR048.md)  
   
-[XR-052 User State and Title-Save Location, Roaming and Dependencies](XR052.md)  
+[XR-052 User State and Title-Save Location, Roaming, and Dependencies](XR052.md)  
   
 [XR-057 Unlocking Achievements](XR057.md)  
   
@@ -63,8 +63,6 @@ To better prepare your game for release, additional content is available for you
 [XR-067 Maintaining Multiplayer Session State](XR067.md)  
   
 [XR-074 Loss of Connectivity to Xbox and Partner Services](XR074.md)  
-  
-[XR-083 XDK / ADK Versions](XR083.md)  
   
 [XR-109 Linking Between Apps](XR109.md)  
   
