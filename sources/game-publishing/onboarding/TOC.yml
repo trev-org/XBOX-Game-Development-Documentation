@@ -1,0 +1,16 @@
+- name: Overview
+  href: overview.md
+- name: Register for an XBOX developer program
+  href: onboarding-register.md
+- name: Provide your business introduction
+  href: onboarding-business-introduction.md
+- name: Sign your non-disclosure agreement
+  href: onboarding-sign-nda.md
+- name: Submit your first game concept
+  href: onboarding-submit-game-concept.md
+- name: Sign your title licensing and development agreements
+  href: onboarding-sign-agreements.md
+- name: Register for Partner Center
+  href: onboarding-register-partner-center.md
+- name: Complete your onboarding
+  href: onboarding-complete-setup.md

@@ -1,36 +1,53 @@
 ---
-title: Create a Store listing for a game
-description: Guidance for Managed Creators to configure Store listings for a game.
+title: Configure Store listings for a game
+description: Tutorial steps to use Partner Center to configure Store listings for a game.
 services: gaming
 author: e-h-s
 ms.author: edwardst
 ms.service: gaming
 ms.topic: article
-ms.date: 3/14/2025
+ms.date: 6/4/2026
 keywords: publishing, publish, selling, sell, distribute, distributing, store, dashboard
 ms.localizationpriority: medium
 permissioned-type: public
+zone_pivot_groups: gpg-program-selection
 ---
 
-# Create a Store listing for a game 
+# Configure Store listings for a game 
+
+This article explains how to create an English store listing. A store listing includes the text and visual assets shown to customers on the product details page (PDP) in the Microsoft Store.
+
+:::zone pivot="xbox"
 
 [!INCLUDE [reminder](../includes/managed-creators-only-feature.md)]
 
-This article explains how to create an English store listing. A store listing includes the text and visual assets shown to customers on the product details page (PDP) in the Microsoft Store.
+## Prerequisites
+
+ - Enrollment as an XBOX creator. To learn more, see [Register as an XBOX creator](../publishing-processes/managed-creators/publishing-processes-onboarding-new-creator.md).
+ - Active Partner Center account. If you don't have an account yet, contact your XBOX team.
+ - Approved Game Concept for your product. To learn more, see [Submit game concepts](../publishing-processes/managed-creators/publishing-processes-game-concepts.md).
 
 > [!Important]
 > This article covers English store listings only. We recommend creating listings for all languages used in your target markets. Review your publishing agreement with Microsoft, the Xbox Games Store Policy in the [Xbox Publisher Guide](https://aka.ms/xboxpublisherguide), and [Microsoft Store Policies](/windows/apps/publish/store-policies) to determine requirements for additional languages.
 
 Store listing assets must meet the requirements for each device family your game supports. Before creating assets, see [Store listing concepts](../concepts/store-listing.md) for specifications.
 
----
+:::zone-end
+
+:::zone pivot="msow"
 
 ## Prerequisites
-Before you begin, make sure you have:
 
- - Enrollment in a Managed Creator program. If you're not enrolled, see [Onboarding as a new Creator](../publishing-processes/managed-creators/publishing-processes-onboarding-new-creator.md).
- - An active Partner Center account. If you don't have an account, contact your Xbox team.
- - An approved game concept. If you don't have concept approval, see [Game Concepts](../publishing-processes/managed-creators/publishing-processes-game-concepts.md).
+ - Enrollment as a Microsoft Store developer.
+ - Active Partner Center account.
+ - To learn more, see [Microsoft Store Developer Platform](https://storedeveloper.microsoft.com/home).
+
+> [!Important]
+> This article covers English store listings only. We recommend creating listings for all languages used in your target markets. Review the [Microsoft Store Policies](/windows/apps/publish/store-policies) to determine requirements for additional languages.
+
+:::zone-end
+
+Store listing assets must meet the requirements for each device family your game supports. Before creating assets, see [Store listing concepts](../concepts/store-listing.md) for specifications.
 
 ---
 
@@ -90,16 +107,18 @@ To remove a language, return to the overview and select **Remove**.
 
 Screenshots should be screen captures or game artwork that reflects your game content.
 
-Image requirements vary by device family. Select each tab (**Desktop** and **Xbox**) to view specifications. For more information, see [Screenshot requirements](../concepts/store-listing.md#screenshots).
+Image requirements vary by device family. Select each tab (such as **Desktop**, or **Xbox**) to view specifications. For more information, see [Screenshot requirements](../concepts/store-listing.md#screenshots).
 
 We recommend uploading at least four screenshots per supported device family. 
 
 * **Desktop:** Recommended for PC games.
-* **Mobile:** Not required for PC or console games
-* **Xbox:** Required for console games.
-* **Holographic:** Not required for PC or console games.
+* **Mobile:** Not required for PC or XBOX games
+* **Xbox:** Required for XBOX games.
+* **Holographic:** Not required for PC or XBOX games.
 
-### Upload screenshots for the Xbox device family
+:::zone pivot="xbox"
+
+### Upload screenshots for the XBOX device family
 
 1. Select the **Xbox** tab.
 1. Upload screenshots by dragging files or selecting them.
@@ -110,11 +129,34 @@ You can upload a maximum of 30 screenshots per game. The number next to each dev
 
 Repeat these steps as necessary for each supported device family.
 
+:::zone-end
+
+:::zone pivot="msow"
+
+### Upload screenshots for the Desktop device family
+
+1. Select the **Desktop** tab.
+1. Upload screenshots by dragging files or selecting them.
+1. To add optional alt text, select **Add Alt Text**. Alt text should describe the image in 1-2 sentences.
+1. Select **Save draft**.
+
+You can upload a maximum of 30 screenshots per game. The number next to each device family tab indicates the number of files uploaded.
+
+:::zone-end
+
 ---
 
 ## Store logos
 
-**Store logos** enhance your game's PDP for customers. Store logos are required for Xbox games. The following assets are supported:
+**Store logos** enhance your game's PDP for customers. 
+
+:::zone pivot="xbox"
+
+Store logos are required for Xbox games.
+
+:::zone-end
+
+The following assets are supported:
 
 * **9:16 Poster art**: Required for Xbox games. For requirements, see [Poster art](../concepts/store-listing.md#poster-art).
 * **1:1 Box art**: Recommended. Used as your main logo if **9:16 Poster art** isn't provided. For requirements, see [Box art](../concepts/store-listing.md#box-art).
@@ -126,7 +168,7 @@ Repeat these steps as necessary for each supported device family.
 1. Partner Center validates the images. If the requirements aren't met, an error dialog appears. 
 1. Select **Save draft**.
 
-If you want customers to see the uploaded logo images instead of the images you include in the **MSIXVC** or **XVC** packages you create for your game, select **For customers on Windows 10/11 and Xbox, display uploaded logo images instead of the images from my packages**. A new **Store display images** section appears with three upload boxes. The **300 x 300 1:1 app tile** is required.
+If you want customers to see the uploaded logo images instead of the images you include in the packages you create for your game, select **For customers on Windows 10/11 and Xbox, display uploaded logo images instead of the images from my packages**. A new **Store display images** section appears with three upload boxes. The **300 x 300 1:1 app tile** is required.
 
 ---
 
@@ -150,14 +192,18 @@ To delete a trailer and its accompanying thumbnail, select the **X** next to its
 1. In **Windows 10 and Xbox image**, upload a **1920 x 1080** or **3840 x 2160** image. This 16:9 "hero" promotional image is displayed after the trailer displayed on the PDP finishes playing. This image is required for a trailer to appear at the top of the PDP.
 2. In **Choose a trailer to play at the top of your Store listing**, select an uploaded trailer.
 
+:::zone pivot="xbox"
+
 ### Additional assets
 
-For Xbox releases, provide:
+For XBOX releases, provide:
 
  - **Titled hero art**. The game title must appear in the top two-thirds of the image.
  - **Featured promotional square art**. The asset must not include the product's title.
 
 For more information, see [Store listing - Art assets reference list](../concepts/store-listing.md#art-assets-reference-list).
+
+:::zone-end
 
 ---
 
@@ -182,6 +228,6 @@ Use the fields in the **Additional information** section to provide extra metada
 
 ---
 
-## Next step
+## Next steps
 
-* [Configure pricing and availability](how-to-configure-pricing-and-availability.md)
+* [Configure pricing and availability for a game](how-to-configure-pricing-and-availability.md)

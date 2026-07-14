@@ -1,34 +1,34 @@
 ---
-title: Xbox game publishing readiness checklist
-description: A publishing readiness checklist for Xbox games used by Managed Creators.
+title: XBOX game publishing readiness checklist
+description: A publishing readiness checklist for XBOX games, used by XBOX creators.
 services: gaming
 author: e-h-s
 ms.author: edwardst
 ms.service: gaming
 ms.topic: article
-ms.date: 10/30/2025
+ms.date: 6/5/2026
 keywords: publishing, publish, selling, sell, distribute, distributing, store, dashboard
 ms.localizationpriority: medium
 permissioned-type: public
 ---
 
-# Xbox game publishing readiness checklist
+# XBOX game publishing readiness checklist
 
 [!INCLUDE [reminder](../../includes/managed-creators-only-feature.md)]
 
-Before you publish your game on Xbox consoles and Xbox on PC, review your Partner Center configuration carefully. This checklist helps you validate your settings, metadata, and release schedule so you can publish with confidence.
+Before you publish your game on XBOX consoles and XBOX on PC, review your Partner Center configuration carefully. This checklist helps you validate your settings, metadata, and release schedule so you can publish with confidence.
 
 ## Before you begin
 
 This checklist assumes that:
  - You're signed in to Partner Center.
  - You're viewing the game you want to review.
- - You've permission to edit all modules, including **Store listings**, **Pricing and availability**, **Properties**, **Gaming metadata**, and **Packages**.
+ - You have permission to edit all modules, including **Store listings**, **Pricing and availability**, **Properties**, **Gaming metadata**, and **Packages**.
 
 This checklist focuses on Game products. You should also validate any **Bundles** or **Add-ons** that release alongside your game.
 
 > [!IMPORTANT]
-> Make sure your configuration accurately represents the product available to customers. For more information, review the Xbox Games Store Policy in the [Xbox Publisher Guide](https://aka.ms/xboxpublisherguide) and [Microsoft Store Policies - 10.1 Distinct Function & Value; Accurate Representation](/windows/apps/publish/store-policies#101-distinct-function--value-accurate-representation).
+> Make sure your configuration accurately represents the product available to customers. For more information, review the XBOX Games Store Policy in the [XBOX Publisher Guide](https://aka.ms/xboxpublisherguide) and [Microsoft Store Policies - 10.1 Distinct Function & Value; Accurate Representation](/windows/apps/publish/store-policies#101-distinct-function--value-accurate-representation).
 
 ---
 
@@ -37,8 +37,8 @@ This checklist focuses on Game products. You should also validate any **Bundles*
 Complete these checks in the **[Game setup](../../concepts/game-setup-overview.md)** module.
 
 1. Confirm that **Retail** is selected for each supported platform:
-   - Select **Desktop** for Xbox on PC.
-   - Select **Xbox** for console releases.
+   - Select **Desktop** for XBOX on PC.
+   - Select **XBOX** for console releases.
 
 ---
 
@@ -47,8 +47,8 @@ Complete these checks in the **[Game setup](../../concepts/game-setup-overview.m
 Complete these checks in the **[Packages](../../concepts/packages-overview.md)** module.
 
 1. Confirm that certified packages exist for each supported platform. A banner is displayed on the [branch](../../concepts/branches.md) and shows the certification result.
-   - Xbox console: approved **.xvc** package for Xbox One, Xbox Series X|S, or both.
-   - Xbox on PC: approved **.msixvc** package.
+   - XBOX console: approved **.xvc** package for XBOX One, XBOX Series X|S, or both.
+   - XBOX on PC: approved **.msixvc** package.
    - If packages failed certification:
      - Review the certification report.
      - Fix all **BVT Failure** and **CFR** issues.
@@ -75,7 +75,7 @@ For more information, see [Properties - Basic info](../../concepts/properties-ba
       
 ### Technical Capabilities
 1. Confirm that all **Technical capabilities** are accurate:
-   - Includes **4K**, **Optimized for Xbox Series X|S**, **Xbox Play Anywhere**, and **Removable storage**.
+   - Includes **4K**, **Optimized for XBOX Series X|S**, **XBOX Play Anywhere**, and **Removable storage**.
    - Only select options your game supports.
 1. If you release on PC, confirm PC-specific settings:
    - Includes **Input Devices** and **Minimum and recommended specifications**.
@@ -83,9 +83,9 @@ For more information, see [Properties - Basic info](../../concepts/properties-ba
 
 For more information, see [Properties - Technical capabilities](../../concepts/properties-technical-capabilities.md).
 
-### Xbox services
-1. Confirm that **Xbox services** settings match your game's features:
-   - **Achievements** are required for full games on Xbox consoles and PC. For more information, see [XR-055](/gaming/gdk/docs/store/policies/Console/certification-requirements#xr-055-achievements-and-gamerscore-).
+### XBOX services
+1. Confirm that **XBOX services** settings match your game's features:
+   - **Achievements** are required for full games on XBOX consoles and PC. For more information, see [XR-055](/gaming/gdk/docs/store/policies/Console/certification-requirements#xr-055-achievements-and-gamerscore-).
    - Achievements aren't required for Game Preview, betas, or demos.
 
 For more information, see [Properties overview](../../concepts/properties-overview.md#xbox-services).
@@ -115,7 +115,7 @@ For more information, see:
 Complete these checks in the **[Store listings](../../concepts/store-listing.md)** module.
 
 1. Confirm that all required languages show as **Complete**.
-   - Follow the Xbox Games Store policy available in the [Xbox Publisher Guide](https://aka.ms/xboxpublisherguide), and your Microsoft agreements.
+   - Follow the XBOX Games Store policy available in the [XBOX Publisher Guide](https://aka.ms/xboxpublisherguide), and your Microsoft agreements.
 1. Confirm that the listings are certified. A banner is displayed on the branch and shows the certification result.
 1. Import certified listings to the **Main** branch if they're in another branch. Skip this step if the listings are already in the **Main** branch.
    - Select **Export** from the source branch to generate an .xlsx file.
@@ -164,34 +164,34 @@ Complete these checks in the **[Gaming metadata](../../concepts/metadata-overvie
    - Only select features your game supports.
    - For more information, see [Accessibility Feature Tags](/gaming/accessibility/accessibility-feature-tags).
 1. Confirm **Supported languages**.
-1. Confirm **Game Pass** isn't configured, unless requested by your Microsoft contacts. This setting isn't required for all Game Pass products.
+1. Confirm **Game Pass** isn't configured, unless requested by your XBOX contacts. This setting isn't required for all Game Pass products.
 1. Confirm **External content** settings.
 
 ---
 
-## Step 8: Xbox services
+## Step 8: XBOX services
 
-Complete these checks in the **[Xbox services](../../concepts/xbox-services.md)** modules.
+Complete these checks in the **[XBOX services](../../concepts/xbox-services.md)** modules.
 
 ### Gameplay settings
 
 1. Identify the source sandbox with final gameplay settings.
    - Use this sandbox when publishing to the **RETAIL** sandbox.
 
-### Xbox settings
+### XBOX settings
 
 1. If applicable, confirm **Localized title names**.
    - Don't use placeholders or names of other products.
 1. Confirm **Yes I will be publishing achievements** is selected unless directed otherwise by Microsoft.
 1. Confirm **Device families** match your release platforms.
-1. If applicable, confirm the **Xbox embargo** date.
+1. If applicable, confirm the **XBOX embargo** date.
    - Embargo is recommended for new game releases.
-   - For more information, see [Xbox settings - embargo](../../concepts/xbox-services.md#embargo-date).
+   - For more information, see [XBOX settings - embargo](../../concepts/xbox-services.md#embargo-date).
 
 ---
 
 > [!TIP]
-> Xbox games are configured to use the [Reseller](../../concepts/availability/managed-creators/reseller-pricing.md) pricing model and require a **revenue SKU**. If publishing fails due to a missing revenue SKU, send your Store ID to your [Microsoft contacts](../../resources/managed-support/overview-microsoft-representatives-and-contacts.md) to request one. Products without a revenue SKU can't publish to the **RETAIL** sandbox but can still publish to development sandboxes or be submitted for Certification.
+> XBOX games are configured to use the [Reseller](../../concepts/availability/managed-creators/reseller-pricing.md) pricing model and require a **revenue SKU**. If publishing fails due to a missing revenue SKU, send your Store ID to your [XBOX contacts](../../resources/managed-support/overview-microsoft-representatives-and-contacts.md) to request one. Products without a revenue SKU can't publish to the **RETAIL** sandbox but can still publish to development sandboxes or be submitted for Certification.
 
 
 ## Next steps

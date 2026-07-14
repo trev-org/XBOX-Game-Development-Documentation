@@ -1,18 +1,18 @@
 ---
-title: Product creation and onboarding
-description: Guidance for Managed Creators about product creation and onboarding in Partner Center.
+title: Set up XBOX products in Partner Center
+description: Guidance for XBOX creators about product creation and onboarding in Partner Center.
 services: gaming
 author: e-h-s
 ms.author: edwardst
 ms.service: gaming
 ms.topic: article
-ms.date: 3/6/2026
+ms.date: 6/5/2026
 keywords: publishing, publish, selling, sell, distribute, distributing, store, dashboard
 ms.localizationpriority: medium
 permissioned-type: public
 ---
 
-# Product creation and onboarding
+# Set up XBOX products in Partner Center
 
 [!INCLUDE [reminder](../../includes/managed-creators-only-feature.md)]
 
@@ -20,7 +20,7 @@ This article provides guidance about creating new products and requesting produc
 
 Create all new game, demo, bundle, or add-on products in [Partner Center](https://partner.microsoft.com/dashboard).
 
-If you're a new creator who wants to join a managed program, register for the ID@Xbox program before opening a Partner Center account. For more information, see [New creator onboarding](publishing-processes-onboarding-new-creator.md). If you already release games on Xbox consoles or PC, you might already have a Partner Center account.
+If you're a new creator who wants to join an XBOX program, register for ID@XBOX before opening a Partner Center account. For more information, see [Register as an XBOX creator](publishing-processes-onboarding-new-creator.md). If you already release games on XBOX consoles or PC, you might already have a Partner Center account.
 
 ## Choose the right product type to create
 
@@ -38,38 +38,38 @@ To get started, see [How to create new products](../../how-to/how-to-create-new-
 
 ## Supported platforms
 
-You can configure games, demos, bundles, and add-ons for PC, Xbox One consoles, and Xbox Series X|S. If you release on multiple platforms, decide how you want to structure your product offerings.
+You can configure games, demos, bundles, and add-ons for PC, XBOX One consoles, and XBOX Series X|S. If you release on multiple platforms, decide how you want to structure your product offerings.
 
-### Smart Delivery (Xbox consoles only)
+### Smart Delivery (XBOX consoles only)
 
-A single product that supports Xbox One and Xbox Series X|S
+A single product that supports XBOX One and XBOX Series X|S
 
 * Upload separate packages for each console generation. Players automatically download the correct package for their device.
 * Players own the product across both device families with one purchase.
 * Use a single configuration for pricing, availability, and Store listings.
-* Share Xbox services across console generations.
-* If you also release on PC, combine Smart Delivery with Xbox Play Anywhere, Bound, or Unbound configurations.
+* Share XBOX services across console generations.
+* If you also release on PC, combine Smart Delivery with XBOX Play Anywhere, Bound, or Unbound configurations.
 
-### Xbox Play Anywhere (XPA)
+### XBOX Play Anywhere (XPA)
 
-A single product that supports both Xbox consoles and PC.
+A single product that supports both XBOX consoles and PC.
 
-* Support Xbox One, Xbox Series X|S, or both.
-* Enable cross-progression between Xbox console and Xbox on PC versions.
-* Players receive Xbox Unified Entitlements, meaning they own the product both platforms with one purchase.
+* Support XBOX One, XBOX Series X|S, or both.
+* Enable cross-progression between XBOX console and XBOX on PC versions.
+* Players receive XBOX Unified Entitlements, meaning they own the product both platforms with one purchase.
 * Use a single configuration for pricing, availability, and Store listings.
-* Share Xbox services across Xbox platforms.
+* Share XBOX services across XBOX platforms.
 
-For more information, review the **Xbox Play Anywhere Policy** in the [Xbox Publisher Guide](https://aka.ms/xboxpublisherguide).
+For more information, review the **XBOX Play Anywhere Policy** in the [XBOX Publisher Guide](https://aka.ms/xboxpublisherguide).
 
 ### Separate Products (Bound)
-Create one product per platform and link them through shared Xbox services.
+Create one product per platform and link them through shared XBOX services.
 
-* Bind products across platforms, such as Xbox One to Xbox Series X|S, or console to PC.
+* Bind products across platforms, such as XBOX One to XBOX Series X|S, or console to PC.
 * You might need to support cross-progression. For details, see [XR-130](/gaming/gdk/_content/gc/policies/xr/xr130).
 * Players only own the platform version they purchase.
 * Configure pricing, availability, and Store listings separately for each platform.
-* Configure Xbox services on a primary product and share them with a secondary product.
+* Configure XBOX services on a primary product and share them with a secondary product.
 
 For more information, see [Game Binding](/gaming/gdk/_content/gc/live/concepts/game-binding/game-binding-overview).
 
@@ -78,9 +78,9 @@ For more information, see [Game Binding](/gaming/gdk/_content/gc/live/concepts/g
 Create one independent per platform.
 
 * You might need to support cross-progression. For more information, see [XR-130](/gaming/gdk/_content/gc/policies/xr/xr130).
-* Configure Xbox services independently for each product.
+* Configure XBOX services independently for each product.
 * Players only own the platform version they purchase.
-* Configure pricing, availability, Store listings, and Xbox services separately for each platform.
+* Configure pricing, availability, Store listings, and XBOX services separately for each platform.
 
 ## Reserve a product name
 
@@ -93,41 +93,39 @@ This approach lets you use a code name during development and update it when the
 
 ## Request product onboarding
 
-Game, Game Bundle, and Season Pass products require onboarding.
+All XBOX products, including games, bundles, and add-ons, require onboarding.
 
-After creating these products, send the Store ID to your Microsoft contacts and include:
+After creating a product, send the Store ID to your XBOX contacts and include:
 
-* Supported platforms such as Xbox One, Xbox Series X|S, or PC.
-* Planned participation in [managed programs](publishing-processes-managed-programs.md) such as Xbox Game Pass or Game Preview.
-* Planned features such as Smart Delivery, Xbox Play Anywhere, or cross-generation bundles.
-
-Game add-on products don't require onboarding, but you should still notify your Microsoft contacts when planning new content.
+* Supported platforms such as XBOX One, XBOX Series X|S, or PC.
+* Planned participation in [curated programs](publishing-processes-managed-programs.md) such as XBOX Game Pass or Game Preview.
+* Planned features such as Smart Delivery, XBOX Play Anywhere, or cross-generation bundles.
 
 ### Configure a revenue SKU
 
-> [!IMPORTANT]
-> You might not be able to publish to the RETAIL sandbox until you complete this step.
+All XBOX products require a revenue SKU (rev SKU). After creating a product, send a request to your XBOX contacts with the product name and Store ID.
 
-All products require a revenue SKU (rev SKU). After creating a product, send a request to your Microsoft contacts with the product name and Store ID.
+If you don't submit XBOX products for onboarding, you're blocked from publishing to the RETAIL sandbox. When you attempt to publish, an error is displayed and states that a revenue SKU is required.
 
 ## Complete Game setup
 
-After you create a game, Partner Center opens the **Game setup** page. Here you:
+After you create a game, Partner Center opens the **[Game setup](../../concepts/game-setup-overview.md)** page. Here you:
 
- - Select environment availability, either **Retail**, **Sandboxes**, or both, for each device family, such as PC and console.
- - Choose a primary development [sandbox](../../concepts/sandboxes.md).
+ - Enable **XBOX services**.
+ - Select **Device family availability**, either **Retail**, **Sandboxes**, or both, for each device family, such as PC and console.
+ - Choose a **primary development [sandbox](../../concepts/sandboxes.md)**.
  - View **Identity details** and required identifiers for building XVC and MSIXVC packages.
 
-### Enable Xbox features and services
+### Enable XBOX features and services
 
-If you save the Game setup page before you [request product onboarding](#request-product-onboarding), access to Xbox services and features is limited:
+XBOX services are disabled by default. If you configure the Game setup page before you [request product onboarding](#request-product-onboarding), you can only **Enable limited XBOX services**. With limited XBOX services, you can't:
 
- - You can't target the Retail environment.
- - You can't configure Xbox achievements.
+ - Publish to the RETAIL sandbox.
+ - Configure XBOX achievements.
 
-After your [Game Concept](publishing-processes-game-concepts.md) is approved, request product onboarding. Your game is then approved to use full Xbox services and features.
+After your [game concept](publishing-processes-game-concepts.md) is approved, request product onboarding. Your game is then approved and you can select **Enable full XBOX services**. 
 
-For more information, see [Configuring Xbox services](../../concepts/xbox-services.md).
+For more information, see [XBOX services](../../concepts/xbox-services.md).
 
 ### Manage development sandboxes
 
@@ -138,7 +136,7 @@ Select a primary development sandbox during setup. You can use up to 100 sandbox
 
 You can create and manage sandboxes at any time. Use isolated sandboxes to limit visibility between teams, and shared sandboxes for broader access, such as QA.
 
-For more information about configuring sandboxes in Partner Center, see [Sandboxes](../../concepts/sandboxes.md). For more information about accessing sandboxes on your device, see [Xbox services sandbox overview](/gaming/gdk/docs/services/fundamentals/sandboxes/live-setup-sandbox).
+For more information about configuring sandboxes in Partner Center, see [Sandboxes](../../concepts/sandboxes.md). For more information about accessing sandboxes on your device, see [XBOX services sandbox overview](/gaming/gdk/docs/services/fundamentals/sandboxes/live-setup-sandbox).
 
 ## Create game add-ons
 
@@ -177,13 +175,13 @@ After creating your product:
 
  - Request product onboarding.
  - Complete all product modules, such as **Store listings**, **Age ratings**, and **Properties**.
- - Continue development with the GDK.
- - Integrate Xbox services, such as sign-in, achievements, and connected storage.
+ - Continue development with the Game Development Kit (GDK).
+ - Integrate XBOX services, such as sign-in, achievements, and connected storage.
 
 ## See also
 
 * [Get started with the Microsoft Game Development Kit](/gaming/gdk/_content/gc/getstarted/get-started-home)
-* [Configuring Xbox services](../../concepts/xbox-services.md)
+* [Configuring XBOX services](../../concepts/xbox-services.md)
 * [Product setup](../../concepts/game-setup-overview.md)
 * [Configure properties for a game](../../concepts/properties-overview.md)
 * [Age ratings](../../concepts/age-ratings.md)

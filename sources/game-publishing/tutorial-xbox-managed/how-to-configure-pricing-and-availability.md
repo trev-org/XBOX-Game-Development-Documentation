@@ -1,34 +1,51 @@
 ---
-title: Configure Pricing and availability for a game
-description: Guidance for Managed Creators to configure pricing and availability for a game.
+title: Configure pricing and availability for a game
+description: Tutorial steps to use Partner Center to configure pricing and availability for a game.
 services: gaming
 author: e-h-s
 ms.author: edwardst
 ms.service: gaming
 ms.topic: article
-ms.date: 2/23/2026
+ms.date: 6/4/2026
 keywords: publishing, publish, selling, sell, distribute, distributing, store, dashboard
 ms.localizationpriority: medium
 permissioned-type: public
+zone_pivot_groups: gpg-program-selection
 ---
 
 # Configure Pricing and availability for a game
 
-[!INCLUDE [reminder](../includes/managed-creators-only-feature.md)]
-
-[!INCLUDE [reminder](../includes/web-scraping-disclaimer.md)]
-
 This article describes how to complete the **Pricing and availability** module in Partner Center.
 
 ---
+:::zone pivot="xbox"
+
+[!INCLUDE [reminder](../includes/web-scraping-disclaimer.md)]
+
+[!INCLUDE [reminder](../includes/managed-creators-only-feature.md)]
 
 ## Prerequisites
 
-Before you begin, make sure you have:
+ - Enrollment as an XBOX creator. To learn more, see [Register as an XBOX creator](../publishing-processes/managed-creators/publishing-processes-onboarding-new-creator.md).
+ - Active Partner Center account. If you don't have an account yet, contact your XBOX team.
+ - Approved Game Concept for your product. To learn more, see [Submit game concepts](../publishing-processes/managed-creators/publishing-processes-game-concepts.md).
 
- - Enrollment in a Managed Creator program. If you're not enrolled, see [Onboarding as a new Creator](../publishing-processes/managed-creators/publishing-processes-onboarding-new-creator.md).
- - An active Partner Center account. If you don't have one, contact your Xbox team.
- - An approved game concept. If you don't have concept approval, see [Game Concepts](../publishing-processes/managed-creators/publishing-processes-game-concepts.md).
+:::zone-end
+
+:::zone pivot="msow"
+
+> [!IMPORTANT]
+> The product configuration described in this article can be accessible via web scraping (or data scraping) technology before the first scheduled date. If this configuration isn't your intent, utilize **Private Audience** to protect your product’s listing up until the first scheduled date.
+>
+> With **Private Audience**, your Product Details Page (PDP) is only visible to a user group of your choosing, and it offers the ability to schedule when the product’s availability transitions from private to public. For more information, see [Visibility - Audiences](/gaming/game-publishing/concepts/availability/visibility-audiences).
+
+## Prerequisites
+
+ - Enrollment as a Microsoft Store developer.
+ - Active Partner Center account.
+ - To learn more, see [Microsoft Store Developer Platform](https://storedeveloper.microsoft.com/home).
+
+:::zone-end
 
 ---
 
@@ -43,8 +60,13 @@ The instructions in this article assume you use the **Main** branch. For more in
 
 ---
 
+:::zone pivot="xbox"
+
 ## Considerations for Xbox Play Anywhere games
+
 If you configure **Pricing and availability** for an Xbox Play Anywhere game, the same settings apply to Xbox consoles and Xbox on PC. For example, the **Release date** and **Price** are shared across both device families. You can't configure these settings separately.
+
+:::zone-end
 
 ---
 
@@ -76,7 +98,7 @@ The **Visibility** section controls how and when players can discover and acquir
 For more information about private audience, see [Visibility - Audiences](../concepts/availability/visibility-audiences.md).
 
 > [!IMPORTANT]
-> To make your game publicly visible, select **End Private Audience Restrictions on** and set a date and time. After this point, the PDP becomes public and can't be restricted again.
+> To make your game publicly visible, select **Make this product public on** and set a date and time. After this point, the PDP becomes public and can't be restricted again.
 
 ### Discoverability
 
@@ -84,6 +106,8 @@ For more information about private audience, see [Visibility - Audiences](../con
 1. Select **Save draft**.
 
 After the game is published, players can discover it based on the configured [Schedule](#configure-schedule).
+
+:::zone pivot="xbox"
 
 ### Advanced discoverability
 
@@ -117,21 +141,45 @@ To customize dates by market, select **Customize for specific markets**. Configu
 
 To show a different release date on the PDP, select **Show options**, enable **Display release date**, and specify the date (UTC).
 
+:::zone-end
+
+:::zone pivot="msow"
+
+---
+
+## Schedule
+
+The product is available to customers as soon as possible. This means that when you publish the game to the RETAIL sandbox, it's accessible in the Microsoft Store immediately after it publishes.
+
+To control the exact date and time that the game is available, enable **Private audience**, select **Make this product public on**, and configure the date and time that the product becomes publicly accessible.
+
+:::zone-end
+
 ---
 
 ## Pricing
 
-Use the **Pricing** section to define your game's price.
+Use the **Pricing** section to define your game's price. Select **Show options** to begin configuring pricing.
 
 ### Configure price
 
 The **Base price** sets the suggested price across all markets. Partner Center automatically converts this price to local currencies. You can override pricing for specific markets if needed.
 
-The price selected is the **Suggested** price. After selecting a price, review the corresponding wholesale price for the product. Microsoft reserves the right to change the retail price without notice.
+:::zone pivot="xbox"
 
-1. In **Pricing**, select **Show options**.
 1. Select the primary platform (**Xbox** or **Desktop**).
 1. Set the **Base price** and **currency**.
+
+The price selected is the **Suggested** price. After selecting a price, review the corresponding wholesale price for the product. Microsoft reserves the right to change the retail price without notice.
+
+:::zone-end
+
+:::zone pivot="msow"
+
+1. Select the **Currency**.
+1. Set the **Retail price**.
+
+:::zone-end
 
 To override the base price for specific markets, select **Create new market group**, select the required markets, and configure the price. Create more market groups as needed.
 
@@ -139,11 +187,17 @@ To override the base price for specific markets, select **Create new market gr
 
 If you don't configure market-specific pricing, Partner Center converts the base price using currency exchange rates.
 
+:::zone pivot="xbox"
+
  - Conversion rates may change over time based on market conditions.
  - Existing wholesale and suggested retail prices don't update automatically. *You must configure any required adjustments*.
  - New price selections use the latest conversion rates.
 
+:::zone-end
+
 Before publishing, select **Review price per market** to validate pricing for all markets.
+
+---
 
 ## Free trial
 
@@ -162,9 +216,33 @@ For more information, see [Trials overview](../concepts/availability/trials.md).
 1. If needed, select **Customize for specific markets**.
 1. Select **Save draft**.
 
+---
+
+:::zone pivot="xbox"
+
 ## Sale pricing and Free to use
 
 Only Microsoft can configure **Sale pricing** and **Free to use** scenarios for game products. For more information, see [Availability - markets, pricing, release schedule](../concepts/availability/availability-overview.md).
+
+:::zone-end
+
+:::zone pivot="msow"
+
+## Sale pricing
+
+Select **Show options** to configure sale pricing for your game.
+
+1. Select **New sale**.
+2. Select the **markets** that receive the sale pricing.
+3. Configure the sale details:
+   - Discount type, such as **price** or **percentage**.
+   - Discount **value**.
+   - Who the discount is **Offered to**.
+   - The date and time the discount **Starts on**.
+   - The date and time the discount **Ends on**.
+4. Select **Save draft**.
+
+:::zone-end
 
 ## Next steps
 
