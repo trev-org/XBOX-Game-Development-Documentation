@@ -1,0 +1,65 @@
+---
+title: "XR-022 Official Naming Standards"
+sidebarTitle: "XR-022 Naming"
+description: "Titles must use Microsoft's official product names, casing, spacing, and marks consistently across Store copy, in-game UI, and marketing."
+icon: "font-awesome"
+keywords: ["XR-022", "naming standards", "Xbox naming", "Microsoft product names", "Xbox Series X|S", "casing"]
+---
+
+## Intent
+
+Microsoft product names change (Xbox Live → Xbox network, Games with Gold sunset, Xbox Series X|S naming conventions). Customers rely on consistent naming to know what they're getting; Microsoft brand teams enforce consistent naming so customers aren't misled. XR-022 makes correct naming a cert-blocking requirement.
+
+## Applies to
+
+Every product's Store listing, in-game UI, achievements, add-on copy, and shipping marketing materials that pass through cert.
+
+## Requirement
+
+Your title **MUST** use current official Microsoft product names, including:
+
+- **Xbox Series X|S** with the pipe between X and S. Not "Xbox Series X and S", not "Series X\\S", not "Xbox Series X/S".
+- **Xbox One** with no space around "One". Not "Xbox 1", not "XboxOne".
+- **Xbox network** (or "Xbox" as a service where appropriate). Not "Xbox Live" going forward except in historical references.
+- **Xbox Game Pass** (proper case). Not "XBox Game Pass", not "Xbox GamePass".
+- **Play Anywhere** where the product is enrolled. Not "cross-play", not "Xbox anywhere".
+- **Microsoft Store** for the store name. Not "Windows Store", not "MS Store".
+- **Windows 10** / **Windows 11** with the correct version.
+
+Your title **MUST NOT**:
+
+- Refer to competitor platforms in ways that violate Microsoft brand guidelines.
+- Use deprecated Microsoft product names in shipping copy (except in a historical context and clearly labeled).
+- Modify Microsoft logos or platform lockups. See [Branding assets](/publishing/branding-assets).
+- Refer to the Xbox console without a generation qualifier where the generation matters.
+- Claim compatibility or features ("Optimized for Series X|S", "HDR", "120 FPS") the title doesn't actually ship.
+
+## Tested scenarios
+
+- Walk every menu and every Store listing string. Look for old naming, wrong casing, wrong spacing.
+- Verify achievement names and descriptions (localized per language) use current naming.
+- Verify feature callouts on Store listing (HDR, 4K, 120 FPS, Smart Delivery) match what the title actually ships.
+- Verify the title's own name matches the Partner Center reservation (see [Game name](/publishing/game-name)).
+
+## Best practices
+
+- **Automate a lint pass** — grep for known-bad naming across localizations and shipping strings.
+- **Coordinate marketing copy** through the same lint before it goes on the Store listing or trailer.
+- **When Microsoft renames a product**, update pending submissions before they hit cert if the change is announced with a grace period.
+
+## Related XRs
+
+- [XR-003](/publishing/xr/xr-003) — Title Quality (naming errors are quality issues).
+- [XR-006](/publishing/xr/xr-006) — Title Assets and Metadata.
+- [XR-062](/publishing/xr/xr-062) — Achievement Names and Descriptions.
+- [XR-130](/publishing/xr/xr-130) — Xbox Console Families and Generations.
+
+## If your title fails XR-022
+
+See [FMA: XR-022 Official Naming Standards](/publishing/fma/xr-022).
+
+## Related
+
+- [Branding assets](/publishing/branding-assets)
+- [Store listing](/publishing/store-listing)
+- [XBOX requirements](/publishing/xbox-requirements)
