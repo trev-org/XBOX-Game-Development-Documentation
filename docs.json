@@ -582,7 +582,9 @@
               "publishing/availability-overview",
               "publishing/preorder-overview",
               "publishing/price-adjustment-preference",
-              "publishing/pricing-models"
+              "publishing/pricing-models",
+              "publishing/properties-basic-info",
+              "publishing/properties-technical-capabilities"
             ]
           },
           {
@@ -651,7 +653,10 @@
               "publishing/how-to-sandboxes-test-accounts",
               "publishing/how-to-package-management",
               "publishing/how-to-visibility",
-              "publishing/how-to-trials"
+              "publishing/how-to-trials",
+              "publishing/how-to-bundle-contents",
+              "publishing/how-to-free-to-use",
+              "publishing/how-to-in-game-store-only"
             ]
           },
           {

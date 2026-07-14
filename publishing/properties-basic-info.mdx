@@ -1,0 +1,89 @@
+---
+title: "Properties: Basic info"
+sidebarTitle: "Properties: Basic info"
+description: "Category, subcategory, support contact, privacy policy URL, and product tags configured in Partner Center Properties."
+icon: "circle-info"
+keywords: ["properties basic info", "category", "subcategory", "privacy policy", "support contact", "product tags"]
+---
+
+**Basic info** is the first subsection of the [Properties](/publishing/properties) module. It covers the classification metadata that drives Store browse, filters, and legal disclosures.
+
+## Fields
+
+### Category and subcategory
+
+Every product must declare a **primary category** and a **subcategory**. Categories drive the Store's browse experience and search filtering.
+
+Common game categories include:
+
+- **Action & adventure** — shooters, action RPG, hack-and-slash, metroidvania.
+- **Card & board** — CCGs, tabletop adaptations.
+- **Educational** — learning-focused titles.
+- **Family & kids** — kid-friendly across genres.
+- **Fighting** — competitive fighters.
+- **Multi-genre** — titles that span multiple categories meaningfully.
+- **Other** — titles that don't fit a defined category.
+- **Platformer** — 2D and 3D platformers.
+- **Puzzle & trivia** — logic games, trivia.
+- **Racing & flying** — driving and flight sim.
+- **Role playing** — CRPGs, JRPGs, tactical RPG.
+- **Shooter** — FPS, TPS.
+- **Simulation** — sandbox, tycoon, life sim.
+- **Sports** — licensed and arcade sports.
+- **Strategy** — RTS, turn-based strategy, 4X.
+- **Word** — word games.
+
+Category drives:
+
+- Browse placement on the Xbox Store and PC Microsoft Store.
+- Discovery filters (customers filtering "Shooter" see only titles categorized as such).
+- Recommendation engine inputs.
+
+### Product tags
+
+Optional free-form tags (up to ~10) that surface as additional discovery signals. Examples: `co-op`, `souls-like`, `deckbuilder`, `roguelike`, `narrative`, `PvP`. Choose accurately; misused tags produce customer refunds and negative reviews.
+
+### Support contact
+
+- **Support email** or **support URL** displayed on the Store PDP.
+- Must be a live, monitored address / URL. Cert checks this exists at submission time and periodically after publish.
+- Consumer-protection law in some markets (EU, Australia) requires a functional support contact for every product on sale.
+
+### Privacy policy URL
+
+Required for any title that:
+
+- Collects user data (even just Xbox Live gamertag beyond what the platform surfaces).
+- Uses analytics SDKs.
+- Sends telemetry to publisher-owned servers.
+- Uses third-party ad networks.
+
+The privacy policy URL must:
+
+- Point to a **publicly reachable** page (no login gate).
+- Cover **every jurisdiction** the product ships in (GDPR-compliant text for EU, CCPA/CPRA disclosures for California, etc.).
+- Be **kept current** — changes require re-publish through [Review and publish](/publishing/modular-submission).
+
+### Website URL (optional)
+
+A link to your game's marketing website. Surfaces on the Store PDP under "More from this publisher."
+
+### Copyright / trademark information
+
+Legal notice text displayed on the PDP. Required for many licensed titles ("© 2026 Publisher Inc. All rights reserved. LICENSED™ mark owned by...").
+
+## Validation
+
+Basic info is validated at submission time:
+
+- Support email / URL must resolve.
+- Privacy policy URL must return HTTP 200.
+- Category must be selected.
+- Product name must match the reserved name (see [Game name](/publishing/game-name)).
+
+## Related
+
+- [Properties](/publishing/properties)
+- [Properties: Technical capabilities](/publishing/properties-technical-capabilities)
+- [Store listing](/publishing/store-listing)
+- [Game name](/publishing/game-name)

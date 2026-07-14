@@ -1,0 +1,76 @@
+---
+title: "Add and edit products in a bundle"
+sidebarTitle: "Bundle contents"
+description: "Change what's inside a published bundle: add a product, remove a product, or swap contents."
+icon: "pen-to-square"
+keywords: ["edit bundle", "bundle contents", "add product to bundle", "remove from bundle", "swap bundle"]
+---
+
+Bundles are not immutable — you can add, remove, or swap constituent products after a bundle is published. But there are rules, especially for bundles with existing customers.
+
+For the concept of bundles see [Bundles](/publishing/bundles). For creating a new bundle see [Create products](/publishing/how-to-create-products).
+
+## What you can change
+
+| Change | Allowed? | Effect on existing owners |
+| --- | --- | --- |
+| **Add a product** to the bundle | Yes | Existing owners **automatically receive** the entitlement to the added product. |
+| **Remove a product** from the bundle | Yes, with caveats | Existing owners **retain** the entitlement to the removed product. New buyers don't get it. |
+| **Swap a product** | Yes | Removed product's entitlement stays with existing owners; new product's entitlement is granted to existing owners. |
+| **Change the price** | Yes | Existing owners unaffected. See [Sale pricing](/publishing/sale-pricing) for time-boxed price changes. |
+| **Delist a constituent product** | Yes, but bundle becomes unpurchasable | Existing owners retain entitlement to the delisted product. Bundle can't be purchased until you either remove the delisted product or delist the bundle. |
+
+## Add or remove
+
+<Steps>
+  <Step title="Open the bundle in Partner Center">
+    Navigate to the bundle product.
+  </Step>
+  <Step title="Open Product relationships">
+    In the left nav, select **Product relationships**.
+  </Step>
+  <Step title="Add or remove">
+    Add a product by selecting it from your catalog. Remove a product by clicking the remove icon next to it.
+  </Step>
+  <Step title="Confirm entitlement propagation">
+    Partner Center shows a preview of what changes for existing owners. Verify this matches your intent.
+  </Step>
+  <Step title="Publish">
+    Publish via [Review and publish](/publishing/modular-submission). Entitlement changes propagate within minutes to a few hours.
+  </Step>
+</Steps>
+
+## Common patterns
+
+### Add a new DLC to an existing Season Pass bundle
+
+As each DLC in your roadmap ships, add it to the Season Pass bundle. Pass owners automatically get it in their library. See [Add-on bundles and Season Pass](/publishing/add-on-bundles).
+
+### Swap an old title for a remaster in a franchise bundle
+
+When you ship a remastered version of a title in a franchise bundle:
+
+1. Add the remaster to the bundle.
+2. Existing bundle owners get the remaster in their library.
+3. Optionally remove the original older title from the bundle. Existing owners keep both.
+4. New buyers get the remaster (and, if you kept the original, both).
+
+### Retire a bundle
+
+When a bundle is no longer commercially useful:
+
+1. Delist the bundle (see [Pricing changes & delist](/publishing/how-to-pricing-changes)).
+2. Existing owners retain entitlements to all constituent products.
+
+Do not delete the bundle product — that breaks customer library entries.
+
+## Regulatory considerations
+
+In some markets (EU, Australia), materially changing the contents of a bundle after sale can trigger consumer-protection review. Adding value is fine; removing value from a bundle customers have already purchased is not. Adding a new DLC to a Season Pass is safe; removing a promised DLC is not.
+
+## Related
+
+- [Bundles](/publishing/bundles)
+- [Product relationships](/publishing/product-relationships)
+- [Add-on bundles and Season Pass](/publishing/add-on-bundles)
+- [Pricing changes & delist](/publishing/how-to-pricing-changes)

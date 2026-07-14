@@ -1,0 +1,77 @@
+---
+title: "Configure add-ons for in-game store only"
+sidebarTitle: "In-game store add-ons"
+description: "Set up add-ons that are only purchasable from inside the game, not the Microsoft Store PDP."
+icon: "store-slash"
+keywords: ["in-game store", "in-game only add-on", "no store listing", "hidden add-on", "IAP"]
+---
+
+Many live-service titles run their own in-game store: cosmetics tab, battle pass shop, currency top-ups. When your game's in-game store is the customer-facing interface, you often **do not** want the add-ons to also appear on the Microsoft Store PDP — duplicating merchandising creates confusion and dilutes your Store PDP with hundreds of skin SKUs.
+
+This how-to configures an add-on that's purchasable via the XStore SDK from inside the game but hidden from Store search and browse.
+
+## Configuration
+
+<Steps>
+  <Step title="Create the add-on">
+    In the base game's Add-ons module, create a new consumable or durable add-on as normal. See [Create products](/publishing/how-to-create-products).
+  </Step>
+  <Step title="Set Visibility to Hidden">
+    In [Pricing and availability → Visibility](/publishing/how-to-visibility), set the add-on to **Hidden**. It won't appear in Store search, browse, or the base game's add-on list on the Microsoft Store.
+  </Step>
+  <Step title="Keep Purchasable = Yes">
+    Purchasable stays enabled — the add-on can still be bought, just not discovered via Store surfaces. The XStore purchase API from inside the game will succeed.
+  </Step>
+  <Step title="Minimize Store listing">
+    Provide only the required minimum Store listing (title, one placeholder image). Since the customer never sees this on the Store, don't invest localization or marketing polish here — put that effort into your in-game store UI instead.
+  </Step>
+  <Step title="Pricing per market">
+    Set [Pricing](/publishing/pricing) as usual. The prices you set here are what the XStore purchase API returns to your game code, which drives what your in-game store shows customers.
+  </Step>
+  <Step title="Publish">
+    Publish via [Review and publish](/publishing/modular-submission). The add-on is now buyable from inside the game.
+  </Step>
+</Steps>
+
+## Runtime pattern
+
+Inside game code:
+
+```text
+// Query products the current user can buy
+products = QueryStoreProductsAsync(new[] { "cosmetic_helmet_red", "cosmetic_helmet_blue", "gold_100" })
+
+// Display them in your in-game store UI
+RenderInGameStore(products)
+
+// When the customer clicks buy
+result = ShowPurchaseUIAsync("cosmetic_helmet_red")
+
+// Grant / fulfill on success
+if (result.Status == Purchased) GrantCosmetic(user, "cosmetic_helmet_red")
+```
+
+See [XStore deep dive](/publishing/xstore-deep-dive) for the full purchase flow.
+
+## Why not just make them fully hidden token-only?
+
+Token-only products can only be redeemed via a promo code. That works for reviewer distribution or contest prizes but breaks the in-game purchase flow — customers can't just buy from your shop UI.
+
+The correct pattern is `Visibility=Hidden, Purchasable=Yes` — hidden from Store discovery, but the purchase API works normally.
+
+## Managing many in-game-only add-ons
+
+Live-service titles often have hundreds of these. Best practices:
+
+- Use a consistent **product ID naming scheme** (`skin_hero_red_01`, `skin_hero_blue_01`) so your game code can generate lookups.
+- Bulk-create through the Partner Center **product ID template** flow if available for your account, or via scripting against the Partner Center API.
+- Use [Product tags](/publishing/properties-basic-info) or category grouping to keep the add-on list navigable inside Partner Center.
+- Regularly delist add-ons for retired seasons rather than accumulating hundreds of legacy SKUs.
+
+## Related
+
+- [Visibility & audiences](/publishing/how-to-visibility)
+- [Add-ons](/publishing/add-ons)
+- [Consumable add-ons](/publishing/consumable-add-ons)
+- [Durable add-ons](/publishing/durable-add-ons)
+- [XStore deep dive](/publishing/xstore-deep-dive)

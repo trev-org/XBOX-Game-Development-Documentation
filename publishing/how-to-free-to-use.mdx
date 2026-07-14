@@ -1,0 +1,67 @@
+---
+title: "Set up free-to-use scenarios"
+sidebarTitle: "Free-to-use"
+description: "Configure a fully free product on the Microsoft Store: free base game, free demo, or free live-service title monetized via add-ons."
+icon: "gift"
+keywords: ["free to use", "free to play", "F2P", "free game", "live service free"]
+---
+
+A **free-to-use** title has a base price of `$0` in every market. Free-to-use isn't a special product type — it's a specific configuration of a standard game product. This how-to walks through it.
+
+## Common free-to-use shapes
+
+| Shape | Monetization |
+| --- | --- |
+| **Free-to-play live service** | Consumable currency, cosmetics, battle passes, ads (where allowed). |
+| **Free base game \+ paid DLC** | Base game free, expansions and content packs paid. |
+| **Free demo / standalone demo** | Not monetized; upsells to a paid full product. |
+| **Free promotional release** | Time-limited free release (event, promotion) that later becomes paid. |
+| **Ad-supported free** | Free with in-game advertising. Rare on XBOX due to policy constraints. |
+
+## Configure a free-to-use title
+
+<Steps>
+  <Step title="Set price to $0 in every market">
+    In [Pricing](/publishing/pricing), set the base price to `$0` USD equivalent for every market you release in. This automatically applies the Store's free-to-use presentation.
+  </Step>
+  <Step title="Configure add-ons for monetization">
+    Create the add-ons that drive revenue. Consumables (currency, boosters) and durables (cosmetics, expansions) are the common shapes. See [Consumable add-ons](/publishing/consumable-add-ons) and [Durable add-ons](/publishing/durable-add-ons).
+  </Step>
+  <Step title="Handle refunds appropriately">
+    A free base game can't be refunded (it costs \$0). Add-on purchases follow the standard 14-day Store refund policy. Design your economy assuming refunds happen — don't grant progression that can't be recovered from a refund.
+  </Step>
+  <Step title="Pass certification against F2P XRs">
+    Free-to-use titles pass the same [Certification](/publishing/certification) bar as paid titles. Some XRs are specifically about F2P (clear pricing in in-game store, no dark patterns that trick minors into purchases, clear communication of loot mechanics where applicable).
+  </Step>
+  <Step title="Declare age-sensitive mechanics">
+    In [Ratings](/publishing/ratings), declare loot boxes, gacha mechanics, and any real-money gambling analogues accurately. Several markets require specific consumer warnings on free-to-use titles with these mechanics.
+  </Step>
+</Steps>
+
+## Free with ads
+
+Ad-supported free titles have specific constraints on XBOX:
+
+- Ads must not be shown to accounts flagged as **child** in Xbox family settings.
+- No pop-up ads during gameplay in a way that interrupts input.
+- No ads that impersonate system UI or purchase confirmation dialogs.
+- Full ad-network disclosure in your privacy policy.
+
+If you plan an ad-supported release, work with your Microsoft representative before submission — several ad SDKs are pre-approved; others require review.
+
+## Free promotional release
+
+A time-limited free release ("Free this weekend") is configured as a **sale** rather than a base price change:
+
+1. Configure the sale in [Sale pricing](/publishing/sale-pricing) with a `$0` sale price for the specific window.
+2. When the sale ends, the price reverts to the base price.
+3. Customers who claimed during the free window **keep the entitlement forever** — this is the whole point of a free promotional release.
+
+## Related
+
+- [Pricing](/publishing/pricing)
+- [Pricing models](/publishing/pricing-models)
+- [Consumable add-ons](/publishing/consumable-add-ons)
+- [Durable add-ons](/publishing/durable-add-ons)
+- [Trials](/publishing/how-to-trials)
+- [Sale pricing](/publishing/sale-pricing)

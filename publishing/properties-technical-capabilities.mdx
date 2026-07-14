@@ -1,0 +1,128 @@
+---
+title: "Properties: Technical capabilities"
+sidebarTitle: "Properties: Technical capabilities"
+description: "System requirements, input methods, hardware feature declarations, and accessibility features configured in Partner Center Properties."
+icon: "microchip"
+keywords: ["technical capabilities", "system requirements", "minimum spec", "recommended spec", "input methods", "accessibility declarations"]
+---
+
+**Technical capabilities** is the second subsection of the [Properties](/publishing/properties) module. It covers hardware requirements, input support, and platform feature declarations.
+
+Some of these fields overlap with [Gaming metadata](/publishing/gaming-metadata). Where a field exists in both, Gaming metadata is the source of truth — Properties reflects it for Store PDP presentation.
+
+## System requirements (PC titles)
+
+PC titles must declare **minimum** and **recommended** specs. These drive the PC Microsoft Store's compatibility indicator and are legally binding for customer expectations.
+
+### Required fields per tier
+
+| Field | Minimum | Recommended |
+| --- | --- | --- |
+| **Operating system** | Windows 10 22H2 / Windows 11 | Windows 11 23H2 |
+| **CPU** | Model / equivalent | Model / equivalent |
+| **RAM** | GB | GB |
+| **GPU** | Model / equivalent (both NVIDIA and AMD tiers helpful) | Model / equivalent |
+| **VRAM** | GB | GB |
+| **DirectX** | Version | Version |
+| **Storage** | GB required | GB required (post-install with updates) |
+| **Network** | Broadband if online-required | Broadband |
+
+### Choosing your minimum spec
+
+- Declared minimum spec **must actually run the game at a playable state**. Not "boots at 15 FPS with 5% memory headroom."
+- Test on physical hardware at that spec, not just an equivalent-on-paper card.
+- Cover both **NVIDIA and AMD** at the minimum tier. Optional: also cover **Intel Arc**.
+- If you rely on features like Auto HDR, Variable Rate Shading, or DirectStorage, declare that clearly.
+
+<Warning>
+  Refunds on titles that don't run at declared minimum spec are the responsibility of the publisher and count against your refund rate metric.
+</Warning>
+
+## Console generation targeting
+
+For console titles, Technical capabilities also captures generation-level declarations:
+
+- **Xbox Series X|S Optimized** — the title is built for and takes advantage of Series X|S features (higher frame rate, HDR, ray tracing where applicable).
+- **Smart Delivery** — declared here plus at the Packages module. Delivers the correct generation's package to a single owned SKU.
+- **Series S memory profile** — declare whether the Series S build ships at 1080p / 60 FPS, 1440p / 30 FPS, or another target. Cert validates the shipping build against the declared target.
+
+## Input support
+
+Declare which inputs your game supports and at what level:
+
+- Xbox Wireless Controller (default; almost always required).
+- Xbox Adaptive Controller (declaration surfaces the accessibility filter).
+- Mouse and keyboard (PC only, and console for titles that support M\+KB via the Xbox platform's M\+KB support).
+- Touch (PC only).
+- Elite Controller custom paddles (support callout).
+
+## Hardware feature declarations
+
+Each feature you declare must actually ship. Never declare features you don't have.
+
+### Display
+
+- HDR10
+- Dolby Vision
+- 4K UHD
+- 8K (rare)
+- 60 FPS target
+- 120 FPS target
+- Variable Refresh Rate (VRR)
+- Ray tracing
+- Auto HDR support
+- FPS Boost (backward-compatible titles only)
+
+### Audio
+
+- Dolby Atmos
+- DTS:X
+- Windows Sonic
+- 5.1 / 7.1 surround
+
+### Storage / delivery
+
+- Smart Delivery
+- DirectStorage (PC / console)
+
+### Cross-platform
+
+- Cross-platform play
+- Cross-generation play
+- Cross-save
+
+## Accessibility features
+
+Accessibility flags declared here also appear in [Gaming metadata](/publishing/gaming-metadata). Common declarations:
+
+- Subtitles with size, color, and background controls.
+- Colorblind modes.
+- Difficulty options / assist modes.
+- Fully remappable controls.
+- Screen reader / narrator support.
+- Speech-to-text and text-to-speech.
+- High-contrast mode.
+- Camera and motion sensitivity controls.
+
+See [MGATS](/publishing/mgats) for the optional Microsoft accessibility test pass that verifies these declarations.
+
+## Multiplayer capability declarations
+
+- Local co-op / competitive player counts.
+- Online co-op / competitive player counts.
+- Cross-platform vs Xbox-only multiplayer.
+- Requires Xbox Live Gold / Game Pass Core (auto-declared from XBOX services configuration).
+- Dedicated server vs peer-to-peer.
+
+## Validation
+
+- Technical capabilities is validated at submission time and cross-checked against the actual package (declared "120 FPS support" must appear as a code path that hits 120 FPS on Series X).
+- Declaring features you don't ship is grounds for a cert failure under the corresponding XR and for a media-validation failure at [Media validation](/publishing/media-validation).
+
+## Related
+
+- [Properties](/publishing/properties)
+- [Properties: Basic info](/publishing/properties-basic-info)
+- [Gaming metadata](/publishing/gaming-metadata)
+- [MGATS](/publishing/mgats)
+- [XBOX requirements](/publishing/xbox-requirements)
