@@ -1,0 +1,64 @@
+---
+title: "Console Build Verification Test (BVT) guide"
+sidebarTitle: "Console BVT guide"
+description: "Run the Console BVT locally on Xbox devkits before submitting to certification to catch stability, boot, suspend/resume, and account failures early."
+icon: "gamepad"
+keywords: ["BVT", "console BVT", "build verification", "pre-cert testing", "devkit"]
+---
+
+The **Console Build Verification Test (BVT)** is a scripted, repeatable pre-cert pass you run locally on Xbox devkits. Running BVT before every cert submission is the single highest-leverage thing you can do to reduce first-pass Failure Mode Analyses.
+
+<Note>
+  BVT is not a substitute for full self-testing against the [XBOX Requirements](/publishing/xbox-requirements) — it's a focused sanity pass on the failure modes that account for the majority of returned submissions.
+</Note>
+
+## What BVT covers
+
+| Area | Checks |
+| --- | --- |
+| **Boot** | Cold boot, warm boot, boot from Quick Resume, boot from disc, boot after system update, boot after game update. |
+| **Suspend / resume** | Home button, dashboard switch, sign-out during play, background download during play, Quick Resume swap-in and swap-out. |
+| **Account switching** | Sign in, sign out, switch profiles mid-session, guest account, child account with parental controls. |
+| **Network** | Play through a network loss and recovery. Play offline. Reconnect and verify state. |
+| **Storage** | Install to internal SSD, external SSD, and (for cross-gen) HDD. Move installed title between drives. Uninstall and reinstall. |
+| **Controller** | Primary controller disconnect / reconnect, secondary controller join, Xbox Adaptive Controller sanity. |
+| **DLC / add-ons** | Grant an add-on mid-session, revoke an add-on, verify entitlement changes are handled. |
+| **Achievements** | Unlock at least one achievement per code path; verify the toast appears and the value writes to XBOX Live. |
+
+## Running BVT
+
+<Steps>
+  <Step title="Install the current BVT scripts">
+    BVT scripts ship with the GDK. Confirm you're on the current recommended GDK release for your target console generation.
+  </Step>
+  <Step title="Configure the target sandbox">
+    Point the devkit at your development sandbox with the current XBOX services configuration published. See [Sandboxes](/publishing/sandboxes).
+  </Step>
+  <Step title="Run BVT against every supported device family">
+    Xbox Series X, Xbox Series S, and Xbox One (if declared as supported). Series S is often the highest-yield surface for finding failures — memory constraints trip up titles that pass on Series X.
+  </Step>
+  <Step title="Fix every BVT failure">
+    BVT tests map closely to XRs. A BVT failure will almost always be an XR failure in cert.
+  </Step>
+  <Step title="Re-run after fixes">
+    Re-run the affected BVT category after every fix pass. Do not submit to cert with any known BVT failure.
+  </Step>
+</Steps>
+
+## Common BVT failures and their XR equivalents
+
+| BVT failure | Likely XR in cert |
+| --- | --- |
+| Crash on Quick Resume swap-in | Stability XRs |
+| Missing sign-out handler | Account-switching XRs |
+| Achievement fires but doesn't write | Achievements XR |
+| Silent hang after controller disconnect | Controller XRs |
+| Bad state after network drop | Network XRs |
+| Add-on entitlement not re-queried | DLC XRs |
+
+## Related
+
+- [PC BVT guide](/publishing/pc-bvt-guide)
+- [Top failing tests](/publishing/xr-top-failing)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [Submit to certification](/publishing/submit-to-certification)

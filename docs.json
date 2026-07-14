@@ -603,7 +603,8 @@
               "publishing/xr-fma",
               "publishing/xbox-requirements",
               "publishing/xr-top-failing",
-              "publishing/cert-bypass-program"
+              "publishing/cert-bypass-program",
+              "publishing/console-bvt-guide"
             ]
           },
           {
