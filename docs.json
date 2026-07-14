@@ -593,7 +593,8 @@
             "icon": "compact-disc",
             "pages": [
               "publishing/discs",
-              "publishing/approve-discs-for-manufacture"
+              "publishing/approve-discs-for-manufacture",
+              "publishing/order-discs"
             ]
           },
           {

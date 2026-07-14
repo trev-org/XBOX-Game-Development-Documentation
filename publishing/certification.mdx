@@ -5,24 +5,118 @@ description: "How XBOX certification works — phases, submission, FMAs, and res
 icon: "clipboard-check"
 ---
 
-XBOX certification verifies your title against the [XBOX Requirements (XRs)](/publishing/xbox-requirements) before it can ship on retail.
+XBOX Certification is Microsoft's compliance and quality gate. Every package that ships on the Microsoft Store on XBOX — new titles, updates, add-ons, and discs — must pass Certification against the [XBOX Requirements (XRs)](/publishing/xbox-requirements) before it can go live in the RETAIL sandbox.
 
-## Phases
+This page explains what certification is and how the process works end-to-end. For the practical, click-by-click submission steps, see [Submit to certification](/publishing/submit-to-certification).
 
-1. **Pre-certification** — internal compliance pass against [Top failing tests](/publishing/xr-top-failing).
-2. **Submission** — upload package via [Partner Center Packages](/publishing/packages).
-3. **Certification** — Microsoft test team runs the XR suite (typically 5–10 business days).
-4. **Failures & resubmission** — review the FMA, fix, resubmit.
-5. **Release** — publish to retail or schedule a release date.
+## Submission types
 
-## Tips
+Not every submission is the same. Choose the one that matches what you are trying to achieve:
 
-- Run the SubmissionValidator locally before uploading.
-- Validate on a retail-equivalent sandbox.
-- Run a full multiplayer and DLC flow with [Sandboxes](/publishing/sandboxes).
+<CardGroup cols={2}>
+  <Card title="Optional Certification" icon="flask">
+    Advisory XR run against a near-final build to surface issues early. Does not publish.
+  </Card>
+
+  <Card title="Final Certification" icon="stamp">
+    Mandatory pass required to publish to RETAIL. Uses your locked release-candidate package.
+  </Card>
+
+  <Card title="Disc Certification" icon="compact-disc" href="/publishing/discs">
+    Certifies the exact image sent to the disc replicator. Runs alongside Final Cert.
+  </Card>
+
+  <Card title="Content Update / Recert" icon="rotate">
+    Any change to a live product. Same XR bar as Final Cert against the delta.
+  </Card>
+
+  <Card title="Cert Bypass" icon="forward" href="/publishing/cert-bypass-program">
+    Qualifying live-service titles publish updates via self-attestation instead of a cert queue.
+  </Card>
+
+  <Card title="MGATS" icon="universal-access">
+    Optional Microsoft Gaming Accessibility Testing pass. Advisory, does not gate publish.
+  </Card>
+</CardGroup>
+
+## The certification pipeline
+
+<Steps>
+  <Step title="Package processing">
+    Partner Center scans the uploaded package for structural issues, signs and stages it, and validates the manifest against your product configuration. Failures here are returned in minutes to a few hours and never enter the test queue.
+  </Step>
+  <Step title="Pre-test intake">
+    A test lead reviews your Supplemental Info, test accounts, and repro steps. If Supplemental Info is missing information the submission is returned before testing begins.
+  </Step>
+  <Step title="XR testing">
+    The Microsoft test team runs the applicable XR suite across every device family in the submission — Xbox Series X, Series S, Xbox One, and PC where declared. This includes stability, suspend/resume, account switching, network loss, multiplayer, achievements, privacy, DLC, and platform-specific rules (for example Series X|S generation rules and Smart Delivery).
+  </Step>
+  <Step title="Result">
+    - **Pass** — submission proceeds to Publishing (auto-publish, scheduled, or manual per your choice).
+    - **Fail** — an [XR Failure Mode Analysis (FMA)](/publishing/xr-fma) is attached. Fix and resubmit.
+  </Step>
+  <Step title="Publish">
+    On a passing Final Cert the package moves to `In the Store` at your configured release time.
+  </Step>
+</Steps>
+
+## Timing expectations
+
+<Warning>
+  Turnaround times are **guidance, not a contractual SLA**. Actual cert time depends on title complexity, device families in scope, current queue depth, and seasonality (Q4 is measurably slower).
+</Warning>
+
+| Submission | Typical turnaround |
+| --- | --- |
+| Package processing | Minutes to a few hours |
+| Optional Certification | 3–7 business days |
+| Final Certification (single-platform, small delta) | 5–7 business days |
+| Final Certification (multi-platform, large title) | 7–14 business days |
+| Disc Certification | Runs in parallel with Final Cert |
+| MGATS | 7–14 business days |
+| Cert Bypass | Same-day to next-day (self-attestation, no queue) |
+
+Plan your release date with a **buffer of at least one full cert cycle** to allow for a resubmission if the first pass fails.
+
+## Sandboxes and certification
+
+Cert always tests against one specific sandbox state. For Final Cert this is always the **RETAIL** sandbox. Optional Cert runs against your development sandbox. Make sure the XBOX services state (achievements, multiplayer session templates, Rich Presence, stats) is published to the sandbox you are certifying from — see [Sandboxes](/publishing/sandboxes).
+
+## Reading an FMA
+
+An FMA lists every failing XR with:
+
+- **XR number and title** (for example `XR-047 — Achievement unlocks`).
+- **Test case executed** and expected vs actual behavior.
+- **Repro steps**, test account used, device family, and sandbox.
+- **Attachments** — screenshots, video captures, and crash dumps where relevant.
+
+Do not resubmit without addressing every failing XR. Partial fixes cause repeat failures and eat your cert buffer. See [XR FMA](/publishing/xr-fma) for a walkthrough.
 
 ## Related
 
-- [XR FMA](/publishing/xr-fma)
-- [Cert bypass program](/publishing/cert-bypass-program)
-- [Top failing tests](/publishing/xr-top-failing)
+<CardGroup cols={2}>
+  <Card title="Submit to certification" icon="paper-plane" href="/publishing/submit-to-certification">
+    The click-by-click submission guide.
+  </Card>
+
+  <Card title="XBOX requirements" icon="clipboard-list" href="/publishing/xbox-requirements">
+    Full catalog of XRs tested during certification.
+  </Card>
+
+  <Card title="Top failing tests" icon="chart-line-down" href="/publishing/xr-top-failing">
+    Where first-pass failures cluster.
+  </Card>
+
+  <Card title="XR FMA" icon="triangle-exclamation" href="/publishing/xr-fma">
+    How to read and resolve a failing FMA.
+  </Card>
+
+  <Card title="Cert bypass program" icon="forward" href="/publishing/cert-bypass-program">
+    Skip the cert queue for qualifying live-ops updates.
+  </Card>
+
+  <Card title="Sandboxes" icon="box-archive" href="/publishing/sandboxes">
+    Which sandbox to certify from.
+  </Card>
+</CardGroup>
