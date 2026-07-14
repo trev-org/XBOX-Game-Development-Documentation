@@ -566,6 +566,8 @@
               "publishing/ratings",
               "publishing/product-relationships",
               "publishing/pricing",
+              "publishing/pricing-models",
+              "publishing/price-adjustment-preference",
               "publishing/bundles",
               "publishing/gaming-metadata",
               "publishing/modular-submission",
@@ -585,8 +587,6 @@
               "publishing/publisher-insights",
               "publishing/availability-overview",
               "publishing/preorder-overview",
-              "publishing/price-adjustment-preference",
-              "publishing/pricing-models",
               "publishing/properties-basic-info",
               "publishing/properties-technical-capabilities"
             ]
