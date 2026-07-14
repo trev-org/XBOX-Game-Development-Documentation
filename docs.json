@@ -617,6 +617,17 @@
             ]
           },
           {
+            "group": "Pre-release & flighting",
+            "icon": "flask",
+            "pages": [
+              "publishing/pre-release",
+              "publishing/branches",
+              "publishing/xbox-insider-program",
+              "publishing/sandboxes",
+              "publishing/insider-faq"
+            ]
+          },
+          {
             "group": "Certification",
             "icon": "clipboard-check",
             "pages": [
@@ -624,12 +635,12 @@
               "publishing/submit-to-certification",
               "publishing/xr-fma",
               "publishing/xbox-requirements",
+              "publishing/pc-certification",
               "publishing/xr-top-failing",
-              "publishing/cert-bypass-program",
               "publishing/console-bvt-guide",
               "publishing/pc-bvt-guide",
+              "publishing/cert-bypass-program",
               "publishing/mgats",
-              "publishing/pc-certification",
               "publishing/media-validation",
               "publishing/supplemental-info",
               "publishing/xr-change-history",
@@ -644,18 +655,6 @@
               "publishing/disc-packaging",
               "publishing/approve-discs-for-manufacture",
               "publishing/order-discs"
-            ]
-          },
-          {
-            "group": "Pre-release & flighting",
-            "icon": "flask",
-            "pages": [
-              "publishing/pre-release",
-              "publishing/branches",
-              "publishing/xbox-insider-program",
-              "publishing/branches",
-              "publishing/sandboxes",
-              "publishing/insider-faq"
             ]
           },
           {
@@ -674,6 +673,8 @@
               "publishing/how-to-age-ratings",
               "publishing/how-to-in-game-store-only",
               "publishing/how-to-hidden-purchasable",
+              "publishing/how-to-request-discs",
+              "publishing/how-to-royalty-tiers",
               {
                 "group": "Data Platform 2013 services",
                 "icon": "database",
@@ -688,9 +689,16 @@
                   "publishing/dp2013-challenges",
                   "publishing/dp2013-events-manifest"
                 ]
-              },
-              "publishing/how-to-request-discs",
-              "publishing/how-to-royalty-tiers"
+              }
+            ]
+          },
+          {
+            "group": "Publish & post-release",
+            "icon": "arrow-up-from-bracket",
+            "pages": [
+              "publishing/readiness-checklist",
+              "publishing/publish-to-retail",
+              "publishing/content-updates"
             ]
           },
           {
@@ -702,15 +710,6 @@
               "publishing/contacts",
               "publishing/branding-assets",
               "publishing/test-vendors"
-            ]
-          },
-          {
-            "group": "Publish & post-release",
-            "icon": "arrow-up-from-bracket",
-            "pages": [
-              "publishing/readiness-checklist",
-              "publishing/publish-to-retail",
-              "publishing/content-updates"
             ]
           }
         ]
