@@ -1,0 +1,64 @@
+---
+title: "XR-130 Xbox Console Families and Generations"
+sidebarTitle: "XR-130 Console generations"
+description: "Titles declared for Xbox Series X|S, Xbox One, or both must behave correctly on each supported console family and correctly use Smart Delivery where applicable."
+icon: "gamepad"
+keywords: ["XR-130", "Xbox Series X|S", "Xbox One", "Smart Delivery", "cross-gen", "console family"]
+---
+
+## Intent
+
+The Xbox family spans multiple hardware generations. A title declared as supporting a specific set of consoles must actually work on each console — not just launch, but hit the declared performance target, use the platform's Smart Delivery correctly for cross-gen SKUs, and gracefully handle the constraints of each console.
+
+## Applies to
+
+Every submission declares which console families it supports. XR-130 tests each declared family.
+
+## Requirement
+
+Your title **MUST**:
+
+- Launch and play correctly on **every declared console family**: Xbox Series X, Xbox Series S, Xbox One (S / X where declared).
+- Use **Smart Delivery** correctly if declared — one purchase, correct package per generation.
+- Meet the **performance targets** declared in Store metadata for each console family. "120 FPS on Series X" must actually hit 120 FPS on Series X on the shipping code path.
+- Respect **Series S memory / storage constraints** — the shipping build must fit and run within Series S limits.
+- Correctly detect **the current console family** at runtime (`XSystemGetDeviceType`) and adapt behavior (rendering resolution, effect quality, memory allocation).
+
+Your title **MUST NOT**:
+
+- Ship as "Optimized for Series X|S" without actually optimizing for Series X|S.
+- Claim cross-gen support without testing on the older generation.
+- Fail on Series S because your engine assumes Series X memory.
+- Ship different SKUs per generation and mislabel them as Smart Delivery.
+
+## Tested scenarios
+
+- Launch on each declared console family; verify no crashes.
+- Verify declared performance targets on each family (Series X 60 or 120 FPS, Series S resolution / framerate).
+- Verify Smart Delivery delivers the correct package per generation.
+- Verify Series S memory profile: no OOMs, no excessive swapping.
+- Verify device-family detection works and correct rendering path is chosen.
+
+## Best practices
+
+- **Test Series S first and often** — the tightest constraint, and the most common source of XR-130 failures.
+- **Have a Series X-vs-Series S rendering profile** in your engine.
+- **Use Smart Delivery** for cross-gen — avoid two separate SKUs where the content is the same.
+
+## Related XRs
+
+- [XR-001](/publishing/xr/xr-001) — Stability across families.
+- [XR-006](/publishing/xr/xr-006) — Metadata / feature declaration.
+- [XR-022](/publishing/xr/xr-022) — Console-family naming.
+- [XR-037](/publishing/xr/xr-037) — Package dependencies across gens.
+- [XR-129](/publishing/xr/xr-129) — Intelligent Delivery interacts with Smart Delivery.
+
+## If your title fails XR-130
+
+See [FMA: XR-130 Xbox Console Families and Generations](/publishing/fma/xr-130).
+
+## Related
+
+- [Product groups](/publishing/product-groups)
+- [Properties: Technical capabilities](/publishing/properties-technical-capabilities)
+- [XBOX requirements](/publishing/xbox-requirements)

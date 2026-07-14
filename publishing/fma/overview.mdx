@@ -1,0 +1,74 @@
+---
+title: "Failure Mode Analysis (FMA) reference overview"
+sidebarTitle: "FMA overview"
+description: "How to read a Failure Mode Analysis, what each field means, and how to work through fixing an FMA before resubmission."
+icon: "triangle-exclamation"
+keywords: ["FMA", "failure mode analysis", "cert failure", "TFB", "resubmit", "deviation"]
+---
+
+A **Failure Mode Analysis (FMA)** is the report Microsoft's test team delivers when your submission fails one or more XRs. It's not a rejection letter — it's a structured document that tells you what failed, how it was tested, and what to do next. Every XR that fails produces one or more entries in the FMA.
+
+This section indexes per-XR FMA guidance pages: for each XR your title might fail, we've captured the common failure modes, the fix patterns, and what the FMA text will look like. Use these pages when a submission fails to accelerate root-cause analysis.
+
+For the process of reading an FMA and resubmitting see [XR FMA](/publishing/xr-fma). For the XR reference itself see [XBOX requirements](/publishing/xbox-requirements). For cert terminology (TFB, deviation, etc.) see [Cert terminology](/publishing/console-cert-terminology).
+
+## Structure of an FMA entry
+
+Every entry in an FMA contains:
+
+| Field | Meaning |
+| --- | --- |
+| **XR number and title** | The XR that failed, e.g. `XR-064 Joinable Game Sessions and Online Play`. |
+| **Severity** | Ship-blocker (must fix), recommendation (should fix), or informational. Ship-blockers block publish. |
+| **Test case executed** | Which specific test case within the XR triggered the failure. An XR can have multiple test cases. |
+| **Repro steps** | The exact sequence the tester used. This is your primary reproduction guide. |
+| **Test environment** | Device family, GDK version, sandbox, test account, controller, network configuration. |
+| **Expected behavior** | What the title should have done. |
+| **Actual behavior** | What the title actually did. |
+| **Attachments** | Screenshots, video, crash dumps, network captures. |
+| **Related XRs** | Adjacent XRs that may also fail with the same root cause. |
+| **Recommended fix** | Where Microsoft can suggest a fix pattern, this section provides guidance. |
+
+## The FMA workflow
+
+<Steps>
+  <Step title="Read the whole FMA before starting">
+    Do not fix the first entry and resubmit. Every entry matters and often multiple entries share a root cause.
+  </Step>
+  <Step title="Cluster entries by root cause">
+    A single bug can produce multiple TFBs. Cluster entries that share the same repro conditions or engine subsystem.
+  </Step>
+  <Step title="Reproduce each cluster locally">
+    Use the FMA's test environment as a guide. Reproduce on the same device family, sandbox, and account type.
+  </Step>
+  <Step title="Fix at the root, not the symptom">
+    A symptomatic patch that hides the failure will surface again in another test case. Fix the underlying issue.
+  </Step>
+  <Step title="Consider a deviation for edge cases">
+    If a specific TFB is a genuine misunderstanding or edge case not covered by the current XR intent, request a **deviation** with justification. Approved deviations don't count as failures.
+  </Step>
+  <Step title="Regression-test after each cluster fix">
+    Fixing one XR failure can introduce a regression in another. Run the affected [BVT](/publishing/console-bvt-guide) categories after every fix.
+  </Step>
+  <Step title="Update Supplemental Info before resubmitting">
+    Reference the original submission ID. Note which XRs you addressed. If you fixed X but not Y, disclose it in [Supplemental info](/publishing/supplemental-info).
+  </Step>
+</Steps>
+
+## Per-XR FMA guidance
+
+Use the [XBOX Requirements](/publishing/xbox-requirements) index to find the specific FMA page for your failing XR. Each page covers:
+
+- The FMA text patterns you'll see for that XR.
+- Common root causes.
+- Fix patterns.
+- How to structure your resubmission for that XR.
+
+## Related
+
+- [XR FMA](/publishing/xr-fma) — The process-level FMA guide.
+- [XBOX requirements](/publishing/xbox-requirements) — Full XR catalog with links to per-XR FMA pages.
+- [Cert terminology](/publishing/console-cert-terminology).
+- [Supplemental info](/publishing/supplemental-info).
+- [Submit to certification](/publishing/submit-to-certification).
+- [Top failing tests](/publishing/xr-top-failing).

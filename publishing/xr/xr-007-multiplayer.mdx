@@ -6,65 +6,128 @@ icon: "users-line"
 keywords: ["XR-007 multiplayer", "cross-play", "session-based multiplayer", "cross-platform invite", "cross-platform voice"]
 ---
 
-## What session-based multiplayer makes hard
+# Xbox Cross-Network Multiplayer Implementation Example: Multiplayer Game
 
-Session-based multiplayer titles (shooters, fighting games, racing games with lobbies, party games) with cross-platform play typically have:
+Version 2.0, 9/1/2025
 
-- **Matchmaking** that pools players across Xbox, PC, PlayStation, mobile.
-- **Invite flows** where an Xbox player can invite a non-Xbox friend into a session.
-- **Voice chat** during a match with players on other platforms.
-- **Post-match reporting** to a publisher backend.
+This example scenario is intended to illustrate the recommended cross-network functionality and flow in a traditional multiplayer game or MOBA. It shows one possible design and implementation path.
 
-Each of these interacts with Xbox network privileges and Xbox privacy features. This page is the applied guidance.
+In this scenario, the title supports the following multiplayer functionality:
 
-## Cross-platform matchmaking
+- **Custom matchmaking** — The title implements a custom matchmaking service. This service first (optionally) matches players into teams and then matches teams and players together.
+- **Dedicated servers** — All gameplay for the title is executed on dedicated servers. All traffic (including chat traffic) is also routed through these servers.
+- **Custom leaderboards** — Title services implement custom leaderboards that include deep information about player progress.
+- **Multiple game modes/settings** — The title supports multiple game modes such as co-op versus team-based and allows the player to configure map, game size, rules, and other settings for these modes.
+- **In-game currency** — The title provides an in-game store with purchasable (premium) in-game currency. This currency enables players to purchase power-ups for the team. Cosmetic items can also be purchased for player characters.
+- **DLC** — Purchasable downloadable content includes new maps and additional characters.
 
-<Steps>
-  <Step title="Check the cross-network privilege before matchmaking">
-    Before showing the customer a "Find match" button that will place them in a cross-platform lobby, verify their `XPrivilegeCrossNetworkMultiplayer` privilege. Accounts without the privilege must be routed to Xbox-only matchmaking or shown a clear message.
-  </Step>
-  <Step title="Route the child-account case explicitly">
-    Child accounts (Xbox family-managed) must not be silently placed in cross-platform lobbies. Present family-safe options.
-  </Step>
-  <Step title="Provide an in-game 'Cross-play' toggle">
-    Even for accounts with the privilege, expose a per-title cross-play toggle so customers can choose Xbox-only play. Persist their choice.
-  </Step>
-  <Step title="Handle mixed sessions gracefully">
-    If a session is mid-match and a cross-network player disconnects, the session must not crash or corrupt state.
-  </Step>
-</Steps>
+## Title services
 
-## Invite flows
+One of the custom title services in this example is an authentication service. This service is used for account linking of an Xbox network (or other multiplayer network) account to a title-specific player account. When a player first connects to the service, account linking is performed silently, and a new cross-network player identity is created. For the Xbox network, the player's XUID is used as a unique player identifier that is linked to the title-specific account. XUID access needs to be approved prior to use and must be discussed with a DAM.
 
-- **Xbox → non-Xbox invites** — the Xbox player invokes an Xbox invite UI. Your session code translates that to a cross-network invite via your matchmaking backend. See [XR-124 Game Invitations](/publishing/fma/xr-124).
-- **Non-Xbox → Xbox invites** — the invite arrives via your backend and surfaces in the game's own invite UI. Also mirror it to the Xbox invite surface where possible.
-- **Party chat integration** — Xbox Party Chat is the customer's chosen voice channel; do not force in-game voice on top of party chat without an explicit opt-in.
+The title-specific account has a unique ID (GUID) that allows all title services to handle players regardless of network origin and stores metadata about the player. In this example, the multiplayer network and basic gameplay player stats are stored in this account.
 
-## Voice chat with non-Xbox players
+Title services use multiplayer network information in the title-specific account to ensure that multiplayer functionality can be restricted to Xbox network players only.
 
-This is the most common XR-007 friction point.
+## Title flow
 
-- Check `XPrivilegeCommunicationsCrossNetworkVoice` before enabling cross-network voice.
-- Enforce the **Xbox mute list** on incoming voice from cross-network players. If your matchmaking backend can transmit the muted XUID list to the other platform's client, do that; if not, mute on the Xbox side so the Xbox customer never hears the muted party.
-- Enforce **child account** voice restrictions — no voice chat with strangers for accounts flagged as child.
-- Provide **in-session mute controls** consistent across platforms.
+For a typical multiplayer game, a compliant flow for cross-network functionality first starts when the player enters the multiplayer mode.
 
-## Post-match reporting to publisher backend
+In this example the title takes the following steps:
 
-- **What you can send**: match results, stats, custom telemetry per your privacy policy.
-- **What you cannot send silently**: PII, gamertag mappings to third-party IDs beyond what's disclosed, Xbox friend graph, private communications content.
-- If you use a publisher account, keep Xbox account data scoped tightly to the linked account.
+1. **Validate privileges**
+   Before starting multiplayer, a title validates the multiplayer privilege (254 and 189). If the privilege is denied, a title does not enter multiplayer mode.
+   The title should also check the communications privilege (252) and end/disable voice and text chat accordingly.
+2. **Validate cross-network privilege**
+   For this example, the title integrates cross-network gameplay into the default matchmaking experience. When a player enters the matchmaking experience, the title validates the cross-network play privilege (185). If the privilege is denied, only matchmaking within the Xbox network is possible.
+   The first time a player is placed into cross-network gameplay the title presents a notification that cross-network gameplay is active.
+3. **Team matchmaking**
+   The title matchmaking service first forms a team from a cross-network players based on matchmaking rules.
+4. **Create and join team/lobby MPSD session**
+   The title matchmaking service creates an MPSD lobby session through service-to-service calls to Xbox services. All Xbox network users join this lobby session and the service uses custom properties to additionally provide hints about the non-Xbox network users in the session. These hints can then be used by client logic for setting session state in the next step.
+5. **Set team/lobby MPSD session**
+   Xbox network clients set the lobby session as the Activity Session. Session joinability and closed status must be set accordingly to cross-network player status. Xbox network players remain in this session as long as they remain in the cross-network team.
+   If the session is full (or becomes full later in the flow), the service or a lobby arbiter must set the session to closed. An Activity Session that has no more player slots must never be joinable.
+6. **Team lobby**
+   In the team lobby, Xbox network players and players from other multiplayer platforms are present. Voice chat is enabled between Xbox network players through a custom title service.
+   Voice chat between all players (Xbox network/non-Xbox network) is only enabled after validating all required privacy and permission checks. For non-Xbox network friend relationships the title uses non-Xbox network friend relationship data.
+   In the team lobby, Xbox network players and non-Xbox network players are uniquely identified by the title account identity. All player identifiers also show gamertags and equivalent player names for other multiplayer networks.
+   In the lobby UI, the team leader selects match properties (such as level or custom rules) for the next step to find a game session with another team and then kicks off the match request.
+7. **Game session matchmaking**
+   In this step, the existing cross-network teams are submitted to matchmaking with additional match properties set by the team leader. These properties are used to identify the best match and result in a new set of two teams for a match. At this point, the match service also identifies the dedicated server for both teams.
+8. **Create and join game MPSD session**
+   The result of the anonymous game session matchmaking is an MPSD game session that is created by the match service or dedicated service through service-to-service calls to Xbox services. All Xbox network users join this game session, and the service uses custom properties to additionally provide hints about the non-Xbox network users in the session.
+   These hints can then be used by client logic for setting session state.
+9. **Connect to dedicated server**
+   In the final step, all clients connect securely to the dedicated server and initiate cross-network gameplay. All traffic between multiplayer networks must be routed through the dedicated server, no peer-to-peer connections are permitted.
+10. **Completing gameplay**
+    After the gameplay match is completed, teams can choose to:
+    - **Replay the match** — Players remain connected to the server and in the MPSD game session. Players start a new gameplay match.
+    - **Search for new opponents** — Players disconnect from the server and leave the MPSD game session. Players remain in the lobby session and return to the lobby screen for a next round of matchmaking.
 
-## Related XRs
+## Session management
 
-- [XR-007](/publishing/xr/xr-007) — the base cross-network XR.
-- [XR-015](/publishing/xr/xr-015) — Managing Player Communications.
-- [XR-045](/publishing/xr/xr-045) — Xbox Network and Account Privileges.
-- [XR-064](/publishing/xr/xr-064) — Joinable Game Sessions and Online Play.
-- [XR-067](/publishing/xr/xr-067) — Maintaining Multiplayer Session State.
-- [XR-124](/publishing/fma/xr-124) — Game Invitations.
+To adhere to all Xbox Requirements, the title creates two MPSD sessions for Xbox network players:
+
+- **Lobby session** — This session is created by the matchmaking service through service-to-service calls to Xbox services. It contains reservations for all Xbox network players in a team upon creation. It is the session that players can send invites for or join in progress. Invites and join-in-progress must use Xbox network systems and cannot be across networks. All Xbox network players therefore set this session as their activity session.
+- **Game session** — This session is created by the matchmaking service through service-to-service calls to Xbox services. It contains reservations for all Xbox network players in a game session (across teams). It is used to track the multiplayer activity of Xbox network players.
+
+Non-Xbox network players are not directly represented in the MPSD sessions as session members. The title only tracks their presence in a custom session property:
+
+```text
+{{"name":"jackplayer"},{"name":"johnplayer"},{"name":"joeplayer"}}
+```
+
+This list and the Xbox network session members can be used to determine if the session is full. If it is full, the invite and join-in-progress functionality for Xbox network has to be disabled for correct behavior. A player (or the server) sets the closed property on the session to disable this functionality.
+
+The MPSD session used to track players in gameplay has to enable the **gameplay** capability to adhere to Xbox Requirements.
+
+## Player communication blocking/reporting
+
+Player blocking in the title is supported on the title level:
+
+- **Xbox network player blocking** — The title uses `check_multiple_permissions_with_multiple_target_users` to check privileges for multiplayer and chat with another Xbox network player and the player classes of non-Xbox network players/non-Xbox network friends. The title also provides access to the profile of another player through `ShowProfileCardAsync`. Blocking can be performed in the profile UI of a player.
+- **Non-Xbox network player blocking** — The title uses an in-title block list to support blocking of communication with non-Xbox network players. This list is maintained on a title service and checked for multiplayer permissions. Cross-network chat is not available by default. A non-Xbox network player can be blocked in the title through a custom title UI.
+- **Xbox network player reporting** — The title also allows reporting of players. For Xbox network, reporting is done by the player through the profile UI. Xbox network enforcement handles player reports.
+- **Non-Xbox network player reporting** — For non-Xbox network users, the title provides a custom reporting UI flow. The title handles player reports accordingly for the title and/or based on guidelines by other multiplayer networks.
+
+## Marketplace
+
+Purchases of in-game currency on the Xbox network and other multiplayer networks are tracked on a title service. The title provides a shared virtual currency wallet and in-game item inventory between all title versions.
+
+For non-Xbox network title versions the following restrictions apply:
+
+- **Player Skins** — Player skins can be purchased through in-game currency only. In-game currency is managed in a unified in-game wallet that is available across all networks. All player skins are identical across all title versions.
+- **Consumables** — Consumables can be purchased through in-game currency only. Like currency, consumable items are managed in a unified in-game inventory.
+- **Downloadable content** — On Xbox network platforms, downloadable content (new maps and character types) is managed through the Microsoft store. Entitlements from other stores are not shared. All players need to have a valid entitlement in their respective store to play in the same map together. Non-purchased character type is visible but not playable for a player that does not have the matching entitlement.
+
+## Achievements
+
+The title has multiple achievements that are based on multiplayer actions, including multiplayer games played. Achievement progress for these (and similar) achievements include cross-network multiplayer game sessions.
+
+The title does not have any achievements that are limited to cross-network gameplay. Achievement progress for Xbox title achievements is possible through gameplay on other title versions.
+
+## Player progress
+
+Player progress is shared between the all title versions. The custom title account holds parts of the player progress.
+
+## Game DVR/broadcasting
+
+The title provides support for Game DVR and screenshots as well as broadcasting in cross-network multiplayer matches.
+
+## Leaderboards
+
+The leaderboard for the title is implemented through a title service that provides extensive leaderboard functionality beyond Xbox network leaderboards. The service creates multiple underlying leaderboards and updates them in parallel: one leaderboard for each multiplayer network, and one merged leaderboard that combines results from all multiplayer networks.
+
+When cross-network multiplayer is enabled, the merged leaderboard is displayed. All players are represented in the same way as in the multiplayer lobby.
+
+The Xbox network-only leaderboard is displayed when a player has disabled the cross-network gameplay functionality.
+
+A title-specific account is used to identify all players on the leaderboard service internally. The external identifiers for Xbox network players depend on the querying title instance. On Xbox network title instances, the XUID is returned and the client performs a lookup to determine the gamertag string of the player. On non-Xbox network title instances, the gamertag or DisplayName string of the player is returned directly. The service retrieves this string from a service-to-service call to Xbox services and caches it for up to 4 hours.
 
 ## Related
 
-- [XBOX services](/publishing/xbox-services)
-- [XBOX requirements](/publishing/xbox-requirements)
+- [XR-007 Cross-Network Play, Data Usage, and Companion App Interactions](/publishing/xr/xr-007)
+- [XR-007 MMO example](/publishing/xr/xr-007-mmo)
+- [XR-015 Managing Player Communication](/publishing/xr/xr-015)
+- [XR-045 Xbox network and Account Privileges](/publishing/xr/xr-045)

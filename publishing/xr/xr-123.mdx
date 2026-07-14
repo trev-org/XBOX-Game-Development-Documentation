@@ -1,0 +1,64 @@
+---
+title: "XR-123 Installation / Unlock of Game Add-Ons or Consumables During Gameplay"
+sidebarTitle: "XR-123 In-session DLC"
+description: "When add-ons or consumables become available mid-session — through purchase, promo redemption, family sharing, or Game Pass — the title must grant access without requiring restart or exhibiting undefined behavior."
+icon: "download"
+keywords: ["XR-123", "DLC during gameplay", "add-on install", "license changed", "consumable balance", "entitlement change"]
+---
+
+## Intent
+
+Customers buy DLC, redeem promo codes, join a family group, or start a Game Pass subscription while a title is running. Their new entitlement should apply to the running session without requiring the customer to close and reopen the title. XR-123 requires titles to detect and honor entitlement changes mid-session.
+
+## Applies to
+
+Every title with DLC, add-ons, consumables, or Game Pass-only content.
+
+## Requirement
+
+Your title **MUST**:
+
+- Subscribe to platform events that signal **entitlement changes**: `XStoreRegisterPackageLicenseLost`, `XStoreQueryAddOnLicensesAsync` result changes.
+- Re-query entitlements at **natural break points**: opening the shop UI, returning to the main menu, before starting a mode that requires an entitlement.
+- Grant access to content on **entitlement acquisition** without requiring the customer to restart.
+- **Install DLC packages during gameplay** (for `durable with package` add-ons). The platform downloads the package; the title mounts and consumes it when install completes.
+- Handle **entitlement loss** gracefully — refund, family sharing removal, subscription end. Lock the affected content on next reference; do not corrupt current session state.
+- Refresh **consumable balances** when a purchase completes so the customer sees their new balance without restart.
+
+Your title **MUST NOT**:
+
+- Cache entitlements across a session so a mid-session purchase requires restart.
+- Ship the customer a locked-down UI that says "restart to unlock" when the platform doesn't require it.
+- Continue granting access to content after an entitlement is revoked.
+- Crash on an entitlement change.
+
+## Tested scenarios
+
+- Start the title without a specific add-on. Purchase the add-on. Verify access appears without restart.
+- Redeem a promo code mid-session. Verify entitlement.
+- Simulate a family-sharing change that revokes an entitlement mid-session. Verify graceful behavior.
+- Subscribe to Game Pass mid-session. Verify Game Pass-only features unlock.
+- Purchase a consumable. Verify the balance refreshes in the in-game shop.
+
+## Best practices
+
+- **Query entitlements on shop-open, mode-select, and title-resume** — the three natural refresh points.
+- **Handle the license-lost event immediately** — lock content, log the event, present UI at the next appropriate break.
+- **For durable-with-package** DLC, listen for the install-complete event and mount the package when ready.
+
+## Related XRs
+
+- [XR-036](/publishing/xr/xr-036) — In-title pricing.
+- [XR-037](/publishing/xr/xr-037) — Package dependencies.
+- [XR-045](/publishing/xr/xr-045) — Privileges (some content is privilege-gated).
+- [XR-129](/publishing/xr/xr-129) — Intelligent Delivery.
+
+## If your title fails XR-123
+
+See [FMA: XR-123 Installation of DLC During Gameplay](/publishing/fma/xr-123).
+
+## Related
+
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [Add-ons](/publishing/add-ons)
+- [XBOX requirements](/publishing/xbox-requirements)

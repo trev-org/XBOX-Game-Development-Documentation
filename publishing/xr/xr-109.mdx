@@ -1,0 +1,51 @@
+---
+title: "XR-109 Linking Between Apps"
+sidebarTitle: "XR-109 App linking"
+description: "Titles that launch other Xbox apps, deep-link into the Store, or hand off to companion experiences must use the platform's app-linking APIs and handle failures gracefully."
+icon: "arrow-up-right-from-square"
+keywords: ["XR-109", "app linking", "deep link", "protocol activation", "companion app"]
+---
+
+## Intent
+
+Titles occasionally launch other apps — open the Microsoft Store PDP for the base game to prompt a DLC purchase, launch the Xbox app for a friend view, hand off to a companion app on a phone. These transitions must use the platform's supported app-linking mechanisms so the customer arrives at the intended destination and can return.
+
+## Applies to
+
+Titles that launch external apps, deep-link into the Store, or coordinate with companion experiences.
+
+## Requirement
+
+Your title **MUST**:
+
+- Use the **platform-supported app-linking APIs** (protocol activation, `LaunchUri`, XStore-provided links) rather than opening web URLs that require the customer to navigate.
+- Handle the case where the target app is **not installed** — present a clear message rather than failing silently.
+- Return the customer to a **sensible state** when they navigate back from the launched app.
+- Not link out to **third-party stores or apps** in a way that competes with Microsoft's commerce surface.
+
+Your title **MUST NOT**:
+
+- Force a browser to open for what should be a native platform link.
+- Deep-link into a Store product other than one associated with the title / publisher.
+- Fail without a graceful fallback if the target app is missing.
+
+## Tested scenarios
+
+- Launch the Store PDP for a DLC. Verify the customer arrives at the PDP for the correct product.
+- Simulate the Xbox app not being installed. Verify graceful fallback.
+- Return to the title after opening the Store. Verify the title resumes correctly.
+
+## Best practices
+
+- Prefer **`XStoreShowProductPageUIAsync`** to open a product PDP rather than a generic URL.
+- Cache and use **XStore product IDs** for deep-links; don't hard-code Store URLs.
+
+## Related XRs
+
+- [XR-001](/publishing/xr/xr-001) — App transitions must not crash.
+- [XR-124](/publishing/fma/xr-124) — Game invitations (related linking flow).
+
+## Related
+
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [XBOX requirements](/publishing/xbox-requirements)

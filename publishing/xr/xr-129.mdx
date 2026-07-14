@@ -1,0 +1,62 @@
+---
+title: "XR-129 Intelligent Delivery Content Management"
+sidebarTitle: "XR-129 Intelligent Delivery"
+description: "Titles that use Intelligent Delivery to ship platform-specific, language-specific, or optional content must declare the delivery layout correctly and consume only the chunks that are actually installed."
+icon: "truck-fast"
+keywords: ["XR-129", "Intelligent Delivery", "content chunks", "platform variants", "language chunks", "optional chunks"]
+---
+
+## Intent
+
+**Intelligent Delivery** lets titles ship only the content each customer needs: their platform (Series X vs Series S vs Xbox One), their language, and their opted-in optional content (HD textures, campaign expansions). This saves install size and download time — but only works if the title correctly declares its delivery layout and only touches installed content at runtime.
+
+## Applies to
+
+Titles that use Intelligent Delivery for platform-specific, language-specific, or optional content.
+
+## Requirement
+
+Your title **MUST**:
+
+- Declare the **Intelligent Delivery layout** in the package manifest — platform chunks, language chunks, optional chunks, and dependencies among them.
+- **Query which chunks are installed** at runtime via the platform APIs before touching content in a chunk.
+- Handle the case where an **optional chunk isn't installed** — either offer to install it, fall back to a lower-quality alternative, or gate the feature.
+- Handle **partial installs** correctly — the customer might have installed English audio and Spanish text but not Spanish audio; the title must not fail on the mismatch.
+- **Coordinate chunk install / uninstall** with the platform's storage manager — don't fight the platform's decisions.
+
+Your title **MUST NOT**:
+
+- Assume the entire package is installed.
+- Reference content by path assuming a specific chunk mapping.
+- Ship a delivery layout that doesn't match what the runtime consumes.
+- Fail to detect Intelligent Delivery configuration errors at runtime; they must be caught in cert.
+
+## Tested scenarios
+
+- Install only the initial-play chunks. Verify title reaches playable state.
+- Install an optional HD texture chunk mid-session. Verify the title picks it up on next natural refresh.
+- Uninstall an optional chunk. Verify the title falls back gracefully.
+- Try mismatched language chunks (audio in one language, text in another). Verify handling.
+
+## Best practices
+
+- **Design chunks around distinct customer preferences**: platform, language, optional-content packs.
+- **Declare dependencies** in the manifest so the platform installs prerequisite chunks first.
+- **Test with partial installs** — don't only test with everything installed.
+
+## Related XRs
+
+- [XR-034](/publishing/fma/xr-034) — Streaming install initial play marker.
+- [XR-037](/publishing/xr/xr-037) — Package dependencies.
+- [XR-123](/publishing/xr/xr-123) — In-session content install.
+- [XR-130](/publishing/xr/xr-130) — Xbox Console Families (Intelligent Delivery \+ Smart Delivery).
+
+## If your title fails XR-129
+
+See [FMA: XR-129 Intelligent Delivery Content Management](/publishing/fma/xr-129).
+
+## Related
+
+- [Packages](/publishing/packages)
+- [Package management](/publishing/how-to-package-management)
+- [XBOX requirements](/publishing/xbox-requirements)

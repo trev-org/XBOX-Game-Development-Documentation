@@ -1,0 +1,60 @@
+---
+title: "FMA: XR-001 Title Stability"
+sidebarTitle: "FMA XR-001"
+description: "How to read and fix XR-001 Title Stability failures: crashes, hangs, black screens, suspend/resume corruption, Quick Resume issues, controller and network state failures."
+icon: "triangle-exclamation"
+keywords: ["FMA XR-001", "stability failure", "crash fix", "suspend resume crash", "Quick Resume fix"]
+---
+
+[XR-001 reference](/publishing/xr/xr-001) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Title crashed to dashboard during \[scenario\]"** — unhandled exception in a specific gameplay path.
+- **"Title hung indefinitely after \[event\]"** — typically an unbounded wait on Xbox network or on a resource that was reclaimed during suspend.
+- **"Black screen following Quick Resume swap-in"** — renderer state assumed persistence across the swap.
+- **"Title corrupted save data after \[event\]"** — partial write on a save; not atomic.
+- **"Console required hard reset"** — the title left the platform in a state it couldn't recover from.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Crash on suspend / resume | GPU or memory resource held across suspend | Free / reload resources on suspend / resume callbacks |
+| Hang on network call | Unbounded synchronous wait | Move to async APIs; add explicit timeouts |
+| Crash on account switch | Cached user state didn't invalidate | Refresh all per-user state on `XUserChangeEvent` |
+| Crash on controller disconnect | Input read expected a specific controller | Handle `XInputDeviceChanged`; support hot-swap |
+| Crash on Quick Resume swap-in | Assumed rendering context persistence | Reinitialize render resources on resume |
+| Series S OOM but not Series X | Memory profile assumes Series X | Add a Series S memory tier; drop resolution / textures |
+| Save corruption | Non-atomic write | Write to temp \+ fsync \+ rename |
+| Long soak crash | Memory leak accumulates over hours | Instrument allocation tracking; audit long-lived allocations |
+
+## Reproducing the failure
+
+1. Match the FMA's test environment exactly (device family, GDK version, sandbox, account).
+2. Reproduce with tracing on: `PIX`, `XPerf`, or your engine's built-in profiler.
+3. Attach a debugger to your retail build (or a matching checked build) and capture the fault frame.
+4. If the failure is intermittent, run for hours; log crash reports centrally.
+
+## Fixing
+
+- **Crash** — root-cause the exception; add a regression test.
+- **Hang** — identify the blocking call; make it async or timebound; add a recovery path.
+- **Corruption** — identify the corrupted resource; add write barriers and validation on read.
+- **OOM on Series S** — profile Series S specifically; drop resource tier at Series S detection.
+
+## Resubmission notes
+
+In [Supplemental info](/publishing/supplemental-info), reference the original submission ID and describe:
+
+- Each root cause identified.
+- The code change made.
+- Which BVT categories now cover the regression.
+- Any TFBs that remain — either with fixes underway or with deviation requests.
+
+## Related
+
+- [XR-001 reference](/publishing/xr/xr-001)
+- [Console BVT guide](/publishing/console-bvt-guide)
+- [PC BVT guide](/publishing/pc-bvt-guide)
+- [Top failing tests](/publishing/xr-top-failing)

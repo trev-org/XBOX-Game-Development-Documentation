@@ -1,0 +1,68 @@
+---
+title: "XR-067 Maintaining Multiplayer Session State"
+sidebarTitle: "XR-067 Session state"
+description: "Multiplayer sessions must maintain accurate state through joins, leaves, host migration, network glitches, and platform events without desyncing or crashing."
+icon: "circle-nodes"
+keywords: ["XR-067", "session state", "host migration", "desync", "session lifecycle", "MPSD"]
+---
+
+## Intent
+
+A multiplayer session's state — who's in, what roles, what mode, what map — must stay accurate throughout the session's lifecycle. If state gets desynced or corrupted, joining players see wrong information and existing players are dropped into wrong contexts. XR-067 requires titles maintain session state through every reasonable perturbation.
+
+## Applies to
+
+Every title with multiplayer session state (MPSD or modern equivalent).
+
+## Requirement
+
+Your title **MUST**:
+
+- Keep the **MPSD session state** in sync with the runtime session on every state transition (member join, member leave, role change, mode change, host migration).
+- Handle **host migration** correctly when the host disconnects — elect a new host, transfer authoritative state, notify remaining members.
+- Handle **member disconnect** — remove the departed member from session state, notify remaining members, adjust joinability if the session is now not full.
+- Handle **network glitches** — transient network loss on the host must not tear down the session if recovery is quick.
+- Handle **platform events** — sign-out, Quick Resume, controller change — without corrupting the session for other members.
+- **Persist session identity** correctly through host migration so join-from-presence still finds the migrated session.
+- Clean up sessions when they naturally end (all members leave, game completes) so the session doesn't ghost in MPSD.
+
+Your title **MUST NOT**:
+
+- Show session state inconsistently across members.
+- Allow a stale MPSD session to persist after the runtime session has ended.
+- Drop all remaining members when the host disconnects.
+- Fabricate members in the session state that aren't actually connected.
+
+## Tested scenarios
+
+- Host a 4-player session. Have the host disconnect (network pull). Verify host migration; verify remaining 3 members continue.
+- Have a non-host member disconnect. Verify graceful removal from state.
+- Rapidly join / leave the session. Verify session state stays consistent.
+- Change game mode mid-lobby. Verify state propagates to all members.
+- Sign out mid-session. Verify session state updates for the remaining members.
+
+## Best practices
+
+- **Design an authoritative host** or **arbitrated session** so there's a single source of truth on session state.
+- **Use MPSD writes carefully** — rate-limit them to avoid throttling under [XR-132](/publishing/xr/xr-132).
+- **Reconcile after network glitches** — on reconnect, re-read MPSD state and diff against runtime.
+- **Timebound host-migration** — if no new host is elected in a bounded time, tear down cleanly rather than hanging.
+
+## Related XRs
+
+- [XR-064](/publishing/xr/xr-064) — Joinable sessions.
+- [XR-070](/publishing/fma/xr-070) — Friends list.
+- [XR-074](/publishing/xr/xr-074) — Loss of connectivity.
+- [XR-115](/publishing/xr/xr-115) — Adding / removing users during gameplay.
+- [XR-124](/publishing/fma/xr-124) — Game invitations.
+- [XR-132](/publishing/xr/xr-132) — Service access limits.
+
+## If your title fails XR-067
+
+See [FMA: XR-067 Maintaining Multiplayer Session State](/publishing/fma/xr-067).
+
+## Related
+
+- [XBOX services](/publishing/xbox-services)
+- [Top failing tests](/publishing/xr-top-failing)
+- [XBOX requirements](/publishing/xbox-requirements)

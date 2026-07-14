@@ -1,0 +1,70 @@
+---
+title: "XR-112 Establishing a User and Controller During Initial Activation and Resume"
+sidebarTitle: "XR-112 Activation"
+description: "Titles must correctly establish the active user and controller during title launch, activation, and resume flows, including Quick Resume."
+icon: "user-check"
+keywords: ["XR-112", "initial activation", "resume", "active user", "controller association", "Quick Resume"]
+---
+
+## Intent
+
+When a title launches from cold boot, from suspend, or from Quick Resume, it must correctly identify **who** is playing and **which controller** they're using. XR-112 defines the correct behavior across these entry points so customers don't end up controlling the wrong profile.
+
+## Applies to
+
+Every title.
+
+## Requirement
+
+On **cold boot** or **launch from home**, your title **MUST**:
+
+- Establish the **active user** from the launching controller's associated account.
+- Handle the case of **no signed-in account** — either sign in a guest, prompt sign-in, or exit cleanly.
+- Associate the launching **controller** with the active user.
+
+On **resume from suspend**, your title **MUST**:
+
+- Verify the previously-active user is still signed in. If not, handle the account change (see [XR-115](/publishing/xr/xr-115)).
+- Verify the previously-associated controller is still connected. If not, prompt for controller reconnect or accept a new controller.
+- Restore in-progress gameplay state, respecting any account or controller changes.
+
+On **Quick Resume swap-in**, your title **MUST**:
+
+- Behave the same as "resume" — verify the active user and controller are unchanged, or handle the change.
+- Not assume the network state is the same as before the swap.
+
+Your title **MUST NOT**:
+
+- Silently continue with the wrong user's profile.
+- Assume a specific controller port maps to a specific user.
+- Fail to detect an account change and continue writing to the previous account's save.
+
+## Tested scenarios
+
+- Cold boot with a single signed-in account. Verify correct activation.
+- Cold boot with no signed-in account. Verify graceful sign-in prompt or guest activation.
+- Suspend, sign out, resume. Verify title handles the account change.
+- Suspend, disconnect controller, resume with a new controller. Verify correct reassociation.
+- Quick Resume swap out; sign out; swap back in. Verify handling.
+
+## Best practices
+
+- **Query the active user on every activation event** rather than caching across suspends.
+- **Use `XUserGetLastError`** consistently to detect sign-in state changes.
+- **Provide graceful sign-in / controller-select UI** rather than crashing on missing state.
+
+## Related XRs
+
+- [XR-001](/publishing/xr/xr-001) — Stability during activation.
+- [XR-052](/publishing/xr/xr-052) — Save integrity across activation.
+- [XR-115](/publishing/xr/xr-115) — User / controller changes during gameplay.
+
+## If your title fails XR-112
+
+See [FMA: XR-112 Establishing a User and Controller](/publishing/fma/xr-112).
+
+## Related
+
+- [Top failing tests](/publishing/xr-top-failing)
+- [Console BVT guide](/publishing/console-bvt-guide)
+- [XBOX requirements](/publishing/xbox-requirements)

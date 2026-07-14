@@ -1,0 +1,49 @@
+---
+title: "XR-083 XDK / ADK Versions"
+sidebarTitle: "XR-083 SDK versions"
+description: "Titles must be built against a supported Game Development Kit (GDK) release, keeping current with mandated version windows."
+icon: "code-branch"
+keywords: ["XR-083", "XDK", "ADK", "GDK", "SDK version", "minimum version", "support window"]
+---
+
+## Intent
+
+Microsoft mandates a **support window** for GDK releases. Titles built against unsupported / deprecated SDKs may miss critical fixes, miss new XR test cases, or misuse deprecated APIs. XR-083 requires titles to keep current with the supported GDK window.
+
+## Applies to
+
+Every submission on every platform.
+
+## Requirement
+
+Your title **MUST**:
+
+- Be built against a **currently supported GDK release**. The support window is announced by Microsoft; typically the most recent 2–4 quarterly releases are supported at any time.
+- Have a **defined migration path** if the GDK release you built against is approaching end-of-support.
+- Use APIs from the **current stable surface** — preview or deprecated APIs are not allowed in retail submissions.
+
+Your title **MUST NOT**:
+
+- Submit for cert on a GDK version outside the support window without a documented deviation.
+- Rely on undocumented APIs, private headers, or reflected internals.
+- Ship a mix of GDK versions across packages of the same product.
+
+## Tested scenarios
+
+- Verify the GDK version declared in the package manifest matches the supported set.
+- Verify no deprecated APIs are referenced in the binary.
+
+## Best practices
+
+- **Update GDK proactively** at each quarterly release rather than reactively at end-of-support.
+- **Test with new GDK on a branch** so upgrade friction is visible before you're forced.
+- **Track GDK release notes** for new XRs, new APIs, and new deprecations. See [XR change history](/publishing/xr-change-history).
+
+## Related XRs
+
+- [XR-003](/publishing/xr/xr-003) — Title quality (deprecated API usage is a quality issue).
+
+## Related
+
+- [XR change history](/publishing/xr-change-history)
+- [XBOX requirements](/publishing/xbox-requirements)

@@ -6,65 +6,135 @@ icon: "globe"
 keywords: ["XR-007 MMO", "MMO cert", "persistent world", "publisher account", "in-game chat rooms"]
 ---
 
-## What MMOs make hard
+# Xbox Cross-Network Multiplayer Implementation Example: MMO
 
-MMOs typically have:
+Version 2.0, 9/1/2025
 
-- A **publisher account system** the customer signs into on top of their Xbox account.
-- **Always-online session state** with a publisher's own matchmaking / world servers.
-- **Persistent-world chat channels** (city chat, guild chat, whisper) that span Xbox and non-Xbox players.
-- **Third-party services** for account linking, analytics, cash shops.
+The following example scenario is intended to illustrate the recommended cross-network functionality and flow in a massive multiplayer online game. It shows one possible design and implementation path.
 
-Each of these is a cross-network concern under [XR-007](/publishing/xr/xr-007). This page is the applied guidance for MMO teams.
+In this scenario, the title supports the following multiplayer functionality:
 
-## Publisher account linking
+- **Open game world** — The title supports an open game world that allows interactions between players. Players are able to group loosely in the open world for player vs. environment (PvE) experiences. Player vs. player (PvP) experiences are 1:1 and only permitted in selected areas.
+- **Custom matchmaking for instanced game sections** — The title implements a custom matchmaking service for players that enter instanced PvP or PvE gameplay sections. This service matches players and/or teams of players together.
+- **Dedicated servers** — All gameplay for the title is executed on dedicated servers. All traffic is also routed through these servers.
+- **Chat** — The title supports voice and text chat between all players. Global text chat is also supported. All traffic is routed through servers.
+- **Consumables** — The title provides an in-game store with purchasable (premium) in-game currency. This currency enables players to purchase items and consumables.
+- **DLC** — Purchasable downloadable content includes new game regions that unlock new player character classes.
 
-<Steps>
-  <Step title="Present the account link disclosure once">
-    On first launch of the MMO, present a screen that discloses the publisher account system, what data will flow to it (gamertag mapping, minimal profile), and the privacy policy URL. Require an explicit acknowledgment.
-  </Step>
-  <Step title="Support account link without account creation on the Xbox">
-    Customers should be able to link an existing publisher account or create a new one, but must not be blocked from playing the game entirely because the publisher account service is down.
-  </Step>
-  <Step title="Persist the link across sign-outs">
-    Once the Xbox account is linked to the publisher account, that link should survive sign-out and re-sign-in. Do not require re-linking on every launch.
-  </Step>
-  <Step title="Support unlinking">
-    Provide an in-game or web-based way for the customer to sever the account link. Follow through on the Xbox side and stop transmitting data.
-  </Step>
-</Steps>
+## Title services
 
-## Chat channel handling
+In this example, the first title service a player interacts with when launching the game is a title sign-in service. To play in the game, a player must create a title account and link it to the Xbox network account. Account creation is possible from within the title or on the title's webpage.
 
-- **World / zone chat** — typically text, sometimes voice. Respect Xbox mute list on the receiving side even for cross-network players; honor child account communication restrictions.
-- **Guild / clan chat** — requires explicit customer consent to join. Honor Xbox privacy privileges at join time.
-- **Whisper / DM** — must respect mute / block bidirectionally. If a customer blocks a player on Xbox, whispers from that XUID must be filtered even if the sender is on a non-Xbox platform.
-- **Voice chat** — gate behind the cross-network voice privilege and Xbox voice communications privilege. Child accounts must not be able to enter voice chat with strangers.
+For account linking, the player's XUID is used and linked to a title-specific account. In the title, a player signs in once with a username/password for the title account to perform account linking. XUID access needs to be approved prior to use and must be discussed with your [Microsoft contacts](/publishing/contacts). The XUID must be protected during transmission and storage.
 
-## Persistent world = always-online
+On the title's webpage, a player signed in with the title account also signs into the Microsoft Account for account linking. For more information refer to the _Website Account Linking_ documentation topic.
 
-- The title must handle **XBOX network loss** without corrupting local state. See [XR-074](/publishing/xr/xr-074).
-- If the publisher's server is unreachable but Xbox network is up, the title must present a **clear disconnect message** rather than freezing on the loading screen.
-- If the Xbox account is signed out of Xbox Live but the publisher account is still authenticated, the title must gracefully drop the customer to a state that either re-authenticates or exits cleanly.
+The title account has a unique ID (GUID) that allows all title services to handle players regardless of network origin. The title account also stores all player states such as player characters, progression, inventory, and all player metadata.
 
-## Cash shop / RMT (real-money transactions)
+## Title flow
 
-MMOs frequently ship cash shops for cosmetics, currency, or subscription time. These are XStore commerce concerns, not third-party billing:
+For a MMO game, a compliant flow for cross-network functionality depends on if the player is in the open world or in instanced gameplay.
 
-- Ship your cash shop as XStore add-ons in Partner Center (see [Consumable add-ons](/publishing/consumable-add-ons), [Durable add-ons](/publishing/durable-add-ons)).
-- Do not send Xbox players to a third-party web checkout. Xbox platform commerce runs through XStore.
-- For subscription products, coordinate with Microsoft on subscription enrollment. Publisher-hosted subscriptions billed outside XStore are typically not allowed on Xbox.
+The following steps apply in all cases:
 
-## Related XRs
+1. **Validate privileges**
+   After player sign-in a title validates the multiplayer privileges (254 & 189) and cross-network privilege (185) for the active player. If any privilege is denied, a player may not enter the title and an error dialog is displayed. At this point a title should also check the communications privilege (252) for voice and text chat to restrict functionality appropriately.
+2. **Cross-network notification**
+   On first launch the game notifies the player that cross-network functionality is present in gameplay.
 
-- [XR-007](/publishing/xr/xr-007) — the base cross-network XR.
-- [XR-014](/publishing/xr/xr-014) — Personal Information.
-- [XR-015](/publishing/xr/xr-015) — Managing Player Communications.
-- [XR-045](/publishing/xr/xr-045) — Xbox Network and Account Privileges.
-- [XR-074](/publishing/xr/xr-074) — Loss of Connectivity.
+The following steps apply for the open game world:
+
+1. **Enter open world**
+   The player always enters the open world when signing in to the game and connects to a title server.
+2. **Join open world MPSD session**
+   The title server for the open world gameplay creates multiple MPSD sessions that reflect the game regions in the open game world. One or more of these MPSD sessions have the gameplay capability enabled. All Xbox network users join the open world session for their game region. The server maintains information about both Xbox network and non-Xbox network players.
+   The open world session allows join-in-progress and invitations for Xbox network players, and is only set to closed if the server does not accept new connections from clients.
+3. **Enable open world gameplay**
+   Gameplay features with other players are available depending on player privileges.
+   - Global text chat is always enabled for players that have the communication privilege set.
+   - All text chat messages use the string validation service and a block list to filter offensive language and terms.
+   - Direct text or voice chat between all players (Xbox network/Xbox network and Xbox network/non-Xbox network) is only enabled after validating all required privacy and permission checks. See _Player blocking/muting/reporting_ for more details.
+   For non-Xbox network friend relationships, the title uses title-specific friend relationships.
+   Direct interaction between Xbox network players is tracked by the title service and used to set an encounter ID between these players in the open world MPSD session. This ensures that players are visible on each other's recent player lists.
+
+The following steps apply for instanced PvE or PvP gameplay:
+
+1. **Group MPSD session**
+   For Xbox network players the title creates an MPSD session to track Xbox network players. Non-Xbox network players are tracked through the title service.
+2. **Group Invites/Join-in-progress**
+   In this example game design limits joins or invites to player groups. The group MPSD session is used to support join-in-progress and invites for Xbox network players. In-game cross-network invites are supported by the title service.
+   Xbox network invites that launch the title provide an automated UI flow into the invited gameplay and join the player to the invited in-game activity/party. If a join failure occurs, the relevant error is clearly communicated to the player. Such failures can include: full game group, non-joinable activity, player offline, etc.
+3. **Group matchmaking**
+   The title enables cross-network multiplayer for group PvP or PvE matchmaking flows. In this example, the player uses a matchmaking UI to select a PvP or PvE experience and then is grouped with other players into an instanced play experience.
+4. **Create and join game MPSD session**
+   The result of the group matchmaking is an MPSD lobby session that is created by the match service through service-to-service calls to Xbox services. All Xbox network users join this game session and remain in this session during instanced gameplay.
+   The service uses custom properties to additionally provide hints about the non-Xbox network users in the session. These hints can then be used by client logic for setting session state during the rest of the flow.
+5. **Instanced gameplay**
+   After all players are ready, the instanced gameplay starts. In this example, chat is also enabled between Xbox network players through the dedicated server.
+   During instanced gameplay, a list of players is visible in the game UI. This list is a title character name list with the option to see gamertags or other network identifier for players. Xbox network players are uniquely highlighted.
+6. **Completing gameplay**
+   After instanced gameplay is completed, team players return to the open game world. Players leave the MPSD game session and set the open world MPSD session as the activity session.
+
+## Session management
+
+To adhere to all Xbox Requirements, the title creates two MPSD sessions for Xbox network players:
+
+- **Open world region game session** — A large MPSD session is created by the title service at startup through service-to-service calls to Xbox services for each title server instance. All players of a title server instance are joined into the corresponding MPSD session. In these sessions the server sets an encounter ID for Xbox network players that interact with each other to ensure correct representation on the recent players list.
+- **Instanced game session** — This session is created by the matchmaking service through service-to-service calls to Xbox services. It contains reservations for all Xbox network players in a game session (across teams). It is used to correctly populate the recent player list of Xbox network players.
+- **Group session** — This session is created as soon as a player creates a group (group of 1). It's used for the activity session to support join-in-progress and invites. By game design players are not able to join during certain game modes. In these modes the **closed** property is used to disable join-in-progress and invites.
+
+Non-Xbox network players are not directly represented in the MPSD sessions as session members. For tracking purposes the title reflects their presence in a custom session property:
+
+```text
+{{"name":"jackplayer"},{"name":"johnplayer"},{"name":"joeplayer"}}
+```
+
+This list and the Xbox network session members can also be used to determine if a server instance is full.
+
+The large MPSD session must enable the gameplay **capability** to adhere to Xbox Requirements.
+
+## Player Identity
+
+The title-specific character name of a player is shared across all networks. During the creation of character names, all strings are validated using the string validation service. Offensive language and terms are blocked.
+
+- **Xbox network player identity** — The title provides access to the Xbox network profile of all Xbox network players. This is done through in-game UI that is available within chat and gameplay interactions.
+- **Non-Xbox network player identity** — The title does not provide access to non-Xbox network profiles or profile names.
+
+## Player blocking, muting and reporting
+
+Player blocking and muting in the title is supported on the title level:
+
+- **Xbox network player blocking / muting** — The title uses `check_multiple_permissions_with_multiple_target_users` to check privileges for multiplayer and chat with another Xbox network player and the player classes of non-Xbox network players/non-Xbox network friends. Blocking and muting is available through the profile UI of a player. The block/mute state of other Xbox network players in the same gameplay experience is checked during a gameplay transition (e.g. move to a different gameplay mode or location) or on a five minute time, whichever occurs first.
+- **Non-Xbox network player blocking/muting** — The title uses an in-title block list to support blocking or muting of non-Xbox network players. This list is maintained on a title service and checked for multiplayer permissions. It must be possible to mute a non-Xbox network player in the title through a custom title UI.
+- **Xbox network player reporting** — The title also allows reporting of players. For the Xbox network, reporting is done by the player through the profile UI that is accessible in the title. Xbox network enforcement handles player reports.
+- **Non-Xbox network player reporting** — For non-Xbox network users, the title provides a custom reporting UI flow. The title handles player reports accordingly for the title and/or based on guidelines by other multiplayer networks.
+
+## Marketplace
+
+Purchases of virtual currency on Xbox network and other multiplayer networks are tracked on a title service dependent on the scenario:
+
+- **Virtual Currency** — Players have a merged wallet of virtual currency and items across all platforms.
+- **Downloadable content** — Downloadable content (DLC) allows access to new regions of the game. The Microsoft Store is used for purchases on Xbox network platforms. A player can only enter the corresponding DLC region and play with other characters that have the entitlement of the region from their respective store.
+
+## Achievements
+
+The title has achievements that are based on open world and instanced gameplay actions. Achievement progress includes cross-network gameplay experiences. The title does not include any achievements that are limited to cross-network gameplay only.
+
+## Player progress
+
+Player progress is shared between all title versions. A custom title account that is linked to multiple multiplayer networks and a custom title service is used for this purpose.
+
+## Game DVR/broadcasting
+
+The title allows Game DVR and screenshots in open world and instanced gameplay, but removes all text chat from the image buffer.
+
+## Leaderboards
+
+The title supports custom leaderboards for in-title PvP matches and PvE challenges. These leaderboards are maintained by a title service. This service identifies players by GUIDs which are resolved on the client to the readable player name.
 
 ## Related
 
-- [XStore deep dive](/publishing/xstore-deep-dive)
-- [XStore S2S APIs](/publishing/xstore-server-to-service)
-- [XBOX services](/publishing/xbox-services)
+- [XR-007 Cross-Network Play, Data Usage, and Companion App Interactions](/publishing/xr/xr-007)
+- [XR-007 Multiplayer game example](/publishing/xr/xr-007-multiplayer)
+- [XR-015 Managing Player Communication](/publishing/xr/xr-015)
+- [XR-045 Xbox network and Account Privileges](/publishing/xr/xr-045)

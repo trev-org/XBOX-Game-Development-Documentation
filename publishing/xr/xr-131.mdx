@@ -1,0 +1,51 @@
+---
+title: "XR-131 Display Mode Support for Game DVR and Screenshots"
+sidebarTitle: "XR-131 DVR & screenshots"
+description: "Titles must support the platform's Game DVR and screenshot capture surfaces across supported display modes, including HDR and 120 FPS variants."
+icon: "video"
+keywords: ["XR-131", "Game DVR", "screenshots", "capture", "HDR capture", "120 FPS capture"]
+---
+
+## Intent
+
+Xbox platform capture (Game DVR, screenshots) is a customer-controlled surface every title must support. XR-131 ensures capture works across the title's declared display modes (HDR, 4K, 120 FPS, VRR) without corrupting the game or producing unusable captures.
+
+## Applies to
+
+Every title.
+
+## Requirement
+
+Your title **MUST**:
+
+- Support **Xbox platform capture** during gameplay in every declared display mode.
+- Support **HDR capture** for HDR titles — captured HDR frames must be usable.
+- Support **120 FPS capture** where declared — the capture surface must handle the higher frame rate.
+- Support **screenshots** at the title's rendered resolution.
+- Not disable capture during customer-visible gameplay unless the title has a specific reason (competitive integrity in a ranked match may be an exception with disclosure).
+
+Your title **MUST NOT**:
+
+- Crash or corrupt frame output during platform capture.
+- Disable capture entirely without customer disclosure.
+- Fail to update HDR metadata during capture on HDR titles.
+
+## Tested scenarios
+
+- Capture a Game DVR clip during gameplay in each declared display mode. Verify the clip is playable.
+- Capture a screenshot in each mode. Verify the image is correct.
+- Attempt to capture during a mode you disable (e.g. cutscene). Verify graceful handling.
+
+## Related XRs
+
+- [XR-001](/publishing/xr/xr-001) — Stability during capture.
+- [XR-130](/publishing/xr/xr-130) — Display modes per console family.
+
+## If your title fails XR-131
+
+See [FMA: XR-131 Game DVR and Screenshots](/publishing/fma/xr-131).
+
+## Related
+
+- [Properties: Technical capabilities](/publishing/properties-technical-capabilities)
+- [XBOX requirements](/publishing/xbox-requirements)

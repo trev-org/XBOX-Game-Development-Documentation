@@ -1,0 +1,60 @@
+---
+title: "XR-132 Service Access Limitations"
+sidebarTitle: "XR-132 Service throttling"
+description: "Titles must respect Xbox network and partner service rate limits, using appropriate backoff on `429 Too Many Requests` and avoiding request patterns that harm the platform for other titles."
+icon: "gauge"
+keywords: ["XR-132", "rate limiting", "throttling", "429", "service abuse", "backoff"]
+---
+
+## Intent
+
+Xbox network services are shared infrastructure. A title that hits a service faster than it should degrades the service for every other title. XR-132 makes rate-limit respect and backoff a cert-blocking requirement.
+
+## Applies to
+
+Every title that uses Xbox network services (MPSD, achievements, presence, stats, social, XStore).
+
+## Requirement
+
+Your title **MUST**:
+
+- Respect the **rate limits documented for each Xbox network service**.
+- On `429 Too Many Requests`, **honor the `Retry-After` header** exactly. Do not retry sooner.
+- Use **exponential backoff** for transient `5xx` errors.
+- **Batch requests** where the service supports it.
+- Cache **read-heavy responses** with an appropriate TTL.
+- Avoid **hot request loops** on any service.
+
+Your title **MUST NOT**:
+
+- Retry a rate-limited request immediately.
+- Fan out large numbers of parallel requests as a workaround for a batch call.
+- Poll a service at a rate faster than the service's documented refresh interval.
+- Use undocumented or higher-limit endpoints to bypass rate limits.
+
+## Tested scenarios
+
+- Force a `429` response and verify the title honors `Retry-After`.
+- Verify batched calls are used where the service supports batching.
+- Verify no hot loops on presence, achievements, or MPSD updates.
+
+## Best practices
+
+- **Instrument service call rates** in your telemetry so you can catch a runaway loop before it hits cert.
+- **Use platform helper libraries** — the GDK's Xbox network helpers include rate-limit handling.
+- **Coordinate across systems** — avoid two independent subsystems both polling presence at once.
+
+## Related XRs
+
+- [XR-067](/publishing/xr/xr-067) — MPSD writes should be rate-limited.
+- [XR-074](/publishing/xr/xr-074) — Connectivity issues can spike retries.
+
+## If your title fails XR-132
+
+See [FMA: XR-132 Service Access Limitations](/publishing/fma/xr-132).
+
+## Related
+
+- [XBOX services](/publishing/xbox-services)
+- [Store REST API reference](/publishing/xstore-rest-api-reference)
+- [XBOX requirements](/publishing/xbox-requirements)

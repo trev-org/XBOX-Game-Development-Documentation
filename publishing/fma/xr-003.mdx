@@ -1,0 +1,45 @@
+---
+title: "FMA: XR-003 Title Quality for Submission"
+sidebarTitle: "FMA XR-003"
+description: "How to fix XR-003 Title Quality failures: debug UI in retail, placeholder art or text, incomplete localization, and other build-cleanliness issues."
+icon: "broom"
+keywords: ["FMA XR-003", "debug UI", "placeholder art", "localization missing", "retail build"]
+---
+
+[XR-003 reference](/publishing/xr/xr-003) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Debug UI visible on \[screen\]"** — an on-screen counter, log, or dev menu shipped in retail.
+- **"Placeholder text visible in \[locale\]"** — `[[NEEDS_LOCALIZATION]]`, `TBD`, `Coming Soon`.
+- **"Localization missing for \[locale\]"** — strings not translated for a declared supported language.
+- **"Debug menu accessible via \[input\]"** — a hidden dev cheat is discoverable.
+- **"Placeholder asset visible in \[location\]"** — test cube, watermarked texture.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Debug UI in retail | Debug flag defaults to on, or dev-configured overlay ships | Gate all debug UI behind a `RETAIL=false` compile constant |
+| Placeholder text | Localization pipeline didn't catch a new string | Automate a diff of loc coverage vs source strings |
+| Debug cheat reachable | Cheat input handler still active in retail | Compile out cheat handlers in retail |
+| Placeholder art | Content branch not fully merged | Enforce final-content review before submission |
+| Wrong version string | Build metadata not stamped | Fix your build stamping script |
+
+## Preventing this
+
+- **Build the retail configuration as the default** for your team's builds.
+- **Run a grep / lint pass** for known-bad strings (`TODO`, `FIXME`, `PLACEHOLDER`) as a pre-submit gate.
+- **Automate a localization diff** — flag any declared language with \< 100% translation coverage.
+- **Walk every menu with a non-dev account** before submission.
+
+## Resubmission notes
+
+Reference the previous submission. For each locale that had a gap, note the localization vendor delivery and the coverage percentage now.
+
+## Related
+
+- [XR-003 reference](/publishing/xr/xr-003)
+- [Readiness checklist](/publishing/readiness-checklist)
+- [Supported languages](/publishing/supported-languages)
+- [Media validation](/publishing/media-validation)
