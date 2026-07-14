@@ -1,0 +1,33 @@
+---
+title: "FMA: XR-067 Maintaining Multiplayer Session State"
+sidebarTitle: "FMA XR-067"
+description: "How to fix XR-067 Session State failures: desync between members, ghosted sessions in MPSD, host migration failures, session-state races."
+icon: "circle-nodes"
+keywords: ["FMA XR-067", "session state", "host migration", "desync", "ghost session"]
+---
+
+[XR-067 reference](/publishing/xr/xr-067) is the reference.
+
+## Common FMA text patterns
+
+- **"Session state desynced between members"** — authoritative-state model broken.
+- **"MPSD session persisted after all members left"** — no session cleanup.
+- **"Host migration failed; remaining members orphaned"** — no host election path.
+- **"Session state overwritten by stale write"** — race condition on MPSD writes.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Desync | Multiple writers to MPSD without arbitration | Use an authoritative host or MPSD-arbitrated writes |
+| Ghost session | No cleanup on session end | Remove members and delete session on natural end |
+| Failed host migration | No election path or too-strict timeout | Implement host election; timebound the migration |
+| Race on write | Optimistic writes without version checks | Use MPSD's version tags for compare-and-swap semantics |
+
+## Related
+
+- [XR-067 reference](/publishing/xr/xr-067)
+- [XR-064](/publishing/xr/xr-064)
+- [XR-070](/publishing/fma/xr-070)
+- [XR-074](/publishing/xr/xr-074)
+- [XR-132](/publishing/xr/xr-132)

@@ -1,0 +1,45 @@
+---
+title: "FMA: XR-022 Official Naming Standards"
+sidebarTitle: "FMA XR-022"
+description: "How to fix XR-022 Naming failures: wrong Microsoft product names, wrong casing, deprecated brand references, misuse of Xbox logos."
+icon: "font-awesome"
+keywords: ["FMA XR-022", "naming failure", "Xbox naming", "deprecated brand", "casing"]
+---
+
+[XR-022 reference](/publishing/xr/xr-022) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Product referred to as 'Xbox Series X and S' instead of 'Xbox Series X|S'"** — wrong lockup format.
+- **"'Xbox Live' referenced in shipping copy"** — deprecated brand name.
+- **"'XBox' with capital B"** — wrong casing.
+- **"Xbox logo modified"** — recoloring, skewing, or cropping the platform lockup.
+- **"Feature declared as 'Optimized for Series X|S' not actually optimized"** — unsupported feature claim.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Wrong lockup | Marketing / loc pipeline not updated | Grep for known-bad strings; fix in every locale |
+| Deprecated brand | Older copy carried forward | Standardize on current names across the team |
+| Wrong casing | Machine translation or first-draft copy | Copy-editor pass on every locale |
+| Modified logo | Design team used a non-approved lockup | Use only the platform-provided lockup files |
+| Unsupported feature claim | Marketing copy exceeds engineering ship | Reconcile Store metadata with engineering |
+
+## Fixing
+
+- Run a **lint pass** on every shipped string across every locale for known-bad naming.
+- Use only the platform-provided lockups from [Branding assets](/publishing/branding-assets).
+- Reconcile **feature declarations** with actual shipping capability.
+
+## Resubmission notes
+
+Include a list of every renamed string / lockup / feature declaration you changed.
+
+## Related
+
+- [XR-022 reference](/publishing/xr/xr-022)
+- [XR-003](/publishing/xr/xr-003)
+- [XR-006](/publishing/xr/xr-006)
+- [XR-062](/publishing/xr/xr-062)
+- [Branding assets](/publishing/branding-assets)

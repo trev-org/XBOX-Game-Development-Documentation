@@ -1,0 +1,33 @@
+---
+title: "FMA: XR-037 Dependencies on Content Packages"
+sidebarTitle: "FMA XR-037"
+description: "How to fix XR-037 Package Dependency failures: missing package errors, wrong manifest, DLC install failures."
+icon: "boxes-stacked"
+keywords: ["FMA XR-037", "package dependency", "missing package", "DLC install fail", "manifest mismatch"]
+---
+
+[XR-037 reference](/publishing/xr/xr-037) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Title referenced content in \[chunk\] before install completed"** — dependency ordering violation.
+- **"DLC install-during-play produced no observable entitlement grant"** — title didn't re-query entitlements after install completion.
+- **"Manifest declares chunk X depends on Y; runtime dependency observed as Z"** — manifest / code mismatch.
+- **"DLC uninstall crashed the title"** — unhandled uninstall event.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Referenced not-yet-installed chunk | Missing runtime availability check | Query chunk state before accessing content |
+| Post-install grant missing | No listener on install-complete | Wire the `XPackageInstalled` event; refresh entitlements |
+| Manifest mismatch | Manifest hand-edited or out of date | Regenerate manifest with packaging tool |
+| Uninstall crash | Unhandled `XPackageUninstalled` | Add uninstall listener; hide affected content on next reference |
+
+## Related
+
+- [XR-037 reference](/publishing/xr/xr-037)
+- [XR-034 FMA](/publishing/fma/xr-034)
+- [XR-123](/publishing/xr/xr-123)
+- [XR-129](/publishing/xr/xr-129)
+- [Packages](/publishing/packages)

@@ -1,0 +1,32 @@
+---
+title: "FMA: XR-064 Joinable Game Sessions and Online Play"
+sidebarTitle: "FMA XR-064"
+description: "How to fix XR-064 Session failures: join-from-presence doesn't work, sessions not discoverable, invites broken, party integration failing."
+icon: "door-open"
+keywords: ["FMA XR-064", "joinable session", "MPSD", "invite", "party join", "presence"]
+---
+
+[XR-064 reference](/publishing/xr/xr-064) is the reference.
+
+## Common FMA text patterns
+
+- **"Join-from-presence produced no session join"** — MPSD session not populated correctly.
+- **"Session invite silently dropped"** — invite handler not wired.
+- **"Party join did not follow leader into session"** — party integration missing.
+- **"Presence showed 'In game' but no joinable session existed"** — fabricated or stale presence.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| No join from presence | MPSD session not created / not associated with presence | Create MPSD session at gameplay start; publish Rich Presence |
+| Invite dropped | No `XGameInviteReceived` handler | Wire the handler; navigate to the invite session |
+| Party miss | Party-join integration not implemented | Implement `XGameSessionMultiplayerConnect` party flow |
+| Fabricated presence | Presence string set without matching session | Update presence only when a real session exists |
+
+## Related
+
+- [XR-064 reference](/publishing/xr/xr-064)
+- [XR-067](/publishing/xr/xr-067)
+- [XR-070](/publishing/fma/xr-070)
+- [XR-124](/publishing/fma/xr-124)

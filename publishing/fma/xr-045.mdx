@@ -1,0 +1,38 @@
+---
+title: "FMA: XR-045 Xbox User and Account Privileges"
+sidebarTitle: "FMA XR-045"
+description: "How to fix XR-045 Privilege failures: missing privilege checks, features enabled without required privilege, child account exposure to restricted features."
+icon: "key"
+keywords: ["FMA XR-045", "privilege check", "XPrivilege", "child account", "cross-network privilege"]
+---
+
+[XR-045 reference](/publishing/xr/xr-045) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Feature enabled without corresponding privilege check"** — multiplayer / chat / UGC enabled with no `XPrivilegeCheck`.
+- **"Child account entered cross-network chat"** — restrictive family setting bypassed.
+- **"Privilege denial produced silent failure"** — no customer-facing message.
+- **"Cached privilege state used after change"** — stale privilege data.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| No check | Feature added without privilege gate | Add `XPrivilegeCheckPrivilege` at the feature gate |
+| Child bypass | Age / privilege check missing on feature entry | Query `XUserGetAgeGroup` / privileges before entry |
+| Silent failure | Denial returns to app without UI | Present a resolve-in-Xbox message |
+| Stale privilege | Privilege cached across sign-in change | Refresh privileges on account-change event |
+
+## Fixing
+
+- Check privileges **at the gate**, not deep in the code path.
+- Use `XPrivilegeCheckPrivilegeWithUI` where the customer can be prompted to resolve.
+- Include **child accounts** as a primary test case.
+
+## Related
+
+- [XR-045 reference](/publishing/xr/xr-045)
+- [XR-007](/publishing/xr/xr-007)
+- [XR-015](/publishing/xr/xr-015)
+- [XR-018](/publishing/xr/xr-018)

@@ -1,0 +1,28 @@
+---
+title: "FMA: XR-070 Xbox Friends List"
+sidebarTitle: "FMA XR-070"
+description: "How to fix XR-070 Friends List failures: friend list not queried correctly, wrong friends shown, blocked users appearing, privacy privilege bypassed on friend list."
+icon: "user-group"
+keywords: ["FMA XR-070", "friends list", "social API", "friend query", "blocked friend"]
+---
+
+## Common FMA text patterns
+
+- **"Friends list did not update after add/remove"** — no refresh on social change events.
+- **"Blocked user appeared in friends list"** — filter not applied.
+- **"Friend list included non-friends"** — wrong query scope.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Stale list | No refresh on `XblSocialAddedRelationshipChangeSubscription` | Wire the subscription; refresh on event |
+| Blocked appears | Filter not applied post-query | Filter blocked XUIDs after query |
+| Wrong scope | Called `GetPeople` or wrong API | Use the correct social API scoped to the friend relationship |
+
+## Related
+
+- [XR-014](/publishing/xr/xr-014)
+- [XR-047](/publishing/xr/xr-047)
+- [XR-064](/publishing/xr/xr-064)
+- [XR-124](/publishing/fma/xr-124)

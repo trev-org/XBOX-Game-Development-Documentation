@@ -1,0 +1,41 @@
+---
+title: "FMA: XR-055 Achievements"
+sidebarTitle: "FMA XR-055"
+description: "How to fix XR-055 Achievement failures: unlocks not firing, wrong achievement fired, unlock but no service write, secret achievement leaked."
+icon: "trophy"
+keywords: ["FMA XR-055", "achievement unlock", "achievement fail", "secret achievement", "gamerscore write"]
+---
+
+For the achievement authoring guidance see [DP 2013 achievements](/publishing/dp2013-achievements). For the earnability policy see [XR-057](/publishing/xr/xr-057).
+
+## Common FMA text patterns
+
+- **"Achievement did not unlock on trigger event"** — unlock condition or write path broken.
+- **"Toast fired but service write did not succeed"** — client-side visual unlock without server persistence.
+- **"Wrong achievement unlocked for the trigger"** — ID mismatch.
+- **"Secret achievement description shown as locked text"** — secret flag not honored.
+- **"Achievement earnable more than once"** — no idempotency on the write.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| No unlock | Trigger not wired to write path | Verify the achievement write API is called on trigger |
+| Toast without write | Client optimistic UI \+ failed service call | Fire toast only after write success (or fire on trigger \+ retry write) |
+| Wrong ID | Achievement ID drift between build and services schema | Regenerate IDs from Partner Center; verify build matches sandbox |
+| Secret leak | Secret flag not set in services schema | Set the secret flag in Partner Center; regenerate manifest |
+| Duplicate | Not idempotent | Achievement writes are idempotent by design; check the correct API used |
+
+## Fixing
+
+- Wire every achievement's **trigger event to the write API** with logging.
+- **Verify service write success** before showing a persistent unlock UI.
+- Confirm the **services schema is published** to the target sandbox.
+- Test both **first unlock** and **already-unlocked** paths.
+
+## Related
+
+- [XR-057](/publishing/xr/xr-057)
+- [XR-062](/publishing/xr/xr-062)
+- [DP 2013 achievements](/publishing/dp2013-achievements)
+- [Sandboxes](/publishing/sandboxes)

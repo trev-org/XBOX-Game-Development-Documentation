@@ -633,22 +633,10 @@
             "icon": "clipboard-check",
             "pages": [
               "publishing/certification",
+              "publishing/pc-certification",
               "publishing/submit-to-certification",
-              "publishing/xr-fma",
               "publishing/optional-submissions",
               "publishing/xbox-requirements",
-              "publishing/pc-certification",
-              "publishing/xr-top-failing",
-              "publishing/console-bvt-guide",
-              "publishing/pc-bvt-guide",
-              "publishing/cert-bypass-program",
-              "publishing/cert-paid-services",
-              "publishing/mgats",
-              "publishing/media-validation",
-              "publishing/supplemental-info",
-              "publishing/cert-beta-game-preview",
-              "publishing/xr-change-history",
-              "publishing/console-cert-terminology",
               {
                 "group": "XR reference",
                 "icon": "clipboard-list",
@@ -662,8 +650,6 @@
                   "publishing/xr/xr-007-pc",
                   "publishing/xr/xr-014",
                   "publishing/xr/xr-015",
-                  "publishing/xr/xr-067",
-                  "publishing/xr/xr-083",
                   "publishing/xr/xr-109",
                   "publishing/xr/xr-112",
                   "publishing/xr/xr-123",
@@ -673,15 +659,41 @@
                   "publishing/xr/xr-132"
                 ]
               },
+              "publishing/xr-fma",
               {
                 "group": "FMA reference",
                 "icon": "triangle-exclamation",
                 "pages": [
                   "publishing/fma/overview",
                   "publishing/fma/xr-001",
-                  "publishing/fma/xr-003"
+                  "publishing/fma/xr-003",
+                  "publishing/fma/xr-022",
+                  "publishing/fma/xr-034",
+                  "publishing/fma/xr-036",
+                  "publishing/fma/xr-037",
+                  "publishing/fma/xr-045",
+                  "publishing/fma/xr-046",
+                  "publishing/fma/xr-047",
+                  "publishing/fma/xr-048",
+                  "publishing/fma/xr-052",
+                  "publishing/fma/xr-055",
+                  "publishing/fma/xr-057",
+                  "publishing/fma/xr-064",
+                  "publishing/fma/xr-067",
+                  "publishing/fma/xr-070"
                 ]
-              }
+              },
+              "publishing/xr-top-failing",
+              "publishing/console-bvt-guide",
+              "publishing/pc-bvt-guide",
+              "publishing/cert-bypass-program",
+              "publishing/cert-paid-services",
+              "publishing/mgats",
+              "publishing/media-validation",
+              "publishing/supplemental-info",
+              "publishing/cert-beta-game-preview",
+              "publishing/xr-change-history",
+              "publishing/console-cert-terminology"
             ]
           },
           {

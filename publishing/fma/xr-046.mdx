@@ -1,0 +1,31 @@
+---
+title: "FMA: XR-046 Display Name and Gamerpic"
+sidebarTitle: "FMA XR-046"
+description: "How to fix XR-046 Display failures: wrong gamertag rendering, real name shown without privilege, stale gamerpic, character encoding issues."
+icon: "user"
+keywords: ["FMA XR-046", "gamertag", "gamerpic", "real name privilege", "modern gamertag"]
+---
+
+[XR-046 reference](/publishing/xr/xr-046) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Real name shown for account without visibility privilege"** — privilege bypass.
+- **"Gamertag suffix truncated"** — modern gamertag format not supported.
+- **"Stale gamerpic after customer changed it"** — no refresh.
+- **"Unicode gamertag rendered incorrectly"** — encoding / rendering bug.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Real name leak | Cached and shown without re-checking privilege | Check on every display; fall back to gamertag |
+| Truncated suffix | Legacy gamertag assumption in string handling | Fix truncation to be codepoint-aware |
+| Stale gamerpic | No refresh on profile event | Wire refresh on relevant events |
+| Unicode issues | Non-Unicode string handling | Use UTF-16 throughout the string pipeline |
+
+## Related
+
+- [XR-046 reference](/publishing/xr/xr-046)
+- [XR-047](/publishing/xr/xr-047)
+- [XR-048](/publishing/xr/xr-048)

@@ -1,0 +1,28 @@
+---
+title: "FMA: XR-048 Profile Settings Usage"
+sidebarTitle: "FMA XR-048"
+description: "How to fix XR-048 Profile Settings failures: preferred language not honored, region mismatch, content filter bypassed on child accounts."
+icon: "gear"
+keywords: ["FMA XR-048", "profile settings", "preferred language", "content filter", "region"]
+---
+
+[XR-048 reference](/publishing/xr/xr-048) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Title defaulted to English despite account preferred language"** — profile language ignored.
+- **"Mature content shown to child account with strict filter"** — content filter bypassed.
+- **"Pricing shown in dev region despite account region"** — region ignored.
+
+## Fixing
+
+- Load **preferred language** at title start; use it as the default unless the customer overrides.
+- Query **content filters** at content-gate time.
+- Use **account region** for market-specific behavior, not the console region.
+
+## Related
+
+- [XR-048 reference](/publishing/xr/xr-048)
+- [Supported languages](/publishing/supported-languages)
+- [XR-045](/publishing/xr/xr-045)
+- [XR-047](/publishing/xr/xr-047)

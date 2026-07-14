@@ -1,0 +1,28 @@
+---
+title: "FMA: XR-047 User Profile Access"
+sidebarTitle: "FMA XR-047"
+description: "How to fix XR-047 Profile Access failures: restricted profile data shown, presence exposed against privacy setting, stale profile cache."
+icon: "id-card"
+keywords: ["FMA XR-047", "profile privacy", "presence", "activity feed", "friend list"]
+---
+
+[XR-047 reference](/publishing/xr/xr-047) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Presence shown for account with 'no one' presence setting"** — privacy bypass.
+- **"Activity feed included restricted target"** — wrong scope.
+- **"Stale profile shown after target changed privacy"** — no invalidation.
+
+## Fixing
+
+- Query profile data **at display time**, not aggressively cached.
+- Honor privacy per-field: presence, activity, achievements-visible-to-friends, real name.
+- Refresh on privacy-change events.
+
+## Related
+
+- [XR-047 reference](/publishing/xr/xr-047)
+- [XR-014](/publishing/xr/xr-014)
+- [XR-046](/publishing/xr/xr-046)
+- [XR-048](/publishing/xr/xr-048)

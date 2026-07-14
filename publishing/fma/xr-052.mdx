@@ -1,0 +1,31 @@
+---
+title: "FMA: XR-052 User State and Title-Save Location"
+sidebarTitle: "FMA XR-052"
+description: "How to fix XR-052 Save failures: save corruption on partial write, save not roaming, conflict resolution missing, account-switch data leak."
+icon: "floppy-disk"
+keywords: ["FMA XR-052", "save corruption", "cloud roaming", "save conflict", "account switch save"]
+---
+
+[XR-052 reference](/publishing/xr/xr-052) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"Save corrupted after \[event\]"** — partial write.
+- **"Cloud save did not roam to console B"** — save in title-owned location.
+- **"Save from account A visible under account B"** — wrong XUID association.
+- **"Save conflict silently overwritten"** — no conflict resolution.
+
+## Fixing
+
+- Write saves **atomically**: write to temp, fsync, rename.
+- Store user state in **Connected Storage** keyed to signed-in XUID.
+- Present a **conflict resolution UI** when local and cloud saves diverge.
+- Reset save state on `XUserChangeEvent` — don't carry across accounts.
+- **Version save format** and support migration.
+
+## Related
+
+- [XR-052 reference](/publishing/xr/xr-052)
+- [XR-001](/publishing/xr/xr-001)
+- [XR-115](/publishing/xr/xr-115)
+- [XR-133](/publishing/fma/xr-133)

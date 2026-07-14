@@ -1,0 +1,39 @@
+---
+title: "FMA: XR-036 Title Pricing Information"
+sidebarTitle: "FMA XR-036"
+description: "How to fix XR-036 In-Title Pricing failures: prices mismatched to Store, wrong currency, stale prices, sale copy without a real sale."
+icon: "tag"
+keywords: ["FMA XR-036", "pricing mismatch", "wrong currency", "stale price", "fake sale"]
+---
+
+[XR-036 reference](/publishing/xr/xr-036) is the reference. This page is fix-oriented.
+
+## Common FMA text patterns
+
+- **"In-game price does not match Store price"** — stale, wrong region, or wrong product.
+- **"Currency symbol displayed as USD for non-US account"** — pricing not localized.
+- **"'50% off' shown but no sale active"** — sale copy misused.
+- **"Blank price displayed on shop UI"** — pricing query failed with no fallback.
+
+## Common root causes
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Wrong price | Hard-coded or dev-region cached | Always fetch from `XStoreQueryProductsAsync` |
+| Wrong currency | Locale not passed to price query | Use customer's locale via `XSystemGetXboxLiveSandboxId` context |
+| Fake sale | Marketing copy left in build after promotion ended | Bind sale UI to XStore's `IsOnSale` flag, not a hard-coded string |
+| Blank price | Query failed and no fallback | Present clear error UI, cache last-known price |
+
+## Fixing
+
+- Always fetch prices from XStore; never hard-code.
+- Cache with a short TTL; refresh on shop-open.
+- Bind sale copy to XStore state, not a static string.
+- Present clear fallback when the query fails.
+
+## Related
+
+- [XR-036 reference](/publishing/xr/xr-036)
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [Sale pricing](/publishing/sale-pricing)
+- [In-game store add-ons](/publishing/how-to-in-game-store-only)
