@@ -1,0 +1,68 @@
+---
+title: "Packages (classic experience)"
+sidebarTitle: "Packages (classic)"
+description: "The legacy Packages module for older titles — how it differs from the modern experience and when you'll still encounter it."
+icon: "box-archive"
+keywords: ["legacy packages", "classic packages", "old partner center", "Xbox 360 packages"]
+---
+
+Partner Center has two Packages experiences. The **modern** module is documented at [Packages](/publishing/packages) and is what every new title uses. The **classic** module is the legacy Packages experience some older titles are still on.
+
+<Note>
+  If you're creating a new product today, you'll use the modern module automatically — no action required. This page exists for teams maintaining older titles or migrating a legacy title.
+</Note>
+
+## Which experience am I on?
+
+Open the Packages module. If you see:
+
+- **Branches, chunk manifests, delta package tuning, and Advanced settings** — you're on the modern module. See [Packages](/publishing/packages).
+- **A single "Packages" list without branch selectors, and separate views for each device family** — you're on the classic module.
+
+## Key differences
+
+| Concern | Modern | Classic |
+| --- | --- | --- |
+| Branching | Per-module branches | Not supported — edits apply to the single working state |
+| Modular submission | Yes | Limited — packages tend to go with the whole product submission |
+| Package flights | Rich (Insider rings, percentage, region) | Limited |
+| Advanced settings (chunk order, min version) | Yes | Limited |
+| Rollback | Native | Requires Microsoft support to execute |
+
+## Common classic-module tasks
+
+### Upload a package
+
+1. Open **Packages → Add package**.
+2. Choose the target device family from the classic device-family selector.
+3. Upload the XVC or MSIXVC.
+4. Wait for package processing (progress bar; typically minutes).
+
+### Submit for certification
+
+1. From Packages, click **Submit for certification**.
+2. Attach Supplemental Info (see [Supplemental info](/publishing/supplemental-info)).
+3. Choose sandbox and submission type.
+4. Submit.
+
+The cert-team-side flow is the same as the modern module — the XR bar and FMA format don't change.
+
+### Rollback
+
+Classic-module rollback is not a self-service button. Contact your Microsoft representative with the previous known-good package version and the reason for rollback.
+
+## Migrating to the modern experience
+
+Microsoft has been progressively migrating classic titles to the modern experience. If you have a title on classic and want it on modern:
+
+1. Ask your Microsoft representative to enable the modern experience for the product.
+2. Microsoft's team performs a server-side migration; you don't have to re-upload packages.
+3. Once migrated, you cannot revert to classic.
+
+Migration is typically transparent — customer-facing state (purchases, entitlements) doesn't change.
+
+## Related
+
+- [Packages](/publishing/packages)
+- [Package management](/publishing/how-to-package-management)
+- [Certification](/publishing/certification)

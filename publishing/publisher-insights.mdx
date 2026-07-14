@@ -1,0 +1,72 @@
+---
+title: "Game publisher insights"
+sidebarTitle: "Publisher insights"
+description: "Sales, engagement, and health telemetry available to publishers in Partner Center, plus common FAQs about how the reports work."
+icon: "chart-line"
+keywords: ["analytics", "publisher insights", "reports", "telemetry", "engagement"]
+---
+
+**Publisher Insights** is the analytics surface in Partner Center. Every published product produces sales, engagement, and health telemetry that publishers use to monitor launch, tune marketing, plan updates, and forecast revenue.
+
+## Available reports
+
+| Report | What it tells you |
+| --- | --- |
+| **Acquisitions** | Purchase count by market, day, edition, and source (organic, promo code, Game Pass, bundle). |
+| **Wishlist / follows** | Wishlist adds, follower count, conversion rate from wishlist to purchase. Useful pre-launch. |
+| **Engagement** | Monthly active users (MAU), daily active users (DAU), average session length, sessions per user. |
+| **Retention** | D1, D7, D30 retention. Critical for live-service titles. |
+| **Revenue** | Gross revenue, refunds, net revenue by market and edition. Segmented by base game, add-ons, and bundles. |
+| **Game Pass telemetry** | For Game Pass titles: subscriber engagement, install count, hours played. |
+| **Health** | Crash rate, hang rate, and other stability signals. Feed post-launch patch prioritization. |
+| **Store listing performance** | PDP impressions, conversion rate from PDP to purchase, and A/B test results (if configured). |
+
+## Access and roles
+
+Access to Insights is role-gated. In [Developer account](/publishing/developer-account) you assign roles:
+
+- **Analytics viewer** — can view Insights but not other Partner Center modules.
+- **Manager / Publisher** — view everything.
+- **Developer** — no Insights access by default; must be explicitly granted.
+
+## Data latency
+
+| Report | Latency |
+| --- | --- |
+| Acquisitions | Same-day (updated hourly) |
+| Engagement / retention | Next-day (T-1) |
+| Revenue | Next-day for gross; monthly reconciliation for payout-ready net |
+| Health / crash rate | Same-day (typically 1–2 hour lag) |
+| Store listing performance | Next-day |
+
+## Frequently asked questions
+
+### Why is my acquisition count higher than my revenue count?
+
+Promo code redemptions, Game Pass installs, and family library shares all count as acquisitions but produce no direct revenue. This is expected. Segment by acquisition source to reconcile.
+
+### Why do my Steam/other-platform numbers not match?
+
+Insights only covers the Microsoft Store on XBOX and PC. Cross-platform totals need to be built from the platform-specific reports.
+
+### Why is engagement lower on Series S than Series X?
+
+Series S has a lower installed base and can also indicate memory-constrained gameplay issues. Check crash rate and average session length on Series S specifically.
+
+### Can I export raw data?
+
+Most reports support CSV export from the report page. For programmatic access, the [Partner Center Analytics API](https://learn.microsoft.com/partner-center/developer/) covers a subset of reports.
+
+### How do refunds appear?
+
+A refund is a negative acquisition \+ negative revenue on the day the refund is processed, not the day of the original purchase. This can create apparent day-over-day swings for high-refund titles.
+
+### Are health signals privacy-safe?
+
+Crash and hang telemetry is aggregated and does not include per-user identifiers. Individual crash dumps for cert-time repro are attached to FMAs — not to Insights.
+
+## Related
+
+- [Developer account](/publishing/developer-account)
+- [Publish to RETAIL](/publishing/publish-to-retail)
+- [Content updates](/publishing/content-updates)

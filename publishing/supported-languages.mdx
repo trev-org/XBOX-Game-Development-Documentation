@@ -1,0 +1,79 @@
+---
+title: "Supported languages reference"
+sidebarTitle: "Supported languages"
+description: "Full reference of the languages you can declare support for on the Microsoft Store on XBOX, and how each level of support is presented to customers."
+icon: "language"
+keywords: ["supported languages", "localization", "language codes", "language matrix", "BCP-47"]
+---
+
+Supported languages are declared in [Gaming metadata](/publishing/gaming-metadata) and surface on the Store PDP's supported-languages callout. This page is the reference for **which languages Microsoft supports** and **how they are presented**.
+
+## Support levels
+
+For each declared language you choose one or more of:
+
+| Level | Meaning | Customer sees |
+| --- | --- | --- |
+| **Interface** | Menus, HUD, system text translated. | "UI" mark. |
+| **Full audio** | Voice content dubbed in this language. | "Full audio" mark. |
+| **Subtitles** | Voice and cutscene content subtitled. | "Subtitles" mark. |
+
+A language declared with all three shows the highest support level. A language declared as Subtitles only shows Subtitles.
+
+## Supported language codes
+
+Microsoft Store on XBOX uses BCP-47 language tags. Common tags:
+
+| Code | Language | Notes |
+| --- | --- | --- |
+| `en-US` | English (United States) | Default fallback for many titles. |
+| `en-GB` | English (United Kingdom) | UK spelling / regional voice cast. |
+| `fr-FR` | French (France) |  |
+| `fr-CA` | French (Canada) | Common secondary for North American releases. |
+| `es-ES` | Spanish (Spain) | Castilian. |
+| `es-MX` | Spanish (Mexico) | Latin American variant. |
+| `de-DE` | German |  |
+| `it-IT` | Italian |  |
+| `pt-BR` | Portuguese (Brazil) | Common for LATAM. |
+| `pt-PT` | Portuguese (Portugal) | European. |
+| `ru-RU` | Russian |  |
+| `pl-PL` | Polish |  |
+| `nl-NL` | Dutch |  |
+| `sv-SE` | Swedish |  |
+| `no-NO` | Norwegian |  |
+| `da-DK` | Danish |  |
+| `fi-FI` | Finnish |  |
+| `tr-TR` | Turkish |  |
+| `ja-JP` | Japanese | Required for Japan release. |
+| `ko-KR` | Korean | Required for Korea release. |
+| `zh-Hans` | Chinese (Simplified) | Used for mainland China distribution. |
+| `zh-Hant` | Chinese (Traditional) | Used for Taiwan, Hong Kong. |
+| `ar-SA` | Arabic (Saudi Arabia) | Right-to-left; requires RTL layout support. |
+| `he-IL` | Hebrew | Right-to-left. |
+
+Check Partner Center for the current complete list — additional locales are added over time.
+
+## Do not over-declare
+
+<Warning>
+  Declaring a language you don't actually support is a media-validation failure and a Certification issue. Customers who buy expecting Japanese and get English-only file support tickets and negative reviews.
+</Warning>
+
+Declare only what ships in your day-one build. If localization arrives via post-launch update, add the language declaration when the update ships — not before.
+
+## Regional store presence
+
+Supported languages are separate from **market availability** (which regions can buy). You can ship a title that:
+
+- Supports English \+ Japanese \+ French but is available for purchase in every market.
+- Supports 20 languages but is only available in EU markets.
+- Is Japanese-only but available globally (rare, but allowed).
+
+Market availability is configured in [Pricing](/publishing/pricing) and [Availability schedule](/publishing/availability-schedule).
+
+## Related
+
+- [Gaming metadata](/publishing/gaming-metadata)
+- [Store listing](/publishing/store-listing)
+- [Pricing](/publishing/pricing)
+- [Properties](/publishing/properties)

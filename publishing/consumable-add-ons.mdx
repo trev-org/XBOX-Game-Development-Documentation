@@ -1,0 +1,97 @@
+---
+title: "Consumable add-ons"
+sidebarTitle: "Consumable add-ons"
+description: "Repeatable-purchase add-ons that get 'used up' — currency, boosters, gacha rolls — in store-managed or developer-managed modes."
+icon: "coins"
+keywords: ["consumable", "virtual currency", "gacha", "booster", "store-managed consumable", "developer-managed consumable"]
+---
+
+A **consumable add-on** is an add-on that can be purchased **repeatedly** and gets consumed by gameplay. Coin packs, gacha rolls, XP boosters, and one-time-use unlocks are all consumables.
+
+## Store-managed vs developer-managed
+
+| Model | Where quantity lives | When to use |
+| --- | --- | --- |
+| **Store-managed consumable** | Microsoft Store tracks quantity owned. Your game calls `FulfillConsumable` to decrement. | Simple currency, single-currency systems, low-frequency purchases. |
+| **Developer-managed consumable** | Your game (or your backend) tracks quantity owned. Purchases grant one "unit" per purchase. | Server-authoritative economies, cross-platform currencies, batch purchases (buy 10 gacha rolls in one transaction). |
+
+Both models pass Certification. Choose based on where your economy state lives.
+
+### Store-managed detail
+
+- Product ID represents the consumable type (e.g. `gold_100`, `gold_1000`).
+- Each purchase increments the Store-tracked quantity by the amount defined on the product.
+- Game queries current balance via `QueryConsumableBalanceRemaining`.
+- Game calls `FulfillConsumable` when the customer spends. Microsoft tracks fulfillment history for refunds and dispute resolution.
+
+### Developer-managed detail
+
+- Product ID represents a single purchase transaction unit.
+- Every purchase = 1 fulfillment. Your game reads the purchase receipt and credits the customer's balance in your own data.
+- You are responsible for cross-device sync, cross-platform balance sharing, and preventing double-fulfillment on the same receipt.
+- Recommended for economies you already run cross-platform via a backend service.
+
+## Configuration
+
+<Steps>
+  <Step title="Create the consumable">
+    In the base game's Partner Center, open **Add-ons → New add-on → Consumable**. Choose store-managed or developer-managed.
+  </Step>
+  <Step title="Set quantity and product ID">
+    For store-managed, specify the quantity granted per purchase. Product ID (`gold_100`, `xp_boost_1h`) is queried from game code.
+  </Step>
+  <Step title="Configure pricing and store listing">
+    Standard [Pricing](/publishing/pricing). Consumables typically ship with minimal Store presence — they're bought from inside the game via the in-game store, not the Microsoft Store PDP.
+  </Step>
+  <Step title="Configure visibility">
+    Most consumables are configured as **in-game store only** — hidden on the Microsoft Store, purchasable only via the XStore purchase flow inside the game. See [Visibility](/publishing/how-to-visibility).
+  </Step>
+</Steps>
+
+## Runtime patterns
+
+### Store-managed
+
+```text
+// Query current balance
+QueryConsumableBalanceRemainingAsync("gold_100") → 500
+
+// Spend 100 gold
+FulfillConsumableAsync("gold_100", 100, trackingId)
+
+// Re-query
+QueryConsumableBalanceRemainingAsync("gold_100") → 400
+```
+
+### Developer-managed
+
+```text
+// Customer purchases 10x gacha_roll
+ShowPurchaseUIAsync("gacha_roll_pack_10")
+
+// On purchase completion, read receipt
+receipt = GetLastPurchaseReceiptAsync()
+
+// Send receipt to your backend
+backend.credit(userId, receipt.productId, receipt.quantity)
+
+// Backend acknowledges to Store
+FulfillConsumableAsync(receipt.productId, receipt.quantity, receipt.trackingId)
+```
+
+See [XStore deep dive](/publishing/xstore-deep-dive) and [XStore S2S APIs](/publishing/xstore-server-to-service) for the full API surface.
+
+## Certification considerations
+
+- Consumables must have clear pricing per unit; "loot box" style consumables face regional regulatory scrutiny — declare gambling-like mechanics accurately in [Ratings](/publishing/ratings).
+- Customers must be able to see current balance in-game.
+- Refund handling: if a customer refunds a consumable purchase, your game must not double-credit them.
+- Server-authoritative economies must survive offline play cleanly (game shouldn't crash or corrupt when the backend is unreachable).
+
+## Related
+
+- [Add-ons](/publishing/add-ons)
+- [Durable add-ons](/publishing/durable-add-ons)
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [XStore S2S APIs](/publishing/xstore-server-to-service)
+- [Visibility & audiences](/publishing/how-to-visibility)

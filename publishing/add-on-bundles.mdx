@@ -1,0 +1,60 @@
+---
+title: "Add-on bundles and Season Pass"
+sidebarTitle: "Add-on bundles & Season Pass"
+description: "Group multiple add-ons into a single purchase or configure a Season Pass that grants entitlements to future DLC."
+icon: "gift"
+keywords: ["add-on bundle", "Season Pass", "expansion pass", "DLC bundle"]
+---
+
+An **add-on bundle** is an add-on product whose entitlement grants ownership of multiple other add-ons. A **Season Pass** is the specific pattern where the bundle references DLC that hasn't shipped yet.
+
+This is a different construct from [Bundles](/publishing/bundles), which are base-game bundles at the Store product level.
+
+## Add-on bundle vs Season Pass
+
+|  | Add-on bundle | Season Pass |
+| --- | --- | --- |
+| Contents | Existing add-ons | Existing **plus future** add-ons |
+| Sold at | Any time | Typically pre-launch or at launch, ahead of DLC releases |
+| Customer proposition | Buy this pack of DLC together for a discount | Commit to the full DLC roadmap for a discount |
+| Ships as | Durable add-on | Durable add-on |
+
+Mechanically both are **durable add-ons** whose product relationships reference the constituent DLC add-ons.
+
+## Configuration
+
+<Steps>
+  <Step title="Configure the constituent DLC first">
+    Each DLC that will be in the bundle / Season Pass must exist as a separate durable add-on. For a Season Pass covering future DLC, create the future add-ons as placeholders now with the correct product IDs — they can be Hidden until you're ready to ship them.
+  </Step>
+  <Step title="Create the bundle / Season Pass as a durable add-on">
+    In the base game's Add-ons module, create a new durable add-on. Choose a distinctive product ID (`season_pass_year1`, `deluxe_dlc_pack`).
+  </Step>
+  <Step title="Add product relationships">
+    In [Product relationships](/publishing/product-relationships), add each constituent DLC add-on as an **included product**. The pass's entitlement propagates to include each of these.
+  </Step>
+  <Step title="Price the pass">
+    Price should reflect the discount over buying each DLC individually. Common target: **20–30% off** the sum of individual prices.
+  </Step>
+  <Step title="Publish">
+    Publish the pass. As you release each DLC add-on later, they become visible on the Store; pass owners automatically get the entitlement without additional purchase.
+  </Step>
+</Steps>
+
+## Season Pass runtime handling
+
+- Game code checks entitlement on the Season Pass **and** on each individual DLC. Owning the pass implicitly grants the individual DLC entitlements — the platform surfaces both.
+- When a new DLC drops, existing pass owners see it in their library and can download without a purchase step.
+- If you add DLC to the pass after launch that wasn't declared up front, this can be legally risky in some markets (customers bought the pass expecting a defined scope). Publish the pass scope clearly in the Store listing and stick to it, or communicate scope changes transparently.
+
+## Handling refunds and partial completion
+
+- If a Season Pass promises 4 DLC drops and only 2 ship, expect regional consumer-protection scrutiny. Deliver what you promised or, if a pass under-delivers, coordinate with your Microsoft representative on a customer-facing communication and refund plan.
+- Refunds on a Season Pass revoke the pass entitlement, which cascades to revoke the constituent DLC entitlements. Handle this gracefully in-game (customer had access, now doesn't).
+
+## Related
+
+- [Add-ons](/publishing/add-ons)
+- [Durable add-ons](/publishing/durable-add-ons)
+- [Bundles](/publishing/bundles)
+- [Product relationships](/publishing/product-relationships)

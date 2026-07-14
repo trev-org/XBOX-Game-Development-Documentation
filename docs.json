@@ -572,7 +572,13 @@
               "publishing/add-ons",
               "publishing/franchise-hubs",
               "publishing/licensing",
-              "publishing/availability-schedule"
+              "publishing/availability-schedule",
+              "publishing/durable-add-ons",
+              "publishing/consumable-add-ons",
+              "publishing/add-on-bundles",
+              "publishing/supported-languages",
+              "publishing/packages-classic",
+              "publishing/publisher-insights"
             ]
           },
           {

@@ -1,0 +1,85 @@
+---
+title: "Durable add-ons"
+sidebarTitle: "Durable add-ons"
+description: "One-time-purchase, permanent add-ons: expansions, editions upgrades, cosmetics, and character unlocks."
+icon: "gem"
+keywords: ["durable add-on", "DLC", "expansion", "cosmetic", "season pass entitlement"]
+---
+
+A **durable add-on** is a one-time purchase that grants a permanent entitlement to the buyer. Once purchased, the customer owns the entitlement forever — it doesn't consume down or expire.
+
+Durables are the workhorse add-on type. Expansions, DLC packs, cosmetic bundles, character unlocks, and edition upgrades are all durables.
+
+## Durable variants
+
+| Variant | Ships a package? | Runtime behavior |
+| --- | --- | --- |
+| **Durable (metadata only)** | No | Grants an entitlement your game code checks via XStore. The game reveals content already shipped in the base package. |
+| **Durable with package** | Yes | Grants an entitlement **and** ships a separate content package the platform downloads and installs. Common for large expansions. |
+| **Durable upgrade** | No | Grants entitlement to a specific product (typically an edition upgrade like Standard → Deluxe). |
+
+## When to ship metadata vs with-package
+
+Ship **metadata-only** durables when:
+
+- The content is already included in the base package (locked cosmetics, character unlocks, campaign chapters gated behind an entitlement).
+- The added content is small and inclusion in the base package doesn't materially bloat install size.
+- You want zero download friction at purchase.
+
+Ship **durable with package** when:
+
+- The added content is large (a full expansion, additional maps, new campaign).
+- You want to keep the base install size down for customers who don't buy the DLC.
+- The content depends on updated engine code you don't want to ship in the base.
+
+## Configuration
+
+<Steps>
+  <Step title="Create the add-on">
+    In the base game's Partner Center, open **Add-ons → New add-on** and choose **Durable** or **Durable with package**. See [Create products](/publishing/how-to-create-products).
+  </Step>
+  <Step title="Set the product ID">
+    Choose a product ID your code will query via XStore. Product IDs are case-sensitive and can't be renamed — pick carefully.
+  </Step>
+  <Step title="Configure Store listing and Pricing">
+    Standard [Store listing](/publishing/store-listing) and [Pricing](/publishing/pricing). Durables can be free (\$0) if the entitlement grants access to something like a promo skin.
+  </Step>
+  <Step title="Set the parent product relationship">
+    Every durable has exactly one parent base game via [Product relationships](/publishing/product-relationships).
+  </Step>
+  <Step title="Upload the package (durable with package only)">
+    The add-on package goes through the same [Certification](/publishing/certification) pass as a base game package.
+  </Step>
+</Steps>
+
+## Runtime checks
+
+Game code queries entitlements via **XStore APIs**:
+
+- Enumerate the current user's owned add-ons at title start and whenever the entitlement matters.
+- Re-query after a purchase (in-game store) or when the platform signals an entitlement change (Game Pass revocation, refund, family library removal).
+- Handle the case where the entitlement is granted but the package hasn't downloaded yet (durable-with-package).
+
+See [XStore deep dive](/publishing/xstore-deep-dive) for the API-level pattern.
+
+## Edition upgrade durables
+
+An **edition upgrade** is a durable that a Standard-edition owner buys to receive Deluxe-edition entitlements. Configure as a durable with:
+
+- Parent set to the **base game** (Standard edition).
+- Product relationships that also reference the **Deluxe edition** it upgrades to.
+- Price set to `(Deluxe price) - (Standard price)`.
+
+The Store automatically surfaces the upgrade offer to Standard owners.
+
+## Season Pass durables
+
+A Season Pass is a durable that pre-purchases entitlement to a future set of DLC. See [Add-on bundles and Season Pass](/publishing/add-on-bundles) for the full pattern.
+
+## Related
+
+- [Add-ons](/publishing/add-ons)
+- [Consumable add-ons](/publishing/consumable-add-ons)
+- [Add-on bundles and Season Pass](/publishing/add-on-bundles)
+- [Product relationships](/publishing/product-relationships)
+- [XStore deep dive](/publishing/xstore-deep-dive)
