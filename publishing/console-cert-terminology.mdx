@@ -1,0 +1,99 @@
+---
+title: "Console certification terminology and Xbox network glossary"
+sidebarTitle: "Cert terminology"
+icon: "book"
+description: "Definitions for the terms and acronyms used in XBOX console certification: TCR, XR, FMA, TFB, cert sandbox, and Xbox network services referenced across cert docs."
+keywords: ["certification terminology", "cert glossary", "TCR", "XR", "FMA", "TFB", "cert sandbox", "Xbox network"]
+---
+
+A reference for the terms you'll encounter across [Certification](/publishing/certification), [XBOX requirements](/publishing/xbox-requirements), [XR FMA](/publishing/xr-fma), and cert-cycle communications from Microsoft.
+
+This page is scoped to **console cert**. For PC-specific terms see [PC certification](/publishing/pc-certification). For general publishing terms see the top-level [Glossary](/publishing/glossary).
+
+## Cert process terms
+
+**Certification (Cert)** — Microsoft's compliance and quality gate. Every package that ships must pass Cert against the current [XR](/publishing/xbox-requirements) set. See [Certification](/publishing/certification).
+
+**Cert sandbox** — The specific sandbox that the test team runs your submission against. Final Cert always uses **RETAIL**; Optional Cert uses a dev sandbox.
+
+**Cert pass / clean pass** — A submission that returned zero failing XRs and is eligible to publish.
+
+**Cert cycle** — One round-trip through the test team: submit → test → result (pass or FMA). A slipped release date usually maps to N extra cert cycles.
+
+**Deviation** — A formal request for the test team to accept a specific XR failure with written justification. Approved deviations don't count as failures.
+
+**Resubmission** — A follow-up submission after a failing cert cycle. References the original submission ID and addresses each FMA finding.
+
+## Requirements terms
+
+**XR (Xbox Requirement)** — A single certification policy your title must meet. Numbered (`XR-001`, `XR-007`, etc.) and named. See [XBOX requirements](/publishing/xbox-requirements).
+
+**TCR (Technical Certification Requirement)** — The lower-level technical rule an XR references. Some XRs map 1:1 to a TCR; others aggregate multiple TCRs. "TCR" is heard less often in current docs but still appears in FMA text.
+
+**Cert-tested XR** — An XR that has an active test case in the current cert suite. Not every XR is actively tested at all times — some are documentation requirements.
+
+**Recommendation** — An XR finding that isn't a ship-blocker for the current submission but is flagged for you to address in a subsequent update.
+
+**Ship-blocker** — An XR finding severity that stops the submission from being able to publish until it's fixed.
+
+## Failure Mode Analysis (FMA) terms
+
+**FMA (Failure Mode Analysis)** — The per-submission report you receive when a cert cycle finds failures. Lists every failing XR with repro steps. See [XR FMA](/publishing/xr-fma).
+
+**TFB (Test Failure Bug)** — A single repro logged against one XR within an FMA. An FMA can contain multiple TFBs against the same XR if multiple distinct failures were observed.
+
+**Repro** — The step-by-step sequence and environment (device, build, sandbox, account) that reliably reproduces a TFB.
+
+**Root-caused** — A TFB where you've identified the underlying code / config issue causing the failure. Roots must be fixed, not just symptomatically patched.
+
+**Waiver** — An XR-specific temporary allowance from the platform team — rare and typically issued for XRs undergoing a policy update.
+
+## Xbox network service terms (as used in cert docs)
+
+**Xbox network** — The current umbrella term for the Xbox Live service platform. Older docs may say "Xbox Live"; "Xbox network" is preferred going forward.
+
+**Xbox Services / GDK Services** — The Xbox network client SDK used by titles — achievements, stats, sessions, presence, social. See [XBOX services](/publishing/xbox-services).
+
+**Sandbox** — An isolated environment for Xbox network state — achievements, session templates, Rich Presence — that lets you develop against one state while retail customers use another. See [Sandboxes](/publishing/sandboxes).
+
+**RETAIL** — The production sandbox. Only sandbox that customers can reach. Final Cert must pass against RETAIL.
+
+**MPSD (Multiplayer Session Directory)** — The Xbox network service that manages multiplayer session state. Referenced by XR-064, XR-067, XR-074, XR-124.
+
+**MPM (Multiplayer Manager)** — The client-side helper library over MPSD. Not required, but recommended.
+
+**Rich Presence** — Localized strings describing what a player is doing. Configured in [XBOX services](/publishing/xbox-services).
+
+**Privilege** — An Xbox network capability an account can use — multiplayer, communications, UGC, cross-network play. Titles must respect current privilege state (XR-045).
+
+**Gamerpic / Gamertag** — Xbox network display identity. Referenced by XR-046.
+
+**Game DVR / Screenshots** — The platform capture surface. Referenced by XR-131.
+
+**Achievements** — Xbox network progression signal. Referenced by XR-055, XR-057, XR-062.
+
+**Family / Home Xbox** — Product-sharing scenarios that XStore surfaces. Referenced across many XRs; see [XStore deep dive](/publishing/xstore-deep-dive).
+
+## Submission-lifecycle terms
+
+**Package processing** — The pre-test validation phase after upload: manifest checks, signing, and staging. Failures here return in minutes to hours and never enter the test queue.
+
+**Intake** — The test lead reviews your Supplemental Info before starting cert testing. Missing / vague Supplemental Info gets returned at intake.
+
+**In review** — The submission is being actively tested.
+
+**Ready to publish** — The submission passed cert and is waiting for your manual publish action (if you chose "Hold for manual publish" at [Submit to certification](/publishing/submit-to-certification)).
+
+**Publishing** — The transition state where a passed submission is propagating to the Microsoft Store.
+
+**In the Store** — The terminal state where the submission is live and available to customers in the sandbox it was published to.
+
+## Related
+
+- [Certification](/publishing/certification)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [XR FMA](/publishing/xr-fma)
+- [PC certification](/publishing/pc-certification)
+- [XR change history](/publishing/xr-change-history)
+- [Beta and Game Preview certification](/publishing/cert-beta-game-preview)
+- [Glossary](/publishing/glossary)

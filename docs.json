@@ -628,7 +628,8 @@
               "publishing/pc-bvt-guide",
               "publishing/mgats",
               "publishing/media-validation",
-              "publishing/supplemental-info"
+              "publishing/supplemental-info",
+              "publishing/console-cert-terminology"
             ]
           },
           {
