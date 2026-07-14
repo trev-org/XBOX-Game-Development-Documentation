@@ -1,0 +1,56 @@
+---
+title: "Product groups"
+sidebarTitle: "Product groups"
+description: "Group related editions and SKUs of the same title so entitlements, upgrades, and Store presentation behave correctly."
+icon: "object-group"
+keywords: ["product group", "editions", "cross-gen", "Smart Delivery", "upgrade"]
+---
+
+A **product group** is a Partner Center concept that ties together multiple products representing different editions, generations, or purchase paths of the same underlying title. Getting product groups right ensures customers don't accidentally re-buy the same game, upgrade paths work, and the Store presents your family of SKUs coherently.
+
+## What a product group does
+
+- **Dedupes ownership** — a customer who owns Standard Edition sees Deluxe Edition presented as an **upgrade**, not a fresh purchase.
+- **Enables Smart Delivery** — lets the Store deliver the correct generation's package (Xbox One vs Xbox Series X|S) to a single owned SKU.
+- **Powers cross-buy** — with [Play Anywhere](/publishing/managed-programs), a single purchase entitles both Xbox and PC.
+- **Governs upgrade offers** — the "Upgrade to Deluxe for \$X" offer only appears to customers in the same product group.
+
+## Members of a group
+
+A product group typically contains:
+
+- **Standard Edition** (base game)
+- **Deluxe / Ultimate Edition** (base game \+ content)
+- **Cross-gen versions** if you ship as separate products rather than Smart Delivery
+- **Play Anywhere companion** if applicable
+- **Upgrade add-ons** that let a Standard owner move to Deluxe
+
+Bundles, season passes, and independent DLC are **not** members of the product group — they are separate products that reference members of the group.
+
+## Configuring a product group
+
+<Steps>
+  <Step title="Create the first product">
+    Create your first SKU (usually Standard Edition) via [Game setup](/publishing/game-setup). At creation, this product implicitly forms its own product group.
+  </Step>
+  <Step title="Add subsequent editions to the same group">
+    When you create additional editions, choose **Add to existing product group** and select the Standard Edition. This ensures Partner Center treats them as related.
+  </Step>
+  <Step title="Confirm relationships">
+    Open the product group view under **Games → Product groups** and confirm each product's role (base, edition, upgrade, cross-gen).
+  </Step>
+  <Step title="Test upgrade paths in a sandbox">
+    Buy Standard on a test account in your development sandbox, then confirm the Deluxe upgrade offer appears at the correct price. See [Sandboxes](/publishing/sandboxes).
+  </Step>
+</Steps>
+
+<Warning>
+  You cannot move a product between product groups after it has customer entitlements. Confirm the group at creation.
+</Warning>
+
+## Related
+
+- [Game setup](/publishing/game-setup)
+- [SKU planning](/publishing/sku-planning)
+- [Product relationships](/publishing/product-relationships)
+- [Add-ons](/publishing/add-ons)

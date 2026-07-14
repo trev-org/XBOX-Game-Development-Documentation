@@ -1,0 +1,51 @@
+---
+title: "Product relationships"
+sidebarTitle: "Product relationships"
+description: "Link parent products, editions, add-ons, bundles, and cross-generation SKUs so entitlements, availability, and upgrades work correctly."
+icon: "diagram-project"
+keywords: ["product relationships", "parent product", "add-on parent", "upgrade", "cross-gen"]
+---
+
+**Product relationships** are the explicit links between products that Partner Center uses to determine ownership, upgrade eligibility, and Store presentation. They sit on top of [Product groups](/publishing/product-groups) with more granular semantics.
+
+## Types of relationships
+
+| Relationship | From | To | Behavior |
+| --- | --- | --- | --- |
+| **Add-on parent** | Add-on | Base game | The add-on is only usable/purchasable in the context of the base game. Every add-on has exactly one parent. |
+| **Edition upgrade** | Upgrade add-on | Base game \+ Deluxe edition | Grants a Standard owner the entitlements of the Deluxe edition. |
+| **Bundle contents** | Bundle | Multiple products | Purchasing the bundle grants entitlements to every referenced product. |
+| **Cross-gen included product** | Xbox One product | Xbox Series X | S product | Purchasing one grants entitlement to the other (rarely used post-Smart Delivery). |
+| **Season Pass entitlement** | Season Pass add-on | Individual DLC add-ons | Owning the season pass grants entitlement to every included DLC as it releases. |
+| **Trial parent** | Trial product | Full product | The trial redirects to the full product for upsell. |
+
+## Configuring relationships
+
+<Steps>
+  <Step title="Open the child product">
+    Navigate to the add-on, bundle, or upgrade product in Partner Center.
+  </Step>
+  <Step title="Open Product relationships">
+    In the product's left nav, select **Product relationships**.
+  </Step>
+  <Step title="Add the parent(s)">
+    Select the base game (and any additional referenced products) and choose the relationship type. Save.
+  </Step>
+  <Step title="Publish">
+    Publish the relationship change through [Review and publish](/publishing/modular-submission). Relationship changes propagate to the Store within minutes to a few hours.
+  </Step>
+</Steps>
+
+## Common mistakes
+
+- **Missing add-on parent** — the add-on will publish but customers cannot purchase it because it has no context.
+- **Season Pass without individual DLC entitlements** — the pass sells but doesn't grant anything until each DLC add-on is linked to it.
+- **Bundle with a delisted product inside** — the bundle becomes unpurchasable. Delist the bundle first, or swap the contents.
+- **Circular relationships** — Partner Center prevents most of these, but a hand-crafted product-group setup can occasionally hit this. Contact your Microsoft representative if you get stuck.
+
+## Related
+
+- [Product groups](/publishing/product-groups)
+- [Add-ons](/publishing/add-ons)
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [Bundles](/publishing/bundles)

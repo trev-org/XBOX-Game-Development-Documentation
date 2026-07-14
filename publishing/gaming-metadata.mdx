@@ -1,0 +1,86 @@
+---
+title: "Gaming metadata"
+sidebarTitle: "Gaming metadata"
+description: "Configure gameplay metadata: supported languages, accessibility features, input types, and platform-specific capabilities that power Store filters and discovery."
+icon: "tags"
+keywords: ["gaming metadata", "supported languages", "accessibility", "input types", "Smart Delivery", "HDR"]
+---
+
+**Gaming metadata** is the structured set of fields that describe your game's capabilities and support matrix. It powers Store filters, discovery, comparison charts, and the accessibility signals that customers rely on to buy confidently.
+
+<Warning>
+  Gaming metadata is customer-facing and legally binding for consumer protection in several markets. Declaring HDR when your game doesn't support HDR, or claiming multiplayer support you don't ship, is grounds for a cert failure and, in some markets, regulatory action.
+</Warning>
+
+## Categories
+
+### Supported languages
+
+Declare which languages your game supports and at what level per language.
+
+| Support level | Meaning |
+| --- | --- |
+| **Interface** | Menus, HUD, and system text translated. |
+| **Full audio** | All voice content dubbed. |
+| **Subtitles** | Cutscenes and voice content subtitled. |
+
+A language declared here appears on the Store listing's supported-languages callout. Do not declare a language unless the shipping build actually supports it in the promised way.
+
+### Accessibility features
+
+Declare the accessibility features you ship. Common flags include:
+
+- Subtitles / captions (with size, color, and background controls)
+- Colorblind modes
+- Difficulty options / assist modes
+- Fully remappable controls
+- Screen reader / narrator support
+- Speech-to-text and text-to-speech
+- High-contrast mode
+- Camera / motion sensitivity controls
+
+Accessibility declarations feed the Store's accessibility filters and the customer-visible accessibility summary. Titles considering the [MGATS](/publishing/mgats) accessibility test pass should coordinate MGATS timing with metadata declarations.
+
+### Technical capabilities
+
+Platform-level capabilities:
+
+- **HDR** (HDR10, Dolby Vision)
+- **4K UHD**
+- **60 FPS / 120 FPS** targets
+- **Variable Refresh Rate (VRR)**
+- **Spatial Audio** (Dolby Atmos, DTS:X, Windows Sonic)
+- **Smart Delivery** — declare if you're shipping one purchase that delivers different packages per generation
+- **Ray tracing**
+- **Auto HDR** support
+- **FPS Boost** support for backward-compatible titles
+
+### Input support
+
+Declare which inputs your game supports:
+
+- Xbox Wireless Controller
+- Xbox Adaptive Controller
+- Mouse and keyboard
+- Touch (PC)
+- Elite Controller custom paddles
+
+### Multiplayer capabilities
+
+- Local co-op / competitive counts
+- Online co-op / competitive counts
+- Cross-platform play
+- Cross-generation play
+- Dedicated servers / peer-to-peer
+- Requires Xbox Live Gold / Game Pass Core (auto-declared based on your XBOX services configuration)
+
+## Where to configure
+
+Gaming metadata is edited under **Product → Gaming metadata** in Partner Center. Some fields (Supported languages, Accessibility) also have equivalents under [Properties](/publishing/properties) — the source of truth is the Gaming metadata module.
+
+## Related
+
+- [Properties](/publishing/properties)
+- [Store listing](/publishing/store-listing)
+- [MGATS](/publishing/mgats)
+- [XBOX services](/publishing/xbox-services)

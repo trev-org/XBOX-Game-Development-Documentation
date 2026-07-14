@@ -1,0 +1,56 @@
+---
+title: "Bundles"
+sidebarTitle: "Bundles"
+description: "Combine multiple products into a single Store SKU at a discounted price."
+icon: "boxes-packing"
+keywords: ["bundle", "bundle product", "pack", "cross-sell"]
+---
+
+A **bundle** is a Store product that grants entitlements to two or more constituent products at a single, typically discounted, price. Bundles are their own product type in Partner Center — distinct from Season Passes (which are add-ons) and from Product Groups (which are ownership dedup logic).
+
+## When to use a bundle
+
+- Ship a **launch bundle** combining base game \+ Season Pass at a premium price.
+- Package **catalog cross-sells**: two older titles offered together at a discount to drive interest.
+- Offer a **franchise pack**: every title in the franchise sold together.
+- Provide a **cross-gen or cross-platform bundle** combining the Xbox and PC versions before Play Anywhere was configured (rare today).
+
+## Bundle rules
+
+- Every referenced product must be **published** and **purchasable** for the bundle to publish.
+- Bundle price does not have to equal the sum of its parts — discount is expected.
+- A customer who already owns one of the referenced products sees a **completion price** offer (bundle price minus already-owned components).
+- Bundles do not carry their own age rating; they inherit the **most restrictive** rating of their contents.
+
+## Configuring a bundle
+
+<Steps>
+  <Step title="Create a new bundle product">
+    In Partner Center, **Games → New product → Bundle**. Reserve a name (see [Game name](/publishing/game-name)).
+  </Step>
+  <Step title="Add contents">
+    In [Product relationships](/publishing/product-relationships), add the constituent products as **bundle contents**.
+  </Step>
+  <Step title="Configure Store listing and pricing">
+    Add [Store listing](/publishing/store-listing) copy that explains what the bundle contains. Set [Pricing](/publishing/pricing) per market.
+  </Step>
+  <Step title="Submit for review">
+    Bundles do not need Final Cert (no package), but they do go through Store review for listing accuracy. Submit via [Review and publish](/publishing/modular-submission).
+  </Step>
+</Steps>
+
+## Bundle variants
+
+- **Standard bundle** — the most common shape described above.
+- **Pre-order bundle** — a bundle configured for pre-order with a specific pre-order incentive. See [Pre-release](/publishing/pre-release).
+- **Early access bundle** — a bundle where one component grants earlier access than others (for example a Deluxe edition with 3-day early access plus DLC).
+- **Pre-order unlock bundle** — unlocks a bonus product on pre-order.
+
+See the pre-order how-tos under [Partner Center how-to](/publishing/partner-center-how-to) for each variant.
+
+## Related
+
+- [Add-ons](/publishing/add-ons)
+- [Product relationships](/publishing/product-relationships)
+- [Product groups](/publishing/product-groups)
+- [XStore deep dive](/publishing/xstore-deep-dive)
