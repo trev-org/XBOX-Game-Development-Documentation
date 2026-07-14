@@ -584,7 +584,8 @@
               "publishing/certification",
               "publishing/xr-fma",
               "publishing/xbox-requirements",
-              "publishing/xr-top-failing"
+              "publishing/xr-top-failing",
+              "publishing/cert-bypass-program"
             ]
           },
           {
@@ -601,16 +602,15 @@
               "publishing/pre-release",
               "publishing/branches",
               "publishing/xbox-insider-program",
-              "publishing/branches"
+              "publishing/branches",
+              "publishing/sandboxes"
             ]
           },
           {
             "group": "Publishing",
             "icon": "shield-check",
             "pages": [
-              "publishing/cert-bypass-program",
-              "publishing/pre-release",
-              "publishing/sandboxes"
+              "publishing/pre-release"
             ]
           },
           {
