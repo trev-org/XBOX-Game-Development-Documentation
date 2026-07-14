@@ -1,0 +1,107 @@
+---
+title: "Troubleshooting XStore development"
+sidebarTitle: "XStore troubleshooting"
+icon: "bug"
+description: "Diagnose the most common XStore integration failures: empty product lists, license mismatches, consumable-report failures, PC sandbox drift, and Play Anywhere edge cases."
+keywords: ["XStore troubleshooting", "XStore errors", "license lost", "E_GAMESTORE_NETWORK_ERROR", "consumable report failure"]
+---
+
+The first XStore integration usually fails for one of a small number of reasons. Use this page as a triage guide before opening a support ticket.
+
+For initial configuration see [XStore testing setup](/publishing/xstore-testing-setup). For runtime details see [XStore deep dive](/publishing/xstore-deep-dive).
+
+## Empty product / license query results
+
+### Symptoms
+
+- `XStoreQueryAssociatedProductsAsync` returns 0 products.
+- `XStoreQueryEntitledProductsAsync` returns an empty list even though the account owns the product.
+- `XStoreQueryAddOnLicensesAsync` returns 0 add-ons.
+
+### Checks (in order)
+
+1. **Sandbox mismatch** — the signed-in account and the running build are in different sandboxes. Confirm with the sandbox switcher on PC or `xbconnect` output on console.
+2. **Product not published in this sandbox** — open Partner Center, confirm the product is published in the sandbox the account is on. See [XStore testing setup](/publishing/xstore-testing-setup).
+3. **`MicrosoftGame.config` mismatch** — the TitleId / StoreId / MSAAppId in the build must match Partner Center. Copy the values directly rather than retyping.
+4. **Account doesn't own the product** — grant the entitlement to the test account in Partner Center. See [Sandboxes & test accounts](/publishing/how-to-sandboxes-test-accounts).
+5. **Query filter too narrow** — `XStoreQueryProductsAsync` with a StoreID list that doesn't match your published products silently returns empty. Try `XStoreQueryAssociatedProductsAsync` to enumerate everything associated with your title.
+
+## Trial license not detected
+
+### Symptoms
+
+- `XStoreQueryGameLicenseAsync` returns `isTrial = false` even though the account should be a trial user.
+- `isTrialOwnedByThisUser = false` while the account clearly acquired the trial.
+
+### Checks
+
+1. Trial licenses **cannot be granted directly** — the account must acquire the trial through the Microsoft Store UI in the target sandbox. Granting via Partner Center creates a **full** license.
+2. If you granted the full license first, the trial state can't be re-created without revoking that entitlement.
+3. Check `licenseXuid` on the returned license — if it's a different XUID, the trial was acquired by a family member and is being shared.
+
+## Consumable balance not updating
+
+### Symptoms
+
+- `XStoreShowPurchaseUIAsync` succeeds but `XStoreQueryConsumableBalanceRemainingAsync` returns the old balance.
+- `XStoreReportConsumableFulfillmentAsync` returns success but the balance never decrements.
+
+### Checks
+
+1. **Duplicate `trackingId`** — the Store service treats a repeated `trackingId` as a retry and ignores it. Generate a fresh GUID per fulfillment attempt and log it locally so retries are intentional.
+2. **Product ID typo** — the ID you queried and the ID you fulfilled against must match exactly (case-sensitive).
+3. **Wrong consumable type** — developer-managed consumables don't use `XStoreQueryConsumableBalanceRemainingAsync` (there's no Store-tracked balance). If you're on developer-managed, the balance lives in your service.
+4. **Race with the Store service** — the balance is eventually consistent. In a fast unit test you may need to poll for a few seconds after `XStoreReportConsumableFulfillmentAsync` completes.
+
+## License lost mid-session
+
+### Symptoms
+
+- `XStoreRegisterPackageLicenseLost` callback fires while the player is still active.
+
+### Root causes
+
+- **Family sharing changed** — the customer left / joined a family group; the shared entitlement's context changed.
+- **Refund processed** — the customer processed a refund on this session's purchase.
+- **Sandbox switched under you** — the sandbox changed (usually only in dev, not customer-facing).
+- **Home Xbox switch** — the customer's Home Xbox designation moved.
+
+### Recommended handling
+
+Do not crash and do not silently continue. Fetch fresh licenses via `XStoreQueryAddOnLicensesAsync`, and if the license truly no longer applies, gracefully lock the affected content and surface UI ("This content is no longer available on this device").
+
+## PC-specific issues
+
+### `E_GAMESTORE_NETWORK_ERROR`
+
+- Confirm the PC has internet.
+- Confirm the Microsoft Store app is signed in and not blocked by the OS network stack.
+- Confirm your sandbox switcher points at the same sandbox as the signed-in account. See [XStore on PC](/publishing/xstore-pc).
+
+### Mismatched Store account
+
+The Microsoft Store app is signed in as user A, but your game is running as user B. See [XStore on PC](/publishing/xstore-pc) for the correct handling. Don't try to force-align the accounts — detect and surface a graceful message.
+
+## Play Anywhere edge cases
+
+- **Console-purchased customer runs the PC build**: XStore returns the console entitlement translated to the PC surface. If the entitlement doesn't appear, the title is not correctly configured as Play Anywhere in [Game setup](/publishing/game-setup).
+- **PC-purchased customer runs the console build offline**: Requires MaP in the sandbox for offline test. See [XStore testing setup](/publishing/xstore-testing-setup).
+
+## When to escalate
+
+If you've walked this triage and:
+
+- The product is definitely published to the right sandbox.
+- The test account has the entitlement.
+- The MicrosoftGame.config matches Partner Center.
+- The sandbox switcher / devkit sandbox matches the account.
+
+— open a Partner Center support ticket with the failing HRESULT / error code, the StoreId, the test account, the sandbox, and a stack trace. See [Contacts](/publishing/contacts).
+
+## Related
+
+- [XStore testing setup](/publishing/xstore-testing-setup)
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [XStore on PC](/publishing/xstore-pc)
+- [XStore S2S APIs](/publishing/xstore-server-to-service)
+- [Sandboxes](/publishing/sandboxes)
