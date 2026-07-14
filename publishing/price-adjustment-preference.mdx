@@ -1,0 +1,66 @@
+---
+title: "Price adjustment preference"
+sidebarTitle: "Price adjustment"
+description: "Choose whether Microsoft automatically adjusts your per-market prices when currency exchange rates or Store price tiers change."
+icon: "scale-unbalanced"
+keywords: ["price adjustment", "currency conversion", "price tier", "auto price update"]
+---
+
+**Price adjustment preference** controls how Partner Center handles the per-market prices of your product when Microsoft updates the underlying price tiers or when exchange rates shift materially.
+
+## Why this exists
+
+Microsoft manages a set of standard **price tiers** per market (for example, tier `US_2999` maps to `$29.99 USD` in the US market, and to the equivalent local currency prices in every other market). Occasionally Microsoft updates these tier tables:
+
+- Currency exchange rates shift and the local-currency price no longer matches the intended USD anchor.
+- Microsoft adds new markets or restructures existing tiers.
+- Regional pricing floors or ceilings change.
+
+When this happens, each product's per-market price could either stay pinned to the old local-currency value or automatically reflect the new tier. Publishers choose which behavior they prefer.
+
+## The two modes
+
+| Mode | Behavior when Microsoft updates price tiers |
+| --- | --- |
+| **Auto-adjust (recommended)** | Per-market prices automatically update to the new tier-equivalent. USD anchor stays constant; local-currency prices track it. |
+| **Manual only** | Per-market prices stay at their last-configured local-currency value regardless of tier changes. You must update prices manually. |
+
+### When to choose auto-adjust
+
+- Most commercial titles — keeps USD-equivalent revenue predictable.
+- Titles with prices in many markets — avoids manual maintenance overhead.
+- Titles that have deliberate USD-anchor pricing (e.g. "we ship at \$29.99 USD equivalent in every market").
+
+### When to choose manual
+
+- Titles with hand-tuned regional pricing that reflects deliberate market-level positioning ("we're \$19.99 in Brazil regardless of USD exchange").
+- Titles under active regulatory review in a specific market where automatic changes could complicate the review.
+- Legacy titles where the current per-market prices need to be preserved exactly for historical reporting.
+
+## Configuring
+
+<Steps>
+  <Step title="Open Pricing and availability → Pricing preferences">
+    Navigate to the product's pricing preferences section.
+  </Step>
+  <Step title="Choose Auto or Manual">
+    Set the preference per product.
+  </Step>
+  <Step title="Publish">
+    Publish the preference via [Review and publish](/publishing/modular-submission). The next tier update will honor the new preference.
+  </Step>
+</Steps>
+
+## Interaction with sales
+
+Sales set explicit prices per market and are unaffected by price-adjustment preference. If a tier update happens **during** a sale, the sale price stays; the base price adjusts (or doesn't, per your preference) when the sale ends.
+
+## Auditing
+
+Under **Pricing history** you can see every price change per market with source (manual edit vs auto-adjust vs sale start/end). Useful for reconciling revenue reports and for regulatory audits.
+
+## Related
+
+- [Pricing](/publishing/pricing)
+- [Pricing models](/publishing/pricing-models)
+- [Availability overview](/publishing/availability-overview)

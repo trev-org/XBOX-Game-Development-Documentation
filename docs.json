@@ -579,7 +579,10 @@
               "publishing/supported-languages",
               "publishing/packages-classic",
               "publishing/publisher-insights",
-              "publishing/availability-overview"
+              "publishing/availability-overview",
+              "publishing/preorder-overview",
+              "publishing/price-adjustment-preference",
+              "publishing/pricing-models"
             ]
           },
           {

@@ -1,0 +1,87 @@
+---
+title: "Pre-orders overview"
+sidebarTitle: "Pre-order overview"
+description: "How pre-orders work on the Microsoft Store: pre-order lifecycle, unlock behavior, refund window, pricing guarantees, and communication to pre-orderers."
+icon: "clock"
+keywords: ["pre-order", "pre-order lifecycle", "pre-order refund", "pre-load", "guaranteed price"]
+---
+
+A **pre-order** is a purchase transaction executed before a product's release date. The customer pays now (or has the transaction authorized) and receives the entitlement on release.
+
+For the click-by-click of configuring pre-orders see [Pre-orders](/publishing/how-to-pre-orders). This page covers the lifecycle and rules.
+
+## Pre-order lifecycle
+
+<Steps>
+  <Step title="Pre-order opens">
+    On the pre-order start date, the buy button flips to "Pre-order" on the PDP. The pre-order price is charged (or authorized, depending on payment method).
+  </Step>
+  <Step title="Pre-order window">
+    Customers can pre-order at any point in the window. Late pre-orderers get the same content as early pre-orderers unless a pre-order bonus was time-limited.
+  </Step>
+  <Step title="Pre-load window (optional)">
+    24–48 hours before release, pre-orderers can download the package so it's ready to play at unlock. See [Package management](/publishing/how-to-package-management).
+  </Step>
+  <Step title="Release / unlock">
+    At the release UTC time, the entitlement unlocks. Pre-loaded customers can play immediately.
+  </Step>
+  <Step title="Post-release">
+    Pre-order becomes a standard purchase. The pre-order price becomes the base price unless you configured a launch-week sale.
+  </Step>
+</Steps>
+
+## Rules and guarantees
+
+### Price guarantee
+
+Microsoft guarantees the pre-order customer the **lowest price** the product carries between pre-order and release. If you drop the price at any point before release, existing pre-orderers automatically get the lower price (and are refunded the difference for already-charged purchases).
+
+### Refund window
+
+Pre-orders are refundable **any time before release** without needing to justify. After release, the standard Microsoft Store refund policy applies (usually 14 days and under 2 hours of playtime).
+
+### Payment timing
+
+- **Credit / debit card** — charged at pre-order time.
+- **Microsoft account balance / gift card** — deducted at pre-order time.
+- **Xbox Game Pass Ultimate members** — pre-order still requires payment; Game Pass membership does not include pre-order titles.
+
+### Communication
+
+Partner Center sends automated emails to pre-orderers at:
+
+- Pre-order confirmation.
+- Pre-load available (if you enabled a pre-load window).
+- Release / unlock.
+- Refund processed (if refunded).
+
+You cannot customize these emails, but pre-orderers can be reached via your XBOX Live notification pipeline for in-game announcements after release.
+
+## Pre-order bonuses
+
+A **pre-order bonus** is content granted only to customers who purchased during the pre-order window.
+
+- Configure the bonus as a hidden token-only add-on (see [Visibility](/publishing/how-to-visibility)).
+- Bundle it with the pre-order (see [Pre-order unlock bundle](/publishing/how-to-pre-orders)).
+- Grant the entitlement on release. Customers who buy post-release do not receive the bonus.
+
+### Time-limited bonuses
+
+Some campaigns offer a bonus for the first N days of pre-order. This is high-friction to configure — typically requires a separate pre-order SKU for the bonus window that stops accepting orders and transitions to the standard pre-order SKU. Coordinate with your Microsoft representative for large-scale time-limited campaigns.
+
+## Cancellation and delays
+
+### You delay the release
+
+If you slip the release date, existing pre-orderers keep their pre-order. Send communication (via your marketing channels) and update the Store listing's release date. Pre-orderers get an updated confirmation email.
+
+### You cancel the release
+
+If a product is cancelled outright, refund all pre-orders through your Microsoft representative. Do not simply delist — that leaves pre-orders in an ambiguous state.
+
+## Related
+
+- [Pre-orders](/publishing/how-to-pre-orders) — configuration how-to
+- [Pre-release](/publishing/pre-release)
+- [Availability schedule](/publishing/availability-schedule)
+- [Pricing](/publishing/pricing)

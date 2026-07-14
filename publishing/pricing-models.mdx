@@ -1,0 +1,86 @@
+---
+title: "Pricing models"
+sidebarTitle: "Pricing models"
+description: "How Microsoft prices, sells, and pays out on your product: retail sale model, reseller pricing, wholesale, and how revenue reaches your account."
+icon: "file-invoice-dollar"
+keywords: ["pricing model", "reseller pricing", "wholesale", "revenue share", "payout model"]
+---
+
+Partner Center supports several **pricing models** that govern how your product is priced, sold, and paid out. The default is the standard retail model; the others cover specific commercial arrangements.
+
+## Standard retail model
+
+The default for almost every self-published title.
+
+- **Publisher sets the retail price** per market via [Pricing](/publishing/pricing).
+- **Microsoft sells** the product on the Microsoft Store at that retail price.
+- **Publisher receives a revenue share** per your commercial agreement with Microsoft, net of applicable taxes, chargebacks, and refunds.
+- Standard **monthly payout** at agreed thresholds via the payout method configured in [Developer account](/publishing/developer-account).
+
+## Reseller / wholesale model
+
+Used for **physical disc** channel distribution and some large-publisher digital arrangements.
+
+- **Publisher sets a wholesale price** — the price Microsoft pays the publisher per unit.
+- **Microsoft (or a retailer) sets the retail price** independently.
+- Retail-price fluctuations don't affect publisher payout — you're paid at the fixed wholesale price per unit sold.
+- Common for **disc SKUs** and some Game Pass licensing arrangements.
+
+See [Order discs](/publishing/order-discs) for the disc-specific royalty tier submission that feeds into this model.
+
+## Free-to-use / free-to-play
+
+- Base game priced at **\$0**.
+- Publisher earns revenue only from [Add-ons](/publishing/add-ons), advertising (where allowed by regional law and platform policy), or subscription tie-ins.
+- Ad revenue and third-party monetization must comply with Microsoft Store policies.
+
+## Game Pass licensing
+
+For titles included in Xbox Game Pass or PC Game Pass:
+
+- **Microsoft licenses** the title from the publisher for a defined term.
+- **Licensing fee** is negotiated and paid up-front, in tranches, or on a per-engagement basis depending on the deal.
+- Publisher **retains the right** to sell the title outside Game Pass at the standard retail model.
+- Standalone retail sales continue to pay out at the standard retail revenue share.
+
+See [Managed programs](/publishing/managed-programs).
+
+## Sub-publisher model
+
+When a title is sub-published (see [Sub-publishing](/publishing/sub-publishing)):
+
+- **Publisher's account** receives Microsoft's payout at the standard retail model.
+- **Publisher then settles** with the developer per their private contract.
+- Microsoft is not party to the developer-publisher split.
+
+## Payout mechanics
+
+<Steps>
+  <Step title="Configure payout account">
+    In [Developer account](/publishing/developer-account), configure a bank account or PayPal (where available) for payout.
+  </Step>
+  <Step title="Configure tax profile">
+    Provide tax residency, VAT number (where applicable), and any withholding forms Microsoft requires for your jurisdiction. Missing tax info blocks payouts.
+  </Step>
+  <Step title="Meet the payout threshold">
+    Payouts execute monthly once your accrued balance passes the minimum threshold (typically \$50 USD equivalent; varies by payout method).
+  </Step>
+  <Step title="Monitor payouts">
+    Payout history and reconciliation reports are under **Payouts** in Partner Center.
+  </Step>
+</Steps>
+
+## Refunds, chargebacks, and clawback
+
+- **Refunds** in the standard 14-day / 2-hour Store refund window: revenue is reversed on the day of refund.
+- **Chargebacks** (customer disputes a transaction with their card issuer): revenue is reversed plus a small chargeback fee, per your agreement.
+- **Clawback** (customer's card declines after entitlement was granted): if the customer consumed in-game consumables between purchase and clawback, the S2S clawback API lets your backend reconcile. See [XStore S2S APIs](/publishing/xstore-server-to-service).
+
+## Related
+
+- [Pricing](/publishing/pricing)
+- [Price adjustment](/publishing/price-adjustment-preference)
+- [Developer account](/publishing/developer-account)
+- [Order discs](/publishing/order-discs)
+- [Managed programs](/publishing/managed-programs)
+- [XStore S2S APIs](/publishing/xstore-server-to-service)
