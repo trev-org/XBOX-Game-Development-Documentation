@@ -6,80 +6,97 @@ icon: "shield-halved"
 keywords: ["XR-001", "title stability", "crash", "hang", "freeze", "suspend resume", "Quick Resume"]
 ---
 
-## Intent
+# XR-001: Title Stability \*
 
-Every XBOX title must remain **stable and responsive** during normal gameplay and during every platform-driven state transition. Customers rely on titles to survive suspend / resume, controller changes, sign-in changes, network transitions, and Quick Resume swaps without crashing, hanging, or losing data. Stability is the foundational XR — a title that trips XR-001 is almost always blocked from publish regardless of how well it satisfies other XRs.
+Version 5.0, 11/01/2025
 
-## Applies to
+Titles must be compliant with Microsoft Store policies regarding title stability. The following policy applies to this requirement:
 
-- Every retail submission on every device family.
-- Every recert and content update.
-- Every disc submission.
-- Also enforced (with slightly narrower scope) in [Beta and Game Preview](/publishing/cert-beta-game-preview) submissions.
+<Note>
+  [Microsoft Store Policy 10.4.2](https://learn.microsoft.com/windows/apps/publish/store-policies#104-usability)
 
-## Requirement
+  Products must start up promptly, continue to run and remain responsive to user input. Products must shut down gracefully and not close unexpectedly. The product must handle exceptions raised by any of the managed or native system APIs and remain responsive to user input after the exception is handled.
+</Note>
 
-Your title **MUST**:
+## Certification Test Cases
 
-- Not crash to the dashboard, hang, or produce a black / frozen screen under any tested scenario in the cert suite.
-- Recover cleanly from suspend and resume, including after long idle windows (multiple hours).
-- Handle Quick Resume swap-in and swap-out without corrupting game state, save data, or platform-visible state.
-- Survive sign-in state changes: account sign-out mid-session, account switch, guest account activation and removal.
-- Survive controller state changes: controller disconnect, secondary controller join, Xbox Adaptive Controller connect.
-- Handle network state transitions: full network loss, partial packet loss, DNS failure, and reconnection without user-visible corruption.
-- Handle storage transitions: install / uninstall of the shipping title's own updates, add-ons, or DLC while the title is running (see [XR-123](/publishing/xr/xr-123)).
-- Complete a full title lifecycle (launch → gameplay → exit) without leaked memory that would trigger platform-level OOM.
-- Not produce a state where the customer must hard-reset the console to recover.
+The following table shows which XR-001 test cases apply to your title on console or PC.
 
-Your title **MUST NOT**:
+| Test Case | Applicable to Console | Applicable to PC |
+| --- | --- | --- |
+| 001-01 Title Stability | Yes | Yes |
+| 001-02 Title Stability After Suspending | Yes | No |
 
-- Ship with unhandled asserts, debug break-in-debugger paths, or heap corruption present in retail builds.
-- Leave the console in a state that requires a factory reset to recover from a title crash.
-- Continue running with corrupted save data or corrupted XBOX services state.
+### 001-01 Title Stability
 
-## Tested scenarios
+**Test Steps**
 
-The cert suite exercises XR-001 through a broad set of scenarios. Common test cases:
+1. Sign in to an Xbox profile and launch the title.
+2. Navigate all areas of the title, including but not limited to:
+   - Gameplay
+   - Menus and features
+   - Downloadable content (DLC)
+3. Using a new Xbox profile with no previous save data, repeat steps 1–3 while disconnected from the Xbox network.
 
-- **Cold boot** — launch from a cold system, from a warm system, from suspend, and from Quick Resume.
-- **Suspend / resume** — Home button, dashboard switch, sign-in change, background download, sleep.
-- **Extended suspend** — leave the title suspended for a multi-hour window; resume and continue.
-- **Quick Resume swap** — swap the title out via another title's Quick Resume; swap back in.
-- **Sign-out mid-session** — sign out the active account during gameplay; verify no crash and no data loss for the account's progress.
-- **Controller disconnect** — disconnect the primary controller during gameplay; reconnect a different controller.
-- **Network loss** — pull the network mid-session in three modes: online multiplayer, downloading content, and idle in a menu.
-- **Storage full** — fill available storage; verify the title fails gracefully rather than crashing.
-- **DLC install during play** — install an add-on while the title is running (see also [XR-123](/publishing/xr/xr-123)).
-- **Rapid state transitions** — alternate suspend / resume repeatedly for stress.
-- **Localization sweeps** — launch the title in every declared language / locale; each launch must be crash-free.
-- **Long soak** — leave the title running for the cert-specified soak window (multiple hours) with no crashes.
+**Expected Result**
 
-## Best practices
+Title instability refers to any state where user input is not recognized, or the user is blocked from progressing due to a software crash without any user notification.
 
-- **Instrument crash reporting** — collect stack traces from your test builds so intermittent crashes can be root-caused.
-- **Test on real hardware, not just devkits** — retail hardware behaves differently than devkits under thermal load.
-- **Cover Series S memory constraints** — Series S has substantially less memory than Series X; many XR-001 failures come from Series S OOMs that Series X hides.
-- **Handle every callback path** — XBOX platform callbacks (services, controllers, users) can fire at any time; every path must be safe.
-- **Timebound network calls** — unbounded waits on Xbox network calls are a common source of hangs.
-- **Free resources on suspend** — the platform may reclaim GPU or memory resources while your title is suspended; hold no assumptions across suspend.
-- **Validate save writes** — corrupted saves that crash on load are XR-001 failures.
+**Pass Examples**
 
-## Related XRs
+1. The title is stable.
+2. The title does not cause unintended loss of user data.
 
-- [XR-003](/publishing/xr/xr-003) — Title Quality for Submission (baseline build cleanliness).
-- [XR-052](/publishing/xr/xr-052) — User State and Title-Save Location (save-data stability).
-- [XR-074](/publishing/xr/xr-074) — Loss of Connectivity to Xbox and Partner Services (network transitions).
-- [XR-112](/publishing/xr/xr-112) — Establishing a User and Controller During Initial Activation and Resume.
-- [XR-115](/publishing/xr/xr-115) — Addition and Removal of Users or Controllers During Gameplay.
-- [XR-123](/publishing/xr/xr-123) — Installation of DLC During Gameplay.
+**Fail Examples**
 
-## If your title fails XR-001
+1. The title crashes, becomes unresponsive, or causes a console reboot.
+2. The title causes the loss of user data.
+3. A non-interactive pause or static screen is presented lasting over twenty seconds.
+4. The title contains a loading screen which is more than two minutes with no indication of progress.
+5. The title contains a loading screen which is more than three minutes with a progress indicator.
 
-See [FMA: XR-001 Title Stability](/publishing/fma/xr-001) for common failure modes and the fix workflow.
+### 001-02 Title Stability After Suspend
+
+On retail consoles, a game will be suspended under the following conditions:
+
+- When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
+- When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.
+
+For the purposes of this test case, both methods should be verified at step 3.
+
+**Test Steps**
+
+1. Sign into an Xbox profile with the console power mode set to Instant-on.
+2. Launch the game and progress into gameplay.
+3. At various points throughout game, suspend the game.
+4. Resume the game and verify the user can continue from their last gameplay location.
+5. Continue to the next save point, save the game, and return to the main menu.
+6. Reload the save made in step 6 and make sure all progress is still present.
+7. Repeat steps 3–6 throughout the game.
+
+**Expected Result**
+
+Title instability refers to any state where user input is not recognized, or the user is blocked from progressing due to a software crash without any user notification. Additionally, users must not lose any save progress after returning to gameplay.
+
+**Pass Examples**
+
+1. The game is stable and does not cause unintended loss of user data.
+2. The game resumes from suspend and the user can immediately continue from their last gameplay location.
+3. The game resumes from suspend and the user is prompted whether they want to resume from their last gameplay location.
+4. The game resumes from suspend and returns to a previous menu or initial interactive state, however the user can load their last save location.
+5. After suspending during online gameplay that requires online service connectivity, the game resumes and has returned the user to a previous menu or initial interactive state.
+6. The game is terminated by the system as a result of connected storage de-synchronization.
+
+**Fail Examples**
+
+1. The game is terminated as a result of a failure to suspend.
+2. The game resumes from suspend and is terminated unexpectedly.
+3. The game resumes from suspend and the user is unable to load their last save location.
+4. The user is unable to re-establish a connection to partner-hosted services.
 
 ## Related
 
+- [XR-003 Title Quality for Submission](/publishing/xr/xr-003)
 - [Top failing tests](/publishing/xr-top-failing)
 - [Console BVT guide](/publishing/console-bvt-guide)
-- [PC BVT guide](/publishing/pc-bvt-guide)
 - [XBOX requirements](/publishing/xbox-requirements)
