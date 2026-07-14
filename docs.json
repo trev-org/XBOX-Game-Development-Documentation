@@ -561,7 +561,9 @@
               "publishing/properties",
               "publishing/store-listing",
               "publishing/ratings",
-              "publishing/pricing"
+              "publishing/pricing",
+              "publishing/add-ons",
+              "publishing/franchise-hubs"
             ]
           },
           {
@@ -582,14 +584,15 @@
           {
             "group": "Pre-release & flighting",
             "icon": "flask",
-            "pages": []
+            "pages": [
+              "publishing/pre-release",
+              "publishing/branches"
+            ]
           },
           {
             "group": "Publishing",
             "icon": "shield-check",
             "pages": [
-              "publishing/branches",
-              "publishing/add-ons",
               "publishing/xbox-requirements",
               "publishing/xr-top-failing",
               "publishing/xstore-deep-dive",
@@ -599,8 +602,6 @@
               "publishing/certification",
               "publishing/cert-bypass-program",
               "publishing/discs",
-              "publishing/franchise-hubs",
-              "publishing/pre-release",
               "publishing/sandboxes",
               "publishing/xr-fma"
             ]
