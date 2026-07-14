@@ -555,7 +555,15 @@
           {
             "group": "Plan your release",
             "icon": "map",
-            "pages": []
+            "pages": [
+              "publishing/game-concepts",
+              "publishing/sku-planning",
+              "publishing/xbox-game-preview",
+              "publishing/wishlist-pages",
+              "publishing/promo-codes",
+              "publishing/sub-publishing",
+              "publishing/managed-programs"
+            ]
           },
           {
             "group": "Set up your product",
@@ -612,6 +620,16 @@
               "publishing/branches",
               "publishing/sandboxes"
             ]
+          },
+          {
+            "group": "Partner Center how-to",
+            "icon": "wrench",
+            "pages": []
+          },
+          {
+            "group": "Resources & terminology",
+            "icon": "book",
+            "pages": []
           },
           {
             "group": "Publish & post-release",
