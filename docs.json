@@ -656,7 +656,15 @@
               "publishing/how-to-trials",
               "publishing/how-to-bundle-contents",
               "publishing/how-to-free-to-use",
-              "publishing/how-to-in-game-store-only"
+              "publishing/how-to-in-game-store-only",
+              "publishing/how-to-hidden-purchasable",
+              {
+                "group": "Data Platform 2013 services",
+                "icon": "database",
+                "pages": [
+                  "publishing/dp2013-overview"
+                ]
+              }
             ]
           },
           {

@@ -1,0 +1,68 @@
+---
+title: "Configure Xbox services (Data Platform 2013) — Overview"
+sidebarTitle: "DP 2013 overview"
+description: "Overview of configuring Xbox services on the legacy Data Platform 2013 model used by Xbox 360 and early Xbox One titles."
+icon: "database"
+keywords: ["Data Platform 2013", "DP 2013", "legacy Xbox Live", "Xbox 360 services", "events", "stats"]
+---
+
+**Data Platform 2013 (DP 2013)** is the legacy Xbox Live services configuration model. Titles originally shipped for Xbox 360 or early Xbox One use DP 2013. New titles use **Data Platform 2017**, documented in the [GDK Xbox services](/gdk/what-is-gdk) section.
+
+<Note>
+  Use DP 2013 only if you're maintaining a legacy title or explicitly need compatibility with the old data pipeline. For any new title, use DP 2017.
+</Note>
+
+## What DP 2013 covers
+
+| Feature | DP 2013 module | Runtime API |
+| --- | --- | --- |
+| Achievements | Achievements editor | Xbox Live SDK legacy achievements API |
+| Player stats | Stats editor | User Stats service |
+| Featured stats | Featured stats editor | Presented on the player Xbox profile |
+| Stat change notifications | Stat notifications editor | Push notifications on stat changes |
+| Leaderboards | Leaderboards editor | Leaderboard queries |
+| Challenges | Challenges editor | Time-boxed player challenges |
+| Events | Events editor | Custom telemetry events |
+
+## Differences from DP 2017
+
+| Concern | DP 2013 | DP 2017 |
+| --- | --- | --- |
+| Data pipeline | Legacy pipeline with hourly-to-daily latency for stats | Real-time pipeline with second-to-minute latency |
+| Event schema | XML-based events manifest | JSON-based, schema-first events |
+| Stats query API | Legacy Xbox Live SDK | GDK modern stats API |
+| Featured stats | Curated on the player profile | Broader profile presence, Rich Presence integration |
+| Cross-platform | Xbox-only pipeline | Unified with PC via GDK |
+| Editor | DP 2013 sub-editor in Partner Center | Modern XBOX services editor |
+
+## When you're on DP 2013
+
+Open your product's **Xbox services** module. If you see a link to **Configure Xbox services (Data Platform 2013)** — or if the achievements editor shows the classic UI — you're on DP 2013.
+
+## Migration to DP 2017
+
+Migrating a live title from DP 2013 to DP 2017 is a substantial project:
+
+- Every stat, achievement, and event must be re-authored in the DP 2017 schema.
+- Historical stats data does not automatically migrate — you may need a custom migration for player progression.
+- Rich Presence strings are re-authored in the modern editor.
+- Client code changes from the legacy Xbox Live SDK to the GDK services API.
+
+Migration is typically driven by a title's remaster / update rather than as a standalone effort. Coordinate with your Microsoft representative and the [Development support](/gdk/development-support) team if you're planning migration.
+
+## Pages in this section
+
+- [Events](/publishing/dp2013-events)
+- [Player stats and stat rules](/publishing/dp2013-stats)
+- [Featured stats](/publishing/dp2013-featured-stats)
+- [Stat change notifications](/publishing/dp2013-stat-notifications)
+- [Leaderboards](/publishing/dp2013-leaderboards)
+- [Achievements](/publishing/dp2013-achievements)
+- [Challenges](/publishing/dp2013-challenges)
+- [Download Events Manifest](/publishing/dp2013-events-manifest)
+
+## Related
+
+- [XBOX services](/publishing/xbox-services)
+- [Sandboxes](/publishing/sandboxes)
+- [Modern XBOX services (DP 2017) in the GDK](/gdk/what-is-gdk)
