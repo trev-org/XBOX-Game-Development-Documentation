@@ -1,0 +1,87 @@
+---
+title: "XR change history and versioning"
+sidebarTitle: "XR change history"
+icon: "clock-rotate-left"
+description: "How XBOX Requirements evolve over time — versioning, deprecation, added tests, and how to check what changed before you resubmit."
+keywords: ["XR change history", "XR versioning", "deprecated XR", "XR added", "XR revision"]
+---
+
+**XBOX Requirements evolve.** New XRs are added when new platform features ship, existing XRs are tightened or relaxed based on data from cert cycles, and some XRs are deprecated when the underlying platform behavior changes. This page explains the change model and how to stay current.
+
+For the current XR catalog see [XBOX requirements](/publishing/xbox-requirements).
+
+## How XRs change
+
+### Types of changes
+
+| Change type | What it means | Impact on your title |
+| --- | --- | --- |
+| **New XR added** | A previously untested area is now cert-gated | Next submission must pass the new XR |
+| **New test added under an existing XR** | An existing XR gains a new test case | Fixes that satisfied the old test may not satisfy the new one |
+| **XR tightened** | Acceptance criteria narrowed | Behavior that previously passed may fail |
+| **XR relaxed** | Acceptance criteria broadened | Previously failing behavior may now pass |
+| **XR deprecated** | Removed from the active tested set | Existing implementation still fine; no action required |
+| **XR replaced** | Merged into or superseded by another XR | Follow the guidance on the successor XR |
+| **PC / console divergence** | Same XR now behaves differently on PC vs console | Verify against the PC variant if you ship on PC |
+
+### Announcement channels
+
+XR changes are announced through:
+
+- **Partner Center change-log** — the source of truth. Every publisher can access it from the product's Certification section.
+- **Microsoft representative communications** — material changes are pushed through your account manager.
+- **GDK release notes** — XRs that require SDK-side changes reference the specific GDK release that ships supporting APIs.
+- **Cert-cycle FMAs** — an FMA against a newly-added test will call out that it was added in the current cert period.
+
+## When to check the change history
+
+Always check before:
+
+- **Every resubmission after a failure.** New tests may have landed between your original submission and your fix cycle.
+- **Every Final Cert of a new title.** The XR set today is not the set your last title certified against.
+- **Every content update on a live title** if more than 90 days have passed since the last cert cycle.
+- **A GDK version bump** that changes the runtime SDK you build against.
+
+## How to interpret "XR was added in"
+
+Each XR entry in the change history documents:
+
+- **Effective date** — the date the change took effect for cert testing.
+- **Applies to submissions on / after** — the cutoff for enforcement. Submissions made before this date use the older XR set even if they cert after.
+- **Grace period** (if any) — for XRs with broad impact, Microsoft sometimes announces a grace period during which the new test is advisory only.
+- **Replaces / supersedes** — pointer to the old XR(s) if this is a replacement.
+
+## Legacy XR numbering
+
+Some older XR numbers appear in historical docs but are no longer active. When you see an XR number in old materials that doesn't match the current catalog:
+
+1. Search the [XBOX requirements](/publishing/xbox-requirements) catalog for the same topic — it's likely been renumbered or absorbed into a more general XR.
+2. Check the change history for the deprecation note.
+3. Follow the guidance on the successor XR, not the deprecated one.
+
+## PC / console variant XRs
+
+Some XRs — notably **XR-007** — exist as both a console and PC variant with different acceptance criteria. Both are tracked in the change history; changes to one do not automatically apply to the other. See [PC certification](/publishing/pc-certification).
+
+## Historical XR set (Beta / Game Preview)
+
+Beta and Game Preview titles are certified against a **reduced XR set**. That reduced set is versioned separately from the standard set and evolves at its own pace. See [Beta and Game Preview certification](/publishing/cert-beta-game-preview) for the current reduced set.
+
+## Practical resubmission checklist
+
+Before hitting resubmit after a failing cert cycle:
+
+- Read every failing XR in the FMA against the **current** catalog, not a cached copy of the XR from a previous submission.
+- Skim the change history for any tests added between your last submission and now.
+- Confirm your build was compiled against a GDK release that supports the current XR set.
+- For PC / mobile submissions, cross-check the PC variant XRs specifically.
+- If a new XR would take you out of scope, document a deviation request before submitting rather than after failing.
+
+## Related
+
+- [XBOX requirements](/publishing/xbox-requirements)
+- [XR FMA](/publishing/xr-fma)
+- [Certification](/publishing/certification)
+- [PC certification](/publishing/pc-certification)
+- [Beta and Game Preview certification](/publishing/cert-beta-game-preview)
+- [Cert terminology](/publishing/console-cert-terminology)

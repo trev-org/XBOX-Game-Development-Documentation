@@ -632,6 +632,7 @@
               "publishing/pc-certification",
               "publishing/media-validation",
               "publishing/supplemental-info",
+              "publishing/xr-change-history",
               "publishing/console-cert-terminology"
             ]
           },
