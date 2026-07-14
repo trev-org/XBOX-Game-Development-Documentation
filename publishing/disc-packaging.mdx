@@ -1,0 +1,74 @@
+---
+title: "Disc packaging requirements"
+sidebarTitle: "Disc packaging requirements"
+description: "Physical disc contract requirements, artwork specs, packaging materials, and the disc image spec for XBOX retail discs."
+icon: "box-open"
+keywords: ["XBOX disc packaging", "disc artwork", "disc image", "BD100", "BD50", "day one update", "retail box"]
+---
+
+Before you can request disc manufacture, every physical XBOX product must meet Microsoft's disc packaging **contractual requirements**. These are separate from — and stricter than — the requirements for a digital-only release.
+
+<Warning>
+  Discs are a contract product. You must have an executed **disc addendum** with Microsoft (in addition to your standard publisher agreement) before Partner Center will let you request discs. Contact your Microsoft representative if disc options are not visible in your product.
+</Warning>
+
+## Contract requirements checklist
+
+Before submitting a disc request:
+
+- An executed **XBOX disc manufacturing addendum** with Microsoft.
+- A **disc royalty tier** submitted and approved. See [Submit royalty tiers](/publishing/how-to-royalty-tiers).
+- Minimum order quantity (MOQ) and per-region SKU plan agreed with your publishing representative.
+- Age ratings issued by the relevant physical rating bodies for every region — including **physical longform ratings** where required. See [Ratings](/publishing/ratings).
+- Approved packaging artwork covering all required legal marks.
+
+## The disc image
+
+The disc image is a locked, cert-approved package with constraints beyond a digital submission:
+
+| Requirement | Detail |
+| --- | --- |
+| **Format** | Xbox Optical Disc (XOD) — BD-XL structure. Current generation ships on **BD-100** (Series X) or **BD-50** (Xbox One / cross-gen). |
+| **Layout** | Locked package layout — no changes after RTM approval. Streaming install order and pre-launch chunks must match the certified manifest. |
+| **Boot experience** | The disc must boot to a playable state offline. Portions requiring the day-one update must fail gracefully with a clear "update required" message. |
+| **Day-one update planning** | Plan the day-one update via [Packages](/publishing/packages) and declare the delta in [Supplemental info](/publishing/supplemental-info) at [Submit to certification](/publishing/submit-to-certification). |
+| **Certification** | The disc image must pass **Disc Certification** — a separate submission from Final Cert on the same underlying build. See [Approve discs for manufacture](/publishing/approve-discs-for-manufacture). |
+
+## Packaging materials (the physical box)
+
+Retail packaging must comply with the current XBOX Retail Packaging Specification issued by your Microsoft representative. High-level rules:
+
+- **Case type** — Standard XBOX green case (BD-XL compatible). Series X titles must use the Series X packaging lockup; cross-gen titles must clearly mark supported platforms.
+- **Front cover** — Platform lockup in the approved position (top of case), title art, publisher logo, and age-rating icon (physical longform icon where the region requires it — for example the full PEGI icon with content descriptors).
+- **Back cover** — Feature callouts (online multiplayer, HDR, 4K, VRR, Smart Delivery, cloud saves), Xbox Live / online-services disclosure, screenshot strip, publisher legal, barcode.
+- **Spine** — Title, publisher, platform lockup.
+- **Inserts** — Any inserts (promo codes, manuals) require pre-approval and must comply with regional legal marks for that market.
+- **Environmental marks** — Recycling and country-of-origin marks per destination market law. Microsoft supplies the current mark set as part of the packaging spec.
+
+## Artwork submission workflow
+
+Artwork is submitted through the Discs module in Partner Center alongside the disc image request:
+
+<Steps>
+  <Step title="Download the current disc art templates">
+    Grab the current templates from your Microsoft representative or the Discs module. Templates are versioned — always use the version referenced in the module.
+  </Step>
+  <Step title="Produce per-region artwork">
+    Each region needs its own variant with correct rating icons, language callouts, and legal lines. North America (ESRB), Europe (PEGI), Australia (ACB), Japan (CERO), Korea (GRAC), and Brazil (ClassInd) are common variants.
+  </Step>
+  <Step title="Upload for review">
+    Upload print-ready PDFs to the Discs module. Microsoft reviews for logo lockup compliance, rating icon accuracy, and required-marks completeness. Typical artwork review is 5–7 business days.
+  </Step>
+  <Step title="Apply feedback and lock">
+    Address feedback and mark artwork **approved**. Locked artwork feeds into [Approve discs for manufacture](/publishing/approve-discs-for-manufacture).
+  </Step>
+</Steps>
+
+## Related
+
+- [Discs](/publishing/discs)
+- [Approve discs for manufacture](/publishing/approve-discs-for-manufacture)
+- [Order discs](/publishing/order-discs)
+- [Ratings](/publishing/ratings)
+- [Submit to certification](/publishing/submit-to-certification)
+- [Branding assets](/publishing/branding-assets)

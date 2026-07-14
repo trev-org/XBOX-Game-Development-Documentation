@@ -1,0 +1,97 @@
+---
+title: "XBOX Insider Program flighting FAQ"
+sidebarTitle: "Insider FAQ"
+description: "Common questions about running flights through the XBOX Insider Program: audience sizing, region scoping, telemetry, and graduating a flight to retail."
+icon: "circle-question"
+keywords: ["Insider FAQ", "insider flighting", "beta", "insider ring", "flight audience"]
+---
+
+Common questions from teams running their first (or second, or tenth) XBOX Insider Program flight. For the concept overview see [XBOX Insider Program](/publishing/xbox-insider-program).
+
+## Audience and rings
+
+### How many Insiders are in each ring?
+
+Microsoft doesn't publish exact ring populations. Rough guidance: **Alpha Skip-Ahead** is the smallest (thousands), **Beta** is mid-sized, and **Omega** is the largest (millions). Ask your Microsoft representative for current sizing when planning a flight.
+
+### Can I target a specific country?
+
+Yes. Flights can be scoped by region on top of ring membership. Common pattern: Beta ring, EU-only, for a soft-launch multiplayer test.
+
+### Can I target specific accounts?
+
+Yes — the **Private Preview** flight type lets you enumerate specific Microsoft accounts. Used for reviewer builds, closed alpha with named participants, and industry demos.
+
+### Can I gate my flight by hardware?
+
+Partially. Scope to a device family (Series X, Series S, Xbox One), but not to specific hardware SKUs beyond that.
+
+## Content and cert
+
+### Does the flight build have to pass Final Cert?
+
+No. Flights ship without Final Cert. Flights do pass a lighter automated compliance check.
+
+### What XRs still apply?
+
+Stability and safety XRs (crashes, data loss, offensive content protection) still apply. Multiplayer, matchmaking, and store XRs are relaxed for flight builds.
+
+### Can I flight content that isn't rated yet?
+
+Only behind an NDA and to a Private Preview audience. Public Insider ring flights need age ratings issued.
+
+## Telemetry and iteration
+
+### What data do I get back from a flight?
+
+- **Crash rate** and health telemetry.
+- **Engagement metrics** (session count, session length, MAU on the flight).
+- **Insider feedback** — submitted through Xbox Insider Hub, surfaced in Partner Center.
+- **Custom telemetry** if you've instrumented your own.
+
+### How fast can I iterate?
+
+A new flight package can be uploaded, processed, and published in hours. Multi-daily iteration is possible.
+
+### Should I do a public flight before Final Cert?
+
+Often yes — a public flight catches issues internal QA and Optional Cert don't (network scale, hardware variety, real customer usage). Budget 2–4 weeks of flight time before Final Cert for major titles.
+
+## Graduating to retail
+
+### How do I promote a flight to retail?
+
+1. Take the flight package that's proven stable.
+2. Submit it for [Final Certification](/publishing/submit-to-certification).
+3. On pass, publish through the standard retail flow.
+
+There is no "one-click promote" — the Final Cert step is required.
+
+### Do Insider-flight players carry saves to retail?
+
+Cloud saves carry across because they're tied to the Microsoft account and your product ID. Handle save-format migration in code if the format changed.
+
+### Are Insider testers paid?
+
+No. Insider Program membership is free and voluntary.
+
+## Operational
+
+### Can I have multiple concurrent flights?
+
+Yes — different rings can receive different packages. Use this for A/B testing.
+
+### Can I stop a flight mid-way?
+
+Yes. Revoke the flight package in the Packages module. Flight-audience customers stop receiving the update.
+
+### What if the flight breaks retail?
+
+Flight packages ship only to the flight audience. They do **not** touch retail owners.
+
+## Related
+
+- [XBOX Insider Program](/publishing/xbox-insider-program)
+- [Package management](/publishing/how-to-package-management)
+- [Pre-release](/publishing/pre-release)
+- [Submit to certification](/publishing/submit-to-certification)

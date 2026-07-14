@@ -1,0 +1,86 @@
+---
+title: "Configure pre-orders and pre-order bundles"
+sidebarTitle: "Pre-orders"
+description: "Configure standard pre-orders, pre-order bundles, early access bundles, and hidden pre-order products."
+icon: "calendar-plus"
+keywords: ["pre-order", "early access bundle", "pre-order bundle", "pre-order unlock", "hidden pre-order"]
+---
+
+Pre-orders let customers buy your product before release date. Partner Center supports several pre-order shapes for different marketing strategies. For the concept-level lifecycle see [Pre-order overview](/publishing/preorder-overview).
+
+## Pre-order shapes
+
+| Shape | What it does |
+| --- | --- |
+| **Standard pre-order** | Buy the base game before release. On release, the game unlocks and downloads. |
+| **Pre-order visible bundle** | A bundle configured for pre-order — base game \+ DLC \+ bonuses at a bundle price. |
+| **Early access bundle** | Bundle where one edition unlocks 3–5 days before general availability. Common for Deluxe / Ultimate editions. |
+| **Pre-order unlock bundle** | Purchase unlocks a bonus product on pre-order that non-pre-orderers don't get. |
+| **Hidden pre-order product** | Pre-order redeemable only via promo code — retailer or influencer exclusives. |
+
+## Enable a standard pre-order
+
+<Steps>
+  <Step title="Open Pricing and availability">
+    Navigate to the product's Pricing and availability module.
+  </Step>
+  <Step title="Set pre-order state">
+    Under **Pre-order**, enable pre-order and set the pre-order start date and price.
+  </Step>
+  <Step title="Confirm release date">
+    The release date must be in the future. This becomes the unlock date for pre-orderers.
+  </Step>
+  <Step title="Optional: pre-load window">
+    Set a pre-load window (typically 24–48 hours before release) so pre-orderers can download early.
+  </Step>
+  <Step title="Publish">
+    Publish via [Review and publish](/publishing/modular-submission). The Store PDP updates to show the pre-order state.
+  </Step>
+</Steps>
+
+## Configure a pre-order bundle
+
+<Steps>
+  <Step title="Create the bundle">
+    Create a bundle with the base game plus bonus products. See [Bundles](/publishing/bundles).
+  </Step>
+  <Step title="Configure pre-order on the bundle">
+    Enable pre-order on the bundle's Pricing and availability, matching the base game's release date.
+  </Step>
+  <Step title="Set the bundle price">
+    Bundle price is independent. Give pre-orderers a genuine discount to reward the commitment.
+  </Step>
+</Steps>
+
+## Early access bundle
+
+An Early Access bundle unlocks a Deluxe / Ultimate edition several days before the Standard edition.
+
+- Deluxe/Ultimate edition is a **separate product** from the Standard edition. Both in the same [product group](/publishing/product-groups).
+- Set the Deluxe edition's release date 3–5 days earlier than the Standard.
+- The bundle contains the Deluxe edition plus DLC / bonuses.
+- Standard-edition pre-orderers unlock on the Standard release date.
+
+## Pre-order unlock bundle
+
+A pre-order unlock bundle grants a bonus product only to customers who buy during the pre-order window.
+
+- Configure the bonus as a **hidden token-only add-on** — see [Visibility](/publishing/how-to-visibility) and [Promo codes](/publishing/promo-codes).
+- Configure the pre-order bundle to include the bonus.
+- After pre-order ends, remove the bonus from the base-game listing.
+
+## Hidden pre-order products
+
+For retailer exclusives or influencer distribution:
+
+- Create the pre-order product with **Visibility: Hidden**.
+- Mint promo codes for distribution. See [Promo codes](/publishing/promo-codes).
+- Only code-redeemers can pre-order.
+
+## Related
+
+- [Pre-order overview](/publishing/preorder-overview)
+- [Pre-release](/publishing/pre-release)
+- [Bundles](/publishing/bundles)
+- [Product groups](/publishing/product-groups)
+- [Pricing](/publishing/pricing)

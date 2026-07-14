@@ -557,6 +557,7 @@
             "icon": "gear",
             "pages": [
               "publishing/game-setup",
+              "publishing/game-name",
               "publishing/product-groups",
               "publishing/packages",
               "publishing/properties",
@@ -567,6 +568,8 @@
               "publishing/bundles",
               "publishing/gaming-metadata",
               "publishing/xbox-services",
+              "publishing/reparenting",
+              "publishing/relationship-management",
               "publishing/add-ons",
               "publishing/franchise-hubs",
               "publishing/add-ons",
@@ -630,6 +633,7 @@
             "icon": "compact-disc",
             "pages": [
               "publishing/discs",
+              "publishing/disc-packaging",
               "publishing/approve-discs-for-manufacture",
               "publishing/order-discs"
             ]
@@ -642,7 +646,8 @@
               "publishing/branches",
               "publishing/xbox-insider-program",
               "publishing/branches",
-              "publishing/sandboxes"
+              "publishing/sandboxes",
+              "publishing/insider-faq"
             ]
           },
           {
@@ -653,9 +658,12 @@
               "publishing/how-to-sandboxes-test-accounts",
               "publishing/how-to-package-management",
               "publishing/how-to-visibility",
+              "publishing/how-to-pre-orders",
               "publishing/how-to-trials",
               "publishing/how-to-bundle-contents",
+              "publishing/how-to-pricing-changes",
               "publishing/how-to-free-to-use",
+              "publishing/how-to-age-ratings",
               "publishing/how-to-in-game-store-only",
               "publishing/how-to-hidden-purchasable",
               {

@@ -1,0 +1,73 @@
+---
+title: "Change pricing, run sales, and delist products"
+sidebarTitle: "Pricing changes & delist"
+description: "Update base pricing, configure sales, and delist products from the Microsoft Store."
+icon: "tags"
+keywords: ["price update", "sale pricing", "discount", "delist", "retire product"]
+---
+
+For initial pricing configuration see [Pricing](/publishing/pricing). This page covers ongoing pricing changes and delisting.
+
+## Change base pricing
+
+<Steps>
+  <Step title="Open Pricing and availability">
+    In the product, open the Pricing section.
+  </Step>
+  <Step title="Update per market">
+    Change the base price per market. Price changes propagate to the Store within a few hours but retain a customer-visible history for regulatory purposes in some regions.
+  </Step>
+  <Step title="Publish">
+    Publish via [Review and publish](/publishing/modular-submission). No cert required.
+  </Step>
+</Steps>
+
+<Warning>
+  Frequent price changes damage customer trust and, in some markets (EU, Australia), trigger consumer-protection review of your "was / now" pricing. Coordinate marketing before repricing.
+</Warning>
+
+## Run a sale
+
+<Steps>
+  <Step title="Open Pricing and availability → Sales">
+    Create a new sale.
+  </Step>
+  <Step title="Set the sale window">
+    Choose start and end UTC dates. Sales default to global; you can scope to specific markets.
+  </Step>
+  <Step title="Set the sale price or discount percentage">
+    Either a hard price or a percentage off the base. Percentage sales apply per market automatically.
+  </Step>
+  <Step title="Publish">
+    Sales publish through Review and publish. The Store surfaces the sale price and "was / now" pricing during the sale window.
+  </Step>
+</Steps>
+
+See [Sale pricing](/publishing/sale-pricing) for eligibility rules and coordination with launches.
+
+## Delist a product
+
+Delisting removes a product from sale. Existing owners retain the entitlement, can re-download, and continue to receive updates you push.
+
+<Steps>
+  <Step title="Open Pricing and availability">
+    Change the product's visibility to **Hidden** (see [Visibility](/publishing/how-to-visibility)) and set availability to end.
+  </Step>
+  <Step title="Notify customers if needed">
+    For live-service titles, communicate the sunset plan clearly ahead of delist. See [Content updates](/publishing/content-updates).
+  </Step>
+  <Step title="Publish">
+    Delist propagates within a few hours. The product PDP becomes unreachable via search but existing owners retain access.
+  </Step>
+</Steps>
+
+### Full removal
+
+Removing a product entirely — including revoking re-download for existing owners — is **rare**. Requires business justification (legal takedown, license expiry) coordinated with your Microsoft representative. Do not attempt to force this by deleting the product in Partner Center.
+
+## Related
+
+- [Pricing](/publishing/pricing)
+- [Sale pricing](/publishing/sale-pricing)
+- [Visibility & audiences](/publishing/how-to-visibility)
+- [Content updates](/publishing/content-updates)
