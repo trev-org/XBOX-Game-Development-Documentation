@@ -22,7 +22,9 @@ For more information about configuring Xbox services features for your product, 
 
 ## Enable Xbox services
 
-When you create your game and select the Desktop or Xbox device families during game setup, you enable limited Xbox services. While limited Xbox services are enabled, you can't configure Xbox achievements. To request full Xbox services for your game, send the Store ID found in the **Identity details** section of the page to your Microsoft contacts and request product onboarding. For more information, see [Creating and onboarding products](../publishing-processes/managed-creators/publishing-processes-product-onboarding-and-configuration.md).
+Before you can configure Xbox services, you must enable them in the [Game setup](game-setup-overview.md) page. When you create your game, Xbox services are disabled by default. You can enable limited or full Xbox services depending on your [game's concept](../publishing-processes/managed-creators/publishing-processes-game-concepts.md) approval status. While limited Xbox services are enabled, you can't configure Xbox achievements. After you receive game concept approval, send your game's Store ID to your Xbox contacts and request product onboarding. You can find the **Store ID** in the **Identity details** section of the **Game setup** page.
+
+For more information, see [Create an Xbox game and configure Game setup](../tutorial-xbox-managed/how-to-create-a-title-and-configure-game-setup.md).
 
 ## Find Xbox services identifiers
 
@@ -45,7 +47,7 @@ You can configure localized title names for your product. Players see the title 
 
 ### Data platform setting: Event-based vs. title-managed stats and achievements
 
-By default, all game products that you create in Partner Center use title-managed stats and achievements (formerly known as Stats and Achievements 2017). To use event-based stats and achievements, configure this setting in the **Xbox services - Xbox Settings** page of your product in Partner Center.
+By default, all game products use title-managed stats and achievements (formerly known as Stats and Achievements 2017). To use event-based stats and achievements, configure this setting in the **Xbox services - Xbox Settings** page of your product in Partner Center. This setting is only available for games that use full Xbox services.
 
 For more information, see [Player Data Overview](/gaming/gdk/_content/gc/live/features/player-data/live-playerdata-overview).
 
