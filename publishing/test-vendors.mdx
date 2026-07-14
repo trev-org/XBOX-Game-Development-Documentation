@@ -1,0 +1,55 @@
+---
+title: "Third-party authorized test vendors"
+sidebarTitle: "Test vendors"
+description: "Microsoft-authorized independent test vendors for pre-cert validation, localization QA, and accessibility testing."
+icon: "handshake-angle"
+keywords: ["third party test", "test vendor", "pre-cert testing", "localization QA", "accessibility vendor"]
+---
+
+**Authorized test vendors** are independent QA companies Microsoft has qualified to run pre-cert validation, localization QA, and accessibility testing on your behalf. They cannot issue an official Microsoft cert pass, but they can run your build through the same XR test scripts Microsoft's team uses and produce a detailed report of likely failures.
+
+## When to use a third-party vendor
+
+- **Small internal QA function** — a vendor gives you an outside test pass without hiring dedicated cert QA.
+- **Localization QA** — vendors specialize in per-language playthrough for missing translations, over-length UI strings, and locale-specific bugs.
+- **Accessibility testing** — some vendors specialize in accessibility validation ahead of [MGATS](/publishing/mgats).
+- **Cross-platform validation** — vendors with both Xbox devkits and PC hardware coverage can run [Console BVT](/publishing/console-bvt-guide) and [PC BVT](/publishing/pc-bvt-guide) in a single engagement.
+
+## What they can and can't do
+
+| Can | Can't |
+| --- | --- |
+| Run BVT and XR test scripts against your build | Issue an official Final Cert pass |
+| Produce a detailed defect report mapped to XRs | Publish your title on your behalf |
+| Sign NDAs and hold your build securely | Access your Partner Center account without you granting access via [Relationship management](/publishing/relationship-management) |
+| Provide test accounts and multiplayer test coverage on your dev sandbox | Grant retail sandbox access |
+
+## The authorized list
+
+The current authorized vendor list is maintained by Microsoft and shared with publishers directly rather than in these docs — it changes as vendors are added, dropped, or re-certified.
+
+<Steps>
+  <Step title="Ask your Microsoft contact">
+    Request the current authorized test vendor list from your account manager or ID@Xbox contact.
+  </Step>
+  <Step title="Contract with the vendor">
+    Contract directly. Microsoft is not party to the engagement.
+  </Step>
+  <Step title="Grant access via Relationship management">
+    In [Relationship management](/publishing/relationship-management), invite the vendor's Partner Center account as a test vendor and scope them to specific products.
+  </Step>
+  <Step title="Provision sandbox access">
+    Add vendor test accounts on your dev sandbox. Do not grant retail sandbox access.
+  </Step>
+</Steps>
+
+## Do not use unauthorized vendors
+
+Only Microsoft-authorized vendors have access to current XR test scripts, are trained on the current cert bar, and have signed the required agreements with Microsoft. Unauthorized vendors may produce reports based on outdated criteria — relying on them can leave you exposed to XR failures they didn't know about.
+
+## Related
+
+- [Cert paid services](/publishing/cert-paid-services)
+- [Relationship management](/publishing/relationship-management)
+- [MGATS](/publishing/mgats)
+- [Contacts](/publishing/contacts)

@@ -583,7 +583,9 @@
               "publishing/add-ons",
               "publishing/franchise-hubs",
               "publishing/add-ons",
-              "publishing/franchise-hubs"
+              "publishing/franchise-hubs",
+              "publishing/licensing",
+              "publishing/availability-schedule"
             ]
           },
           {
@@ -645,7 +647,12 @@
           {
             "group": "Resources & terminology",
             "icon": "book",
-            "pages": []
+            "pages": [
+              "publishing/glossary",
+              "publishing/useful-links",
+              "publishing/branding-assets",
+              "publishing/test-vendors"
+            ]
           },
           {
             "group": "Publish & post-release",

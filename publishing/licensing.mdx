@@ -1,0 +1,53 @@
+---
+title: "Open and restrictive licensing"
+sidebarTitle: "Licensing"
+description: "Choose between Open and Restrictive licensing for your product and understand what each implies for pre-launch access, code redemption, and reviewer distribution."
+icon: "key"
+keywords: ["open licensing", "restrictive licensing", "license", "pre-launch access"]
+---
+
+Every XBOX product ships with a **licensing mode** that governs which sign-in and entitlement flows Microsoft will allow. There are two modes: **Open** and **Restrictive**.
+
+## Modes
+
+| Mode | Behavior | Typical use |
+| --- | --- | --- |
+| **Open licensing** | Any Microsoft account can install and run the product if they have the entitlement (purchase, promo code, Game Pass, family library). | The default for retail titles. |
+| **Restrictive licensing** | Only accounts on an allowlist (specific test accounts, specific Xbox Insider audiences, specific accounts you enumerate) can install and run. | Private betas, review copies of unreleased titles, closed pre-launch soft launches, industry demos. |
+
+## Selecting a mode
+
+Licensing mode is set per product in **Game setup → Licensing**.
+
+<Steps>
+  <Step title="Choose Open at product creation for retail titles">
+    Almost every commercial retail product should be Open licensed.
+  </Step>
+  <Step title="Choose Restrictive for closed pre-launch">
+    If you're distributing a build to a controlled audience (reviewers, closed beta, industry event demos) use Restrictive.
+  </Step>
+  <Step title="Move from Restrictive to Open at launch">
+    Restrictive titles must transition to Open licensing before the product goes on sale to the general public. This is a metadata change that publishes through [Review and publish](/publishing/modular-submission).
+  </Step>
+</Steps>
+
+## Interaction with visibility and audiences
+
+Licensing mode is orthogonal to [Visibility & audiences](/publishing/how-to-visibility):
+
+- A **hidden token-only** product is Open licensed but only reachable via promo code.
+- A **Restrictive** product can be visible or hidden — independent axis.
+- A public soft-launched title is Open licensed but audience-scoped to a specific region.
+
+Use Restrictive licensing when you need to enumerate who can play, not just who can see the page.
+
+## Cert implications
+
+Restrictive-licensed titles still pass Certification against the applicable XRs. Some XRs (for example those covering the retail purchase flow) do not apply while the title is Restrictive; Microsoft's test team handles this automatically based on the declared licensing mode. When you flip to Open, a fresh cert pass validates the retail flows.
+
+## Related
+
+- [Game setup](/publishing/game-setup)
+- [Visibility & audiences](/publishing/how-to-visibility)
+- [Sandboxes](/publishing/sandboxes)
+- [XBOX Insider Program](/publishing/xbox-insider-program)

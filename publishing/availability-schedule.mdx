@@ -1,0 +1,74 @@
+---
+title: "Availability schedule"
+sidebarTitle: "Availability schedule"
+description: "Schedule when a product becomes visible, becomes purchasable, unlocks for pre-orderers, and ends availability — per market."
+icon: "calendar-days"
+keywords: ["availability schedule", "release date", "scheduled publish", "end availability", "per market schedule"]
+---
+
+An **availability schedule** lets you set precise UTC dates for the lifecycle events of your product per market. Rather than manually flipping visibility, pre-order, and price at launch time, you script the launch and let Partner Center execute.
+
+## Lifecycle events you can schedule
+
+| Event | Meaning |
+| --- | --- |
+| **Visibility start** | Product page becomes visible on the Store. |
+| **Pre-order start** | Pre-order button becomes active. |
+| **Purchase / release date** | Full purchase / download / unlock becomes active. |
+| **Sale start / end** | Sale price applies within this window. |
+| **Availability end** | Product becomes hidden or non-purchasable. Existing owners retain the entitlement. |
+
+## Configuring the schedule
+
+<Steps>
+  <Step title="Open Pricing and availability → Schedule">
+    Navigate to the schedule module.
+  </Step>
+  <Step title="Set the schedule per market">
+    You can use a single global schedule or override per market. Common pattern: global schedule with Australia / New Zealand offset earlier to launch "first" for that region.
+  </Step>
+  <Step title="Use UTC">
+    All schedule dates are in **UTC**. Convert carefully for your target markets.
+  </Step>
+  <Step title="Publish the schedule">
+    Publish through [Review and publish](/publishing/modular-submission). The schedule is stored; Partner Center executes the events at the specified UTC times.
+  </Step>
+</Steps>
+
+## Coordinating with cert
+
+A scheduled release only works if the associated packages are already Final Cert-passed and staged in Partner Center. Order of operations:
+
+1. Pass Final Cert with **Hold for manual publish** or **Scheduled** release option (see [Publish to RETAIL](/publishing/publish-to-retail)).
+2. Configure the availability schedule.
+3. Confirm the schedule matches the cert-selected release date.
+4. At the scheduled UTC time, Partner Center automatically publishes the packages and flips availability.
+
+## Common scheduling patterns
+
+### Global simultaneous launch
+
+Set the same UTC purchase-release date across every market. This creates a single global street date. Downside: not aligned to any specific local time zone; some markets get an odd-hour launch.
+
+### Rolling regional launch
+
+Schedule Australia / NZ first (typically 5 hours ahead of North America launch), then Asia, then Europe, then Americas. Feels like a natural "midnight launch" per region but requires careful coordination if you have a global marketing moment.
+
+### Region-specific soft launch
+
+Availability starts in one or two markets (typically Australia or a Nordic country) weeks before global. Used for validating monetization, matchmaking scale, and localization at real customer volumes.
+
+### Pre-order \+ release \+ sale on day one
+
+Schedule: pre-order start today → release date in 3 months → launch-week sale from release date \+ 7 days for one week. All configured up front.
+
+### End-of-life delist
+
+Set an availability-end date for a retiring product. Combined with a farewell communication window, this gives customers time to buy before the product is delisted.
+
+## Related
+
+- [Pricing](/publishing/pricing)
+- [Pre-release](/publishing/pre-release)
+- [Visibility & audiences](/publishing/how-to-visibility)
+- [Publish to RETAIL](/publishing/publish-to-retail)
