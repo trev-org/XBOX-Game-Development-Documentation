@@ -545,33 +545,70 @@
         "tab": "Publishing",
         "groups": [
           {
+            "group": "Get started",
+            "icon": "rocket",
+            "pages": [
+              "publishing/overview",
+              "publishing/developer-account"
+            ]
+          },
+          {
+            "group": "Set up your product",
+            "icon": "gear",
+            "pages": [
+              "publishing/game-setup",
+              "publishing/packages",
+              "publishing/properties",
+              "publishing/store-listing",
+              "publishing/ratings",
+              "publishing/pricing"
+            ]
+          },
+          {
+            "group": "XStore commerce",
+            "icon": "cart-shopping",
+            "pages": []
+          },
+          {
+            "group": "Certification",
+            "icon": "clipboard-check",
+            "pages": []
+          },
+          {
+            "group": "Disc releases",
+            "icon": "compact-disc",
+            "pages": []
+          },
+          {
+            "group": "Pre-release & flighting",
+            "icon": "flask",
+            "pages": []
+          },
+          {
             "group": "Publishing",
             "icon": "shield-check",
             "pages": [
-              "publishing/overview",
               "publishing/branches",
               "publishing/add-ons",
-              "publishing/packages",
-              "publishing/game-setup",
               "publishing/xbox-requirements",
               "publishing/xr-top-failing",
               "publishing/xstore-deep-dive",
               "publishing/xstore-server-to-service",
               "publishing/xstore-pc",
               "publishing/xbox-insider-program",
-              "publishing/developer-account",
               "publishing/certification",
               "publishing/cert-bypass-program",
               "publishing/discs",
               "publishing/franchise-hubs",
               "publishing/pre-release",
-              "publishing/pricing",
-              "publishing/properties",
-              "publishing/ratings",
               "publishing/sandboxes",
-              "publishing/store-listing",
               "publishing/xr-fma"
             ]
+          },
+          {
+            "group": "Publish & post-release",
+            "icon": "arrow-up-from-bracket",
+            "pages": []
           }
         ]
       },
