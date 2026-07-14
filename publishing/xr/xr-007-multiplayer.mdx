@@ -1,0 +1,70 @@
+---
+title: "XR-007 Cross-Network Play — Multiplayer game implementation example"
+sidebarTitle: "XR-007 (Multiplayer)"
+description: "Concrete implementation guidance for XR-007 in session-based multiplayer titles: cross-platform matchmaking, invite flows, voice chat with non-Xbox players, and mute / block enforcement."
+icon: "users-line"
+keywords: ["XR-007 multiplayer", "cross-play", "session-based multiplayer", "cross-platform invite", "cross-platform voice"]
+---
+
+## What session-based multiplayer makes hard
+
+Session-based multiplayer titles (shooters, fighting games, racing games with lobbies, party games) with cross-platform play typically have:
+
+- **Matchmaking** that pools players across Xbox, PC, PlayStation, mobile.
+- **Invite flows** where an Xbox player can invite a non-Xbox friend into a session.
+- **Voice chat** during a match with players on other platforms.
+- **Post-match reporting** to a publisher backend.
+
+Each of these interacts with Xbox network privileges and Xbox privacy features. This page is the applied guidance.
+
+## Cross-platform matchmaking
+
+<Steps>
+  <Step title="Check the cross-network privilege before matchmaking">
+    Before showing the customer a "Find match" button that will place them in a cross-platform lobby, verify their `XPrivilegeCrossNetworkMultiplayer` privilege. Accounts without the privilege must be routed to Xbox-only matchmaking or shown a clear message.
+  </Step>
+  <Step title="Route the child-account case explicitly">
+    Child accounts (Xbox family-managed) must not be silently placed in cross-platform lobbies. Present family-safe options.
+  </Step>
+  <Step title="Provide an in-game 'Cross-play' toggle">
+    Even for accounts with the privilege, expose a per-title cross-play toggle so customers can choose Xbox-only play. Persist their choice.
+  </Step>
+  <Step title="Handle mixed sessions gracefully">
+    If a session is mid-match and a cross-network player disconnects, the session must not crash or corrupt state.
+  </Step>
+</Steps>
+
+## Invite flows
+
+- **Xbox → non-Xbox invites** — the Xbox player invokes an Xbox invite UI. Your session code translates that to a cross-network invite via your matchmaking backend. See [XR-124 Game Invitations](/publishing/fma/xr-124).
+- **Non-Xbox → Xbox invites** — the invite arrives via your backend and surfaces in the game's own invite UI. Also mirror it to the Xbox invite surface where possible.
+- **Party chat integration** — Xbox Party Chat is the customer's chosen voice channel; do not force in-game voice on top of party chat without an explicit opt-in.
+
+## Voice chat with non-Xbox players
+
+This is the most common XR-007 friction point.
+
+- Check `XPrivilegeCommunicationsCrossNetworkVoice` before enabling cross-network voice.
+- Enforce the **Xbox mute list** on incoming voice from cross-network players. If your matchmaking backend can transmit the muted XUID list to the other platform's client, do that; if not, mute on the Xbox side so the Xbox customer never hears the muted party.
+- Enforce **child account** voice restrictions — no voice chat with strangers for accounts flagged as child.
+- Provide **in-session mute controls** consistent across platforms.
+
+## Post-match reporting to publisher backend
+
+- **What you can send**: match results, stats, custom telemetry per your privacy policy.
+- **What you cannot send silently**: PII, gamertag mappings to third-party IDs beyond what's disclosed, Xbox friend graph, private communications content.
+- If you use a publisher account, keep Xbox account data scoped tightly to the linked account.
+
+## Related XRs
+
+- [XR-007](/publishing/xr/xr-007) — the base cross-network XR.
+- [XR-015](/publishing/xr/xr-015) — Managing Player Communications.
+- [XR-045](/publishing/xr/xr-045) — Xbox Network and Account Privileges.
+- [XR-064](/publishing/xr/xr-064) — Joinable Game Sessions and Online Play.
+- [XR-067](/publishing/xr/xr-067) — Maintaining Multiplayer Session State.
+- [XR-124](/publishing/fma/xr-124) — Game Invitations.
+
+## Related
+
+- [XBOX services](/publishing/xbox-services)
+- [XBOX requirements](/publishing/xbox-requirements)

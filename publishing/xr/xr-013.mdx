@@ -1,0 +1,63 @@
+---
+title: "XR-013 Linking Microsoft Accounts with Publisher Accounts"
+sidebarTitle: "XR-013 Account linking"
+description: "Titles that link the customer's Xbox / Microsoft account to a publisher-owned account must disclose the link, allow unlinking, and handle sign-in transitions safely."
+icon: "link"
+keywords: ["XR-013", "account linking", "publisher account", "MSA", "account link disclosure", "unlink"]
+---
+
+## Intent
+
+Many titles link the Xbox / Microsoft account (MSA) to a publisher-owned account so the customer can carry progression across platforms. Linking creates a durable identity relationship and, done badly, can leak PII, prevent sign-in, or trap customers into an unwanted account association. XR-013 defines the contract for how MSA ↔ publisher account linking works safely.
+
+## Applies to
+
+Any title that maintains a publisher-owned account, subscription, or identity outside of Xbox Live and links it to the signed-in Xbox account.
+
+## Requirement
+
+Your title **MUST**:
+
+- **Disclose the link** at the point of linking. The customer must see, in plain language: what publisher account this is, what data will flow, and where to find the privacy policy.
+- Require **explicit customer consent** for the link. Passive linking based on which account happens to be signed in is not allowed.
+- Allow **unlinking** — from within the game or via a web endpoint the customer can reach. Unlinking must revoke ongoing data flow and remove the association.
+- Handle **MSA sign-out gracefully** — if the customer signs out of Xbox mid-session, the linked publisher session must either safely re-authenticate or exit; it must not continue running with mismatched identity.
+- Handle **MSA switch** — if the customer switches accounts, the publisher session tied to the previous account must be closed cleanly. Do not silently rebind the publisher account to the new MSA.
+- Handle **publisher account issues gracefully** — if the publisher account service is down, the customer must still be able to launch and play the offline portion of the title (unless the title is exclusively online).
+- Not require the customer to create a publisher account to play the offline / single-player parts of the title, unless that account is explicitly the primary account model.
+
+Your title **MUST NOT**:
+
+- Silently link the currently signed-in MSA to a publisher account created earlier without asking.
+- Sell or share the MSA / publisher account link with third parties outside your privacy policy.
+- Use the MSA gamertag or XUID as a public identifier in the publisher account UI without disclosure.
+- Prevent the customer from unlinking or from using the title with a fresh account.
+
+## Tested scenarios
+
+- Launch the title with an account that has never been linked. Verify the link flow is disclosed and explicit.
+- Sign out of Xbox mid-session with a linked publisher account. Verify graceful behavior.
+- Switch to a different Xbox account. Verify the previous publisher session ends cleanly.
+- Attempt to unlink from in-game or via web. Verify data flow stops.
+- Play the offline portion without linking (where applicable). Verify no forced link.
+
+## Best practices
+
+- Make the link flow **skippable** for as long as possible. The customer should be able to play offline / trial / demo without linking.
+- Use a **QR code / short link** flow for web-based linking rather than in-game credential entry — credential-entry-in-game is a common phishing vector.
+- Persist the link so **customers don't have to re-link on every launch**. Store the mapping server-side, not just client-side.
+- **Log unlink events** so customer support can validate an unlink actually took effect.
+
+## Related XRs
+
+- [XR-014](/publishing/xr/xr-014) — Player Data and Personal Information.
+- [XR-045](/publishing/xr/xr-045) — Xbox Network and Account Privileges.
+
+## If your title fails XR-013
+
+See [FMA: XR-013 Linking Microsoft Accounts with Publisher Accounts](/publishing/fma/xr-013).
+
+## Related
+
+- [XBOX requirements](/publishing/xbox-requirements)
+- [Properties: Basic info](/publishing/properties-basic-info)

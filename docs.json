@@ -652,7 +652,17 @@
               {
                 "group": "XR reference",
                 "icon": "clipboard-list",
-                "pages": []
+                "pages": [
+                  "publishing/xr/xr-001",
+                  "publishing/xr/xr-003",
+                  "publishing/xr/xr-006",
+                  "publishing/xr/xr-007",
+                  "publishing/xr/xr-007-mmo",
+                  "publishing/xr/xr-007-multiplayer",
+                  "publishing/xr/xr-007-pc",
+                  "publishing/xr/xr-013",
+                  "publishing/xr/xr-015"
+                ]
               },
               {
                 "group": "FMA reference",

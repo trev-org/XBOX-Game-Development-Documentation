@@ -1,0 +1,85 @@
+---
+title: "XR-001 Title Stability"
+sidebarTitle: "XR-001 Title Stability"
+description: "Titles must not crash, hang, or become unrecoverable under normal operating conditions or platform-driven state transitions."
+icon: "shield-halved"
+keywords: ["XR-001", "title stability", "crash", "hang", "freeze", "suspend resume", "Quick Resume"]
+---
+
+## Intent
+
+Every XBOX title must remain **stable and responsive** during normal gameplay and during every platform-driven state transition. Customers rely on titles to survive suspend / resume, controller changes, sign-in changes, network transitions, and Quick Resume swaps without crashing, hanging, or losing data. Stability is the foundational XR — a title that trips XR-001 is almost always blocked from publish regardless of how well it satisfies other XRs.
+
+## Applies to
+
+- Every retail submission on every device family.
+- Every recert and content update.
+- Every disc submission.
+- Also enforced (with slightly narrower scope) in [Beta and Game Preview](/publishing/cert-beta-game-preview) submissions.
+
+## Requirement
+
+Your title **MUST**:
+
+- Not crash to the dashboard, hang, or produce a black / frozen screen under any tested scenario in the cert suite.
+- Recover cleanly from suspend and resume, including after long idle windows (multiple hours).
+- Handle Quick Resume swap-in and swap-out without corrupting game state, save data, or platform-visible state.
+- Survive sign-in state changes: account sign-out mid-session, account switch, guest account activation and removal.
+- Survive controller state changes: controller disconnect, secondary controller join, Xbox Adaptive Controller connect.
+- Handle network state transitions: full network loss, partial packet loss, DNS failure, and reconnection without user-visible corruption.
+- Handle storage transitions: install / uninstall of the shipping title's own updates, add-ons, or DLC while the title is running (see [XR-123](/publishing/xr/xr-123)).
+- Complete a full title lifecycle (launch → gameplay → exit) without leaked memory that would trigger platform-level OOM.
+- Not produce a state where the customer must hard-reset the console to recover.
+
+Your title **MUST NOT**:
+
+- Ship with unhandled asserts, debug break-in-debugger paths, or heap corruption present in retail builds.
+- Leave the console in a state that requires a factory reset to recover from a title crash.
+- Continue running with corrupted save data or corrupted XBOX services state.
+
+## Tested scenarios
+
+The cert suite exercises XR-001 through a broad set of scenarios. Common test cases:
+
+- **Cold boot** — launch from a cold system, from a warm system, from suspend, and from Quick Resume.
+- **Suspend / resume** — Home button, dashboard switch, sign-in change, background download, sleep.
+- **Extended suspend** — leave the title suspended for a multi-hour window; resume and continue.
+- **Quick Resume swap** — swap the title out via another title's Quick Resume; swap back in.
+- **Sign-out mid-session** — sign out the active account during gameplay; verify no crash and no data loss for the account's progress.
+- **Controller disconnect** — disconnect the primary controller during gameplay; reconnect a different controller.
+- **Network loss** — pull the network mid-session in three modes: online multiplayer, downloading content, and idle in a menu.
+- **Storage full** — fill available storage; verify the title fails gracefully rather than crashing.
+- **DLC install during play** — install an add-on while the title is running (see also [XR-123](/publishing/xr/xr-123)).
+- **Rapid state transitions** — alternate suspend / resume repeatedly for stress.
+- **Localization sweeps** — launch the title in every declared language / locale; each launch must be crash-free.
+- **Long soak** — leave the title running for the cert-specified soak window (multiple hours) with no crashes.
+
+## Best practices
+
+- **Instrument crash reporting** — collect stack traces from your test builds so intermittent crashes can be root-caused.
+- **Test on real hardware, not just devkits** — retail hardware behaves differently than devkits under thermal load.
+- **Cover Series S memory constraints** — Series S has substantially less memory than Series X; many XR-001 failures come from Series S OOMs that Series X hides.
+- **Handle every callback path** — XBOX platform callbacks (services, controllers, users) can fire at any time; every path must be safe.
+- **Timebound network calls** — unbounded waits on Xbox network calls are a common source of hangs.
+- **Free resources on suspend** — the platform may reclaim GPU or memory resources while your title is suspended; hold no assumptions across suspend.
+- **Validate save writes** — corrupted saves that crash on load are XR-001 failures.
+
+## Related XRs
+
+- [XR-003](/publishing/xr/xr-003) — Title Quality for Submission (baseline build cleanliness).
+- [XR-052](/publishing/xr/xr-052) — User State and Title-Save Location (save-data stability).
+- [XR-074](/publishing/xr/xr-074) — Loss of Connectivity to Xbox and Partner Services (network transitions).
+- [XR-112](/publishing/xr/xr-112) — Establishing a User and Controller During Initial Activation and Resume.
+- [XR-115](/publishing/xr/xr-115) — Addition and Removal of Users or Controllers During Gameplay.
+- [XR-123](/publishing/xr/xr-123) — Installation of DLC During Gameplay.
+
+## If your title fails XR-001
+
+See [FMA: XR-001 Title Stability](/publishing/fma/xr-001) for common failure modes and the fix workflow.
+
+## Related
+
+- [Top failing tests](/publishing/xr-top-failing)
+- [Console BVT guide](/publishing/console-bvt-guide)
+- [PC BVT guide](/publishing/pc-bvt-guide)
+- [XBOX requirements](/publishing/xbox-requirements)

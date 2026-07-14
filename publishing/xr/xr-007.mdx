@@ -1,0 +1,71 @@
+---
+title: "XR-007 Cross-Network Play, Data Usage, and Companion App Interactions"
+sidebarTitle: "XR-007 Cross-Network"
+description: "Titles that connect to non-Xbox networks or expose customer data across networks must disclose the connection, honor customer choice, and respect Xbox privacy privileges."
+icon: "network-wired"
+keywords: ["XR-007", "cross-network play", "cross-platform", "data usage", "companion app", "third-party services"]
+---
+
+## Intent
+
+When a title connects to a network Microsoft does not operate (a third-party matchmaking service, a publisher's own account system, a companion app on a phone, a cross-play network with other platforms), the customer needs to know it and Xbox's privacy privileges must still be honored. XR-007 defines the disclosure, opt-in, and cross-network conduct requirements.
+
+## Applies to
+
+- Titles with **cross-platform multiplayer** (Xbox ↔ PC ↔ PlayStation — any non-Xbox platform).
+- Titles with a **publisher-owned account system** used in-game ("log in with PublisherID").
+- Titles with a **companion app** on iOS, Android, or web that exchanges data with the game session.
+- Titles that use **third-party services** (analytics, ad networks, voice chat services) that leave the Xbox trust boundary.
+
+See also the specific examples: [XR-007 MMO example](/publishing/xr/xr-007-mmo), [XR-007 Multiplayer example](/publishing/xr/xr-007-multiplayer), and [XR-007 (PC)](/publishing/xr/xr-007-pc).
+
+## Requirement
+
+Your title **MUST**:
+
+- **Disclose the cross-network connection** to the customer at the point they enable it (in-game text, EULA acceptance, or first-run notice).
+- Honor the customer's **cross-network play privilege** (`XPrivilegeCommunicationsCrossNetworkVoice`, `XPrivilegeCrossNetworkMultiplayer`). If the privilege is denied, do not enable cross-network features.
+- Honor **child account restrictions** — accounts flagged as child by Xbox family settings must not enter cross-network play or communications unless the family manager has enabled it.
+- Handle the customer's **communications privilege** consistently on Xbox and on the cross-network partner. A customer who has muted communications on Xbox must not receive voice chat from PS5 players.
+- Route **any Xbox-network features** (achievements, presence, invites) through Xbox network services rather than a parallel publisher pipeline.
+- Present **companion app interactions** with clear disclosure. Companion app data flows must not leak PII (gamertag, XUID) beyond declared scope.
+- Route **third-party analytics** through your privacy policy declaration. Third-party ad networks require explicit opt-in.
+
+Your title **MUST NOT**:
+
+- Enable cross-network play by default for accounts that lack the privilege.
+- Silently upload gamertag, XUID, or Xbox friend graph to a third-party service without disclosure.
+- Bypass Xbox mute / block for cross-network communications.
+- Expose child accounts to unmoderated cross-network chat.
+- Present cross-network matchmaking as "Xbox only" when it isn't.
+
+## Tested scenarios
+
+- Verify cross-network toggle respects the account's cross-network privilege.
+- Verify muting a player on Xbox extends to that player on the cross-network side (best-effort via the publisher network, but must be honored where technically possible).
+- Verify a child account with restrictive family settings cannot enter cross-network chat.
+- Verify the disclosure UI appears the first time the customer enables cross-network play.
+- Verify Xbox-network features (achievements, presence, invites) still work when cross-network is on.
+- For companion apps: verify data flows described in the app's privacy policy are what actually flows.
+
+## Best practices
+
+- **Design the cross-network privilege check at the gate**, not deep in matchmaking. A customer without the privilege should never see "Searching for match..." — they should see the disclosure and, if applicable, the opt-in.
+- **Coordinate mute / block across networks** via your matchmaking service. Where cross-network mute isn't technically feasible, disclose that clearly.
+- **Isolate child accounts** at the friend-graph level — they shouldn't even receive cross-network invite offers.
+- **Document the third-party services** used in your privacy policy (see [Properties: Basic info](/publishing/properties-basic-info)).
+
+## Related XRs
+
+- [XR-007 (MMO)](/publishing/xr/xr-007-mmo) — MMO-specific implementation example.
+- [XR-007 (Multiplayer)](/publishing/xr/xr-007-multiplayer) — general multiplayer implementation example.
+- [XR-007 (PC)](/publishing/xr/xr-007-pc) — PC-specific variant.
+- [XR-014](/publishing/xr/xr-014) — Player Data and Personal Information.
+- [XR-015](/publishing/xr/xr-015) — Managing Player Communications.
+- [XR-045](/publishing/xr/xr-045) — Xbox Network and Account Privileges.
+
+## Related
+
+- [XBOX services](/publishing/xbox-services)
+- [XBOX requirements](/publishing/xbox-requirements)
+- [PC certification](/publishing/pc-certification)

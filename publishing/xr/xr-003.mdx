@@ -1,0 +1,70 @@
+---
+title: "XR-003 Title Quality for Submission"
+sidebarTitle: "XR-003 Title Quality"
+description: "Submissions must be in a release-candidate state — no debug UI, no left-over test code paths, no placeholder assets, no incomplete localization for declared languages."
+icon: "broom"
+keywords: ["XR-003", "title quality", "submission quality", "debug UI", "release build", "placeholder"]
+---
+
+## Intent
+
+Certification is a gate on **customer-ready** builds. A build that ships with debug UI, unfinished features, placeholder assets, or broken localizations wastes cert cycles and produces customer-facing bugs. XR-003 requires that every submission is a genuine release candidate — the same build you would ship to customers if it passed cert today.
+
+## Applies to
+
+Every submission on every platform. Applied consistently across Optional Cert, Final Cert, and content updates.
+
+## Requirement
+
+Your submission **MUST**:
+
+- Be built in the **retail configuration** of your engine and toolchain — not a debug or checked build.
+- Have all **debug UI removed** or gated behind a customer-inaccessible path (no on-screen FPS counters, memory readouts, or console commands accessible without a devkit).
+- Have all **debug menus removed** from the customer-reachable UI. If a debug menu ships behind a hidden input, that input must not be discoverable by normal play.
+- Have **no placeholder art** in the shipping content path — no TODO textures, no test cubes, no watermarked assets.
+- Have **no placeholder text** in customer-facing strings — no `[[NEEDS_LOCALIZATION]]`, no `TBD`, no `Coming Soon` where content should be present.
+- Have **complete localization** for every declared supported language (see [Supported languages](/publishing/supported-languages)). Missing translations for declared languages fail XR-003.
+- Ship with the **age rating icons and legal marks** correct for every declared market (see [Ratings](/publishing/ratings)).
+- Have **no debug symbols** in retail packages beyond what the platform expects.
+- Have **no TODO comments, dev-team internal jokes, or unfinished paths** visible to customers.
+- Have **no test XUIDs, test gamertags, or dev-team profile references** in shipping content.
+- Match the **Store listing** you're publishing — the shipped title must be recognizably the same title the Store PDP describes.
+
+Your submission **MUST NOT**:
+
+- Include unfinished features gated behind promises to "fix in a patch." Ship it or cut it.
+- Include content that materially differs from what the Store listing depicts.
+- Include code paths that expose Microsoft-internal identifiers, sandbox IDs, or test-account credentials.
+
+## Tested scenarios
+
+- Walk of every menu and screen — no placeholder assets or debug UI visible.
+- Localization sweep of every declared language — UI text present and readable, no fallback strings.
+- Age rating icon check against the declared rating for the target market.
+- Attempt to trigger dev cheats through known input patterns — no cheats must be reachable.
+- Compare shipping content against Store listing screenshots — no material differences.
+
+## Best practices
+
+- **Build the retail configuration as the default** for the whole team — don't cert a build from your "debug build" pipeline.
+- **Run a `git grep -i TODO` and `grep -i FIXME`** across the ship branch before cutting the submission. Address every hit in customer-facing paths.
+- **Automate a localization diff** — flag any declared language where translation coverage is below 100%.
+- **Have a fresh pair of eyes walk every menu** — the team stops noticing debug affordances they've lived with for months.
+- **Test with a non-dev account** — debug paths often only fire for accounts on a dev allow-list; test with a customer-shaped account.
+
+## Related XRs
+
+- [XR-001](/publishing/xr/xr-001) — Title Stability (a debug UI that crashes is a double failure).
+- [XR-006](/publishing/xr/xr-006) — Title Assets and Metadata (Store listing quality).
+- [XR-022](/publishing/xr/xr-022) — Official Naming Standards (correct product naming).
+- [XR-062](/publishing/xr/xr-062) — Achievement Names and Descriptions (achievement copy quality).
+
+## If your title fails XR-003
+
+See [FMA: XR-003 Title Quality for Submission](/publishing/fma/xr-003).
+
+## Related
+
+- [Readiness checklist](/publishing/readiness-checklist)
+- [Media validation](/publishing/media-validation)
+- [XBOX requirements](/publishing/xbox-requirements)

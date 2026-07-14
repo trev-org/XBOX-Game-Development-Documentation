@@ -1,0 +1,66 @@
+---
+title: "XR-006 Title Assets and Metadata"
+sidebarTitle: "XR-006 Assets & Metadata"
+description: "Store listing assets — hero art, screenshots, trailers, icons — must accurately represent the shipping title and meet Microsoft Store media specifications."
+icon: "images"
+keywords: ["XR-006", "title assets", "store metadata", "hero art", "screenshots", "trailer", "tile"]
+---
+
+## Intent
+
+Store listing assets are what customers see before they buy. They must **accurately represent** the shipping product (no bullshots passed off as gameplay, no CG-only screenshots claimed as in-engine), meet the Microsoft Store's technical specifications, and comply with regional legal marks. XR-006 is where visual claims become legally binding for consumer protection.
+
+## Applies to
+
+Every product with a Store listing: base games, add-ons, bundles, and pre-order products.
+
+## Requirement
+
+All Store listing assets **MUST**:
+
+- **Accurately represent** the shipping product. Trailers marketed as "gameplay" must show gameplay footage. CG must be labeled.
+- Meet the current **hero art** specification (aspect ratio, resolution, safe zones, no burned-in age-rating icons or Store branding).
+- Provide the required **minimum screenshot count** (typically 3, target 8\+). Every screenshot must be in-game content captured at supported resolution.
+- Meet **trailer** requirements (codec, resolution, frame rate, audio levels). Trailers must not include unlicensed music or third-party IP.
+- Include correct **age rating icons** on the Store listing for every market. For disc SKUs, include physical **longform ratings** where required (see [Ratings](/publishing/ratings)).
+- Include **required legal marks** for licensed content (©, ™, ®) where applicable.
+- Match the **product name** reserved in Partner Center (see [Game name](/publishing/game-name)). No renaming between Store listing and shipping title.
+- Match the **Store listing copy** to the shipping product's genre, features, and modes (see [Store listing](/publishing/store-listing)).
+
+Store assets **MUST NOT**:
+
+- Include competitor platform lockups (PlayStation, Nintendo, Steam) without approval.
+- Include Xbox logos or marks used incorrectly. See [Branding assets](/publishing/branding-assets).
+- Include content above the declared age rating (an M-rated screenshot on an E-rated title fails XR-006 and [XR-017](/publishing/xr/xr-017)).
+- Include unlicensed likenesses, unlicensed music, or unlicensed IP.
+- Include placeholder text (`Coming Soon`, `TBD`) in customer-facing copy.
+
+## Tested scenarios
+
+- Verify hero art meets current spec sheet: dimensions, safe zone, no logo burn-in.
+- Verify minimum screenshot count. Verify each screenshot is captured at the target platform resolution.
+- Verify trailers play cleanly on retail Xbox and PC. Verify audio isn't clipping.
+- Verify age rating icons for every market. For disc, verify physical rating icons on packaging (see [Disc packaging requirements](/publishing/disc-packaging)).
+- Verify Store listing copy is complete for every declared language.
+- Cross-reference Store screenshots against shipping build — no material differences.
+
+## Best practices
+
+- **Export screenshots losslessly** from the game engine — don't re-encode from a compressed capture.
+- **Capture on retail hardware** at the target-platform resolution. Series X 4K captures don't automatically look right on Series S surfaces.
+- **Have a copy editor review localized listings** — machine-translated Store copy is a common XR-006 failure.
+- **Verify legal clearances** for any music, likenesses, or IP shown in trailers before submission.
+- **Update Store listing screenshots** when a content update materially changes the game (new mode, new UI); customers rely on the PDP being current.
+
+## Related XRs
+
+- [XR-003](/publishing/xr/xr-003) — Title Quality for Submission.
+- [XR-017](/publishing/xr/xr-017) — Title Ratings.
+- [XR-022](/publishing/xr/xr-022) — Official Naming Standards.
+
+## Related
+
+- [Store listing](/publishing/store-listing)
+- [Media validation](/publishing/media-validation)
+- [Ratings](/publishing/ratings)
+- [Branding assets](/publishing/branding-assets)

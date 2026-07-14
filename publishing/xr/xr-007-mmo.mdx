@@ -1,0 +1,70 @@
+---
+title: "XR-007 Cross-Network Play — MMO implementation example"
+sidebarTitle: "XR-007 (MMO)"
+description: "Concrete implementation guidance for XR-007 in MMO / persistent-world titles: publisher account systems, always-online sessions, in-game chat rooms, and Xbox privilege handling in a persistent-world context."
+icon: "globe"
+keywords: ["XR-007 MMO", "MMO cert", "persistent world", "publisher account", "in-game chat rooms"]
+---
+
+## What MMOs make hard
+
+MMOs typically have:
+
+- A **publisher account system** the customer signs into on top of their Xbox account.
+- **Always-online session state** with a publisher's own matchmaking / world servers.
+- **Persistent-world chat channels** (city chat, guild chat, whisper) that span Xbox and non-Xbox players.
+- **Third-party services** for account linking, analytics, cash shops.
+
+Each of these is a cross-network concern under [XR-007](/publishing/xr/xr-007). This page is the applied guidance for MMO teams.
+
+## Publisher account linking
+
+<Steps>
+  <Step title="Present the account link disclosure once">
+    On first launch of the MMO, present a screen that discloses the publisher account system, what data will flow to it (gamertag mapping, minimal profile), and the privacy policy URL. Require an explicit acknowledgment.
+  </Step>
+  <Step title="Support account link without account creation on the Xbox">
+    Customers should be able to link an existing publisher account or create a new one, but must not be blocked from playing the game entirely because the publisher account service is down.
+  </Step>
+  <Step title="Persist the link across sign-outs">
+    Once the Xbox account is linked to the publisher account, that link should survive sign-out and re-sign-in. Do not require re-linking on every launch.
+  </Step>
+  <Step title="Support unlinking">
+    Provide an in-game or web-based way for the customer to sever the account link. Follow through on the Xbox side and stop transmitting data.
+  </Step>
+</Steps>
+
+## Chat channel handling
+
+- **World / zone chat** — typically text, sometimes voice. Respect Xbox mute list on the receiving side even for cross-network players; honor child account communication restrictions.
+- **Guild / clan chat** — requires explicit customer consent to join. Honor Xbox privacy privileges at join time.
+- **Whisper / DM** — must respect mute / block bidirectionally. If a customer blocks a player on Xbox, whispers from that XUID must be filtered even if the sender is on a non-Xbox platform.
+- **Voice chat** — gate behind the cross-network voice privilege and Xbox voice communications privilege. Child accounts must not be able to enter voice chat with strangers.
+
+## Persistent world = always-online
+
+- The title must handle **XBOX network loss** without corrupting local state. See [XR-074](/publishing/xr/xr-074).
+- If the publisher's server is unreachable but Xbox network is up, the title must present a **clear disconnect message** rather than freezing on the loading screen.
+- If the Xbox account is signed out of Xbox Live but the publisher account is still authenticated, the title must gracefully drop the customer to a state that either re-authenticates or exits cleanly.
+
+## Cash shop / RMT (real-money transactions)
+
+MMOs frequently ship cash shops for cosmetics, currency, or subscription time. These are XStore commerce concerns, not third-party billing:
+
+- Ship your cash shop as XStore add-ons in Partner Center (see [Consumable add-ons](/publishing/consumable-add-ons), [Durable add-ons](/publishing/durable-add-ons)).
+- Do not send Xbox players to a third-party web checkout. Xbox platform commerce runs through XStore.
+- For subscription products, coordinate with Microsoft on subscription enrollment. Publisher-hosted subscriptions billed outside XStore are typically not allowed on Xbox.
+
+## Related XRs
+
+- [XR-007](/publishing/xr/xr-007) — the base cross-network XR.
+- [XR-014](/publishing/xr/xr-014) — Personal Information.
+- [XR-015](/publishing/xr/xr-015) — Managing Player Communications.
+- [XR-045](/publishing/xr/xr-045) — Xbox Network and Account Privileges.
+- [XR-074](/publishing/xr/xr-074) — Loss of Connectivity.
+
+## Related
+
+- [XStore deep dive](/publishing/xstore-deep-dive)
+- [XStore S2S APIs](/publishing/xstore-server-to-service)
+- [XBOX services](/publishing/xbox-services)

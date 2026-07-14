@@ -1,0 +1,55 @@
+---
+title: "XR-007 Cross-Network Data Usage (PC)"
+sidebarTitle: "XR-007 (PC)"
+description: "PC-variant of XR-007. Additional PC-specific data-usage considerations for titles that use Xbox Live services on Windows and mobile."
+icon: "windows"
+keywords: ["XR-007 PC", "cross-network PC", "Windows Xbox Live", "data usage PC"]
+---
+
+## Intent
+
+The PC variant of [XR-007](/publishing/xr/xr-007) covers cross-network data usage from the Windows and mobile surface. On PC, additional considerations apply because:
+
+- The **Microsoft Store account** and the **Xbox network sign-in** can be different users.
+- **Third-party PC services** are more common (anti-cheat SDKs, ad networks, publisher launchers).
+- The **Windows privacy model** is broader than console — titles can access more of the OS than they can on Xbox.
+
+## Applies to
+
+PC and mobile titles that use Xbox Live / Xbox network services and exchange data with non-Xbox networks. This includes Play Anywhere titles on their PC surface.
+
+## Requirement
+
+On PC, in addition to the base [XR-007](/publishing/xr/xr-007) requirements, your title **MUST**:
+
+- Honor the **Xbox Network Services data-processing addendum** — see [PC certification](/publishing/pc-certification). Reference the addendum in your privacy policy.
+- Detect **mismatched Store account** scenarios and handle them without silently sending data under the wrong identity. See [XStore on PC](/publishing/xstore-pc).
+- Not use **Windows telemetry APIs** to circumvent Xbox network privacy privileges.
+- Not use **anti-cheat SDKs** that transmit data classified as personal information under the addendum without disclosure.
+- Respect the **Microsoft Store license token** as the primary identity for entitlement checks. Do not fall through to a third-party identity when the customer expects to be signed in as their Xbox account.
+- Isolate **third-party PC launcher integrations** — publisher launchers must not intercept or modify Xbox network state.
+
+Your title **MUST NOT**:
+
+- Transmit gamertag, XUID, or Xbox friend graph to a third-party service on the PC surface without disclosure in the privacy policy.
+- Enable persistent third-party account creation from within an Xbox-network session on PC without customer consent.
+- Use PC clipboard, screen capture, or accessibility APIs to sample Xbox network data.
+
+## Tested scenarios
+
+- Sign the Microsoft Store in as user A, run the game as user B. Verify the title does not silently transmit data under user A's identity.
+- Verify the privacy policy referenced in Properties: Basic info covers third-party services active on the PC surface.
+- Verify anti-cheat and third-party SDKs behave when the customer denies their permissions.
+- Verify no OS-level telemetry API is used to bypass an in-game privacy toggle.
+
+## Related XRs
+
+- [XR-007](/publishing/xr/xr-007) — base cross-network XR.
+- [XR-014](/publishing/xr/xr-014) — Player Data and Personal Information.
+- [XR-045](/publishing/xr/xr-045) — Xbox Network and Account Privileges.
+
+## Related
+
+- [PC certification](/publishing/pc-certification)
+- [XStore on PC](/publishing/xstore-pc)
+- [Properties: Basic info](/publishing/properties-basic-info)

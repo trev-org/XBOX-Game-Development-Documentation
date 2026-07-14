@@ -1,0 +1,67 @@
+---
+title: "XR-015 Managing Player Communications"
+sidebarTitle: "XR-015 Communications"
+description: "Titles must respect Xbox mute, block, and communications privileges for voice and text chat, and provide moderation and reporting flows."
+icon: "comment-slash"
+keywords: ["XR-015", "communications", "voice chat", "text chat", "mute", "block", "reporting"]
+---
+
+## Intent
+
+Customer safety in multiplayer titles depends on consistent enforcement of the platform's communications controls. If a customer mutes or blocks another player on Xbox, that must extend into the title. If a customer reports a message, the report must reach Xbox network moderation. XR-015 makes these behaviors mandatory.
+
+## Applies to
+
+Titles with any form of customer-to-customer communication: voice chat, text chat, in-game whispers, quick-chat / voice-line systems, in-game emotes, party chat integration, cross-platform communications.
+
+## Requirement
+
+Your title **MUST**:
+
+- Honor the **communications privilege** (`XPrivilegeCommunications`, `XPrivilegeCommunicationsCrossNetwork*`) on the signed-in account. If the privilege is denied, communications features must be disabled.
+- Honor the **Xbox mute list** — muted XUIDs must not have their voice or text reach the muting customer.
+- Honor the **Xbox block list** — blocked customers cannot be added to sessions, cannot invite, and cannot communicate.
+- Provide **in-game mute controls** for real-time voice / chat, in addition to platform-level mute.
+- Provide a **reporting flow** so a customer can report offensive communication. The report must include enough context (timestamp, sender XUID, message) to be actionable.
+- Route reports through Xbox network reporting where possible, or via a moderated publisher pipeline. Reports must not be silently dropped.
+- Enforce **child account restrictions** — no unmoderated voice or text communications with strangers for accounts flagged as child.
+- Enforce **communications privileges cross-network** where technically feasible (see [XR-007](/publishing/xr/xr-007)).
+
+Your title **MUST NOT**:
+
+- Bypass mute or block via a title-owned chat system.
+- Present a "mute" toggle that only mutes on the current device without persisting to Xbox network.
+- Ship an unmoderated open chat channel to child accounts.
+- Include chat-content data in customer-visible analytics or leaderboards.
+
+## Tested scenarios
+
+- Mute a player on Xbox; verify they cannot be heard in the title.
+- Block a player; verify they cannot enter the same lobby / invite the customer.
+- Send an offensive message from account A to account B; verify account B can report it and the report is recorded.
+- Sign in a child account with restrictive family settings; verify voice / text chat is disabled or moderated.
+- Verify communications privilege gates the entire feature, not just the microphone.
+
+## Best practices
+
+- Query and cache the mute / block list at session start; refresh it on session events.
+- Consider **profanity filtering** in text chat channels as a defense in depth, especially for younger audiences.
+- For **voice**, moderation typically requires transcription or clip-based reporting. Xbox network reporting supports voice clips.
+- Log **only aggregated** communications data for analytics — never raw chat content.
+- Provide **automated moderation** for common infractions and a **human moderation queue** for reports.
+
+## Related XRs
+
+- [XR-007](/publishing/xr/xr-007) — Cross-network communications.
+- [XR-014](/publishing/xr/xr-014) — Communications data is PII.
+- [XR-018](/publishing/xr/xr-018) — UGC reporting (parallel report / take-down flow).
+- [XR-045](/publishing/xr/xr-045) — Privileges.
+
+## If your title fails XR-015
+
+See [FMA: XR-015 Managing Player Communication](/publishing/fma/xr-015).
+
+## Related
+
+- [XBOX services](/publishing/xbox-services)
+- [XBOX requirements](/publishing/xbox-requirements)
