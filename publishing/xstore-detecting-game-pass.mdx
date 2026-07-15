@@ -6,7 +6,7 @@ description: "Query the Store service to determine whether a player has Xbox Gam
 ---
 
 <Info>
-  This flow uses the [v9 publisherQuery](/publishing/xstore-rest-v9-query) endpoint documented in the **API** tab under [Microsoft Store REST APIs](/publishing/xstore-rest-api-reference).
+  This flow uses the [v9 publisherQuery](/reference/xstore-rest-v9-query) endpoint documented in the **API** tab under [Microsoft Store REST APIs](/reference/xstore-rest-api-reference).
 </Info>
 
 Game Pass tiers grant catalog entitlements at runtime, but many titles also want to check for a Game Pass subscription server-side — to award loyalty bonuses, unlock server-only features, or drive cross-title benefits.
@@ -26,7 +26,7 @@ These IDs are stable across markets. Consult Partner Center for the latest compl
 
 ## How to check
 
-Use the [`collections/publisherQuery`](/publishing/xstore-rest-v9-query) endpoint with the pass entitlement filter and the specific product IDs:
+Use the [`collections/publisherQuery`](/reference/xstore-rest-v9-query) endpoint with the pass entitlement filter and the specific product IDs:
 
 ```http
 POST https://collections.mp.microsoft.com/v9.0/collections/publisherQuery
@@ -66,4 +66,4 @@ Client-side detection (via `XStoreQueryEntitledProductsAsync`) is fine for UI ("
 ## Related
 
 - [Query user entitlements from your services](/publishing/xstore-query-entitlements)
-- [`collections/publisherQuery` reference](/publishing/xstore-rest-v9-query)
+- [`collections/publisherQuery` reference](/reference/xstore-rest-v9-query)

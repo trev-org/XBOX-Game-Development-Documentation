@@ -169,6 +169,26 @@
       "source": "/gdk/dev-pc-setup",
       "destination": "/gdk/download-install",
       "permanent": true
+    },
+    {
+      "source": "/publishing/xstore-rest-api-reference",
+      "destination": "/reference/xstore-rest-api-reference",
+      "permanent": true
+    },
+    {
+      "source": "/publishing/xstore-rest-v9-query",
+      "destination": "/reference/xstore-rest-v9-query",
+      "permanent": true
+    },
+    {
+      "source": "/publishing/xstore-rest-grant",
+      "destination": "/reference/xstore-rest-grant",
+      "permanent": true
+    },
+    {
+      "source": "/publishing/xstore-rest-recurrence-change",
+      "destination": "/reference/xstore-rest-recurrence-change",
+      "permanent": true
     }
   ],
   "metadata": {
@@ -984,15 +1004,15 @@
             "group": "Microsoft Store REST APIs",
             "icon": "cart-shopping",
             "pages": [
-              "publishing/xstore-rest-api-reference",
-              "publishing/xstore-rest-v9-query",
-              "publishing/xstore-rest-v8-query",
-              "publishing/xstore-rest-consume",
-              "publishing/xstore-rest-clawback-v1",
-              "publishing/xstore-rest-clawback-v2-sastoken",
-              "publishing/xstore-rest-grant",
-              "publishing/xstore-rest-recurrence-query",
-              "publishing/xstore-rest-recurrence-change"
+              "reference/xstore-rest-api-reference",
+              "reference/xstore-rest-v9-query",
+              "reference/xstore-rest-v8-query",
+              "reference/xstore-rest-consume",
+              "reference/xstore-rest-clawback-v1",
+              "reference/xstore-rest-clawback-v2-sastoken",
+              "reference/xstore-rest-grant",
+              "reference/xstore-rest-recurrence-query",
+              "reference/xstore-rest-recurrence-change"
             ]
           }
         ]

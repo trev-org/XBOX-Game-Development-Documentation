@@ -7,7 +7,7 @@ description: "On-demand per-user, per-product query of orders and refund state. 
 
 The `b2b/orders/query` endpoint is the **clawback v1** pattern: query a specific user's orders for a specific product to see whether any have been refunded or charged back. Use for customer-support workflows or targeted reconciliation.
 
-For high-volume ingestion, use [clawback v2 SAS-token feed](/publishing/xstore-rest-clawback-v2-sastoken) instead.
+For high-volume ingestion, use [clawback v2 SAS-token feed](/reference/xstore-rest-clawback-v2-sastoken) instead.
 
 ## Endpoint
 
@@ -17,7 +17,7 @@ POST https://purchase.mp.microsoft.com/v8.0/b2b/orders/query
 
 ## Headers
 
-Same as [v9 `publisherQuery`](/publishing/xstore-rest-v9-query#headers) but sent to `purchase.mp.microsoft.com`.
+Same as [v9 `publisherQuery`](/reference/xstore-rest-v9-query#headers) but sent to `purchase.mp.microsoft.com`.
 
 ## Request body
 
@@ -72,9 +72,9 @@ Same as [v9 `publisherQuery`](/publishing/xstore-rest-v9-query#headers) but sent
 
 ## Errors
 
-See [v9 `publisherQuery` errors](/publishing/xstore-rest-v9-query#errors).
+See [v9 `publisherQuery` errors](/reference/xstore-rest-v9-query#errors).
 
 ## Related
 
-- [Clawback v2 SAS token](/publishing/xstore-rest-clawback-v2-sastoken)
+- [Clawback v2 SAS token](/reference/xstore-rest-clawback-v2-sastoken)
 - [Managing refunds and chargebacks](/publishing/xstore-managing-refunds)

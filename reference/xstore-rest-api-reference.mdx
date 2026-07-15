@@ -1,0 +1,77 @@
+---
+title: "Microsoft Store REST API reference (v8 / v9)"
+sidebarTitle: "Overview"
+icon: "code"
+description: "Reference index for the Microsoft Store service-to-service REST endpoints: collections, purchase, clawback, grant, recurrences, and consume."
+keywords: ["Microsoft Store API", "REST API", "collections.mp.microsoft.com", "purchase.mp.microsoft.com", "S2S REST", "clawback API", "consume API", "grant API"]
+---
+
+This is the endpoint-by-endpoint reference for the **Microsoft Store service-to-service (S2S) REST APIs**. Use it to look up the exact URL, verb, required scope, and payload shape for each Store call your backend makes.
+
+<Tip>
+  For the conceptual how-to (patterns for querying entitlements, fulfilling consumables, processing refunds, and managing subscriptions from your service), see [XStore commerce overview](/publishing/xstore-commerce-overview) in the Publishing tab.
+</Tip>
+
+<Note>
+  All endpoints require an Azure AD app token acquired via the client-credentials flow. See [Authenticating your service](/publishing/xstore-authenticating-service).
+</Note>
+
+## Endpoints in this reference
+
+| Endpoint | Purpose |
+| --- | --- |
+| [v9 `publisherQuery`](/reference/xstore-rest-v9-query) | Query a user's entitlements to your publisher's products. |
+| [v8 `b2bLicensePreview`](/reference/xstore-rest-v8-query) | Legacy signed license-blob query. |
+| [v8 `consume`](/reference/xstore-rest-consume) | Deduct from a Store-managed consumable balance. |
+| [v8 clawback v1 (`orders/query`)](/reference/xstore-rest-clawback-v1) | On-demand per-user refund/chargeback lookup. |
+| [v8 clawback v2 (`clawback/sastoken`)](/reference/xstore-rest-clawback-v2-sastoken) | Publisher-wide refund event feed via SAS token. |
+| [v7 `purchases/grant`](/reference/xstore-rest-grant) | Grant a product to a user from your service. |
+| [v8 `recurrences/query`](/reference/xstore-rest-recurrence-query) | List a user's subscription recurrences. |
+| [v8 `recurrences/{id}/change`](/reference/xstore-rest-recurrence-change) | Cancel or modify a subscription recurrence. |
+
+## Base hosts
+
+| Host | Purpose |
+| --- | --- |
+| `collections.mp.microsoft.com` | Query and manage the current customer's collection (owned products and consumable balances). |
+| `purchase.mp.microsoft.com` | Grant, refund, clawback, and subscription lifecycle operations. |
+| `login.microsoftonline.com` | Azure AD token endpoint used to authenticate all calls above. |
+
+## Common authentication
+
+Every endpoint requires an Azure AD bearer token acquired via the client-credentials flow, plus (for per-user endpoints) a **User Store ID** in the request body. See:
+
+- [Authenticating your service](/publishing/xstore-authenticating-service)
+- [Requesting a User Store ID](/publishing/xstore-requesting-userstoreid)
+- [Renewing a User Store ID key](/publishing/xstore-renew-userstoreid)
+
+## Fine-grained rate limiting
+
+All Microsoft Store REST APIs enforce **fine-grained rate limits (FGRL)** per publisher and per endpoint. The service returns `429 Too Many Requests` with a `Retry-After` header when you exceed the limit.
+
+Best practices:
+
+- Respect `Retry-After` exactly. Don't retry sooner.
+- Batch queries where the endpoint supports it (`publisherQuery` accepts multiple `beneficiaries` per call).
+- For high-volume clawback processing, use the SAS-token queue rather than repeatedly querying orders.
+- Cache read-heavy results (subscription state, product ownership) with a short TTL rather than requerying on every gameplay event.
+
+See [Fine-grained rate limiting](/publishing/xstore-fgrl) for the full pattern.
+
+## Standard error handling
+
+| Status | Meaning | Action |
+| --- | --- | --- |
+| `400 BadRequest` | Malformed request body or invalid parameter | Fix the payload; do not retry |
+| `401 Unauthorized` | Token missing, expired, or wrong audience/scope | Re-acquire the token, verify scope |
+| `403 Forbidden` | App doesn't have permission on the referenced beneficiary or product | Check Partner Center scoping |
+| `404 NotFound` | Beneficiary or product doesn't exist | Verify the User Store ID and product ID |
+| `409 Conflict` | Idempotency conflict (typical: consume with reused tracking ID) | Return the original result; do not double-fulfill |
+| `429 TooManyRequests` | Rate limited | Honor `Retry-After` |
+| `5xx` | Transient service error | Retry with exponential backoff |
+
+## Related
+
+- [XStore commerce overview](/publishing/xstore-commerce-overview)
+- [Manage from your services (how-to)](/publishing/xstore-authenticating-service)
+- [Troubleshooting XStore development](/publishing/xstore-troubleshooting)

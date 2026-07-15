@@ -6,7 +6,7 @@ description: "Fulfill Store-managed consumables authoritatively from your backen
 ---
 
 <Info>
-  Full endpoint schema: [`collections/consume` reference](/publishing/xstore-rest-consume) in the **API** tab.
+  Full endpoint schema: [`collections/consume` reference](/reference/xstore-rest-consume) in the **API** tab.
 </Info>
 
 For high-value virtual currency and premium consumables, do the consume server-side. Server-side fulfillment survives client tampering, offline reinstalls, and duplicate reports — and lets your backend of record match the Store balance.
@@ -15,7 +15,7 @@ For high-value virtual currency and premium consumables, do the consume server-s
 
 1. Client detects the player has spent currency (e.g., bought an in-game item).
 2. Client requests a **UserStoreId (collections)** and posts it to your backend along with the pending spend.
-3. Backend calls [`collections/consume`](/publishing/xstore-rest-consume) to deduct the amount.
+3. Backend calls [`collections/consume`](/reference/xstore-rest-consume) to deduct the amount.
 4. Backend updates the player's currency balance in your DB.
 5. Backend returns success to the client, which unlocks the item.
 
@@ -66,6 +66,6 @@ Developer-managed consumables use the same endpoint but the Store does not maint
 
 ## Related
 
-- [`collections/consume` reference](/publishing/xstore-rest-consume)
+- [`collections/consume` reference](/reference/xstore-rest-consume)
 - [Consumable-based ecosystems (client)](/publishing/xstore-consumables)
 - [Managing refunds and chargebacks](/publishing/xstore-managing-refunds)

@@ -5,7 +5,7 @@ icon: "code"
 description: "Legacy v8 endpoint for querying a user's licenses. Prefer v9 publisherQuery for new integrations."
 ---
 
-The v8 `b2bLicensePreview` endpoint returns a signed license blob describing the user's entitlements to your publisher's products. It is retained for backward compatibility; new integrations should use [v9 `publisherQuery`](/publishing/xstore-rest-v9-query).
+The v8 `b2bLicensePreview` endpoint returns a signed license blob describing the user's entitlements to your publisher's products. It is retained for backward compatibility; new integrations should use [v9 `publisherQuery`](/reference/xstore-rest-v9-query).
 
 ## Endpoint
 
@@ -15,7 +15,7 @@ POST https://collections.mp.microsoft.com/v8.0/collections/b2bLicensePreview
 
 ## Headers
 
-Same as [v9 `publisherQuery`](/publishing/xstore-rest-v9-query#headers).
+Same as [v9 `publisherQuery`](/reference/xstore-rest-v9-query#headers).
 
 ## Request body
 
@@ -56,13 +56,13 @@ Decode the blob to inspect the entitlements it certifies. Verify the signature a
 - You need a **signed** attestation that survives handoff between services.
 - You already integrated against v8 and haven't migrated yet.
 
-For typical "does this user own X?" checks, prefer [v9 `publisherQuery`](/publishing/xstore-rest-v9-query) — easier to parse and richer filters.
+For typical "does this user own X?" checks, prefer [v9 `publisherQuery`](/reference/xstore-rest-v9-query) — easier to parse and richer filters.
 
 ## Errors
 
-Same set as [v9 `publisherQuery`](/publishing/xstore-rest-v9-query#errors).
+Same set as [v9 `publisherQuery`](/reference/xstore-rest-v9-query#errors).
 
 ## Related
 
-- [v9 `publisherQuery`](/publishing/xstore-rest-v9-query)
+- [v9 `publisherQuery`](/reference/xstore-rest-v9-query)
 - [Query user entitlements from your services](/publishing/xstore-query-entitlements)

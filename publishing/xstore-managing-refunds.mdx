@@ -6,7 +6,7 @@ description: "Use the clawback endpoints to detect refunds and reconcile granted
 ---
 
 <Info>
-  Full endpoint schemas: [clawback v1](/publishing/xstore-rest-clawback-v1) and [clawback v2 (SAS token)](/publishing/xstore-rest-clawback-v2-sastoken) in the **API** tab.
+  Full endpoint schemas: [clawback v1](/reference/xstore-rest-clawback-v1) and [clawback v2 (SAS token)](/reference/xstore-rest-clawback-v2-sastoken) in the **API** tab.
 </Info>
 
 When a customer refunds a purchase or the Store processes a chargeback, the Store revokes the entitlement. If you granted in-game rewards (currency, cosmetics, progression) tied to that purchase, you must reconcile — otherwise players can effectively duplicate content.
@@ -15,8 +15,8 @@ The **clawback** REST endpoints are how your service learns about refunds.
 
 ## Two versions
 
-- **Clawback v1** — [`purchase.mp.microsoft.com/v8.0/b2b/orders/query`](/publishing/xstore-rest-clawback-v1) queries a user's refunds/chargebacks per user, per product. Suitable for on-demand reconciliation triggered by a customer support event.
-- **Clawback v2 (SAS token)** — [`purchase.mp.microsoft.com/v8.0/b2b/clawback/sastoken`](/publishing/xstore-rest-clawback-v2-sastoken) yields a SAS token to an Azure blob feed of publisher-wide refund events. Suitable for continuous ingestion into your data warehouse.
+- **Clawback v1** — [`purchase.mp.microsoft.com/v8.0/b2b/orders/query`](/reference/xstore-rest-clawback-v1) queries a user's refunds/chargebacks per user, per product. Suitable for on-demand reconciliation triggered by a customer support event.
+- **Clawback v2 (SAS token)** — [`purchase.mp.microsoft.com/v8.0/b2b/clawback/sastoken`](/reference/xstore-rest-clawback-v2-sastoken) yields a SAS token to an Azure blob feed of publisher-wide refund events. Suitable for continuous ingestion into your data warehouse.
 
 Most publishers ship both: v2 as the primary ingestion, v1 for one-off customer support lookups.
 
@@ -28,7 +28,7 @@ Most publishers ship both: v2 as the primary ingestion, v1 for one-off customer 
 4. Log the reconciliation for audit.
 
 <Warning>
-  Make sure your fulfillment records store `orderId` and `orderLineItemId` from the [`/consume`](/publishing/xstore-rest-consume) or [`publisherQuery`](/publishing/xstore-rest-v9-query) response — without these you cannot correlate refunds back to the reward you granted.
+  Make sure your fulfillment records store `orderId` and `orderLineItemId` from the [`/consume`](/reference/xstore-rest-consume) or [`publisherQuery`](/reference/xstore-rest-v9-query) response — without these you cannot correlate refunds back to the reward you granted.
 </Warning>
 
 ## v1: on-demand lookup
@@ -63,6 +63,6 @@ Some publishers apply a grace policy — for example, do not claw back below a f
 
 ## Related
 
-- [Clawback v1 reference](/publishing/xstore-rest-clawback-v1)
-- [Clawback v2 SAS-token reference](/publishing/xstore-rest-clawback-v2-sastoken)
+- [Clawback v1 reference](/reference/xstore-rest-clawback-v1)
+- [Clawback v2 SAS-token reference](/reference/xstore-rest-clawback-v2-sastoken)
 - [Managing consumables from your service](/publishing/xstore-managing-consumables)
