@@ -1,0 +1,55 @@
+---
+title: "GDK Commerce Systems Overview"
+sidebarTitle: "Commerce systems overview"
+icon: "circle-info"
+description: "How Microsoft Store commerce, XStore runtime APIs, Partner Center, and S2S services fit together for GDK titles."
+---
+
+The GDK exposes Microsoft Store commerce to your title through two complementary surfaces:
+
+- **XStore (client-side, in your title)** — `XStore*` and `XPackage*` APIs for showing purchase UI, enumerating add-ons, checking licenses and entitlements, mounting DLC packages, and reporting consumable fulfillment.
+- **Microsoft Store S2S REST APIs (service-side, in your backend)** — HTTPS endpoints for authoritatively querying entitlements, fulfilling consumables, granting products, detecting Xbox Game Pass, and processing refunds and chargebacks.
+
+Both surfaces share the same product catalog you configure in **Partner Center** and the same identity model rooted in the player's Microsoft account.
+
+## What Store commerce covers
+
+- **Base games** — the primary product players buy or receive via Xbox Game Pass.
+- **Add-ons** — durables (permanent unlocks), durables with packages (DLC that ships its own MSIXVC), consumables, and store-managed subscriptions.
+- **Bundles and season passes** — collections that grant multiple child entitlements from a single purchase.
+- **Trials** — time-limited or usage-limited trials that grant a temporary license.
+- **Cross-device entitlements** — Xbox Play Anywhere, family sharing, home Xbox, and Xbox Game Pass.
+
+## Product model at a glance
+
+Every product in Partner Center has a set of identifiers that show up throughout the XStore APIs and Store REST:
+
+| Identifier | Format | Where you see it |
+| --- | --- | --- |
+| **StoreId** (Product ID) | 12-character alphanumeric (for example, `9NBLGGH42THS`) | Deep links, `XStoreProduct::storeId`, S2S queries |
+| **BigId** | 12-character alphanumeric | Legacy product identifier still surfaced by some APIs |
+| **SKU ID** | GUID | Identifies a specific SKU within a product |
+| **TitleId** / **ServiceConfigurationId (SCID)** | Hex / GUID | Ties the title to XBOX services and `MicrosoftGame.config` |
+| **MSAAppId** | GUID | Used for Microsoft account auth from the title |
+
+## How the pieces connect at runtime
+
+1. Player launches your title. The Store activates the license and mounts the base package.
+2. Title calls `XStoreCreateContext` for the signed-in user.
+3. Title queries the catalog with `XStoreQueryAssociatedProductsAsync` or `XStoreQueryProductsAsync`.
+4. Title checks entitlements with `XStoreQueryEntitledProductsAsync`, `XStoreQueryAddOnLicensesAsync`, or `XStoreQueryGameLicenseAsync`.
+5. Title shows purchase UI with `XStoreShowPurchaseUIAsync` when the player wants to buy something.
+6. For consumables, title reads the balance with `XStoreQueryConsumableBalanceRemainingAsync` and reports spend with `XStoreReportConsumableFulfillmentAsync`.
+7. Optional: title requests a User Store ID and hands it to your service for authoritative S2S calls.
+
+## Client vs. service responsibility
+
+<Info>
+  **Rule of thumb:** show it on the client, prove it on the server. Any decision that must survive reinstall, sign-out, or client tampering (durable currency, granted rewards, subscription state) should be reconciled with the S2S REST APIs from your backend of record.
+</Info>
+
+## Where to go next
+
+- [Choosing the right product type](/publishing/xstore-choosing-product-type)
+- [Initial configuration in Partner Center](/publishing/xstore-initial-configuration)
+- [Enabling XStore development and testing](/publishing/xstore-product-testing-setup)

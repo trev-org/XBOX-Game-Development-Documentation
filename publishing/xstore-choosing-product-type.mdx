@@ -1,0 +1,68 @@
+---
+title: "Choosing the right product type"
+sidebarTitle: "Choosing product type"
+icon: "list-check"
+description: "Decide between durables, durables with packages, consumables, bundles, season passes, subscriptions, and trials."
+---
+
+Partner Center product type is the single biggest decision in your commerce integration — it decides how the Microsoft Store manages the entitlement, whether your title ships extra packages, and which XStore APIs you call at runtime.
+
+## Quick decision matrix
+
+| Scenario | Recommended product type |
+| --- | --- |
+| Permanent unlock, content already in base package (character, mode, cosmetic) | **Durable without a package (DWOB)** |
+| Permanent unlock, ships its own installable content (expansion, map pack) | **Durable with packages** (add-on package) |
+| In-game currency (gold, gems, credits) tracked by the Store | **Store-managed consumable** |
+| One-shot boost or item redeemed once (double-XP token) | **Developer-managed consumable** |
+| Collection of existing add-ons sold as one product | **Add-on bundle** |
+| Ongoing pass whose contents grow after launch | **Season pass** (empty-collection add-on bundle) |
+| Time-limited or usage-limited demo | **Trial** (configured on the base game or add-on) |
+| Recurring monthly/annual subscription | **Store-managed subscription** (setup via Microsoft) |
+
+## Durables
+
+A durable is a permanent entitlement tied to the player's Microsoft account. Once purchased it never expires (unless refunded or clawed back).
+
+- **Durable without a package** — no MSIXVC shipped with the add-on. Use for unlocks that are already inside your base game package. Ideal for cosmetic packs, gameplay modes, character slots, or content you gate behind a runtime flag.
+- **Durable with packages** — has one or more MSIXVC packages associated with it. Use for map packs, expansions, or anything that ships new assets or executables. Requires `XPackageMount` / `XPackageInstallChunksAsync` at runtime.
+
+## Consumables
+
+Consumables represent things a player uses up: virtual currency, one-shot boosts, keys.
+
+- **Store-managed consumable** — the Microsoft Store tracks the balance. Great for hard currency ("1000 Gold"). You read the balance with `XStoreQueryConsumableBalanceRemainingAsync` and deduct with `XStoreReportConsumableFulfillmentAsync`.
+- **Developer-managed consumable** — the Store records the purchase; your service tracks whether it has been redeemed. Great for one-shot items (single-use boost, promo code).
+
+<Tip>
+  Use a `trackingId` (a GUID your title generates before calling `XStoreReportConsumableFulfillmentAsync`) so retries after a crash are idempotent and don't double-charge.
+</Tip>
+
+## Bundles and season passes
+
+An **add-on bundle** groups existing add-ons and grants each child entitlement on purchase. A **season pass** is functionally the same product type used for growing content — the bundle can start empty and add child items as new DLC ships.
+
+At runtime, `XStoreQueryAddOnLicensesAsync` returns one license per child; `XStoreQueryEntitledProductsAsync` also lets you detect the bundle itself.
+
+## Subscriptions
+
+Store-managed subscriptions are configured by Microsoft on your behalf. Detect them at runtime with `XStoreQueryGameLicenseAsync` (for base-game subscriptions such as Xbox Game Pass) or `XStoreQueryEntitledProductsAsync`. Authoritative subscription state and management (list, cancel, change) live in the [S2S recurrences endpoints](/publishing/xstore-rest-recurrence-query).
+
+## Trials
+
+Trials aren't a separate product — they're a mode on your base game or add-on:
+
+- **Time-limited trial** — the Store enforces the time cap (for example, 60 minutes). Your title just checks `isTrial` and shows the countdown.
+- **Usage-limited trial** — your title enforces the cap (for example, first two levels only) based on gameplay progress.
+
+See [Implementing trials for your game](/publishing/xstore-trials).
+
+## What you cannot change later
+
+Once a product ships in RETAIL:
+
+- You cannot convert a durable into a consumable, or vice versa.
+- You cannot move a durable-without-package into a durable-with-packages (or the reverse) without publishing a new product.
+- Add-on-bundle membership can grow, but you cannot remove items already granted to players.
+
+Plan the product taxonomy carefully before launch.

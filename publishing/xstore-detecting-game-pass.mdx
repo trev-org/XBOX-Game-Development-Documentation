@@ -1,0 +1,65 @@
+---
+title: "Detecting Xbox Game Pass subscription access from your service"
+sidebarTitle: "Detecting Game Pass"
+icon: "crown"
+description: "Query the Store service to determine whether a player has Xbox Game Pass, PC Game Pass, or Ultimate access."
+---
+
+Game Pass tiers grant catalog entitlements at runtime, but many titles also want to check for a Game Pass subscription server-side — to award loyalty bonuses, unlock server-only features, or drive cross-title benefits.
+
+## The subscription product IDs
+
+Game Pass appears in the Store service as **subscription products** (`Pass`). Check for entitlement on any of the following product IDs, depending on which tier you care about:
+
+| Tier | Product ID |
+| --- | --- |
+| Xbox Game Pass (Console) | `CFQ7TTC0K5DJ` |
+| PC Game Pass | `CFQ7TTC0KGQ8` |
+| Xbox Game Pass Ultimate | `CFQ7TTC0KHS0` |
+| Xbox Game Pass Core | `CFQ7TTC0K5DH` |
+
+These IDs are stable across markets. Consult Partner Center for the latest complete list — Microsoft occasionally adds tiers (for example, family or friends & family plans).
+
+## How to check
+
+Use the [`collections/publisherQuery`](/publishing/xstore-rest-v9-query) endpoint with the pass entitlement filter and the specific product IDs:
+
+```http
+POST https://collections.mp.microsoft.com/v9.0/collections/publisherQuery
+Authorization: Bearer {aadToken}
+Content-Type: application/json
+MS-ContractVersion: 1
+
+{
+  "beneficiaries": [{
+    "identityType": "b2b",
+    "identityValue": "{userStoreId}"
+  }],
+  "entitlementFilters": ["Pass"],
+  "productSkuIds": [
+    { "productId": "CFQ7TTC0K5DJ" },
+    { "productId": "CFQ7TTC0KGQ8" },
+    { "productId": "CFQ7TTC0KHS0" }
+  ],
+  "validityType": "Valid"
+}
+```
+
+Any returned item with `status: Active` and `endDate` in the future means the player currently has that tier.
+
+## Ultimate implies Console \+ PC
+
+A player entitled to Ultimate is also entitled to console and PC Game Pass benefits. In practice you can check for Ultimate first and short-circuit; if not Ultimate, then check Console/PC/Core specifically.
+
+## Cache carefully
+
+Game Pass entitlements can change any time (renewal fails, customer cancels, family membership changes). Cache the answer for at most 24 hours — and always re-check server-side on high-value grants (rewards, tournament entry).
+
+## Prefer server-side detection
+
+Client-side detection (via `XStoreQueryEntitledProductsAsync`) is fine for UI ("Game Pass Ultimate exclusive!" banner), but any grant that must be authoritative should come from the S2S check.
+
+## Related
+
+- [Query user entitlements from your services](/publishing/xstore-query-entitlements)
+- [`collections/publisherQuery` reference](/publishing/xstore-rest-v9-query)

@@ -1,0 +1,74 @@
+---
+title: "Basic DRM and license checks (PC)"
+sidebarTitle: "Basic DRM & license checks"
+icon: "shield"
+description: "Wire your PC title's launch and gameplay loop to XStore license checks so unlicensed sessions are refused gracefully."
+---
+
+On PC, unlike console, your title runs in a rich environment where the Store client, sandbox, and signed-in Microsoft account can all diverge from what your game expects. Basic DRM — checking the license every session and responding to changes — is what keeps unlicensed play from happening.
+
+## What XStore DRM does for you
+
+- Verifies the currently signed-in Microsoft account has an active license for the running title.
+- Notifies you when that license is revoked (family sharing change, refund, Home Xbox move, sandbox switch).
+- Surfaces the license kind (full, trial, disc, Play Anywhere, Game Pass).
+
+It does **not** obfuscate your executable, verify code integrity, or protect asset files. Ship additional DRM layers (packing, tamper detection) if your business needs them.
+
+## Startup pattern
+
+```cpp
+void CheckLicenseAtStartup(XUserHandle user, XStoreContextHandle context) {
+    XStoreGameLicense license = {};
+    HRESULT hr = XStoreQueryGameLicense(context, &license);
+
+    if (FAILED(hr) || !license.isActive) {
+        ShowLicenseRequiredScreen();
+        return; // do not enter gameplay
+    }
+
+    if (license.isTrial) {
+        EnableTrialUX(license.trialTimeRemainingInSeconds);
+    }
+
+    XTaskQueueRegistrationToken token = {};
+    XStoreRegisterGameLicenseChanged(
+        context, taskQueue, /* ctx */ nullptr,
+        [](void* /*ctx*/) { RecheckLicense(); },
+        &token);
+}
+```
+
+## Suspend / resume
+
+Always re-check the license on:
+
+- Sign-in / sign-out.
+- Resume from suspend.
+- After returning from the Store purchase UI.
+- After a `PackageLicenseLost` callback fires.
+
+Do not cache "active" indefinitely. A license can lapse mid-session (refund, Home Xbox change).
+
+## Reacting to license-lost
+
+When the license goes inactive:
+
+1. Save gameplay state.
+2. Return to a lobby screen with a clear message: "Your access to \[Game\] is no longer available on this device."
+3. Offer a purchase link via `XStoreShowPurchaseUIAsync`.
+
+Do not crash, and do not silently continue — the OS considers that a policy failure.
+
+## PC-only edge cases
+
+- **Store client offline** — `XStoreQueryGameLicense` may return a cached last-known license; treat with a short grace period.
+- **User signed out of the Microsoft Store app** — causes the mismatched-store-account state (see [Handling mismatched store account scenarios](/publishing/xstore-mismatched-accounts)).
+- **Multiple Windows profiles on the same PC** — each profile has its own Store state; licensing is per-account.
+
+## Related
+
+- [Enabling licensing testing](/publishing/xstore-licensing-setup)
+- [Open and restrictive licensing](/publishing/xstore-open-restrictive-licensing)
+- [Handling mismatched store account scenarios](/publishing/xstore-mismatched-accounts)
+- [Using License Tokens](/publishing/xstore-license-tokens)

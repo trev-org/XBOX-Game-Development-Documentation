@@ -1,0 +1,65 @@
+---
+title: "Checking for updates"
+sidebarTitle: "Checking for updates"
+icon: "arrows-rotate"
+description: "Query for package updates, decide when to prompt the player, and trigger a download-and-install from your title."
+---
+
+Your title can check for and (with user consent) install updates to itself and its DLC without leaving to the Store. This is useful before joining an online session where all peers need the same build.
+
+## Query for available updates
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    uint32_t count = 0;
+    HRESULT hr = XStoreQueryGameAndDlcPackageUpdatesResult(async, &count, nullptr);
+    if (SUCCEEDED(hr) && count > 0) {
+        std::vector<XStorePackageUpdate> updates(count);
+        XStoreQueryGameAndDlcPackageUpdatesResult(async, &count, updates.data());
+        // For each update: packageIdentifier, isMandatory
+    }
+    delete async;
+};
+
+XStoreQueryGameAndDlcPackageUpdatesAsync(context, async.release());
+```
+
+Use `XStoreQueryPackageUpdatesAsync` if you only care about a specific package.
+
+## Prompt when it matters
+
+Good moments to check:
+
+- Just before matchmaking or joining an online session.
+- On sign-in, to surface an optional "Update available" chip.
+- After a critical server-side event marks a build obsolete.
+
+Do not block the player from single-player content behind a non-mandatory update.
+
+## Download and install
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    HRESULT hr = XStoreDownloadAndInstallPackageUpdatesResult(async);
+    // On success, prompt the user to relaunch when appropriate.
+    delete async;
+};
+
+const char* packageIds[] = { updates[0].packageIdentifier };
+XStoreDownloadAndInstallPackageUpdatesAsync(
+    context,
+    ARRAYSIZE(packageIds),
+    packageIds,
+    async.release());
+```
+
+## Mandatory updates
+
+When `isMandatory` is true, the OS will typically require the update before the title can launch. Handle the case where a running session encounters a mandatory update mid-play (server enforces version) — gracefully save state, prompt to update, and exit.
+
+## Related
+
+- [Manage and license downloadable content (DLC)](/publishing/xstore-dlc)
+- [Basic store operations](/publishing/xstore-basic-operations)

@@ -1,0 +1,86 @@
+---
+title: "Initial configuration in Partner Center"
+sidebarTitle: "Initial Partner Center config"
+icon: "gear"
+description: "Create the Store product, set identifiers, and wire your title’s MicrosoftGame.config before calling any XStore APIs."
+---
+
+XStore APIs only return meaningful results after your product exists in Partner Center and your title is bound to it. Do this once per product before writing commerce code.
+
+## Step 1. Create the product in Partner Center
+
+1. Sign in to [Partner Center](https://partner.microsoft.com/dashboard) with an account that has access to your publisher.
+2. Create a new product (or open an existing one). Choose **Xbox** (console \+ PC) or **PC XBOX** as appropriate.
+3. Reserve the product name to allocate a **StoreId** (Product ID) and **BigId**.
+4. Under **Services → Xbox services**, enable Xbox services and note the **Title ID** and **SCID (Service Configuration Id)**.
+5. Under **Product identity**, record the **MSA App Id** (needed for user auth).
+
+## Step 2. Add the identifiers to `MicrosoftGame.config`
+
+At the root of your package sources, `MicrosoftGame.config` must reference the same product:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Game configVersion="1">
+  <Identity Name="CompanyName.GameName"
+            Publisher="CN=YourPublisherCN"
+            Version="1.0.0.0" />
+  <ExecutableList>
+    <Executable Name="Game.exe" TargetDeviceFamily="PC" Id="Game" />
+  </ExecutableList>
+  <MSAAppId>00000000-0000-0000-0000-000000000000</MSAAppId>
+  <TitleId>0xFFFFFFFF</TitleId>
+  <StoreId>9XXXXXXXXXXX</StoreId>
+  <ExtendedAttributeList>
+    <ExtendedAttribute Name="Scid" Value="00000000-0000-0000-0000-000000000000" />
+  </ExtendedAttributeList>
+</Game>
+```
+
+Every package you upload (dev, cert, retail) must contain a `MicrosoftGame.config` with the correct StoreId, TitleId, MSAAppId, and SCID for the target Partner Center product.
+
+## Step 3. Configure add-ons and bundles
+
+For each add-on:
+
+- Go to **Add-ons** under the parent product.
+- Create the add-on and choose its product type (see [Choosing the right product type](/publishing/xstore-choosing-product-type)).
+- Assign the add-on its own StoreId.
+- For durables-with-packages, associate the DLC MSIXVC package with the add-on.
+
+For bundles / season passes:
+
+- Create an **Add-on bundle** product.
+- Add child add-ons already in the same parent product.
+- Configure whether the bundle is upgradable (season pass model).
+
+## Step 4. Sandbox and availability
+
+- Publish the product to your **development sandbox** so XStore returns data in dev builds. Use **Availability → Sandboxes** and target the sandbox you use for local testing (typical form `PUBLISHER.1`).
+- Set **Pricing** and **Markets** for at least one country so the product resolves in `XStoreQueryAssociatedProductsAsync`.
+- Add a **Store listing** with title, description, and screenshots — required for `XStoreShowPurchaseUIAsync` to display something meaningful.
+
+## Step 5. Verify with an XStore call
+
+Once configured, verify from a title running in the dev sandbox:
+
+```cpp
+XStoreContextHandle context = nullptr;
+HRESULT hr = XStoreCreateContext(user, &context);
+
+auto asyncBlock = std::make_unique<XAsyncBlock>();
+hr = XStoreQueryAssociatedProductsAsync(
+    context,
+    XStoreProductKind::Durable | XStoreProductKind::Consumable | XStoreProductKind::Game,
+    25, // max items per query
+    asyncBlock.get());
+```
+
+If the query returns your product, the wiring is correct. If it returns empty, jump to [Troubleshooting XStore development](/publishing/xstore-troubleshooting).
+
+## Common wiring mistakes
+
+- StoreId in `MicrosoftGame.config` does not match Partner Center.
+- Xbox services not enabled on the product.
+- Product not published to the target sandbox.
+- Test account has no access to the sandbox (see [Enabling XStore development and testing](/publishing/xstore-product-testing-setup)).

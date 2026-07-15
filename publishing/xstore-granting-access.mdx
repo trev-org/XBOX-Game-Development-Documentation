@@ -1,0 +1,92 @@
+---
+title: "Granting players access to add-on content"
+sidebarTitle: "Granting add-on access"
+icon: "unlock"
+description: "Check add-on licenses, react to revocation, and gate content in your title based on Store entitlements."
+---
+
+Once a player buys an add-on, your title needs to check that the license is active and unlock the content. This applies to durables (without a package), durables-with-packages, bundles, and season passes.
+
+## The core loop
+
+1. Enumerate the player's add-on licenses.
+2. For each active license, unlock the corresponding content.
+3. Register for revocation so you can re-gate content if the license is lost.
+
+## Enumerate add-on licenses
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    uint32_t count = 0;
+    XStoreAddonLicenseHandle* licenses = nullptr;
+    HRESULT hr = XStoreQueryAddOnLicensesResult(async, &count, &licenses);
+    if (SUCCEEDED(hr)) {
+        for (uint32_t i = 0; i < count; ++i) {
+            char storeId[XSTORE_LICENSE_STORE_ID_MAX_LENGTH];
+            bool isActive = false;
+            XStoreGetAddOnLicenseInfo(licenses[i], sizeof(storeId), storeId, &isActive);
+            if (isActive) {
+                // Unlock content associated with storeId
+            }
+        }
+        for (uint32_t i = 0; i < count; ++i) {
+            XStoreCloseAddonLicenseHandle(licenses[i]);
+        }
+        free(licenses);
+    }
+    delete async;
+};
+
+XStoreQueryAddOnLicensesAsync(context, async.release());
+```
+
+## Acquire a license for a durable-with-package
+
+Some scenarios require an explicit license acquisition (typically before mounting a DLC package):
+
+```cpp
+XStoreLicenseHandle licenseHandle = nullptr;
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    XStoreLicenseHandle handle = nullptr;
+    HRESULT hr = XStoreAcquireLicenseForDurablesResult(async, &handle);
+    // handle: check hr, then use handle
+    delete async;
+};
+
+XStoreAcquireLicenseForDurablesAsync(
+    context,
+    storeId,
+    async.release());
+```
+
+For packages specifically, use `XStoreAcquireLicenseForPackageAsync` and pair with `XPackageMount`.
+
+## Register for license-lost
+
+```cpp
+XTaskQueueRegistrationToken token = {};
+XStoreRegisterPackageLicenseLost(
+    packageLicenseHandle,
+    taskQueue,
+    /* context */ nullptr,
+    [](void* /*ctx*/) {
+        // License revoked. Re-lock content, re-query licenses.
+    },
+    &token);
+```
+
+<Warning>
+  Family-sharing and Home-Xbox changes can revoke a shared license at any time. Do not treat a license as permanent once you've observed it; always be ready to re-lock.
+</Warning>
+
+## Best practice: reconcile with your service
+
+For content that grants a persistent gameplay reward (in-game currency, character unlock recorded in your DB), have the client hand a **UserStoreId** to your backend and reconcile the entitlement server-side via [Query user entitlements from your services](/publishing/xstore-query-entitlements). That way a client tampering with local state cannot fake the entitlement.
+
+## Related
+
+- [Product sharing model for games](/publishing/xstore-product-sharing)
+- [How to use a durable without a package](/publishing/xstore-dwob)
+- [Manage and license downloadable content (DLC)](/publishing/xstore-dlc)

@@ -1,0 +1,64 @@
+---
+title: "Managing refunds and chargebacks from your service"
+sidebarTitle: "Refunds & chargebacks"
+icon: "rotate-left"
+description: "Use the clawback endpoints to detect refunds and reconcile granted in-game rewards."
+---
+
+When a customer refunds a purchase or the Store processes a chargeback, the Store revokes the entitlement. If you granted in-game rewards (currency, cosmetics, progression) tied to that purchase, you must reconcile — otherwise players can effectively duplicate content.
+
+The **clawback** REST endpoints are how your service learns about refunds.
+
+## Two versions
+
+- **Clawback v1** — [`purchase.mp.microsoft.com/v8.0/b2b/orders/query`](/publishing/xstore-rest-clawback-v1) queries a user's refunds/chargebacks per user, per product. Suitable for on-demand reconciliation triggered by a customer support event.
+- **Clawback v2 (SAS token)** — [`purchase.mp.microsoft.com/v8.0/b2b/clawback/sastoken`](/publishing/xstore-rest-clawback-v2-sastoken) yields a SAS token to an Azure blob feed of publisher-wide refund events. Suitable for continuous ingestion into your data warehouse.
+
+Most publishers ship both: v2 as the primary ingestion, v1 for one-off customer support lookups.
+
+## Reconciliation model
+
+1. Ingest refund events from clawback v2 (or query v1 on demand).
+2. Match each refund to a granted reward using the `orderId` \+ `orderLineItemId` you recorded when you fulfilled the original purchase.
+3. Revoke or claw back the reward in your service (subtract currency, remove cosmetic, adjust progression).
+4. Log the reconciliation for audit.
+
+<Warning>
+  Make sure your fulfillment records store `orderId` and `orderLineItemId` from the [`/consume`](/publishing/xstore-rest-consume) or [`publisherQuery`](/publishing/xstore-rest-v9-query) response — without these you cannot correlate refunds back to the reward you granted.
+</Warning>
+
+## v1: on-demand lookup
+
+```http
+POST https://purchase.mp.microsoft.com/v8.0/b2b/orders/query
+Authorization: Bearer {aadToken}
+Content-Type: application/json
+
+{
+  "userStoreId": "{purchaseUserStoreId}",
+  "productId": "9NBLGGH42XYZ"
+}
+```
+
+Returns each order the user placed for that product with its current refund state.
+
+## v2: SAS-token feed
+
+Step 1: request a SAS token.
+
+```http
+GET https://purchase.mp.microsoft.com/v8.0/b2b/clawback/sastoken
+Authorization: Bearer {aadToken}
+```
+
+Step 2: poll the returned Azure blob URL for the daily/hourly feed. Each blob is a JSON array of refund events. Persist a high-water mark so you don't reprocess events.
+
+## Grace policies
+
+Some publishers apply a grace policy — for example, do not claw back below a floor balance, or reverse only refunds within a certain window. Encode these rules server-side; the Store does not implement them for you.
+
+## Related
+
+- [Clawback v1 reference](/publishing/xstore-rest-clawback-v1)
+- [Clawback v2 SAS-token reference](/publishing/xstore-rest-clawback-v2-sastoken)
+- [Managing consumables from your service](/publishing/xstore-managing-consumables)

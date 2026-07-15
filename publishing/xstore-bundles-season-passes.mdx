@@ -1,0 +1,42 @@
+---
+title: "Bundles and Season Passes"
+sidebarTitle: "Bundles & season passes"
+icon: "gift"
+description: "Group existing add-ons into a bundle or season pass and detect the child entitlements at runtime."
+---
+
+Add-on **bundles** and **season passes** are Partner Center products that grant a collection of child add-ons on purchase. They share the same product type; the difference is intent — bundles are usually static, season passes usually grow over time.
+
+## Configure the bundle or season pass
+
+1. In Partner Center under the base product, open **Add-ons**.
+2. Create a new add-on with product type **Add-on bundle**.
+3. Add child add-ons that already exist in the same base product.
+4. For a **season pass**, publish an empty (or partially filled) bundle at launch; add child items as new DLC ships. Existing owners automatically receive the new children.
+5. Set price, markets, and Store listing; publish to sandbox and (eventually) RETAIL.
+
+<Warning>
+  Once a customer owns the bundle, you cannot remove items that were part of the bundle at the time of their purchase. Season-pass owners always keep everything included as of their acquisition.
+</Warning>
+
+## Runtime: detect the children
+
+Buying a bundle grants an entitlement per child. `XStoreQueryAddOnLicensesAsync` returns one license per child; you don't have to know that the entitlement came from a bundle:
+
+```cpp
+XStoreQueryAddOnLicensesAsync(context, async);
+// Enumerate licenses; each maps to a child StoreId
+```
+
+To detect the **bundle itself** (for example, to show "You own the Season Pass" in UI), use `XStoreQueryEntitledProductsAsync` and filter for the bundle's StoreId.
+
+## Storefront UX guidance
+
+- Show the bundle price and the sum-of-individuals price so customers see the discount.
+- If the customer already owns some children, use `XStoreQueryEntitledProductsAsync` to compute the effective discount and offer to fill only the missing items (or communicate the value clearly).
+- For season passes, list the items included today and the items coming in future updates.
+
+## Related
+
+- [Choosing the right product type](/publishing/xstore-choosing-product-type)
+- [Granting players access to add-on content](/publishing/xstore-granting-access)

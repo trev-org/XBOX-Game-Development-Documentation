@@ -1,0 +1,68 @@
+---
+title: "collections.mp.microsoft.com/v8.0/collections/b2bLicensePreview"
+sidebarTitle: "v8 b2bLicensePreview"
+icon: "code"
+description: "Legacy v8 endpoint for querying a user's licenses. Prefer v9 publisherQuery for new integrations."
+---
+
+The v8 `b2bLicensePreview` endpoint returns a signed license blob describing the user's entitlements to your publisher's products. It is retained for backward compatibility; new integrations should use [v9 `publisherQuery`](/publishing/xstore-rest-v9-query).
+
+## Endpoint
+
+```text
+POST https://collections.mp.microsoft.com/v8.0/collections/b2bLicensePreview
+```
+
+## Headers
+
+Same as [v9 `publisherQuery`](/publishing/xstore-rest-v9-query#headers).
+
+## Request body
+
+```json
+{
+  "beneficiaries": [
+    {
+      "identityType": "b2b",
+      "identityValue": "{userStoreId}",
+      "localTicketReference": "correlation-id"
+    }
+  ],
+  "productSkuIds": [
+    { "productId": "9NBLGGH42THS" }
+  ],
+  "entitlementFilters": ["Game", "Durable", "UnmanagedConsumable", "Consumable", "Pass"],
+  "expiryDuration": "PT2H"
+}
+```
+
+`expiryDuration` (ISO-8601) sets how long the returned license blob is valid — default 90 minutes, max 24 hours.
+
+## Response body
+
+The response is a **signed license blob** (JWT-like) that you can hand back to a client or trust in your service without re-validating on every use, until its expiry.
+
+```json
+{
+  "signedLicenseBlob": "eyJhbGc...",
+  "expiresAt": "2024-01-15T20:32:44Z"
+}
+```
+
+Decode the blob to inspect the entitlements it certifies. Verify the signature against Microsoft's published certificate before trusting the claims.
+
+## When to still use v8
+
+- You need a **signed** attestation that survives handoff between services.
+- You already integrated against v8 and haven't migrated yet.
+
+For typical "does this user own X?" checks, prefer [v9 `publisherQuery`](/publishing/xstore-rest-v9-query) — easier to parse and richer filters.
+
+## Errors
+
+Same set as [v9 `publisherQuery`](/publishing/xstore-rest-v9-query#errors).
+
+## Related
+
+- [v9 `publisherQuery`](/publishing/xstore-rest-v9-query)
+- [Query user entitlements from your services](/publishing/xstore-query-entitlements)

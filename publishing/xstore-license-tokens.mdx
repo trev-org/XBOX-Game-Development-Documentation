@@ -1,0 +1,69 @@
+---
+title: "Using License Tokens to validate licensing on your services"
+sidebarTitle: "License tokens"
+icon: "stamp"
+description: "Have your PC title present a signed License Token to your backend so the service can trust the current license state."
+---
+
+A **License Token** is a signed proof — issued by the Microsoft Store and Gaming Services on PC — that a specific Microsoft account currently has an active license to your product on this machine. Titles pass the token to their backend, which validates the signature and trusts the entitlement without an extra Store round-trip.
+
+License tokens are the recommended PC pattern when your service needs a fast, authoritative "is this player licensed right now?" answer.
+
+## When to use
+
+- Multiplayer session join: the server refuses connections without a valid, recent license token.
+- Time-sensitive online commerce where you cannot afford a `/publisherQuery` round trip per player action.
+- Anti-cheat / fraud pipelines that want a lightweight signed attestation.
+
+## Acquire the token in the title
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    size_t size = 0;
+    HRESULT hr = XStoreGetLicenseTokenResultSize(async, &size);
+    if (SUCCEEDED(hr)) {
+        std::string token(size, '\0');
+        XStoreGetLicenseTokenResult(async, size, token.data());
+        // Post the token to your service.
+    }
+    delete async;
+};
+
+XStoreGetLicenseTokenAsync(
+    context,
+    /* serviceUri */ "https://your-backend.example.com",
+    /* audienceUri */ "https://your-backend.example.com",
+    async.release());
+```
+
+`serviceUri` and `audienceUri` bind the token to a specific relying party, so tokens intercepted by other services are useless.
+
+## Validate on the service
+
+The token is a signed JWT. Your service must:
+
+1. Fetch Microsoft's public signing keys from the well-known metadata endpoint (cache them, refresh on rotation).
+2. Verify the JWT signature.
+3. Verify `aud` matches your service.
+4. Verify `exp` is in the future.
+5. Verify the productId (or bigId) claim matches your title.
+6. Optionally verify additional claims such as `sandboxid` and `xuid`.
+
+Do not skip signature verification, and do not accept expired tokens.
+
+## Token lifetime and refresh
+
+Tokens are short-lived (typically minutes). Your title should re-fetch periodically or on-demand — not cache one for the whole session. On sandbox switch, sign-in change, or license-lost, discard cached tokens.
+
+## What License Tokens are not
+
+- Not a replacement for server-side entitlement queries when you need historical order data (use `publisherQuery` for that).
+- Not proof of _purchase history_; only proof of _current license state_.
+- Not portable across Microsoft accounts — each token is per-user.
+
+## Related
+
+- [Basic DRM and license checks](/publishing/xstore-basic-drm)
+- [Requesting a User Store ID](/publishing/xstore-requesting-userstoreid)
+- [Query user entitlements from your services](/publishing/xstore-query-entitlements)

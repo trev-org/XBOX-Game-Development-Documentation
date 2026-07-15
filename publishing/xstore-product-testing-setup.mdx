@@ -1,0 +1,61 @@
+---
+title: "Enabling XStore development and testing"
+sidebarTitle: "Enabling XStore testing"
+icon: "vial"
+description: "Publish to a dev sandbox, add test accounts, and confirm your product resolves through XStoreQueryAssociatedProductsAsync."
+---
+
+XStore is not usable from a dev kit or PC until your product is visible in the sandbox that machine is switched to. This page walks through the exact steps.
+
+## 1. Choose (or create) a development sandbox
+
+A **sandbox** is an isolated Store/services environment. Your team typically has one or more dev sandboxes with names like `PUBLISHER.1`, `PUBLISHER.2`. RETAIL is the sandbox real customers see.
+
+Create additional sandboxes under **Xbox Services → Sandboxes** in Partner Center.
+
+## 2. Publish the product to that sandbox
+
+In Partner Center for the product:
+
+1. Complete a **Store submission** with at least Product Setup, Pricing and Availability, Properties, Age Ratings, and Packages.
+2. Under **Pricing and Availability → Sandboxes**, add your dev sandbox.
+3. Submit the certification-free path (dev-sandbox submissions do not require full cert).
+4. Wait until the sandbox status shows **In the Store**.
+
+Repeat for every add-on you want to see at runtime.
+
+## 3. Switch the target machine to the sandbox
+
+On an Xbox devkit (via XbConnect / Windows Device Portal or `xbconnect.exe`):
+
+```text
+xbconnect /X:<devkit-name> sandbox PUBLISHER.1
+```
+
+On PC, use the **Gaming Services** sandbox switcher tool provided with the GDK, or set the sandbox via `wdapp.exe`.
+
+See [Switching sandboxes properly for store operations](/publishing/xstore-switching-sandbox) for PC-specific caveats.
+
+## 4. Add the test account to the sandbox
+
+Under **Xbox Services → Access**, add the Microsoft accounts you will sign in with to the sandbox's allow list. Sign that account out and back in on the device so the token refreshes.
+
+## 5. Sign in on the device and validate
+
+1. On the target device, sign in with an allow-listed test account.
+2. Launch your title (or the **Store** app in the sandbox) and confirm your product is discoverable.
+3. From your title, call `XStoreQueryAssociatedProductsAsync` and log the returned products.
+
+If nothing shows up, see the sandbox/access diagnostics in [Troubleshooting XStore development](/publishing/xstore-troubleshooting).
+
+## Recommended dev habits
+
+- Keep at least two test accounts: one that **owns** the product, one that does not.
+- Keep a **trial-owner** account for testing trial flows.
+- Keep a family group of accounts for family-sharing and home-Xbox scenarios.
+- After a Partner Center change, wait 5–15 minutes and re-launch before assuming your code is wrong — sandbox propagation is not instantaneous.
+
+## Next
+
+- [Enabling licensing testing](/publishing/xstore-licensing-setup) — turn on license enforcement for pre-launch checks.
+- [Troubleshooting XStore development](/publishing/xstore-troubleshooting)

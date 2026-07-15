@@ -1,0 +1,38 @@
+---
+title: "Renewing a User Store ID key"
+sidebarTitle: "Renewing UserStoreId"
+icon: "arrows-rotate"
+description: "Detect UserStoreId key rotation and refresh keys without interrupting player experience."
+---
+
+UserStoreIds are signed with a rotating publisher-scoped key. When Microsoft rotates the signing key, previously issued UserStoreIds may become invalid. Your service must recover automatically.
+
+## Symptoms of rotation
+
+- A previously valid UserStoreId starts returning `401 InvalidUserStoreId` (or `AuthenticationFailed`) from `/publisherQuery`, `/consume`, `/orders/query`, or `/recurrences/query`.
+- The client and service happily agreed on the UserStoreId minutes earlier; only now is it rejected.
+
+## Recovery pattern
+
+1. Detect the `401` in your service.
+2. Return a specific error to the client asking for a fresh UserStoreId (do **not** return the raw Store error).
+3. The client re-invokes `XStoreGetUserCollectionsIdAsync` (or `XStoreGetUserPurchaseIdAsync`) to fetch a new UserStoreId.
+4. The client resends the operation with the new UserStoreId.
+5. Service retries the Store call.
+
+Because the client-side call is fast (no user interaction), this loop is transparent to the player.
+
+## Prevent unnecessary rotation calls
+
+- Do not fetch a UserStoreId until you actually need it. Keys are one-shot in intent.
+- Never cache UserStoreIds across app sessions or across user sign-out.
+- When your service ingests a UserStoreId, use it and discard it — don't hold it in a queue for later.
+
+## Instrumentation
+
+Log every `401 InvalidUserStoreId` with the timestamp and the AAD app / product context. A spike in these errors typically signals a Microsoft-side rotation event; a slow trickle typically signals your service is caching UserStoreIds too long.
+
+## Related
+
+- [Requesting a User Store ID](/publishing/xstore-requesting-userstoreid)
+- [Authenticating your service](/publishing/xstore-authenticating-service)

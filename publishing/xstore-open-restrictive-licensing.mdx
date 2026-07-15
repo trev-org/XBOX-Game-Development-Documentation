@@ -1,0 +1,56 @@
+---
+title: "Open and restrictive licensing (PC)"
+sidebarTitle: "Open & restrictive licensing"
+icon: "lock-open"
+description: "Choose between open and restrictive licensing for PC titles and understand the trade-offs each model creates for offline play and DRM."
+---
+
+When configuring a PC title in Partner Center, you choose one of two license enforcement models:
+
+- **Open licensing** — the title can launch even if the license check fails to reach the Store server. Best for single-player content, offline scenarios, and titles that treat DRM lightly.
+- **Restrictive licensing** — the title requires a successful license check on every launch. Best for online-first titles or titles that need strong entitlement enforcement.
+
+Set this in **Partner Center → Product Setup → Licensing**.
+
+## Behavior differences
+
+| Aspect | Open | Restrictive |
+| --- | --- | --- |
+| First launch, license present | Launch | Launch |
+| First launch, Store client offline | Launch (open license grace) | Refuse launch |
+| Subsequent launch, license present, offline | Launch (cached license) | Grace period (configurable), then refuse |
+| License revoked mid-session | `PackageLicenseLost` fires | `PackageLicenseLost` fires |
+| Sandbox switch causing missing license | Launch may still succeed | Refuse launch |
+
+## When to choose open
+
+- Story-driven single-player games where an offline experience is important.
+- Titles that already ship additional DRM layers.
+- Free-to-play titles where you're relying on service-side entitlement checks anyway.
+
+## When to choose restrictive
+
+- Multiplayer-only titles.
+- Titles with heavy paid DLC where restricting play mirrors real-money value.
+- Games in markets where piracy pressure warrants stricter enforcement.
+
+## Trade-offs to weigh
+
+- Restrictive licensing eliminates certain "pirate can run the game offline" scenarios but produces launch failures during real-world outages (customer's ISP, Windows Update disrupting the Store client, corporate firewall).
+- Open licensing is friendlier to customers but means your title can run for extended periods against a stale license. Your service-side entitlement checks become the real backstop.
+
+## Testing licensing modes
+
+Simulate offline by:
+
+1. Ensuring the title has a fresh license (launch once online).
+2. Disconnecting the machine from the network.
+3. Launching the title. Behavior should match your chosen mode.
+
+Repeat with the machine offline for extended periods (1 day, 7 days, 30 days) to catch stale-license expiry cases specific to restrictive mode.
+
+## Related
+
+- [Basic DRM and license checks](/publishing/xstore-basic-drm)
+- [Enabling licensing testing](/publishing/xstore-licensing-setup)
+- [License tokens](/publishing/xstore-license-tokens)

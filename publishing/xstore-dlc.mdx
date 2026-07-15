@@ -1,0 +1,105 @@
+---
+title: "Manage and license downloadable content (DLC)"
+sidebarTitle: "Manage and license DLC"
+icon: "box"
+description: "Enumerate DLC packages, acquire licenses, mount packages, install chunks on demand, and monitor progress."
+---
+
+Durable-with-package add-ons ship their own MSIXVC content. Your title enumerates them, acquires a license, mounts the package, and installs chunks as gameplay demands them.
+
+## Enumerate DLC packages
+
+```cpp
+char packageId[XPACKAGE_IDENTIFIER_MAX_LENGTH];
+XPackageEnumeratePackages(
+    XPackageKind::Content,
+    XPackageEnumerationScope::ThisPublisher,
+    /* context */ nullptr,
+    [](void*, const XPackageDetails* details) -> bool {
+        // details->packageIdentifier, ->storeId, ->installState, ->version
+        return true; // continue
+    });
+```
+
+`XPackageDetails::installState` tells you whether the package is not present, staged, or fully installed. Chunks let you download progressively.
+
+## Acquire a license for the package
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    XStoreLicenseHandle handle = nullptr;
+    HRESULT hr = XStoreAcquireLicenseForPackageResult(async, &handle);
+    // handle owns the license until closed
+    delete async;
+};
+
+XStoreAcquireLicenseForPackageAsync(
+    context,
+    packageIdentifier,
+    async.release());
+```
+
+Register `XStoreRegisterPackageLicenseLost` on the handle so you can re-lock the DLC if the license goes away.
+
+## Mount the package
+
+```cpp
+XPackageMountHandle mount = nullptr;
+HRESULT hr = XPackageMount(packageIdentifier, &mount);
+if (SUCCEEDED(hr)) {
+    char mountPath[MAX_PATH];
+    XPackageGetMountPath(mount, sizeof(mountPath), mountPath);
+    // Read content from mountPath
+}
+```
+
+For first-run mount with UI (progress spinner), use `XPackageMountWithUiAsync`.
+
+## Install chunks on demand
+
+Streaming installs let players start playing before every chunk is present. Kick off an install for the chunks a specific level needs:
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    HRESULT hr = XPackageInstallChunksResult(async);
+    delete async;
+};
+
+uint32_t chunkIds[] = { 3, 4, 5 };
+XPackageInstallChunksAsync(
+    packageIdentifier,
+    ARRAYSIZE(chunkIds),
+    chunkIds,
+    /* minimumBytes */ 0,
+    /* suppressUserConfirmation */ true,
+    async.release());
+```
+
+## Monitor install progress
+
+```cpp
+XTaskQueueRegistrationToken token = {};
+XPackageRegisterInstallationProgressChanged(
+    packageIdentifier,
+    taskQueue,
+    /* context */ nullptr,
+    [](void*, const XPackageInstallationProgress* p) {
+        // p->totalBytes, p->installedBytes, p->launchable, p->completed
+    },
+    &token);
+```
+
+## Package best practices
+
+- Fail gracefully if a chunk isn't installed yet — kick off a background install and show a small UI hint.
+- Prefer `XPackageMountWithUiAsync` on first mount so the OS can display a progress dialog if content is still streaming.
+- Register `XStoreRegisterPackageLicenseLost` on every DLC package you rely on. Don't cache mount handles across suspend / resume without re-checking.
+- Use `XPackageEnumeratePackages` on startup to establish which optional content is currently on the device before deciding which chunks to fetch.
+
+## Related
+
+- [Checking for updates](/publishing/xstore-checking-updates)
+- [How to use a durable without a package](/publishing/xstore-dwob)
+- [Basic store operations](/publishing/xstore-basic-operations)

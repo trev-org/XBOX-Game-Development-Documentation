@@ -1,0 +1,72 @@
+---
+title: "Enabling licensing testing"
+sidebarTitle: "Enabling licensing testing"
+icon: "shield-check"
+description: "Turn on license enforcement in your dev sandbox so XStore returns realistic license state, including trial and expired-license scenarios."
+---
+
+By default, dev sandboxes are permissive: they may report your test account as fully licensed for everything, which masks license-loss and trial paths in code. To exercise the real licensing behavior, enable licensing enforcement.
+
+## When licensing enforcement matters
+
+- Verifying **`XStoreRegisterPackageLicenseLost`** fires (family-sharing changes, refunds).
+- Testing **trial** flows where `isTrial` is true.
+- Validating **PC License Tokens** for services (see [License tokens](/publishing/xstore-license-tokens)).
+- Testing that your title gracefully handles a lost DLC license mid-session.
+
+## Enable licensing on the product
+
+1. In Partner Center, open the product and go to **Product Setup**.
+2. Under **Licensing**, ensure the product is **Marked as Provisioned** for your dev sandbox.
+3. If your product is PC or PC XBOX, choose between **Open** and **Restrictive** licensing (see [Open and restrictive licensing](/publishing/xstore-open-restrictive-licensing)).
+4. Publish/republish the product to the sandbox.
+
+## Prime the test account
+
+A test account only sees a license after it has **acquired** the product (even if free) in that sandbox:
+
+- Sign in on a devkit / PC that is in the sandbox.
+- Open the **Store** app.
+- Find the product and select **Get** (dev sandboxes typically have \$0 pricing).
+- Confirm the acquisition. The Store grants a license to the account.
+
+For **trial** testing, choose **Try** instead of **Get**. The account will have `isTrial = true` with the configured cap.
+
+## Exercising license-lost scenarios
+
+To simulate a lost license:
+
+- **Refund path** — in the Store app, remove the license ("Manage" → remove). `XStoreRegisterPackageLicenseLost` fires while your title is running.
+- **Family sharing path** — sign in a family-member account on another device with the primary owner elsewhere and revoke home-Xbox designation.
+- **Sandbox switch** — switch the device to a sandbox where the account does not own the product; on relaunch, the license query returns unlicensed.
+
+## Validating from your title
+
+```cpp
+XStoreGameLicense license = {};
+HRESULT hr = XStoreQueryGameLicense(context, &license);
+
+if (SUCCEEDED(hr)) {
+    // license.isTrial
+    // license.isTrialOwnedByThisUser
+    // license.trialTimeRemainingInSeconds
+    // license.expirationDate
+}
+
+XTaskQueueRegistrationToken token = {};
+XStoreRegisterPackageLicenseLost(
+    packageLicense,
+    taskQueue,
+    context,
+    [](void* ctx) { /* handle license loss */ },
+    &token);
+```
+
+<Warning>
+  Do not cache license state across `XStoreRegisterPackageLicenseLost` callbacks. Always re-query on suspend/resume and on user change.
+</Warning>
+
+## Next
+
+- [Troubleshooting XStore development](/publishing/xstore-troubleshooting)
+- [Basic DRM and license checks](/publishing/xstore-basic-drm) (PC)

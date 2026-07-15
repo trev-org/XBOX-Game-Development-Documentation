@@ -1,0 +1,68 @@
+---
+title: "purchase.mp.microsoft.com/v8.0/b2b/recurrences/{recurrenceId}/change"
+sidebarTitle: "v8 recurrences change"
+icon: "code"
+description: "Change or cancel a subscription recurrence from your backend."
+---
+
+Modify a subscription recurrence — typically to cancel auto-renew, or (where allowed) to refund the current period. Retrieve `recurrenceId` from [`recurrences/query`](/publishing/xstore-rest-recurrence-query) first.
+
+## Endpoint
+
+```text
+POST https://purchase.mp.microsoft.com/v8.0/b2b/recurrences/{recurrenceId}/change
+```
+
+## Request body
+
+```json
+{
+  "userStoreId": "{purchaseUserStoreId}",
+  "changeType": "Cancel",
+  "cancellationOptions": {
+    "refundType": "None"
+  }
+}
+```
+
+### `changeType` values
+
+| Value | Effect |
+| --- | --- |
+| `Cancel` | Turns off auto-renew. Benefits continue until `expirationTime` unless `refundType` triggers early revoke. |
+| `Refund` | Where allowed, refunds the current period and revokes the subscription. |
+| `ExtendedEntitlement` | Grants an extension (customer support scenarios). |
+
+### `cancellationOptions.refundType`
+
+| Value | Meaning |
+| --- | --- |
+| `None` | Keep benefits until `expirationTime`. |
+| `Full` | Refund fully and revoke immediately. |
+| `Prorated` | Prorated refund based on unused portion. |
+
+Which refund types are permitted depends on the subscription product's Partner Center configuration.
+
+## Response body
+
+```json
+{
+  "recurrenceId": "{guid}",
+  "recurrenceState": "Canceled",
+  "cancellationDate": "2024-01-16T08:00:00Z",
+  "expirationTime": "2024-02-15T00:00:00Z"
+}
+```
+
+## Errors
+
+| HTTP | `code` | Fix |
+| --- | --- | --- |
+| 400 | `InvalidChangeType` | This `changeType` is not permitted for this product |
+| 404 | `RecurrenceNotFound` | `recurrenceId` invalid or already ended |
+| 409 | `AlreadyCanceled` | The recurrence is already in a Canceled state |
+
+## Related
+
+- [Managing subscription products from your service](/publishing/xstore-managing-subscriptions)
+- [Recurrences query](/publishing/xstore-rest-recurrence-query)

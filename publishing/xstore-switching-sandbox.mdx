@@ -1,0 +1,64 @@
+---
+title: "Switching sandboxes properly for store operations (PC)"
+sidebarTitle: "Switching PC sandboxes"
+icon: "box-archive"
+description: "Correctly switch PC Gaming Services between sandboxes so XStore queries return the expected products and licenses."
+---
+
+On PC, XStore's sandbox is managed by **Gaming Services**. Switching it improperly is the most common source of "my product isn't showing up" reports on PC.
+
+## Verify the current sandbox
+
+From an elevated command prompt:
+
+```text
+wdapp getsandbox
+```
+
+Or from PowerShell using the Gaming Services module (GDK tools).
+
+## Switch the sandbox
+
+```text
+wdapp setsandbox PUBLISHER.1
+```
+
+After switching:
+
+1. Close every running instance of your title and the Microsoft Store app.
+2. Sign out of the Microsoft Store app and sign back in (or restart Windows).
+3. Launch your title. XStore now queries against the new sandbox.
+
+## Why the sign-out
+
+Gaming Services and the Store app cache the previous sandbox's identity tokens. Without a re-sign-in you may see stale license responses for a few minutes to hours.
+
+## Sandboxes on PC vs. console
+
+| Behavior | Console | PC |
+| --- | --- | --- |
+| Sandbox scoped per | Console device | Windows user account |
+| Switching affects | Everyone signed in on the console | Only the current Windows user |
+| Cached tokens invalidated | Immediately | After sign-out/sign-in of Store app |
+
+## Rules of thumb
+
+- Never leave a dev PC on the RETAIL sandbox when doing paid-purchase testing — you will spend real money.
+- Never assume the sandbox stays what you set it to across reboots — verify at startup with `wdapp getsandbox`.
+- Make sure your test account has access to the sandbox before switching; otherwise the account's entitlements disappear.
+- If you use multiple Windows profiles, remember each profile has its own sandbox.
+
+## Common failures after a switch
+
+| Symptom | Fix |
+| --- | --- |
+| `XStoreQueryGameLicenseAsync` returns inactive | Sign out/in of Microsoft Store app |
+| Products not in `XStoreQueryAssociatedProductsAsync` | Publish product to new sandbox, wait ~15 min |
+| Trial license lost across sandbox switch | Re-acquire trial in new sandbox |
+| Purchase UI shows RETAIL prices in dev sandbox | Ensure `wdapp setsandbox` succeeded and Store app is restarted |
+
+## Related
+
+- [Enabling XStore development and testing](/publishing/xstore-product-testing-setup)
+- [Handling mismatched store account scenarios](/publishing/xstore-mismatched-accounts)
+- [Troubleshooting XStore development](/publishing/xstore-troubleshooting)

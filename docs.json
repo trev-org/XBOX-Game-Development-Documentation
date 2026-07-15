@@ -609,12 +609,80 @@
             "group": "XStore commerce",
             "icon": "cart-shopping",
             "pages": [
+              "publishing/xstore-commerce-overview",
+              {
+                "group": "Getting started",
+                "icon": "rocket",
+                "pages": [
+                  "publishing/xstore-overview",
+                  "publishing/xstore-choosing-product-type",
+                  "publishing/xstore-initial-configuration",
+                  "publishing/xstore-product-testing-setup",
+                  "publishing/xstore-licensing-setup",
+                  "publishing/xstore-troubleshooting"
+                ]
+              },
+              {
+                "group": "Fundamentals",
+                "icon": "cube",
+                "pages": [
+                  "publishing/xstore-basic-operations",
+                  "publishing/xstore-granting-access",
+                  "publishing/xstore-product-sharing",
+                  "publishing/xstore-trials",
+                  "publishing/xstore-dlc",
+                  "publishing/xstore-checking-updates",
+                  "publishing/xstore-dwob",
+                  "publishing/xstore-consumables",
+                  "publishing/xstore-bundles-season-passes"
+                ]
+              },
+              {
+                "group": "Manage from your services",
+                "icon": "network-wired",
+                "pages": [
+                  "publishing/xstore-authenticating-service",
+                  "publishing/xstore-query-entitlements",
+                  "publishing/xstore-detecting-game-pass",
+                  "publishing/xstore-managing-subscriptions",
+                  "publishing/xstore-managing-consumables",
+                  "publishing/xstore-managing-refunds",
+                  "publishing/xstore-requesting-userstoreid",
+                  "publishing/xstore-requesting-userstoreid-oauth",
+                  "publishing/xstore-renew-userstoreid",
+                  "publishing/xstore-fgrl"
+                ]
+              },
+              {
+                "group": "Microsoft Store REST APIs",
+                "icon": "code",
+                "pages": [
+                  "publishing/xstore-rest-api-reference",
+                  "publishing/xstore-rest-v9-query",
+                  "publishing/xstore-rest-v8-query",
+                  "publishing/xstore-rest-consume",
+                  "publishing/xstore-rest-clawback-v1",
+                  "publishing/xstore-rest-clawback-v2-sastoken",
+                  "publishing/xstore-rest-grant",
+                  "publishing/xstore-rest-recurrence-query",
+                  "publishing/xstore-rest-recurrence-change"
+                ]
+              },
+              {
+                "group": "PC-specific considerations",
+                "icon": "windows",
+                "pages": [
+                  "publishing/xstore-pc",
+                  "publishing/xstore-basic-drm",
+                  "publishing/xstore-open-restrictive-licensing",
+                  "publishing/xstore-license-tokens",
+                  "publishing/xstore-mismatched-accounts",
+                  "publishing/xstore-switching-sandbox"
+                ]
+              },
               "publishing/xstore-deep-dive",
-              "publishing/xstore-pc",
               "publishing/xstore-testing-setup",
-              "publishing/xstore-server-to-service",
-              "publishing/xstore-troubleshooting",
-              "publishing/xstore-rest-api-reference"
+              "publishing/xstore-server-to-service"
             ]
           },
           {

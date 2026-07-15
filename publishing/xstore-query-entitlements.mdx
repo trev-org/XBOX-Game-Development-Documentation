@@ -1,0 +1,85 @@
+---
+title: "Query user entitlements from your services"
+sidebarTitle: "Query user entitlements"
+icon: "magnifying-glass"
+description: "Use the collections/publisherQuery endpoint to authoritatively list a user’s entitlements from your backend."
+---
+
+Querying entitlements from your service (rather than the client) gives you an authoritative view of what a player owns — essential for granting server-side rewards, awarding cross-title bonuses, or verifying purchases before shipping physical merchandise.
+
+## Prerequisites
+
+- Server can obtain an Azure AD access token — see [Authenticating your service](/publishing/xstore-authenticating-service).
+- Client has fetched a **User Store ID (collections)** and sent it to your service — see [Requesting a User Store ID](/publishing/xstore-requesting-userstoreid).
+- Your app is associated with the Partner Center product being queried.
+
+## Endpoint
+
+`POST https://collections.mp.microsoft.com/v9.0/collections/publisherQuery`
+
+Full request/response schema: [v9 publisherQuery reference](/publishing/xstore-rest-v9-query).
+
+## Minimal example
+
+```http
+POST https://collections.mp.microsoft.com/v9.0/collections/publisherQuery
+Authorization: Bearer {aadToken}
+Host: collections.mp.microsoft.com
+Content-Type: application/json
+MS-ContractVersion: 1
+
+{
+  "beneficiaries": [
+    {
+      "identityType": "b2b",
+      "identityValue": "{userStoreId}",
+      "localTicketReference": "gamer-1234"
+    }
+  ],
+  "modifiedAfter": "2024-01-01T00:00:00Z",
+  "expandSatisfyingItems": true,
+  "entitlementFilters": ["Game", "Durable", "UnmanagedConsumable", "Consumable", "Pass"],
+  "productSkuIds": [
+    { "productId": "9NBLGGH42THS" }
+  ],
+  "validityType": "Valid"
+}
+```
+
+## What you get back
+
+The response is a JSON list of items with:
+
+- `productId`, `skuId`, `productKind` — which product is entitled.
+- `startDate`, `endDate` — validity window.
+- `status` — `Active`, `Suspended`, `Expired`, `Revoked`.
+- `orderId`, `orderLineItemId`, `acquisitionType` — how the entitlement was acquired (Purchase, Gift, GamePass, etc.).
+- For bundles, `satisfyingItems` — the child products the bundle grants.
+
+## Common patterns
+
+### "Does this player own product X?"
+
+Send `productSkuIds` filtered to X's productId; if the response contains a `status: Active` item, the answer is yes.
+
+### "What Game Pass tier does this player have?"
+
+Set `entitlementFilters` to `["Pass"]` and inspect the returned pass IDs. See [Detecting Xbox Game Pass](/publishing/xstore-detecting-game-pass) for the specific IDs to check.
+
+### "Sync entitlements to my DB nightly"
+
+Store the last successful call's timestamp and pass it as `modifiedAfter` next run to get an incremental delta.
+
+## Errors and rate limits
+
+See [Fine-grained rate limiting](/publishing/xstore-fgrl) for 429 handling. Common issues:
+
+- `400 InvalidRequest` — request body missing required fields (usually `beneficiaries[0].identityValue`).
+- `401` — stale or wrong-audience AAD token.
+- `404` — product not associated with the publisher of the AAD app.
+
+## Related
+
+- [`collections.mp.microsoft.com/v9.0/collections/publisherQuery` reference](/publishing/xstore-rest-v9-query)
+- [`collections.mp.microsoft.com/v8.0/collections/b2bLicensePreview` reference](/publishing/xstore-rest-v8-query)
+- [Managing subscription products from your service](/publishing/xstore-managing-subscriptions)

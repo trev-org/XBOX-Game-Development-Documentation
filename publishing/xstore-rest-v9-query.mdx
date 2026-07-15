@@ -1,0 +1,124 @@
+---
+title: "collections.mp.microsoft.com/v9.0/collections/publisherQuery"
+sidebarTitle: "v9 publisherQuery"
+icon: "code"
+description: "Modern v9 endpoint for querying a user's entitlements to your publisher's products."
+---
+
+The v9 `publisherQuery` endpoint is the current, recommended way to enumerate a user's entitlements for products in your Partner Center publisher. It supersedes the v8 `b2bLicensePreview` endpoint for new integrations.
+
+## Endpoint
+
+```text
+POST https://collections.mp.microsoft.com/v9.0/collections/publisherQuery
+```
+
+## Headers
+
+| Header | Value |
+| --- | --- |
+| `Authorization` | `Bearer {aadAccessToken}` — see [Authenticating your service](/publishing/xstore-authenticating-service) |
+| `Content-Type` | `application/json` |
+| `Host` | `collections.mp.microsoft.com` |
+| `MS-ContractVersion` | `1` |
+| `MS-CorrelationId` | GUID for debugging (optional but recommended) |
+| `MS-RequestId` | Unique GUID per request |
+
+## Request body
+
+```json
+{
+  "beneficiaries": [
+    {
+      "identityType": "b2b",
+      "identityValue": "{userStoreId}",
+      "localTicketReference": "correlation-id"
+    }
+  ],
+  "modifiedAfter": "2024-01-01T00:00:00Z",
+  "expandSatisfyingItems": true,
+  "entitlementFilters": [
+    "Game", "Application", "Durable", "UnmanagedConsumable", "Consumable", "Pass", "OwnedByFriends"
+  ],
+  "productSkuIds": [
+    { "productId": "9NBLGGH42THS", "skuId": "0010" }
+  ],
+  "validityType": "Valid",
+  "market": "US"
+}
+```
+
+### Fields
+
+| Field | Notes |
+| --- | --- |
+| `beneficiaries` | Required. Array of identities. `identityType` is typically `b2b`; `identityValue` is the UserStoreId. |
+| `modifiedAfter` | Optional. ISO-8601 UTC. Return only items modified after this time. |
+| `expandSatisfyingItems` | Optional. For bundles, return the child items granted. |
+| `entitlementFilters` | Optional. Restrict returned types. |
+| `productSkuIds` | Optional. Restrict to specific products/SKUs. |
+| `validityType` | `Valid`, `Invalid`, or `All`. Default `Valid`. |
+| `market` | Optional 2-letter market override. |
+
+## Response body
+
+```json
+{
+  "items": [
+    {
+      "id": "{itemInstanceId}",
+      "itemType": "Durable",
+      "productId": "9NBLGGH42THS",
+      "productKind": "Durable",
+      "skuId": "0010",
+      "status": "Active",
+      "acquisitionType": "Purchase",
+      "startDate": "2024-01-15T18:32:44.123Z",
+      "endDate": "9999-12-31T23:59:59.999Z",
+      "orderId": "{guid}",
+      "orderLineItemId": "{guid}",
+      "beneficiary": { "identityType": "b2b", "identityValue": "{userStoreId}" },
+      "satisfiedByProductIds": ["9PXYZ..."],
+      "quantity": 1
+    }
+  ],
+  "continuationToken": null
+}
+```
+
+## Common query recipes
+
+### Does this user own a specific product?
+
+```json
+{
+  "beneficiaries": [{ "identityType": "b2b", "identityValue": "{userStoreId}" }],
+  "productSkuIds": [{ "productId": "9NBLGGH42THS" }],
+  "validityType": "Valid"
+}
+```
+
+### Return all durables \+ passes the user owns
+
+```json
+{
+  "beneficiaries": [{ "identityType": "b2b", "identityValue": "{userStoreId}" }],
+  "entitlementFilters": ["Durable", "Pass"],
+  "expandSatisfyingItems": true
+}
+```
+
+## Errors
+
+| HTTP | Body `code` | Fix |
+| --- | --- | --- |
+| 400 | `InvalidRequest` | Missing or malformed `beneficiaries[0].identityValue` |
+| 401 | `AuthenticationFailed` | Refresh AAD token; check audience |
+| 401 | `InvalidUserStoreId` | Fetch a fresh UserStoreId ([Renewing UserStoreId](/publishing/xstore-renew-userstoreid)) |
+| 404 | `ProductNotFound` | Product not associated with your publisher |
+| 429 | `TooManyRequests` | Back off ([FGRL](/publishing/xstore-fgrl)) |
+
+## Related
+
+- [Query user entitlements from your services](/publishing/xstore-query-entitlements)
+- [v8 `b2bLicensePreview`](/publishing/xstore-rest-v8-query)

@@ -1,0 +1,77 @@
+---
+title: "Implementing trials for your game"
+sidebarTitle: "Implementing trials"
+icon: "hourglass-half"
+description: "Add time-limited or usage-limited trials, detect trial state at runtime, and upsell trial players to the full product."
+---
+
+A trial is a **mode** on your base game (and, in some cases, on add-ons), not a separate product. Configure the trial in Partner Center and gate content in your title based on the trial license state.
+
+## Two trial models
+
+### Time-limited trial
+
+The Microsoft Store enforces the trial cap (for example, 60 minutes of play). You just read `license.trialTimeRemainingInSeconds` and show a countdown.
+
+- Best for linear experiences where any first hour is a good demo.
+- The Store terminates the trial license automatically when time expires.
+
+### Usage-limited trial
+
+You set a cap in your own terms (levels, missions, characters). The Store grants a persistent trial license; your title decides when the demo ends.
+
+- Best for games with a natural chapter or level boundary.
+- Your title is responsible for locking content and prompting purchase.
+
+## Configure the trial in Partner Center
+
+1. Open the base-game product.
+2. Go to **Product Setup** → **Trial**.
+3. Choose **Time-limited** or **Usage-limited** and (for time-limited) set the cap.
+4. Save and republish to your sandboxes.
+
+## Detect trial state at runtime
+
+```cpp
+XStoreGameLicense license = {};
+HRESULT hr = XStoreQueryGameLicense(context, &license);
+
+if (SUCCEEDED(hr) && license.isActive) {
+    if (license.isTrial) {
+        // Trial mode
+        if (license.isTrialOwnedByThisUser) {
+            // This user has an active trial license
+            uint32_t secondsLeft = license.trialTimeRemainingInSeconds; // 0 = unlimited/usage-limited
+        } else {
+            // Trial license visible via sharing but not owned by this user
+        }
+    } else {
+        // Full license
+    }
+}
+```
+
+## Show the upsell
+
+When the player reaches the trial boundary (time near zero, or usage cap hit), present the full-product purchase:
+
+```cpp
+XStoreShowPurchaseUIAsync(context, baseGameStoreId, L"Unlock the full game", nullptr, async);
+```
+
+When the UI dismisses, re-query the license. If the user completed the purchase, `isTrial` becomes `false`.
+
+## React to trial expiration
+
+Register `XStoreRegisterGameLicenseChanged`. On time-limited trials, the callback fires when the cap is reached and the license transitions to inactive; save state and return the player to a lobby / purchase screen.
+
+## Trial testing tips
+
+- Trial acquisition must happen through the Microsoft Store UI in the target sandbox — there is no Partner Center switch to grant a trial license.
+- Once you grant a **full** license to a test account, you cannot re-acquire the trial for that account. Keep a dedicated trial-owner test account.
+- Time-limited trial time is tracked per account, not per device.
+
+## Related
+
+- [GDK Commerce Systems Overview](/publishing/xstore-overview)
+- [Basic store operations](/publishing/xstore-basic-operations)

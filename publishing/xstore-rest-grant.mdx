@@ -1,0 +1,75 @@
+---
+title: "purchase.mp.microsoft.com/v7.0/purchases/grant"
+sidebarTitle: "v7 purchases/grant"
+icon: "code"
+description: "Grant a product to a user from your service (promotional grants, customer-support corrections)."
+---
+
+The `purchases/grant` endpoint gives your service the ability to grant a product to a user without a purchase flow — for promotional grants, customer-support corrections, or founders'-pack redemption.
+
+<Warning>
+  Availability of the grant endpoint is scoped to specific product configurations and requires the endpoint be enabled by Microsoft for your publisher. Confirm with your Xbox representative before integrating.
+</Warning>
+
+## Endpoint
+
+```text
+POST https://purchase.mp.microsoft.com/v7.0/purchases/grant
+```
+
+## Request body
+
+```json
+{
+  "userStoreId": "{purchaseUserStoreId}",
+  "productId": "9NBLGGH42XYZ",
+  "skuId": "0010",
+  "availabilityId": "{availabilityGuid}",
+  "pricingContext": {
+    "market": "US",
+    "currency": "USD",
+    "listPrice": 0.00,
+    "msrp": 0.00
+  },
+  "quantity": 1,
+  "orderIdempotencyKey": "{guid}"
+}
+```
+
+### Fields
+
+| Field | Notes |
+| --- | --- |
+| `productId`, `skuId`, `availabilityId` | Identifies the exact SKU \+ availability to grant. `availabilityId` comes from Partner Center Store listings. |
+| `pricingContext` | Zero-cost promotional context. |
+| `orderIdempotencyKey` | Required GUID. Same GUID = same grant recorded once. |
+
+## Response body
+
+```json
+{
+  "orderId": "{guid}",
+  "orderState": "Purchased",
+  "lineItems": [
+    { "orderLineItemId": "{guid}", "productId": "9NBLGGH42XYZ", "skuId": "0010", "quantity": 1 }
+  ]
+}
+```
+
+## Errors
+
+| HTTP | `code` | Fix |
+| --- | --- | --- |
+| 400 | `InvalidAvailability` | Confirm `availabilityId` in Partner Center |
+| 403 | `GrantNotAllowed` | Publisher not enabled for `/grant` on this product |
+| 409 | Repeated `orderIdempotencyKey` | Same key \+ same body returns the original grant |
+
+## Common uses
+
+- Founders-pack fulfillment when a customer redeems a code obtained outside the Microsoft Store.
+- Customer-support reruns of a lost grant.
+- Promotional grants tied to a campaign.
+
+## Related
+
+- [Managing refunds and chargebacks](/publishing/xstore-managing-refunds)

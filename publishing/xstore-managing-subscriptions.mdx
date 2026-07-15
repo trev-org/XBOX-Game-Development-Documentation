@@ -1,0 +1,62 @@
+---
+title: "Managing subscription products from your service"
+sidebarTitle: "Managing subscriptions"
+icon: "repeat"
+description: "List a user's recurrences, change auto-renew, and cancel subscriptions from your backend using the recurrences REST endpoints."
+---
+
+Store-managed subscriptions (including Game Pass and any custom subscription products) can be inspected and modified from your service via the **recurrences** REST endpoints. This gives you the same capabilities the customer has in the Microsoft Store, but scoped to products your publisher owns.
+
+## Query a user's recurrences
+
+List a user's active subscriptions to your products with [`purchase.mp.microsoft.com/v8.0/b2b/recurrences/query`](/publishing/xstore-rest-recurrence-query):
+
+```http
+POST https://purchase.mp.microsoft.com/v8.0/b2b/recurrences/query
+Authorization: Bearer {aadToken}
+Content-Type: application/json
+
+{
+  "userStoreId": "{purchaseUserStoreId}"
+}
+```
+
+The response contains a list of `recurrenceStates`, each with:
+
+- `recurrenceId` — the handle you'll use to change or cancel.
+- `productId`, `skuId` — which subscription.
+- `recurrenceState` — `Active`, `Inactive`, `Canceled`, `Failed`.
+- `startTime`, `expirationTime`, `lastRenewalTime`.
+- `autoRenew` — whether the subscription will renew.
+
+## Change a recurrence
+
+Turn auto-renew off, or cancel effective at period end, with [`purchase.mp.microsoft.com/v8.0/b2b/recurrences/{recurrenceId}/change`](/publishing/xstore-rest-recurrence-change):
+
+```http
+POST https://purchase.mp.microsoft.com/v8.0/b2b/recurrences/{recurrenceId}/change
+Authorization: Bearer {aadToken}
+Content-Type: application/json
+
+{
+  "userStoreId": "{purchaseUserStoreId}",
+  "changeType": "Cancel"
+}
+```
+
+Supported `changeType` values include `Cancel`, `Refund`, and `ExtendedEntitlement` (per your product configuration). Confirm which apply to your subscription in Partner Center.
+
+## Cancel-at-period-end vs. immediate refund
+
+- **Cancel** — the subscription stays active until `expirationTime`, then does not renew. Customer keeps benefits until then.
+- **Refund** (where allowed) — revokes the entitlement and issues a refund per the Store's refund rules. Use for customer-support flows.
+
+## Detect Game Pass cancellation server-side
+
+Because `recurrences/query` returns the current `autoRenew` state, you can detect "about to lapse" and offer retention. Do not poll this endpoint frequently — respect [rate limits](/publishing/xstore-fgrl).
+
+## Related
+
+- [Detecting Xbox Game Pass](/publishing/xstore-detecting-game-pass)
+- [Recurrence-query reference](/publishing/xstore-rest-recurrence-query)
+- [Recurrence-change reference](/publishing/xstore-rest-recurrence-change)

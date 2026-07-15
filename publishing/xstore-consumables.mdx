@@ -1,0 +1,82 @@
+---
+title: "Consumable-based ecosystems"
+sidebarTitle: "Consumables"
+icon: "coins"
+description: "Model in-game currency and one-shot items as Store-managed or developer-managed consumables and fulfill them safely."
+---
+
+Consumables represent things a player uses up: virtual currency, one-shot boosts, single-use keys. XStore supports two flavors, differing in **who tracks the balance**.
+
+## Store-managed consumables
+
+The Microsoft Store tracks the remaining balance. Your title reads it and reports spend; the Store persists everything.
+
+### Read the balance
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    uint32_t balance = 0;
+    HRESULT hr = XStoreQueryConsumableBalanceRemainingResult(async, &balance);
+    // balance = current remaining quantity
+    delete async;
+};
+
+XStoreQueryConsumableBalanceRemainingAsync(
+    context,
+    storeId,
+    async.release());
+```
+
+### Report a fulfillment (spend)
+
+```cpp
+GUID trackingIdGuid;
+CoCreateGuid(&trackingIdGuid);
+
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    uint32_t newBalance = 0;
+    GUID tracking = {};
+    HRESULT hr = XStoreReportConsumableFulfillmentResult(async, &newBalance, &tracking);
+    delete async;
+};
+
+XStoreReportConsumableFulfillmentAsync(
+    context,
+    storeId,
+    /* quantity */ 100,
+    trackingIdGuid,
+    async.release());
+```
+
+<Tip>
+  Generate the `trackingId` **before** you call the API and persist it locally. If your title crashes between the debit and the report, retry with the same GUID — the Store treats the second call as an idempotent retry and returns the already-recorded new balance.
+</Tip>
+
+### Best practices for hard currency
+
+- Do all currency spend server-side (see [Managing consumable products from your service](/publishing/xstore-managing-consumables)) so the balance is authoritative even when the client is offline or tampered with.
+- Have the client hand a UserStoreId to your service; the service fulfills the consumable via S2S and updates your DB of record.
+- Cache the balance on the client only for UI. The service is the source of truth.
+
+## Developer-managed consumables
+
+The Store records the purchase but doesn't track a balance — your service does.
+
+- Use for one-shot items (single-use boost, promo code redemption).
+- On purchase, the product shows up in `XStoreQueryEntitledProductsAsync`.
+- Your service redeems the entitlement (typically via the `collections/consume` S2S endpoint) and marks it as spent in your DB.
+
+## Handling failures
+
+| Symptom | Likely cause |
+| --- | --- |
+| `XStoreReportConsumableFulfillmentAsync` returns success but balance unchanged | Duplicate `trackingId` — the Store idempotently retried |
+| Balance says 0 immediately after purchase | UI showed success before the Store finished commit; poll for a few seconds |
+| Cannot fulfill against a developer-managed product | You are using the Store-managed API on a developer-managed product |
+
+## Related
+
+- [Managing consumable products from your service](/publishing/xstore-managing-consumables)
+- [`collections/consume` S2S endpoint](/publishing/xstore-rest-consume)

@@ -1,0 +1,57 @@
+---
+title: "Handling mismatched store account scenarios on PC"
+sidebarTitle: "Mismatched store accounts"
+icon: "user-slash"
+description: "Detect when the game user and Microsoft Store user differ on PC and guide the customer to a clean state."
+---
+
+On PC, the account running your title (`XUser*`) and the account signed into the **Microsoft Store** app can be different. When they are, XStore license checks can return unexpected results — usually reporting the Store-signed-in account's entitlements rather than the game user's.
+
+Most customers fall into this state accidentally: they signed into the Store app with a personal MSA years ago, then created a new work account, or joined a shared family PC.
+
+## Detect the mismatch
+
+Query the identity of both accounts:
+
+```cpp
+// Game user
+uint64_t gameXuid = 0;
+XUserGetId(user, &gameXuid);
+
+// Store user — available via XStore APIs after XStoreCreateContext
+// Compare license.licenseXuid against gameXuid; if they diverge in a way that
+// doesn't match Home-Xbox / family-sharing, you likely have a mismatched
+// Store-app account.
+```
+
+A cleaner signal: `XStoreQueryGameLicenseAsync` returns `isActive = false` for the game user even though you expected true, and the customer confirms they own the game.
+
+## Guide the customer to fix it
+
+Do **not** try to force-align the accounts programmatically. Show a clear UI:
+
+> "It looks like the Microsoft Store on this PC is signed in as a different account than \[game gamertag\]. To play with your entitlements, sign into the Microsoft Store with the account that purchased this game, or sign out of the Microsoft Store to use the account you're playing as."
+
+Provide two actions:
+
+1. **Open the Microsoft Store app** — launch `ms-windows-store:` deep link to let the customer switch accounts.
+2. **Continue anyway** — for open-licensed titles with offline grace, allow the session to proceed with limited features.
+
+## Prevent your own mistakes
+
+- Don't stamp the customer's game progression / achievements against the Store account. Always use the game user (`XUserGetId`) as the identity.
+- Do fetch UserStoreIds against the correct context; if the license belongs to a different account, `XStoreGetUserCollectionsIdAsync` still fetches for the current XUser, which is what your service should reconcile.
+
+## Testing
+
+Simulate the mismatch:
+
+1. Sign into the Microsoft Store app as account A.
+2. Sign into Windows as account B and launch the title using account B in `XUserAddAsync`.
+3. Observe license behavior and confirm your title surfaces the appropriate UI.
+
+## Related
+
+- [Basic DRM and license checks](/publishing/xstore-basic-drm)
+- [Switching sandboxes properly for store operations](/publishing/xstore-switching-sandbox)
+- [Troubleshooting XStore development](/publishing/xstore-troubleshooting)

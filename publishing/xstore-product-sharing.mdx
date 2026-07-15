@@ -1,0 +1,57 @@
+---
+title: "Product sharing model for games"
+sidebarTitle: "Product sharing model"
+icon: "users"
+description: "How Home Xbox, family sharing, Xbox Game Pass, and Play Anywhere grant entitlements across accounts and devices."
+---
+
+Microsoft Store entitlements are not always one-license-per-account. Understanding the sharing model helps you predict what `XStoreQueryGameLicense` and `XStoreQueryAddOnLicensesAsync` will return in real households.
+
+## Home Xbox
+
+Every Microsoft account can designate exactly one console as its **Home Xbox**. On that console:
+
+- Anyone signed in can play the digital games the Home-Xbox account owns.
+- The Home-Xbox account itself can play those games on other consoles when signed in.
+
+At runtime, this presents as an active license without the current user being the license owner. `licenseXuid` (on `XStoreGameLicense` and `XStoreAddonLicense`) tells you which account granted the entitlement.
+
+## Family sharing (Microsoft family group)
+
+Adults and children in a Microsoft family group can share purchases when the family setting is enabled. This works across accounts, not devices — the shared license appears wherever the family member signs in.
+
+Family membership can change dynamically. Register for `XStoreRegisterPackageLicenseLost` and be ready to re-gate content.
+
+## Xbox Play Anywhere
+
+A Play Anywhere title purchased on Xbox is entitled on PC (and vice versa) for the same Microsoft account. `XStoreQueryGameLicense` returns an active license on either device.
+
+Requirements:
+
+- Product configured as Play Anywhere in Partner Center.
+- `MicrosoftGame.config` on both console and PC targets uses the same StoreId.
+- The account is the same across devices.
+
+## Xbox Game Pass
+
+Game Pass is a subscription that grants entitlements for the catalog. At runtime the game license is active while the subscription is; when the subscription lapses or the title leaves the catalog, `XStoreRegisterGameLicenseChanged` fires with an inactive license.
+
+From services, detect Game Pass with the [Detecting Xbox Game Pass subscription access](/publishing/xstore-detecting-game-pass) flow.
+
+## Disc licenses
+
+On console, `XStoreGameLicense::isDiscLicense` is `true` when the entitlement is granted by an inserted retail disc. If the disc is ejected mid-session, the license flips to inactive.
+
+## Trials
+
+A trial license is granted to the individual account that acquired the trial — it is **not shareable** through Home Xbox or family. `isTrialOwnedByThisUser` distinguishes trial owners from other users on the device.
+
+## Refunds and clawback
+
+When a customer refunds a purchase, the entitlement is revoked. On the client this surfaces as license-lost; on the service side, use the [clawback endpoints](/publishing/xstore-rest-clawback-v1) to reconcile against granted in-game rewards.
+
+## Design implications
+
+- Do not tie irrevocable in-game grants to a **single observation** of a client-side license. Reconcile server-side.
+- Do not assume `XUserGetId(user) == licenseXuid`. Home Xbox and family sharing routinely produce mismatches.
+- Do not lock content permanently on license-lost — re-query on next sign-in; the license may return.

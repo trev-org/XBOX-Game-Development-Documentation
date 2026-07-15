@@ -1,0 +1,72 @@
+---
+title: "purchase.mp.microsoft.com/v8.0/b2b/clawback/sastoken"
+sidebarTitle: "v8 clawback v2 (SAS token)"
+icon: "code"
+description: "Obtain a SAS token to read the publisher-wide clawback event feed (Azure blob). Clawback v2 pattern."
+---
+
+Clawback v2 is the modern, high-volume pattern for consuming refund and chargeback events. Rather than polling per-user, per-product, you request a SAS token to a shared Azure blob feed that contains all clawback events for your publisher.
+
+## Endpoint
+
+```text
+GET https://purchase.mp.microsoft.com/v8.0/b2b/clawback/sastoken
+```
+
+## Headers
+
+| Header | Value |
+| --- | --- |
+| `Authorization` | `Bearer {aadAccessToken}` |
+| `Host` | `purchase.mp.microsoft.com` |
+| `MS-ContractVersion` | `1` |
+
+## Response body
+
+```json
+{
+  "blobStorageAccessSignature": "?sv=2024-01-01&ss=b&srt=co&sp=rl&se=...&sig=...",
+  "blobStorageEndpoint": "https://xstoreclawbackprod.blob.core.windows.net/clawbackfeed-{publisher}",
+  "expiresAt": "2024-01-15T20:32:44Z"
+}
+```
+
+Use the endpoint \+ SAS to list and download blob objects, each containing a batch of refund/chargeback events in JSON.
+
+## Ingestion pattern
+
+1. Ingestion job requests a SAS token at least an hour before its cached one expires.
+2. Lists blobs in the container that have not yet been processed (track a high-water mark).
+3. For each new blob, downloads the JSON, iterates events, and reconciles against your fulfillment DB.
+4. Records the processed blob so re-runs are idempotent.
+5. Repeats every N minutes (typically 15–60).
+
+## Event schema (illustrative)
+
+```json
+{
+  "eventType": "OrderRefunded",
+  "eventTime": "2024-01-20T10:14:03Z",
+  "orderId": "{guid}",
+  "orderLineItemId": "{guid}",
+  "userStoreId": "{purchaseUserStoreId}",
+  "productId": "9NBLGGH42THS",
+  "skuId": "0010",
+  "quantity": 1,
+  "revenueAdjustment": "-4.99"
+}
+```
+
+Use `orderId` \+ `orderLineItemId` to match back to the fulfillment your service originally recorded (from `/consume` or `/publisherQuery`), then revoke or claw back accordingly.
+
+## Compared to v1
+
+- **v2** — push-style feed, best for continuous ingestion at scale.
+- **v1** — pull-style per-user query, best for one-off customer support.
+
+Most publishers run v2 continuously and keep v1 available in their support tools.
+
+## Related
+
+- [Clawback v1 (orders/query)](/publishing/xstore-rest-clawback-v1)
+- [Managing refunds and chargebacks](/publishing/xstore-managing-refunds)

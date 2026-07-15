@@ -1,0 +1,63 @@
+---
+title: "purchase.mp.microsoft.com/v8.0/b2b/recurrences/query"
+sidebarTitle: "v8 recurrences/query"
+icon: "code"
+description: "List a user's subscription recurrences (Game Pass and other Store-managed subscriptions)."
+---
+
+Query a user's subscription recurrences — the auto-renewal records for Store-managed subscriptions including Xbox Game Pass, PC Game Pass, and any custom subscriptions you publish.
+
+## Endpoint
+
+```text
+POST https://purchase.mp.microsoft.com/v8.0/b2b/recurrences/query
+```
+
+## Request body
+
+```json
+{
+  "userStoreId": "{purchaseUserStoreId}",
+  "beneficiaryLocalTicketReference": "correlation-id",
+  "continuationToken": null
+}
+```
+
+## Response body
+
+```json
+{
+  "recurrenceStates": [
+    {
+      "recurrenceId": "{guid}",
+      "productId": "CFQ7TTC0KHS0",
+      "skuId": "0001",
+      "recurrenceState": "Active",
+      "startTime": "2024-01-15T00:00:00Z",
+      "expirationTime": "2024-02-15T00:00:00Z",
+      "lastRenewalTime": "2024-01-15T00:00:00Z",
+      "autoRenew": true,
+      "cancellationDate": null
+    }
+  ],
+  "continuationToken": null
+}
+```
+
+### `recurrenceState` values
+
+| Value | Meaning |
+| --- | --- |
+| `Active` | Subscription is active and (if `autoRenew` true) will renew. |
+| `Inactive` | Past its `expirationTime`. |
+| `Canceled` | User canceled; benefits typically continue until `expirationTime`. |
+| `Failed` | Renewal attempt failed (billing issue). Customer may re-add payment method. |
+
+## Change / cancel
+
+Use [`recurrences/{recurrenceId}/change`](/publishing/xstore-rest-recurrence-change) with the returned `recurrenceId` to cancel or modify.
+
+## Related
+
+- [Managing subscription products from your service](/publishing/xstore-managing-subscriptions)
+- [Detecting Xbox Game Pass](/publishing/xstore-detecting-game-pass)

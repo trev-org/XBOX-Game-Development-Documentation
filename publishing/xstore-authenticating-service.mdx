@@ -1,0 +1,77 @@
+---
+title: "Authenticating your service with the Microsoft Store APIs"
+sidebarTitle: "Authenticating your service"
+icon: "key"
+description: "Acquire and use Azure AD access tokens so your backend can call the Microsoft Store S2S REST endpoints."
+---
+
+Every Microsoft Store service-to-service (S2S) REST endpoint requires two credentials:
+
+1. An **Azure AD access token** identifying your service (obtained via client-credentials flow).
+2. A **User Store ID** (or equivalent) identifying the player whose entitlements you are acting on — sent in the request body or a header depending on the endpoint.
+
+This page covers the AAD side. See [Requesting a User Store ID](/publishing/xstore-requesting-userstoreid) for the second half.
+
+## One-time setup
+
+1. In [Partner Center](https://partner.microsoft.com/dashboard), open your product and go to **Product identity**. Note the **Azure AD tenant** and **client ID** associated with your publisher.
+2. If you don't have an Azure AD app registration, create one in the [Azure portal](https://portal.azure.com/) under **App registrations**.
+3. Generate a **client secret** for the app (or use a certificate). Store it in your service's secret manager.
+4. Under **Partner Center → Users**, associate the AAD app with your publisher account so the Store service will accept tokens issued for it.
+
+## Acquire an access token
+
+Call the Azure AD token endpoint with your app's credentials and the correct audience for each Store API family:
+
+| API family | Audience (`resource`) |
+| --- | --- |
+| Collections (`collections.mp.microsoft.com`) | `https://onestore.microsoft.com` |
+| Purchase / recurrences / clawback / grant | `https://onestore.microsoft.com` |
+
+```http
+POST https://login.microsoftonline.com/{tenantId}/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+&client_id={clientId}
+&client_secret={clientSecret}
+&resource=https://onestore.microsoft.com
+```
+
+The response includes an `access_token` valid for about one hour. Cache it in memory until close to expiration — do not request a fresh token on every call.
+
+## Call a Microsoft Store endpoint
+
+Send the AAD token in the `Authorization` header. Include a `Content-Type: application/json` and a request-scoped `MS-CorrelationId` GUID for debugging:
+
+```http
+POST https://collections.mp.microsoft.com/v9.0/collections/publisherQuery
+Authorization: Bearer {aadAccessToken}
+Content-Type: application/json
+Host: collections.mp.microsoft.com
+MS-ContractVersion: 1
+MS-CorrelationId: 00000000-0000-0000-0000-000000000000
+MS-RequestId: 00000000-0000-0000-0000-000000000000
+
+{ ...request body... }
+```
+
+Include the User Store ID (or equivalent per-user token) in the request body — endpoint-specific.
+
+## Common errors
+
+| HTTP | Meaning | Fix |
+| --- | --- | --- |
+| 401 Unauthorized | Missing or invalid AAD token | Refresh token; verify audience/tenant |
+| 401 with `InvalidPublisher` | AAD app not associated with your Partner Center publisher | Complete the association step |
+| 403 Forbidden | Token is valid but caller lacks permission | Verify roles / product association |
+| 429 Too Many Requests | Fine-grained rate limiting | See [Fine-grained rate limiting](/publishing/xstore-fgrl) |
+
+<Warning>
+  Never ship the AAD client secret in your title. All S2S calls must originate from your backend. A client-visible secret is treated as compromised and revoked.
+</Warning>
+
+## Related
+
+- [Requesting a User Store ID for service-to-service authentication](/publishing/xstore-requesting-userstoreid)
+- [Fine-grained rate limiting for Microsoft Store APIs](/publishing/xstore-fgrl)

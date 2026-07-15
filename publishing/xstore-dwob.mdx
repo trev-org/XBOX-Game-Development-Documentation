@@ -1,0 +1,65 @@
+---
+title: "How to use a durable without a package"
+sidebarTitle: "Durables without packages (DWOB)"
+icon: "key"
+description: "Use durables without a backing MSIXVC to unlock content that already ships inside the base package."
+---
+
+A **durable without a package** (also called a **DWOB** or DWOBS) is a Partner Center add-on that has no MSIXVC associated with it. Buying it grants an entitlement that your title checks at runtime; the content itself already exists in the base package.
+
+## When to use a DWOB
+
+- Cosmetic packs (skins, weapons, character variants) that are cheap to ship in the base package.
+- Gameplay modes toggled by a runtime flag.
+- Character or class unlocks with no new assets.
+- "Founder's pack" bonuses that are just data in your save.
+
+Skip a DWOB and use a durable-with-packages when:
+
+- The content is more than a few dozen MB.
+- You want to release the content after your base game ships (streaming DLC).
+- You need to keep the extra content off the customer's disc until they buy it.
+
+## Configure the add-on
+
+1. In Partner Center, open your base product and go to **Add-ons**.
+2. Create a new add-on with product type **Durable**.
+3. Skip package association — leave the packages section empty.
+4. Set the price, markets, availability, and Store listing.
+5. Publish to the sandbox.
+
+## Check ownership at runtime
+
+DWOBs surface identically to any durable via `XStoreQueryAddOnLicensesAsync` and `XStoreQueryEntitledProductsAsync`:
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    uint32_t count = 0;
+    XStoreAddonLicenseHandle* licenses = nullptr;
+    HRESULT hr = XStoreQueryAddOnLicensesResult(async, &count, &licenses);
+    for (uint32_t i = 0; i < count; ++i) {
+        char storeId[XSTORE_LICENSE_STORE_ID_MAX_LENGTH];
+        bool isActive = false;
+        XStoreGetAddOnLicenseInfo(licenses[i], sizeof(storeId), storeId, &isActive);
+        if (isActive && strcmp(storeId, myDwobStoreId) == 0) {
+            g_unlocked = true;
+        }
+        XStoreCloseAddonLicenseHandle(licenses[i]);
+    }
+    delete async;
+};
+
+XStoreQueryAddOnLicensesAsync(context, async.release());
+```
+
+## Pitfalls
+
+- Because there is no package, `XPackageMount` is not applicable — don't try to mount a DWOB.
+- Do not persist "unlocked" state locally without re-checking the license: refunds and family-sharing changes must revoke the unlock.
+- On PC, the mismatched-store-account path can hide DWOB entitlements; see [Handling mismatched store account scenarios](/publishing/xstore-mismatched-accounts).
+
+## Related
+
+- [Choosing the right product type](/publishing/xstore-choosing-product-type)
+- [Granting players access to add-on content](/publishing/xstore-granting-access)

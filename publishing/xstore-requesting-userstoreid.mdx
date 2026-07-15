@@ -1,0 +1,72 @@
+---
+title: "Requesting a User Store ID for service-to-service authentication"
+sidebarTitle: "Requesting a User Store ID"
+icon: "id-card"
+description: "Have the title acquire a UserStoreId and hand it to your service so the service can call the Store on the player's behalf."
+---
+
+Every per-user Microsoft Store S2S call needs a **User Store ID** identifying the player. The client fetches this key from the Store, hands it to your service, and your service uses it in the request body of `/publisherQuery`, `/consume`, `/orders/query`, etc.
+
+Two variants exist, matching the two REST families:
+
+| Variant | Used for endpoints under… |
+| --- | --- |
+| **UserCollectionsId** | `collections.mp.microsoft.com` (entitlements, consumables) |
+| **UserPurchaseId** | `purchase.mp.microsoft.com` (orders, recurrences, clawback) |
+
+Each is a short-lived, single-use signed handle. Fetch a new one for every backend call; do not cache.
+
+## Fetching from the title (GDK)
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    size_t size = 0;
+    HRESULT hr = XStoreGetUserCollectionsIdResultSize(async, &size);
+    if (SUCCEEDED(hr)) {
+        std::string userStoreId(size, '\0');
+        XStoreGetUserCollectionsIdResult(async, size, userStoreId.data());
+        // Post userStoreId to your service.
+    }
+    delete async;
+};
+
+XStoreGetUserCollectionsIdAsync(
+    context,
+    /* serviceTicket */ nullptr, // optional; see below
+    /* publisherUserId */ nullptr,
+    async.release());
+```
+
+Use `XStoreGetUserPurchaseIdAsync` for the purchase-service variant.
+
+### `serviceTicket` and `publisherUserId`
+
+- **`serviceTicket`** — an optional Azure AD token identifying **your service**. When present, the Store will bind the returned UserStoreId to that service, reducing the risk of forwarded/stolen keys.
+- **`publisherUserId`** — an opaque identifier your service uses for the player (for example, your PlayFab entity ID). It's returned back to your service in the API responses for correlation.
+
+## Posting to your service
+
+Send the UserStoreId in an authenticated request from the client to your backend. Do **not** call the Microsoft Store S2S endpoints from the client — doing so would leak your AAD credentials.
+
+```http
+POST https://your-backend.example.com/api/store/entitlements
+Authorization: Bearer {yourBackendAuth}
+Content-Type: application/json
+
+{ "userStoreId": "{opaqueString}" }
+```
+
+## When a UserStoreId key expires
+
+UserStoreIds are signed with a rotating key. When keys rotate, in-flight keys become invalid; your service should handle a `401 InvalidUserStoreId` by asking the client for a fresh one. See [Renewing a User Store ID key](/publishing/xstore-renew-userstoreid).
+
+## Advanced: X-tokens and OAuth 2.0
+
+Some services (especially Xbox Live titles migrating from XSAPI) obtain the UserStoreId via a longer-lived X-token or OAuth flow. See [Requesting a UserStoreId with X-tokens or OAuth 2.0](/publishing/xstore-requesting-userstoreid-oauth).
+
+## Related
+
+- [Authenticating your service](/publishing/xstore-authenticating-service)
+- [Renewing a User Store ID key](/publishing/xstore-renew-userstoreid)
+- [Requesting a UserStoreId with X-tokens or OAuth 2.0](/publishing/xstore-requesting-userstoreid-oauth)

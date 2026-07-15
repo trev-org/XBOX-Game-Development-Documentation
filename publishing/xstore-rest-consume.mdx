@@ -1,0 +1,82 @@
+---
+title: "collections.mp.microsoft.com/v8.0/collections/consume"
+sidebarTitle: "v8 consume"
+icon: "code"
+description: "Server-side endpoint to fulfill (deduct from) a Store-managed consumable balance."
+---
+
+The `collections/consume` endpoint deducts quantity from a Store-managed consumable balance and returns the new balance. Use it from your backend to authoritatively spend currency or one-shot items.
+
+## Endpoint
+
+```text
+POST https://collections.mp.microsoft.com/v8.0/collections/consume
+```
+
+## Headers
+
+Same as [v9 `publisherQuery`](/publishing/xstore-rest-v9-query#headers).
+
+## Request body
+
+```json
+{
+  "beneficiary": {
+    "identityType": "b2b",
+    "identityValue": "{userStoreId}",
+    "localTicketReference": "correlation-id"
+  },
+  "productId": "9NBLGGH42XYZ",
+  "trackingId": "{guid}",
+  "removeQuantity": 100,
+  "includeOrderIds": true,
+  "sandboxId": "RETAIL"
+}
+```
+
+### Fields
+
+| Field | Notes |
+| --- | --- |
+| `beneficiary` | Required. The player. |
+| `productId` | Required. Store-managed or developer-managed consumable product ID. |
+| `trackingId` | Required GUID. Idempotency key — same GUID = same result. |
+| `removeQuantity` | Required. Non-negative integer to deduct. |
+| `includeOrderIds` | Optional. If true, response includes the orderId/orderLineItemId the deduction applied to (essential for later clawback reconciliation). |
+| `sandboxId` | Optional. `RETAIL` or a specific dev sandbox. |
+
+## Response body
+
+```json
+{
+  "itemId": "{itemInstanceId}",
+  "productId": "9NBLGGH42XYZ",
+  "trackingId": "{guid}",
+  "newQuantity": 850,
+  "orderId": "{guid}",
+  "orderLineItemId": "{guid}"
+}
+```
+
+<Warning>
+  Persist `orderId` and `orderLineItemId` next to your fulfillment record. You will need them to reconcile refunds via [clawback](/publishing/xstore-rest-clawback-v1).
+</Warning>
+
+## Idempotency behavior
+
+- Calling `/consume` with a `trackingId` the Store has already recorded returns the original result. The balance is not decremented again.
+- Generate `trackingId` **before** the network call and persist it locally. On network failure, retry with the same GUID. On a new logical spend, use a new GUID.
+
+## Errors
+
+| HTTP | `code` | Meaning |
+| --- | --- | --- |
+| 400 | `InsufficientQuantity` | User's balance is less than `removeQuantity` |
+| 400 | `InvalidProduct` | Product is not a consumable |
+| 401 | `AuthenticationFailed` / `InvalidUserStoreId` | AAD or UserStoreId invalid |
+| 429 | `TooManyRequests` | Rate-limited |
+
+## Related
+
+- [Managing consumables from your service](/publishing/xstore-managing-consumables)
+- [Consumable-based ecosystems (client)](/publishing/xstore-consumables)

@@ -1,0 +1,59 @@
+---
+title: "Fine-grained rate limiting for Microsoft Store APIs"
+sidebarTitle: "Fine-grained rate limiting"
+icon: "gauge-high"
+description: "How Microsoft Store S2S enforces per-partner and per-user rate limits, and how your service should back off and retry."
+---
+
+The Microsoft Store service-to-service (S2S) REST APIs apply **fine-grained rate limiting (FGRL)** across several dimensions:
+
+- Requests per second per partner (AAD app).
+- Requests per second per endpoint.
+- Requests per user per endpoint.
+- Burst vs. sustained caps.
+
+Exceeding a bucket returns `HTTP 429 Too Many Requests`. Well-behaved services detect 429 and back off; poorly behaved services see cascading failures and, eventually, per-partner throttling.
+
+## What triggers 429
+
+Most commonly:
+
+- A single service instance polling `/publisherQuery` in a tight loop for many users.
+- A crash-loop that retries clawback ingestion without exponential backoff.
+- A high-traffic launch event that concentrates all `/consume` calls into a single second.
+
+## Response format
+
+```http
+HTTP/1.1 429 Too Many Requests
+Retry-After: 12
+Content-Type: application/json
+
+{
+  "code": "TooManyRequests",
+  "message": "Request rate exceeded. Retry after the interval specified in Retry-After."
+}
+```
+
+Honor the `Retry-After` header exactly — do not retry sooner. If the header is absent, back off exponentially starting at 1 second, doubling each retry, up to 60 seconds.
+
+## Design patterns to avoid throttling
+
+- **Batch, don't loop.** `/publisherQuery` accepts many product IDs and multiple beneficiaries in a single call. Prefer 1 call for 100 products over 100 calls for 1 product.
+- **Use clawback v2 SAS feeds** instead of polling v1 per user for refund reconciliation.
+- **Coalesce spend.** If a player consumes 3 items in rapid succession, aggregate to a single `/consume` if your gameplay allows.
+- **Cache aggressively where appropriate.** Game Pass tier can be cached for hours; a currency balance may only be cached seconds.
+- **Serialize per-user retries.** If a per-user 429 hits, do not fire a parallel retry for the same user; hold the second call until the first resolves.
+
+## Global-outage playbook
+
+If you see sustained 429 across all endpoints unrelated to your traffic pattern, treat the Store as degraded and:
+
+1. Fail closed for grants (don't award content until reconciliation succeeds).
+2. Queue spends in a durable log to replay after recovery.
+3. Show a user-facing "Store services are temporarily unavailable" message.
+
+## Related
+
+- [Authenticating your service](/publishing/xstore-authenticating-service)
+- [`collections/publisherQuery` reference](/publishing/xstore-rest-v9-query)

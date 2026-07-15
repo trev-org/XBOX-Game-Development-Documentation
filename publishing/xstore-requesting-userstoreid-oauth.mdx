@@ -1,0 +1,68 @@
+---
+title: "Requesting a User Store ID from your service with X-tokens or OAuth 2.0"
+sidebarTitle: "UserStoreId via X-token / OAuth"
+icon: "lock"
+description: "Service-initiated flows for obtaining a User Store ID when the client hands your service an Xbox Live X-token or a Microsoft OAuth 2.0 access token."
+---
+
+Most titles fetch the UserStoreId directly with `XStoreGetUserCollectionsIdAsync` / `XStoreGetUserPurchaseIdAsync` and post it to the service (see [Requesting a User Store ID](/publishing/xstore-requesting-userstoreid)).
+
+Some architectures instead have the client hand a longer-lived **X-token** (Xbox Live authentication) or a Microsoft **OAuth 2.0** access token to the service; the service then exchanges that for a UserStoreId. This page covers those flows.
+
+## Prerequisites
+
+- The client obtains an Xbox Live X-token (via XSAPI/XUser) or a Microsoft account OAuth 2.0 access token for the correct audience.
+- The service can call the Microsoft Store's collection service with its AAD client credentials — see [Authenticating your service](/publishing/xstore-authenticating-service).
+
+## Endpoint
+
+`POST https://collections.mp.microsoft.com/v6.0/b2bLicensePreview/GetUserCollectionsId`
+
+(There is a paired purchase endpoint at `purchase.mp.microsoft.com` for the UserPurchaseId variant.)
+
+## Exchange an X-token
+
+```http
+POST https://collections.mp.microsoft.com/v6.0/b2bLicensePreview/GetUserCollectionsId
+Authorization: Bearer {serviceAadToken}
+Content-Type: application/json
+
+{
+  "serviceTicket": "{serviceAadToken}",
+  "publisherUserId": "your-internal-id",
+  "xTokenXbl": "XBL3.0 x=<uhs>;<xstsToken>"
+}
+```
+
+The response contains a `userCollectionsId` (opaque string). Use it in the body of subsequent `collections/*` calls.
+
+## Exchange an OAuth 2.0 access token
+
+```http
+POST https://collections.mp.microsoft.com/v6.0/b2bLicensePreview/GetUserCollectionsId
+Authorization: Bearer {serviceAadToken}
+Content-Type: application/json
+
+{
+  "serviceTicket": "{serviceAadToken}",
+  "publisherUserId": "your-internal-id",
+  "userAccessToken": "{msaOAuth2AccessToken}"
+}
+```
+
+## When to use which
+
+- **X-token** — title is already using XSAPI and has an X-token in hand.
+- **OAuth 2.0** — web storefront or companion app that signed the user in with Microsoft OAuth.
+- **Direct client acquisition** (`XStoreGetUserCollectionsIdAsync`) — GDK title running on Xbox or PC. Prefer this when available.
+
+## Security notes
+
+- Treat the X-token / OAuth token as sensitive; use TLS 1.2\+ everywhere.
+- Bind the exchange to a specific `serviceTicket` (your service's AAD token) so intercepted tokens cannot be replayed from other services.
+- Rotate `publisherUserId` mapping in your DB if a customer changes identities.
+
+## Related
+
+- [Requesting a User Store ID](/publishing/xstore-requesting-userstoreid)
+- [Authenticating your service](/publishing/xstore-authenticating-service)

@@ -1,0 +1,121 @@
+---
+title: "Basic store operations"
+sidebarTitle: "Basic store operations"
+icon: "play"
+description: "Create an XStore context, query products and licenses, and show purchase UI — the runtime foundation every commerce integration needs."
+---
+
+Almost every XStore scenario starts with the same three steps: create a context, query products, and check licenses. This page walks through those primitives.
+
+## 1. Create an XStore context
+
+An `XStoreContextHandle` is per-user and per-title. Create it after `XUserAddAsync` returns a signed-in user:
+
+```cpp
+XStoreContextHandle context = nullptr;
+HRESULT hr = XStoreCreateContext(user, &context);
+if (FAILED(hr)) {
+    // handle: no user, wrong sandbox, offline
+}
+```
+
+Release with `XStoreCloseContextHandle` when the user signs out or the title exits.
+
+## 2. Query products
+
+### Products associated with your title
+
+`XStoreQueryAssociatedProductsAsync` enumerates every product in your Partner Center title (base game \+ add-ons) that the current sandbox exposes:
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    XStoreProductQueryHandle handle = nullptr;
+    HRESULT hr = XStoreQueryAssociatedProductsResult(async, &handle);
+    if (SUCCEEDED(hr)) {
+        XStoreEnumerateProductsQuery(handle,
+            /* state */ nullptr,
+            [](const XStoreProduct* product, void*) -> bool {
+                // product->storeId, ->title, ->productKind, ->hasDigitalDownload
+                return true; // continue
+            });
+        XStoreCloseProductsQueryHandle(handle);
+    }
+    delete async;
+};
+
+XStoreQueryAssociatedProductsAsync(
+    context,
+    XStoreProductKind::Durable | XStoreProductKind::Consumable |
+        XStoreProductKind::Game | XStoreProductKind::UnmanagedConsumable,
+    25, // page size
+    async.release());
+```
+
+### Products by StoreId
+
+Use `XStoreQueryProductsAsync` to look up a specific set of StoreIds. Useful for a curated storefront in your title.
+
+### Only the products the user owns
+
+`XStoreQueryEntitledProductsAsync` returns only the products the current user has an entitlement for. This is the fastest way to answer "does the player already own X?"
+
+## 3. Check the base-game license
+
+```cpp
+XStoreGameLicense license = {};
+HRESULT hr = XStoreQueryGameLicense(context, &license);
+
+if (SUCCEEDED(hr) && license.isActive) {
+    if (license.isTrial) {
+        // enforce trial UX; license.trialTimeRemainingInSeconds
+    }
+    // license.isDiscLicense, license.expirationDate, license.acquisitionKind
+}
+```
+
+Register for revocation with `XStoreRegisterGameLicenseChanged` so you react promptly if the player refunds mid-session.
+
+## 4. Show purchase UI
+
+The Store owns the checkout flow. Your title just requests it:
+
+```cpp
+auto async = std::make_unique<XAsyncBlock>();
+async->callback = [](XAsyncBlock* async) {
+    HRESULT hr = XStoreShowPurchaseUIResult(async);
+    // hr == S_OK means the UI completed. Re-query the license to see if the user actually bought.
+    delete async;
+};
+
+XStoreShowPurchaseUIAsync(
+    context,
+    storeId,          // product to sell
+    nullptr,          // optional name override
+    nullptr,          // optional JSON extended data
+    async.release());
+```
+
+After the UI dismisses, re-query licenses / entitlements — do not assume the purchase succeeded from the return code.
+
+## 5. React to license and package changes
+
+Register for these events during startup:
+
+- `XStoreRegisterGameLicenseChanged` — fires when the base-game license changes state.
+- `XStoreRegisterPackageLicenseLost` — fires when a DLC or bundle license is revoked.
+- `XPackageRegisterInstallationProgressChanged` — fires as chunks install.
+
+See [Granting players access to add-on content](/publishing/xstore-granting-access) for the full pattern.
+
+## Threading and task queues
+
+Every `*Async` variant needs an `XAsyncBlock` whose `queue` you own. Use a dedicated task queue for XStore work rather than sharing the process queue, so a slow Store response cannot block gameplay callbacks.
+
+## Related APIs
+
+- `XStoreCreateContext`, `XStoreCloseContextHandle`
+- `XStoreQueryAssociatedProductsAsync`, `XStoreQueryProductsAsync`, `XStoreQueryEntitledProductsAsync`
+- `XStoreQueryGameLicense`, `XStoreQueryGameLicenseAsync`
+- `XStoreShowPurchaseUIAsync`
+- `XStoreRegisterGameLicenseChanged`, `XStoreRegisterPackageLicenseLost`

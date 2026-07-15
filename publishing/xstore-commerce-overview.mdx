@@ -1,0 +1,61 @@
+---
+title: "XStore commerce overview"
+sidebarTitle: "Commerce overview"
+icon: "cart-shopping"
+description: "How XStore, Partner Center, and the Microsoft Store services fit together for Xbox and PC titles."
+---
+
+The **XStore** APIs are the runtime side of Microsoft Store commerce for Xbox and PC titles built on the GDK. Together with Partner Center (where you model your products) and the Microsoft Store service-to-service (S2S) REST APIs (where your backend queries and grants entitlements), they give you a complete commerce platform for base games, DLC, trials, consumables, subscriptions, and bundles.
+
+This section mirrors the topic layout on Microsoft Learn and covers everything you need to design, integrate, test, and operate Store commerce for your title.
+
+## In this section
+
+<CardGroup cols={2}>
+  <Card title="Getting started" icon="rocket" href="/publishing/xstore-getting-started">
+    Overview, product types, Partner Center setup, testing, licensing, and troubleshooting.
+  </Card>
+
+  <Card title="Fundamentals" icon="cube" href="/publishing/xstore-fundamentals">
+    Basic store operations, DLC, trials, consumables, bundles, DWOB, and updates.
+  </Card>
+
+  <Card title="Manage from your services" icon="network-wired" href="/publishing/xstore-s2s">
+    Authenticate services, query entitlements, subscriptions, refunds, and User Store IDs.
+  </Card>
+
+  <Card title="PC-specific considerations" icon="windows" href="/publishing/xstore-pc-overview">
+    DRM, license tokens, mismatched-store-account handling, and sandbox switching.
+  </Card>
+
+  <Card title="Microsoft Store REST APIs" icon="code" href="/publishing/xstore-rest-api-reference">
+    Reference for the v8/v9 collections, purchase, clawback, grant, and recurrences endpoints.
+  </Card>
+
+  <Card title="Franchise game hubs" icon="sitemap" href="/publishing/franchise-game-hubs">
+    Group multiple products under a single Store franchise hub.
+  </Card>
+</CardGroup>
+
+## Big picture: how the pieces connect
+
+- **Partner Center** — where you create products (base games, add-ons, bundles, season passes, subscriptions, consumables), define pricing and availability, and assign identifiers (**StoreId**, **Product ID**, **BigId**, **SKU ID**).
+- **`MicrosoftGame.config`** — ships inside your title package and binds the running executable to the Store product via `TitleId`, `StoreId`, and `MSAAppId`.
+- **XStore runtime APIs (`XStore*`)** — client-side calls made from your game to enumerate products, query licenses and entitlements, show purchase UI, and report consumable fulfillment.
+- **XPackage APIs (`XPackage*`)** — mount and license optional packages (DLC), install chunks, and observe package state changes.
+- **Microsoft Store S2S REST APIs** — server-side endpoints your backend calls to authoritatively query entitlements, fulfill consumables, grant products, look up subscriptions, and process refunds/clawbacks.
+- **User Store ID (UserStoreId)** — a short-lived key your title obtains via `XUserGetTokenAndSignatureAsync` (or `XStoreGetUserCollectionsIdAsync` / `XStoreGetUserPurchaseIdAsync`) and hands to your service so the service can call the Store on behalf of that user.
+
+## Client versus service
+
+Almost every Store scenario has both a **client-side** (XStore) and a **service-side** (S2S REST) path. Use the client for real-time UX (show the buy button, unlock content, report a consumable spend); use the service when authority matters (fulfilling a virtual-currency spend that must survive title reinstalls, granting a promo item, detecting Game Pass, processing a refund).
+
+A reliable pattern:
+
+1. Client detects the purchase or spend and shows immediate UX.
+2. Client sends a UserStoreId to your service.
+3. Service calls the Store S2S API to confirm the entitlement or fulfill the consumable and updates your database of record.
+
+## Where to go next
+
+If you are new to XStore, start with [GDK Commerce Systems Overview](/publishing/xstore-overview) and then [Choosing the right product type](/publishing/xstore-choosing-product-type).

@@ -1,0 +1,67 @@
+---
+title: "Managing consumable products from your service"
+sidebarTitle: "Managing consumables"
+icon: "coins"
+description: "Fulfill Store-managed consumables authoritatively from your backend using the collections/consume endpoint."
+---
+
+For high-value virtual currency and premium consumables, do the consume server-side. Server-side fulfillment survives client tampering, offline reinstalls, and duplicate reports — and lets your backend of record match the Store balance.
+
+## Flow
+
+1. Client detects the player has spent currency (e.g., bought an in-game item).
+2. Client requests a **UserStoreId (collections)** and posts it to your backend along with the pending spend.
+3. Backend calls [`collections/consume`](/publishing/xstore-rest-consume) to deduct the amount.
+4. Backend updates the player's currency balance in your DB.
+5. Backend returns success to the client, which unlocks the item.
+
+## Endpoint call
+
+```http
+POST https://collections.mp.microsoft.com/v8.0/collections/consume
+Authorization: Bearer {aadToken}
+Content-Type: application/json
+MS-ContractVersion: 1
+
+{
+  "beneficiary": {
+    "identityType": "b2b",
+    "identityValue": "{userStoreId}"
+  },
+  "productId": "9NBLGGH42XYZ",
+  "trackingId": "{guid}",
+  "removeQuantity": 100,
+  "includeOrderIds": true
+}
+```
+
+The response returns the new balance and the order/line-item IDs the deduction was applied against.
+
+## `trackingId` idempotency
+
+Generate one GUID per logical spend and persist it in your backend before you call `/consume`. If your service crashes and retries, call again with the **same** `trackingId` — the Store treats it as an idempotent retry and returns the recorded result. If you regenerate the GUID on retry, you will double-charge the customer.
+
+## Common failures
+
+| HTTP | Response `code` | Meaning |
+| --- | --- | --- |
+| 400 | `InsufficientQuantity` | Player does not have enough balance |
+| 400 | `InvalidProduct` | Product is not a Store-managed consumable |
+| 401 | — | Missing/invalid AAD token or UserStoreId |
+| 429 | — | Rate-limited; see [FGRL](/publishing/xstore-fgrl) |
+
+## Developer-managed consumables
+
+Developer-managed consumables use the same endpoint but the Store does not maintain a balance; you fulfill once and mark it consumed in your DB. `removeQuantity` should equal the granted quantity.
+
+## Best practices
+
+- Do all currency accounting server-side; the client is presentation only.
+- Log the `trackingId` and Store response in your operational logs so you can reconcile refunds via clawback later.
+- Never call `/consume` from the client. The AAD token would leak.
+
+## Related
+
+- [`collections/consume` reference](/publishing/xstore-rest-consume)
+- [Consumable-based ecosystems (client)](/publishing/xstore-consumables)
+- [Managing refunds and chargebacks](/publishing/xstore-managing-refunds)
