@@ -5,6 +5,10 @@ icon: "rotate-left"
 description: "Use the clawback endpoints to detect refunds and reconcile granted in-game rewards."
 ---
 
+<Info>
+  Full endpoint schemas: [clawback v1](/publishing/xstore-rest-clawback-v1) and [clawback v2 (SAS token)](/publishing/xstore-rest-clawback-v2-sastoken) in the **API** tab.
+</Info>
+
 When a customer refunds a purchase or the Store processes a chargeback, the Store revokes the entitlement. If you granted in-game rewards (currency, cosmetics, progression) tied to that purchase, you must reconcile — otherwise players can effectively duplicate content.
 
 The **clawback** REST endpoints are how your service learns about refunds.

@@ -654,21 +654,6 @@
                 ]
               },
               {
-                "group": "Microsoft Store REST APIs",
-                "icon": "code",
-                "pages": [
-                  "publishing/xstore-rest-api-reference",
-                  "publishing/xstore-rest-v9-query",
-                  "publishing/xstore-rest-v8-query",
-                  "publishing/xstore-rest-consume",
-                  "publishing/xstore-rest-clawback-v1",
-                  "publishing/xstore-rest-clawback-v2-sastoken",
-                  "publishing/xstore-rest-grant",
-                  "publishing/xstore-rest-recurrence-query",
-                  "publishing/xstore-rest-recurrence-change"
-                ]
-              },
-              {
                 "group": "PC-specific considerations",
                 "icon": "windows",
                 "pages": [
@@ -993,6 +978,21 @@
               "reference/playfab-playstream-events",
               "reference/playfab-access-policy",
               "reference/playfab-party"
+            ]
+          },
+          {
+            "group": "Microsoft Store REST APIs",
+            "icon": "cart-shopping",
+            "pages": [
+              "publishing/xstore-rest-api-reference",
+              "publishing/xstore-rest-v9-query",
+              "publishing/xstore-rest-v8-query",
+              "publishing/xstore-rest-consume",
+              "publishing/xstore-rest-clawback-v1",
+              "publishing/xstore-rest-clawback-v2-sastoken",
+              "publishing/xstore-rest-grant",
+              "publishing/xstore-rest-recurrence-query",
+              "publishing/xstore-rest-recurrence-change"
             ]
           }
         ]
