@@ -1,0 +1,669 @@
+---
+title: "Build and run your first console title with GDKX"
+sidebarTitle: "First console title walkthrough"
+description: "End-to-end walkthrough: create a native Xbox GDK project, add DirectXTK12, build for Xbox Series X|S, deploy to a dev kit, diagnose launch failures, and build an installable XVC."
+icon: "gamepad"
+keywords: ["GDKX", "sample game", "Xbox Series X|S", "dev kit", "xbapp", "xbconnect", "makepkg", "XVC", "DirectXTK12", "MicrosoftGame.config"]
+---
+
+This walkthrough documents the end-to-end process for creating a small `sample-game` title, building it for Xbox Series X|S, deploying the complete game to an Xbox development kit, diagnosing startup failures, and creating an installable XVC.
+
+The completed sample uses C\+\+, Direct3D 12, and the GDK with Xbox Extensions (GDKX). It also uses [DirectXTK12](https://github.com/microsoft/DirectXTK12) as an optional rendering helper. Both paddles are computer controlled so the game can run unattended while graphics, gameplay, and effects are iterated.
+
+<Warning>
+  The public GDK available through GitHub or WinGet supports **Windows PC** game development only. To compile and deploy an **Xbox console** executable, install the **GDK with Xbox Extensions (GDKX)** from Xbox Secure Downloads. Access requires an approved Xbox developer account — see [ID@XBOX onboarding](/onboarding) and [Access resources](/gdk/access-resources).
+</Warning>
+
+## What you will build
+
+By the end of this walkthrough you will have:
+
+- A native Xbox GDK project (not a UWP project).
+- Debug, Profile, and Release configurations for Xbox Series X|S and Xbox One.
+- An autoplay sample game with scoring, predictive paddle AI, particle effects, a motion trail, and a textured circular puck.
+- A complete loose-file deployment running on an Xbox development kit.
+- An optional Store-associated XVC that can be installed and tested on the dev kit.
+
+## Prerequisites
+
+This walkthrough was validated with:
+
+- Visual Studio 2022 Enterprise 17.14.
+- April 2026 Update 2 GDKX, edition `260402`.
+- `Gaming.Xbox.Scarlett.x64` for Xbox Series X|S.
+- `Gaming.Xbox.XboxOne.x64` for Xbox One.
+- DirectXTK12 commit `e656d54637b2830fc6eb5ecd9b329a9c72cb87d4`.
+
+Use the GDK edition installed on your development PC instead of `260402` if you are following the walkthrough with another release.
+
+## 1. Create the working folder
+
+Open PowerShell and create an empty root folder.
+
+```powershell
+New-Item -ItemType Directory -Path D:\repos\sample-game -Force
+```
+
+The final project layout used in this walkthrough is:
+
+```text
+D:\repos\sample-game
+|-- external
+|   `-- DirectXTK12
+|-- tools
+|   `-- BuildAssets.ps1
+|-- sample-game
+|   |-- Assets
+|   |-- DeviceResources.cpp
+|   |-- DeviceResources.h
+|   |-- Game.cpp
+|   |-- Game.h
+|   |-- GameTuning.h
+|   |-- GraphicsLogo.png
+|   |-- LargeLogo.png
+|   |-- Main.cpp
+|   |-- MicrosoftGameConfig.mgc
+|   |-- ParticleSystem.cpp
+|   |-- ParticleSystem.h
+|   |-- sample-gameSimulation.cpp
+|   |-- sample-gameSimulation.h
+|   |-- pch.cpp
+|   |-- pch.h
+|   |-- SmallLogo.png
+|   |-- SplashScreen.png
+|   |-- StepTimer.h
+|   |-- StoreLogo.png
+|   `-- sample-game.vcxproj
+`-- sample-game.sln
+```
+
+Visual Studio creates `DeviceResources.*`, `Main.cpp`, `pch.*`, `StepTimer.h`, and the shell visual PNG files from the **Direct3D 12 Xbox Game** template. Keep those generated files when adding the sample-specific source.
+
+## 2. Verify the Xbox GDK installation
+
+Open the **Xbox Series X|S VS 2022 Gaming Command Prompt** installed with GDKX. The shortcut is normally under **Microsoft GDK** on the Start menu.
+
+You can also initialize the environment from an ordinary command prompt:
+
+```cmd
+call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingXboxVars.cmd" GamingXboxScarlettVS2022 260402
+```
+
+Verify that the Xbox build and deployment tools are available:
+
+```cmd
+echo %GXDKEDITION%
+where msbuild
+where cl
+where xbconnect
+where xbapp
+where makepkg
+```
+
+The GDK installation is **not** ready for console development if:
+
+- `GXDKEDITION` is empty.
+- The Xbox command-prompt shortcut is missing.
+- Visual Studio does not show Xbox project templates.
+- The `Gaming.Xbox.Scarlett.x64` MSBuild platform is unavailable.
+- `xbconnect` or `xbapp` cannot be found.
+
+If only Desktop GDK command prompts and Desktop templates are available, the public PC GDK is probably installed instead of GDKX.
+
+## 3. Create a native Xbox project
+
+<Steps>
+  <Step title="Open Visual Studio 2022 and choose Create a new project">
+    Set **Language** to **C\+\+**, **Platform** to **Xbox**, and **Project type** to **Games**.
+  </Step>
+  <Step title="Select Direct3D 12 Xbox Game">
+    Set the project name to `sample-game` and the location to `D:\repos\sample-game`.
+  </Step>
+  <Step title="Leave Place solution and project in the same directory cleared">
+    So the solution is in the root and the project is in `D:\repos\sample-game\sample-game`.
+  </Step>
+  <Step title="Create the project">
+  </Step>
+</Steps>
+
+The supported workflow is to create the project through Visual Studio. Manually copying `d3d12game_gx` template files is a recovery technique, not the recommended new-project workflow.
+
+### Confirm the project is not UWP
+
+Before adding game code, verify the project:
+
+- Contains `MicrosoftGameConfig.mgc`.
+- Uses a `Gaming.Xbox.*.x64` project platform.
+- Links to the Xbox GDK platform libraries.
+- Does **not** use `Package.appxmanifest` as its title configuration.
+- Was created from **Direct3D 12 Xbox Game**, not a Universal Windows template.
+
+If the project is UWP, delete it and create a new project from the Xbox GDK template. Converting the generated UWP project is more error prone than starting with the correct template.
+
+## 4. Pin the GDK edition and configure console targets
+
+Pinning the GDK edition prevents a future GDK install from silently changing the toolchain used by the project.
+
+In the main property group in `sample-game.vcxproj`, set:
+
+```xml
+<XdkEditionTarget>260402</XdkEditionTarget>
+```
+
+Use Visual Studio Configuration Manager to confirm these solution configurations:
+
+| Configuration | Platform |
+| --- | --- |
+| Debug | `Gaming.Xbox.Scarlett.x64` |
+| Profile | `Gaming.Xbox.Scarlett.x64` |
+| Release | `Gaming.Xbox.Scarlett.x64` |
+| Debug | `Gaming.Xbox.XboxOne.x64` |
+| Profile | `Gaming.Xbox.XboxOne.x64` |
+| Release | `Gaming.Xbox.XboxOne.x64` |
+
+If the title only supports Xbox Series X|S, the Xbox One configurations can be omitted. See [Cross-gen](/gdk/cross-gen) for shipping the same title across generations.
+
+## 5. Build the unmodified template
+
+Build the generated template before adding dependencies or game code. This isolates toolchain problems from problems introduced by the sample.
+
+From an **Xbox Series X|S VS 2022 Gaming Command Prompt**:
+
+```cmd
+msbuild D:\repos\sample-game\sample-game.sln /m /restore /p:Configuration=Debug /p:Platform=Gaming.Xbox.Scarlett.x64 /nologo /verbosity:minimal
+```
+
+For Xbox One, initialize the Xbox One command environment and build the Xbox One platform:
+
+```cmd
+call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingXboxVars.cmd" GamingXboxVS2022 260402
+msbuild D:\repos\sample-game\sample-game.sln /m /p:Configuration=Debug /p:Platform=Gaming.Xbox.XboxOne.x64 /nologo /verbosity:minimal
+```
+
+<Warning>
+  Do not continue until the stock Xbox template builds successfully.
+</Warning>
+
+## 6. Add DirectXTK12 as an optional helper
+
+DirectXTK12 isn't required to create a GDK title. The Xbox GDK template already provides the Direct3D 12 device, command queue, swap chain, and game loop needed to build a game against Direct3D 12 directly.
+
+This sample uses the separate Microsoft open-source DirectXTK12 library to reduce the amount of low-level rendering utility code required for sprite rendering, descriptor management, texture loading, resource upload, and graphics memory management. A title can replace these helpers with its own engine or a direct D3D12 implementation.
+
+Clone DirectXTK12 into the project:
+
+```powershell
+Set-Location D:\repos\sample-game
+New-Item -ItemType Directory -Path .\external -Force
+git clone https://github.com/microsoft/DirectXTK12.git .\external\DirectXTK12
+git -C .\external\DirectXTK12 checkout e656d54637b2830fc6eb5ecd9b329a9c72cb87d4
+```
+
+In Visual Studio:
+
+1. Add `external\DirectXTK12\DirectXTK_GDKX_2022.vcxproj` to the solution.
+2. Add DirectXTK12 as a project reference from `sample-game`.
+3. Add `$(SolutionDir)external\DirectXTK12\Inc` to the include directories.
+4. Build both projects for the same Xbox platform and configuration.
+
+The `sample-game` project uses this property:
+
+```xml
+<DirectXTK12Dir>$(SolutionDir)external\DirectXTK12\</DirectXTK12Dir>
+```
+
+It then adds the include path and project reference:
+
+```xml
+<AdditionalIncludeDirectories>$(DirectXTK12Dir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+```
+
+```xml
+<ProjectReference Include="$(DirectXTK12Dir)DirectXTK_GDKX_2022.vcxproj">
+  <Project>{94F17A4D-611B-4B81-8806-B6735910AB31}</Project>
+  <Name>DirectXTK12</Name>
+</ProjectReference>
+```
+
+In this project, the DirectXTK12 shader build commands were changed to invoke `CompileShaders.cmd` through an explicit project-relative path:
+
+```xml
+Command="&quot;$(ProjectDir)Src\Shaders\CompileShaders.cmd&quot; gxdk scarlett"
+```
+
+This avoids relying on the current command directory when MSBuild invokes the shader compiler.
+
+## 7. Add the game code
+
+The sample separates gameplay state from rendering so the simulation can be tuned without changing Direct3D code.
+
+Keep the template-generated files, including `DeviceResources.*`, `Main.cpp`, `pch.*`, `StepTimer.h`, and the five shell visual PNG files. Add these sample-specific files to the project:
+
+| File | Purpose |
+| --- | --- |
+| `GameTuning.h` | Arena, paddle, puck, AI, trail, and particle constants. |
+| `sample-gameSimulation.h/.cpp` | Puck movement, paddle movement, collision, scoring, serving, and AI. |
+| `ParticleSystem.h/.cpp` | Fixed-size particle pool and impact emitters. |
+| `Game.h/.cpp` | DirectXTK12 resources, game update, and rendering. |
+| `tools\BuildAssets.ps1` | Reproducible DDS generation for the white sprite and puck. |
+
+### Use a fixed simulation step
+
+The project uses the template's `StepTimer` with a **120 Hz fixed update**. A fixed step keeps collision response and AI behavior stable when frame times vary.
+
+The simulation contains:
+
+- Two paddle states.
+- One circular puck state.
+- Scores for the left and right sides.
+- A serve delay and alternating serve direction.
+- Impact events for paddle, wall, and goal collisions.
+
+### Implement circular puck collision
+
+Treat each paddle as an axis-aligned rectangle and the puck as a circle:
+
+1. Find the point on the paddle rectangle closest to the puck center.
+2. Measure the squared distance from that point to the puck center.
+3. A collision occurred if the distance is no greater than the squared puck radius.
+4. Move the puck outside the paddle to prevent repeated overlap.
+5. Calculate the outgoing angle from the hit offset and paddle velocity.
+6. Increase puck speed slightly, up to a maximum.
+
+This keeps the physics circular even though the puck is drawn from a square texture.
+
+### Add predictive autoplay
+
+Each paddle:
+
+- Predicts where the puck will intersect its horizontal position.
+- Reflects the predicted coordinate across the top and bottom arena walls.
+- Updates its target at a fixed reaction interval.
+- Uses acceleration and maximum-speed limits rather than snapping.
+- Adds a small deterministic targeting error.
+
+To allow games to score, each side occasionally enters a short mistake window and deliberately moves away from the predicted intercept. Stagger the initial mistake timers so both paddles do not miss simultaneously.
+
+### Render the scene with DirectXTK12
+
+Create:
+
+- `GraphicsMemory`.
+- A descriptor heap containing a white texture and the puck texture.
+- A normal-alpha `SpriteBatch`.
+- An additive `SpriteBatch` for particles.
+- DDS textures through `ResourceUploadBatch` and `CreateDDSTextureFromFile`.
+
+Draw the arena, center line, paddles, score, puck trail, and puck with `SpriteBatch`. Draw particles in the additive pass.
+
+The completed sample renders in a 1920 by 1080 virtual coordinate system and scales that scene to the output viewport.
+
+### Keep effects restrained
+
+The final tuning used:
+
+- A short, exponentially decaying screen shake.
+- Smaller streak-shaped impact particles.
+- More particles on paddle hits than wall hits.
+- A stronger burst for a goal.
+- A low-alpha puck trail.
+- A brief green impact flash.
+
+These changes preserved impact feedback without making the game appear cartoon-like or making paddle collisions visually jarring.
+
+## 8. Create and deploy the texture assets
+
+The sample needs:
+
+- `Assets\white.dds` — a 1 by 1 white RGBA texture used to draw rectangles and particles.
+- `Assets\xbox_logo.dds` — a 256 by 256 RGBA texture used for the puck.
+
+The asset script:
+
+1. Loads the source logo.
+2. Resizes it to 256 by 256.
+3. Applies a feathered circular alpha mask.
+4. Writes an RGBA8 DDS with a DX10 header.
+5. Creates the 1 by 1 white DDS.
+
+Run it from PowerShell:
+
+```powershell
+Set-Location D:\repos\sample-game
+.\tools\BuildAssets.ps1
+```
+
+Register both DDS files as deployment content in `sample-game.vcxproj`:
+
+```xml
+<CopyFileToFolders Include="Assets\white.dds">
+  <DeploymentContent>true</DeploymentContent>
+  <DestinationFileName>Assets\%(Filename)%(Extension)</DestinationFileName>
+</CopyFileToFolders>
+<CopyFileToFolders Include="Assets\xbox_logo.dds">
+  <DeploymentContent>true</DeploymentContent>
+  <DestinationFileName>Assets\%(Filename)%(Extension)</DestinationFileName>
+</CopyFileToFolders>
+```
+
+<Note>
+  A DDS file using the standard header plus a DX10 extension has **148 bytes** before the pixel data. During the original session, a custom DDS writer emitted 152 bytes and the title failed during texture loading with `0x8007000D`. If you use a custom DDS writer, validate the header layout before deployment.
+</Note>
+
+## 9. Build the game
+
+From the Xbox Series X|S VS 2022 Gaming Command Prompt:
+
+```cmd
+msbuild D:\repos\sample-game\sample-game.sln /m /p:Configuration=Debug /p:Platform=Gaming.Xbox.Scarlett.x64 /nologo /verbosity:minimal
+```
+
+The loose build output is:
+
+```text
+D:\repos\sample-game\Gaming.Xbox.Scarlett.x64\Debug
+```
+
+Confirm that the output contains:
+
+- `sample-game.exe`
+- `MicrosoftGame.config`
+- The shell visual PNG files
+- `Assets\white.dds`
+- `Assets\xbox_logo.dds`
+- Required runtime DLLs
+- The Game OS image or other deployment metadata produced by the build
+
+The project source is named `MicrosoftGameConfig.mgc`. The GDK `MGCCompile` build item validates it and emits `MicrosoftGame.config` in the build output. Deployment and packaging both use the generated `.config` file. See [Game config](/gdk/game-config).
+
+## 10. Connect to the Xbox development kit
+
+Set the default console using its Tools IP address or host name:
+
+```cmd
+xbconnect <console-address>
+```
+
+Check the stored console:
+
+```cmd
+xbconnect /B
+```
+
+Run connection diagnostics:
+
+```cmd
+xbconnect /DX
+```
+
+If the title uses a Partner Center sandbox, configure the case-sensitive sandbox ID and restart the console:
+
+```cmd
+xbconfig sandboxid=<sandbox-id>
+xbreboot
+xbconnect /WS
+```
+
+Display the current sandbox:
+
+```cmd
+xbconfig sandboxid
+```
+
+## 11. Deploy the complete game
+
+Deploy the entire build output folder:
+
+```cmd
+xbapp deploy "D:\repos\sample-game\Gaming.Xbox.Scarlett.x64\Debug"
+```
+
+<Warning>
+  Do not copy only `sample-game.exe`. The title also needs `MicrosoftGame.config`, assets, runtime dependencies, shell images, and deployment metadata. An executable-only copy is **not** a valid full deployment.
+</Warning>
+
+For a clean redeployment after changing assets or configuration:
+
+```cmd
+xbapp list
+xbapp terminate <package-family-name-or-AUMID>
+xbapp uninstall <package-full-name>
+xbapp deploy "D:\repos\sample-game\Gaming.Xbox.Scarlett.x64\Debug"
+```
+
+Use `xbapp list` after deployment to find the registered package full name and application user model ID (AUMID). The AUMID ends with `!Game`.
+
+## 12. Launch and verify the game
+
+Launch the exact AUMID reported by `xbapp list`:
+
+```cmd
+xbapp launch <package-family-name>!Game
+```
+
+Wait for the title process:
+
+```cmd
+xbconnect /WTP:60
+```
+
+Verify that the package is running:
+
+```cmd
+xbapp query <package-full-name>
+```
+
+The expected result is:
+
+```text
+Package execution state: 1 (running)
+```
+
+At this point, the autoplay match should be visible on the development kit.
+
+## 13. Diagnose an immediate launch failure
+
+If the game exits immediately, do **not** assume that deployment succeeded simply because the executable was copied.
+
+### Get the last title result
+
+```cmd
+xbapp lastgamedetails
+```
+
+### Monitor debug output
+
+Start a debug output monitor in one command prompt:
+
+```cmd
+xbdbgmon /t /v
+```
+
+Launch the game from another:
+
+```cmd
+xbapp launch <package-family-name>!Game
+```
+
+The sample added `OutputDebugStringA` messages around:
+
+- Game initialization.
+- DirectXTK12 resource creation.
+- Each texture load.
+- Sprite pipeline creation.
+- Texture upload completion.
+- Frame exceptions.
+
+The startup failure in the original session was isolated to loading `white.dds`. The loader returned `0x8007000D`, which identified malformed DDS data. Correcting the DDS header and performing a clean full deployment fixed the launch.
+
+For more launch diagnostics, run `xbWatson` while reproducing the failure. See also [Error handling](/gdk/error-handling).
+
+## 14. Iterate safely
+
+For most code-only changes:
+
+1. Build Debug.
+2. Terminate the running package.
+3. Deploy the complete output folder.
+4. Launch the registered AUMID.
+5. Query the package state.
+
+For changes to `MicrosoftGameConfig.mgc`, assets, or deployment metadata, **uninstall** the old loose deployment before deploying again. This prevents stale files or registration data from hiding a fix.
+
+## Optional: Create and test an XVC
+
+Loose deployment is the fastest development loop. Create an XVC when you need to test retail-like installation or prepare a package for Partner Center. See [Packaging](/gdk/packaging) for the full packaging reference.
+
+### 1. Associate MicrosoftGame.config with Partner Center
+
+Get these values from **Game setup → Identity details** for the product:
+
+- Package Identity Name.
+- Package Identity Publisher.
+- Publisher Display Name.
+- Store ID.
+- Xbox Title ID.
+- MSA App ID.
+
+Use placeholders in source-control examples; do not copy another product's identity.
+
+For Xbox Series X|S, the important structure is:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Game configVersion="1">
+  <Identity Name="REPLACE-WITH-PACKAGE-IDENTITY-NAME"
+            Publisher="REPLACE-WITH-PACKAGE-IDENTITY-PUBLISHER"
+            Version="1.0.0.0"/>
+
+  <ExecutableList>
+    <Executable Name="sample-game.exe"
+                TargetDeviceFamily="Scarlett"
+                Id="Game"/>
+  </ExecutableList>
+
+  <ShellVisuals DefaultDisplayName="sample-game"
+                PublisherDisplayName="REPLACE-WITH-PUBLISHER-DISPLAY-NAME"
+                Square480x480Logo="LargeLogo.png"
+                Square150x150Logo="GraphicsLogo.png"
+                Square44x44Logo="SmallLogo.png"
+                Description="sample-game"
+                ForegroundText="light"
+                BackgroundColor="#000040"
+                SplashScreenImage="SplashScreen.png"
+                StoreLogo="StoreLogo.png"/>
+
+  <MSAAppId>REPLACE-WITH-MSA-APP-ID</MSAAppId>
+  <TitleId>REPLACE-WITH-XBOX-TITLE-ID</TitleId>
+  <StoreId>REPLACE-WITH-STORE-ID</StoreId>
+</Game>
+```
+
+`TargetDeviceFamily="Scarlett"` is required for the Xbox Series X|S package. Use a separate configuration for an Xbox One package.
+
+### 2. Build Release
+
+```cmd
+msbuild D:\repos\sample-game\sample-game.sln /m /p:Configuration=Release /p:Platform=Gaming.Xbox.Scarlett.x64 /nologo /verbosity:minimal
+```
+
+### 3. Stage the package content
+
+Copy the Release output to a staging directory, but keep `gameos.xvd` outside the content map and do not include PDB files as ordinary package content.
+
+```powershell
+$source  = 'D:\repos\sample-game\Gaming.Xbox.Scarlett.x64\Release'
+$root    = 'D:\repos\sample-game\packages\Scarlett\Release'
+$staging = Join-Path $root 'staging'
+$output  = Join-Path $root 'output'
+
+Remove-Item $staging, $output -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Path $staging, $output -Force | Out-Null
+
+Get-ChildItem $source -Force |
+    Where-Object { $_.Name -ne 'gameos.xvd' -and $_.Extension -ne '.pdb' } |
+    Copy-Item -Destination $staging -Recurse -Force
+```
+
+### 4. Generate the layout
+
+```cmd
+makepkg genmap /f "D:\repos\sample-game\packages\Scarlett\Release\layout.xml" /d "D:\repos\sample-game\packages\Scarlett\Release\staging"
+```
+
+For this small sample, the resulting layout contains one launch chunk:
+
+```xml
+<Package>
+  <Chunk Id="1000" Marker="Launch">
+    <FileGroup DestinationPath="."        SourcePath="."        Include="*.*" />
+    <FileGroup DestinationPath=".\Assets" SourcePath=".\Assets" Include="*.*" />
+  </Chunk>
+</Package>
+```
+
+### 5. Create a dev-kit test package
+
+Default test encryption is useful for local development-kit installation:
+
+```cmd
+makepkg pack /f "D:\repos\sample-game\packages\Scarlett\Release\layout.xml" /d "D:\repos\sample-game\packages\Scarlett\Release\staging" /pd "D:\repos\sample-game\packages\Scarlett\Release\output" /gameos "D:\repos\sample-game\Gaming.Xbox.Scarlett.x64\Release\gameos.xvd" /symbolpaths "D:\repos\sample-game\Gaming.Xbox.Scarlett.x64\Release" /validationcritical /loggable
+```
+
+<Tip>
+  When `StoreId` is present in `MicrosoftGame.config`, `/productid` is **unnecessary** for a normal Store submission. Omit it unless a documented offline or disc scenario specifically requires it.
+</Tip>
+
+### 6. Use submission encryption for a Partner Center package
+
+The sample-game package was first produced with dev-kit test encryption so installation and launch could be verified. For a package that will be submitted, follow the current packaging policy and use `/lk` or `/l`.
+
+The recommended repeatable `/lk` workflow is:
+
+```cmd
+makepkg genkey /ekb D:\secure\sample-game.lekb
+makepkg pack /lk D:\secure\sample-game.lekb /f "D:\repos\sample-game\packages\Scarlett\Release\layout.xml" /d "D:\repos\sample-game\packages\Scarlett\Release\staging" /pd "D:\repos\sample-game\packages\Scarlett\Release\output" /gameos "D:\repos\sample-game\Gaming.Xbox.Scarlett.x64\Release\gameos.xvd" /symbolpaths "D:\repos\sample-game\Gaming.Xbox.Scarlett.x64\Release" /validationcritical /loggable
+```
+
+<Warning>
+  Secure the LEKB. Do **not** commit it to source control.
+</Warning>
+
+### 7. Install and launch the XVC
+
+```cmd
+xbapp install "<path-to-package>.xvc"
+xbapp list
+xbapp launch <store-associated-package-family-name>!Game
+xbapp query <store-associated-package-full-name>
+```
+
+Terminate the package when testing is complete:
+
+```cmd
+xbapp terminate <store-associated-package-family-name>!Game
+```
+
+## Common problems and fixes
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Only Desktop templates are available | Public PC GDK is installed without Xbox Extensions | Install GDKX and its Visual Studio integration from Xbox Secure Downloads. |
+| The project contains `Package.appxmanifest` and targets UWP | The wrong Visual Studio template was selected | Recreate the project with **Direct3D 12 Xbox Game**. |
+| `Gaming.Xbox.Scarlett.x64` is unavailable | The Xbox GDK platform or Visual Studio extension is missing | Repair or reinstall the matching GDKX release and Visual Studio integration. |
+| The title launches and immediately exits | Missing deployment files or runtime initialization failure | Deploy the complete build output and inspect `xbapp lastgamedetails` plus `xbdbgmon`. |
+| DDS loading returns `0x8007000D` | Malformed DDS header or unsupported data | Regenerate the DDS and verify the 148-byte DDS plus DX10 header. |
+| An asset change does not appear | Stale loose deployment | Terminate, uninstall, and fully deploy again. |
+| `makepkg` rejects the configuration | Missing or incorrect `TargetDeviceFamily` | Set `Scarlett` for Series X\|S or `XboxOne` for Xbox One. |
+| Product identity is being supplied in more than one place | `/productid` was added even though the Store identity is already in the game config | Keep `StoreId` in the game config and omit `/productid` for a normal Store submission. |
+| PDB files cause package-map or validation issues | Symbols were included as game content | Exclude PDBs from staging and pass the build directory through `/symbolpaths`. |
+| Store-associated launch appears to fail during handshake | The title may still be starting or diagnostics are incomplete | Launch with `/WaitToExit`, `/show:all`, and `/LogModuleLoads`, then query the package state. |
+
+## Related
+
+- [Develop a new GDK title](/gdk/developing-new-titles)
+- [Install the GDK](/gdk/download-install)
+- [MicrosoftGame.config](/gdk/game-config)
+- [Packaging](/gdk/packaging)
+- [Build for Series X|S](/paths/series-xs/build)
+- [Cross-gen](/gdk/cross-gen)

@@ -231,6 +231,7 @@
             "icon": "play",
             "pages": [
               "gdk/developing-new-titles",
+              "gdk/first-console-title-walkthrough",
               "gdk/add-backend-services",
               "gdk/porting-guides"
             ]
@@ -684,10 +685,7 @@
                   "publishing/xstore-mismatched-accounts",
                   "publishing/xstore-switching-sandbox"
                 ]
-              },
-              "publishing/xstore-deep-dive",
-              "publishing/xstore-testing-setup",
-              "publishing/xstore-server-to-service"
+              }
             ]
           },
           {
