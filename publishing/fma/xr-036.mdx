@@ -1,39 +1,75 @@
 ---
-title: "FMA: XR-036 Title Pricing Information"
+title: "FMA: XR-036 In-Title Pricing Information"
 sidebarTitle: "FMA XR-036"
-description: "How to fix XR-036 In-Title Pricing failures: prices mismatched to Store, wrong currency, stale prices, sale copy without a real sale."
+description: "FMA scenario severities for XR-036 In-Title Pricing Information, including the XSAPI currency format reference chart."
 icon: "tag"
-keywords: ["FMA XR-036", "pricing mismatch", "wrong currency", "stale price", "fake sale"]
+keywords: ["FMA XR-036", "in-title pricing", "currency code", "XSAPI", "Xbox Store catalogue"]
 ---
 
-[XR-036 reference](/publishing/xr/xr-036) is the reference. This page is fix-oriented.
+# XR-036: In-Title Pricing Information
 
-## Common FMA text patterns
+## FMA scenario severities
 
-- **"In-game price does not match Store price"** — stale, wrong region, or wrong product.
-- **"Currency symbol displayed as USD for non-US account"** — pricing not localized.
-- **"'50% off' shown but no sale active"** — sale copy misused.
-- **"Blank price displayed on shop UI"** — pricing query failed with no fallback.
+See the [XR-036 reference](/publishing/xr/xr-036) for the underlying certification requirement.
 
-## Common root causes
+### 036-01 In-Title Pricing Information
 
-| Symptom | Root cause | Fix |
+| Scenario | Severity | Platform |
 | --- | --- | --- |
-| Wrong price | Hard-coded or dev-region cached | Always fetch from `XStoreQueryProductsAsync` |
-| Wrong currency | Locale not passed to price query | Use customer's locale via `XSystemGetXboxLiveSandboxId` context |
-| Fake sale | Marketing copy left in build after promotion ended | Bind sale UI to XStore's `IsOnSale` flag, not a hard-coded string |
-| Blank price | Query failed and no fallback | Present clear error UI, cache last-known price |
+| No current scenario. | Not Relevant (-4) | Xbox One, Xbox Series |
+| No current scenario. | Very Minor (1) | Xbox One, Xbox Series |
+| In-title currency is displayed using the relevant international currency code (for example, EUR, USD, GBP) instead of the equivalent currency symbol. | Minor (2) | Xbox One, Xbox Series |
+| No current scenario. | Moderate (6) | Xbox One, Xbox Series |
+| No current scenario. | Critical (12) | Xbox One, Xbox Series |
+| Price displayed in-title is different from the price in the Xbox Store catalogue. | Catastrophic (22) | Xbox One, Xbox Series |
+| Currency displayed for an in-title price isn't specified or isn't correct (to be correct, it must match the Xbox Store catalogue OR the XSAPI symbol in the FMA Notes table). | Catastrophic (22) | Xbox One, Xbox Series |
 
-## Fixing
+**Notes**
 
-- Always fetch prices from XStore; never hard-code.
-- Cache with a short TTL; refresh on shop-open.
-- Bind sale copy to XStore state, not a static string.
-- Present clear fallback when the query fails.
+- The title may display DLC price as Free within the title or in the Xbox Store. This issue is to be logged under Non-Testable XRs.
+- See the following chart for currency codes:
 
-## Related
-
-- [XR-036 reference](/publishing/xr/xr-036)
-- [XStore deep dive](/publishing/xstore-deep-dive)
-- [Sale pricing](/publishing/sale-pricing)
-- [In-game store add-ons](/publishing/how-to-in-game-store-only)
+| Country code | Name | XSAPI Format | Currency code |
+| --- | --- | --- | --- |
+| AE | United Arab Emirates | 72.99 | USD |
+| AR | Argentina | \$ 1.299,00 | ARS |
+| AT | Austria | 69,99 € | EUR |
+| AU | Australia | \$99.95 | AUD |
+| BE | Belgium | € 69,99 | EUR |
+| BR | Brazil | R\$ 199,00 | BRL |
+| CA | Canada | \$49.99 | CAD |
+| CH | Switzerland | CHF 79.00 | CHF |
+| CL | Chile | \$ 44.900,00 | CLP |
+| CN | China | CN¥249.00 | CNY |
+| CO | Colombia | \$234.900,00 | COP |
+| CZ | Czech Republic | 1 799,00 Kč | CZK |
+| DE | Germany | 69,99 € | EUR |
+| DK | Denmark | 500,00 kr. | DKK |
+| ES | Spain | 69,99 € | EUR |
+| FI | Finland | 69.99 € | EUR |
+| FR | France | 69,99 € | EUR |
+| GB | United Kingdom | £44.99 | GBP |
+| GR | Greece | € 69.99 | EUR |
+| HK | Hong Kong SAR | HK\$416.00 | HKD |
+| HU | Hungary | 18 990,00 Ft | HUF |
+| IE | Republic of Ireland | € 69.99 | EUR |
+| IL | Israel | 340.00 ILS | ILS |
+| IN | India | Rs. 4,490.00 | INR |
+| IT | Italy | € 64,99 | EUR |
+| JP | Japan | ¥6,912 | JPY |
+| KR | South Korea | ₩57,900 | KRW |
+| MX | Mexico | \$1,097.00 | MXN |
+| NL | Netherlands | € 69,99 | EUR |
+| NO | Norway | 549,00 kr. | NOK |
+| NZ | New Zealand | \$109.95 | NZD |
+| PL | Poland | 239,99 zł | PLN |
+| PT | Portugal | 69,99 € | EUR |
+| RU | Russia | \$39.99 | USD |
+| SA | Saudi Arabia | SAR 269.00 | SAR |
+| SE | Sweden | 599,00 kr | SEK |
+| SG | Singapore | \$69.90 | SGD |
+| SK | Slovakia | 69.99 € | EUR |
+| TR | Türkiye | 250,00 TL | TRY |
+| TW | Taiwan | NT\$1,674 | TWD |
+| US | United States | \$39.99 | USD |
+| ZA | South Africa | R 799,00 | ZAR |

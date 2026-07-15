@@ -1,31 +1,34 @@
 ---
 title: "FMA: XR-046 Display Name and Gamerpic"
 sidebarTitle: "FMA XR-046"
-description: "How to fix XR-046 Display failures: wrong gamertag rendering, real name shown without privilege, stale gamerpic, character encoding issues."
+description: "FMA scenario severities for XR-046 Display Name and Gamerpic."
 icon: "user"
-keywords: ["FMA XR-046", "gamertag", "gamerpic", "real name privilege", "modern gamertag"]
+keywords: ["FMA XR-046", "gamertag", "gamerpic", "modern gamertag", "display name", "Unicode"]
 ---
 
-[XR-046 reference](/publishing/xr/xr-046) is the reference. This page is fix-oriented.
+# XR-046: Display Name and Gamerpic
 
-## Common FMA text patterns
+## FMA scenario severities
 
-- **"Real name shown for account without visibility privilege"** — privilege bypass.
-- **"Gamertag suffix truncated"** — modern gamertag format not supported.
-- **"Stale gamerpic after customer changed it"** — no refresh.
-- **"Unicode gamertag rendered incorrectly"** — encoding / rendering bug.
+See the [XR-046 reference](/publishing/xr/xr-046) for the underlying certification requirement.
 
-## Common root causes
+### 046-01 Display Name and Gamerpic
 
-| Symptom | Root cause | Fix |
+| Scenario | Severity | Platform |
 | --- | --- | --- |
-| Real name leak | Cached and shown without re-checking privilege | Check on every display; fall back to gamertag |
-| Truncated suffix | Legacy gamertag assumption in string handling | Fix truncation to be codepoint-aware |
-| Stale gamerpic | No refresh on profile event | Wire refresh on relevant events |
-| Unicode issues | Non-Unicode string handling | Use UTF-16 throughout the string pipeline |
+| A gamertag isn't updated when shown as part of metadata for that user's associated UGC (for example, the listed creator). | Not Relevant (-4) | Xbox One, Xbox Series, Windows |
+| No current scenario. | Very Minor (1) |  |
+| The title displays the user's gamerpic, but the gamerpic is displayed incorrectly in low visibility areas. The gamerpic is accompanied by the gamertag which is both clearly visible and accurate. | Minor (2) | Xbox One, Xbox Series, Windows |
+| The title correctly displays a user's gamertag but is split between two lines. | Minor (2) | Xbox One, Xbox Series, Windows |
+| In a non-core or low visibility area of the title, the title doesn't correctly display all 15 characters of any gamertag. | Moderate (6) | Xbox One, Xbox Series, Windows |
+| The gamertag doesn't show some of the Unicode characters correctly (including the auto-generated suffix) when using a modern gamertag. (Log as an ION) | Moderate (6) | Xbox One, Xbox Series, Windows |
+| The title displays the user's gamerpic, but the gamerpic is displayed incorrectly in high visibility areas. The gamerpic is accompanied by the gamertag which is both clearly visible and accurate. | Moderate (6) | Xbox One, Xbox Series, Windows |
+| In core high visibility areas of the title, the title doesn't correctly display all 15 characters of any gamertag. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title displays the user's gamerpic, but the gamerpic is displayed incorrectly throughout the title. The gamertag doesn't accompany the gamerpic. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title displays a gamertag or gamerpic different from that of the selected Xbox network user. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title doesn't display any of the required characters of a user's modern gamertag correctly. | Critical (12) | Xbox One, Xbox Series, Windows |
+| No current scenario. | Catastrophic (22) |  |
 
-## Related
+**Notes**
 
-- [XR-046 reference](/publishing/xr/xr-046)
-- [XR-047](/publishing/xr/xr-047)
-- [XR-048](/publishing/xr/xr-048)
+- In betas, the gamertag isn't required to be displayed (for example, active user indication), but if the title does implement it then it needs to adhere to this XR.

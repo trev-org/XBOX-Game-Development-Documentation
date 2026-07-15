@@ -1,0 +1,49 @@
+---
+title: "XR-022 Official Naming Standards"
+sidebarTitle: "XR-022 Naming Standards"
+description: "Titles must use the official Xbox terminology list for all in-title text and imagery referring to Xbox console, controllers, peripherals, and Xbox network features."
+icon: "spell-check"
+keywords: ["XR-022", "terminology", "naming standards", "Xbox terminology", "branding", "controller names", "peripheral names"]
+---
+
+**XR-022 is tested in Certification.** Titles must use the naming standards defined in the latest release of the Xbox terminology list for Xbox console and/or Xbox network features.
+
+On Xbox consoles, titles must not display images or refer to components of the console system or components of peripherals using terms that aren't specifically included in the terminology list.
+
+See [Cert terminology](/publishing/console-cert-terminology) for the current localized terminology tables.
+
+## Requirement
+
+- Use terms from the current [Xbox terminology list](/publishing/console-cert-terminology) in all localized in-title text.
+- Do not reference components of a competing platform in text or imagery.
+- Controller button call-outs, icons, and prompts must match the current Xbox Wireless Controller nomenclature (A, B, X, Y, LB, LT, RB, RT, View, Menu, Xbox, Share).
+- Localized surface strings must use the localized terms in the terminology list, not literal translations.
+
+## Test cases
+
+### 022-01 Official Naming Standards
+
+1. Launch the title and visit every menu, sub-menu, cutscene, and settings screen.
+2. Save and load all supported game types.
+3. Note every text string and image that refers to hardware, controller inputs, or Xbox network features.
+4. Compare each against the current terminology list for the active locale.
+
+**Pass:** Every reference matches the terminology list.
+
+**Fail:**
+
+- The title uses a proprietary term or image from a competitive platform.
+- The title refers to a component of the console system or peripheral using any term not in the terminology list.
+
+## Common mistakes
+
+- **Cross-platform prompts** — leftover PlayStation button glyphs, or generic “trigger” language, when running on Xbox.
+- **Legacy Xbox Live** — mentions of “Xbox Live Gold” after the rebrand to Xbox Game Pass Essential / Core.
+- **Untranslated controller strings** — English button names in localized builds.
+- **Marketing tag divergence** — using “Xbox Series X|S Enhanced” instead of the current official capability tag.
+
+## Related
+
+- [Cert terminology](/publishing/console-cert-terminology)
+- [XR-006 Title Assets and Metadata](/publishing/xr/xr-006)
+- [XR-017 Title Ratings](/publishing/xr/xr-017)

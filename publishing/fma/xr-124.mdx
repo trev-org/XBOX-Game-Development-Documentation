@@ -1,0 +1,37 @@
+---
+title: "FMA: XR-124 Game Invitations"
+sidebarTitle: "FMA XR-124"
+description: "FMA scenario severities for XR-124 Game Invitations."
+icon: "envelope-open-text"
+keywords: ["FMA XR-124", "game invitation", "in-game invite", "system toast", "multiplayer"]
+---
+
+# XR-124: Game Invitations
+
+## FMA scenario severities
+
+See the [XR-124 reference](/publishing/xr/xr-124) for the underlying certification requirement.
+
+### 124-01 Game Invitations
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| The title doesn't immediately transition the user into a game session, but does so when the user returns to the main menu/a previous menu and no messaging or notification is provided. | Moderate (6) | Xbox One, Xbox Series |
+| The title doesn't inform the user that they must return to the main menu/a previous menu in order to enter the multiplayer session. | Moderate (6) | Xbox One, Xbox Series |
+| The title doesn't complete an invite sent via in-game. The invited user remains in the same game area and no clear error messaging is displayed. | Critical (12) | Xbox One, Xbox Series |
+| The title takes the user to the main menu when accepting a game invitation sent via in-game and no messaging/notifications are displayed to help the user to join the game session. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't display a system toast when a game invitation has been received. | Critical (12) | Xbox One, Xbox Series |
+| A multiplayer game doesn't support the ability to send an invite via in-game functionality where expected (generally where the 'Join' option is available in the Friends list, see test case 064-01/064-02). | Catastrophic (22) | Xbox One, Xbox Series |
+
+**Notes**
+
+- This XR is for the implementation of in-game invites, not invites sent via the guide.
+- Cross-platform PC ↔ Xbox invitations may be optionally supported by the title.
+- Timing: Wait until publisher/legal screens start appearing during the initial boot before accepting an invite. Accepting an invite isn't expected to work before this point (during the splash screen).
+- Game design may dictate that pre-conditions are met before allowing multiplayer (for example, playing a tutorial first).
+- Game design may allow in-game server region switching. The invite must work regardless.
+- If the title takes the user to the main menu when accepting a game invite, the title must provide sufficient messaging/notifications to help the user enter the game session. For example, the game boots to IIS where a 'Press A' prompt is displayed. This is only valid if there's an option to then proceed into the game session without requiring a new invite.
+- Suggested probability of 4. Increase/decrease where it's felt appropriate to do so (for example, depending on game area/mode).

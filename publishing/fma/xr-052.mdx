@@ -1,31 +1,76 @@
 ---
-title: "FMA: XR-052 User State and Title-Save Location"
+title: "FMA: XR-052 User State and Title Save Location, Roaming, and Dependencies"
 sidebarTitle: "FMA XR-052"
-description: "How to fix XR-052 Save failures: save corruption on partial write, save not roaming, conflict resolution missing, account-switch data leak."
+description: "FMA scenario severities for XR-052 User State and Title Save Location, Roaming, and Dependencies."
 icon: "floppy-disk"
-keywords: ["FMA XR-052", "save corruption", "cloud roaming", "save conflict", "account switch save"]
+keywords: ["FMA XR-052", "save data", "connected storage", "roaming", "conflict resolution", "cloud save"]
 ---
 
-[XR-052 reference](/publishing/xr/xr-052) is the reference. This page is fix-oriented.
+# XR-052: User State and Title Save Location, Roaming, and Dependencies
 
-## Common FMA text patterns
+## FMA scenario severities
 
-- **"Save corrupted after \[event\]"** — partial write.
-- **"Cloud save did not roam to console B"** — save in title-owned location.
-- **"Save from account A visible under account B"** — wrong XUID association.
-- **"Save conflict silently overwritten"** — no conflict resolution.
+See the [XR-052 reference](/publishing/xr/xr-052) for the underlying certification requirement.
 
-## Fixing
+### 052-01 Correct Location for User State
 
-- Write saves **atomically**: write to temp, fsync, rename.
-- Store user state in **Connected Storage** keyed to signed-in XUID.
-- Present a **conflict resolution UI** when local and cloud saves diverge.
-- Reset save state on `XUserChangeEvent` — don't carry across accounts.
-- **Version save format** and support migration.
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| The title stores per-user data as global data. | Minor (2) | Xbox One, Xbox Series |
+| The title uses connected storage for storing large amounts of state data (100 megabytes or greater per user) which isn't required to roam with the user. | Moderate (6) | Xbox One, Xbox Series |
+| The title stores global data as per-user data. | Moderate (6) | Xbox One, Xbox Series |
+| No current scenario. | Critical (12) |  |
+| No current scenario. | Catastrophic (22) |  |
 
-## Related
+**Notes**
 
-- [XR-052 reference](/publishing/xr/xr-052)
-- [XR-001](/publishing/xr/xr-001)
-- [XR-115](/publishing/xr/xr-115)
-- [XR-133](/publishing/fma/xr-133)
+- No current FMA Notes to consider.
+
+### 052-02 Connected Storage Usage
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| The user notices a substantial performance impact during a save. | Minor (2) | Xbox One, Xbox Series |
+| The title saves progress data outside of the connected storage. | Moderate (6) | Xbox One, Xbox Series |
+| The user experiences save failures due to running out of connected storage. | Moderate (6) | Xbox One, Xbox Series |
+| The title uses more than the allotted per user storage per title (256 MB). | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- No current FMA Notes to consider.
+
+### 052-05 User State Roaming
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| The user loses a very minor amount of progress after roaming their save between consoles. | Minor (2) | Xbox One, Xbox Series |
+| The user loses a moderate amount of progress after roaming their save between consoles. | Moderate (6) | Xbox One, Xbox Series |
+| The user loses a critical amount of progress after roaming their save between consoles. | Critical (12) | Xbox One, Xbox Series |
+| Xbox network user data doesn't roam between consoles. | Catastrophic (22) | Xbox One, Xbox Series |
+
+**Notes**
+
+- No current FMA Notes to consider.
+
+### 052-06 Conflict Resolution UI
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| The user isn't presented with a save conflict resolution UI when needed. | Moderate (6) | Xbox One, Xbox Series |
+| The save conflict resolution UI doesn't provide meaningful information (such as timestamps or progress info) to help the user choose which save to keep. | Moderate (6) | Xbox One, Xbox Series |
+| The title automatically overwrites saved data without the user's consent when a conflict occurs. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- No current FMA Notes to consider.

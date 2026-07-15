@@ -1,0 +1,38 @@
+---
+title: "XR-133 Local Storage Write Limitations"
+sidebarTitle: "XR-133 Local Storage Writes"
+description: "Titles that use local storage must not exceed 1 GiB of total writes to persistent or temporary storage in any 5-minute window."
+icon: "hard-drive"
+keywords: ["XR-133", "local storage", "persistent storage", "temporary storage", "write limits", "system toast"]
+---
+
+**XR-133 is tested in Certification.** Titles that use local storage must not exceed **1 GiB of total writes** to persistent local storage or temporary storage in a **5-minute increment of time**.
+
+Exceeding this budget triggers the Local Storage Write Limitations system toast, which is treated as a certification failure.
+
+For implementation details on local storage on Xbox consoles with the GDK, read the [Local Storage section](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/system/overviews/features/local-storage) of the GDK documentation.
+
+## Test cases
+
+### 133-01 Local Storage Write Limitations
+
+1. Install the title and, with it running, navigate through all areas, including but not limited to:
+   - Create a game save, reboot the console, and load the game save.
+   - Play all game modes and unlock / view achievements.
+2. Observe the title to see whether the Local Storage Write Limitations system toast appears.
+
+**Pass:** The title doesn’t trigger the Local Storage Write Limitations system toast.
+
+**Fail:** The title triggers the Local Storage Write Limitations system toast.
+
+## Common causes of failure
+
+- Verbose telemetry or debug logging written to disk in retail builds.
+- Streaming caches that write frequently for very small deltas.
+- Save-on-every-frame patterns or overly aggressive auto-save.
+- Middleware writing intermediate files without cleanup.
+
+## Related
+
+- [XR-132 Service Access Limitations](/publishing/xr/xr-132)
+- [XR-052 User State and Title-Save Location, Roaming and Dependencies](/publishing/xr/xr-052)

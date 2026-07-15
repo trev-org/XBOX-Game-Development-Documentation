@@ -1,0 +1,64 @@
+---
+title: "FMA: XR-115 Addition and Removal of Users or Controllers During Gameplay"
+sidebarTitle: "FMA XR-115"
+description: "FMA scenario severities for XR-115 Addition and Removal of Users or Controllers During Gameplay."
+icon: "gamepad"
+keywords: ["FMA XR-115", "controller", "add user", "remove user", "account picker", "active user"]
+---
+
+# XR-115: Addition and Removal of Users or Controllers During Gameplay
+
+## FMA scenario severities
+
+See the [XR-115 reference](/publishing/xr/xr-115) for the underlying certification requirement.
+
+### 115-01 Addition of Users
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| The title automatically interrupts the active user's gameplay when a second controller is powered on and signs into an Xbox profile. | Critical (12) | Xbox One, Xbox Series |
+| The title transitions the user to the title screen without messaging upon establishment of a new user. | Catastrophic (22) | Xbox One, Xbox Series |
+
+**Notes**
+
+- No current FMA Notes to consider.
+
+### 115-02 Removal of Controllers
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| Disconnecting the active Xbox controller and then connecting another to continue requires that user to find the in-title account picker in order to assign themselves to the controller, without having to exit an in-progress gameplay session. | Not Relevant (-4) | Xbox One, Xbox Series |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| The title returns the user to the initial interactive state after the Xbox Controller is powered off in an area where no game progress is lost (for example, during the title's menus before entering gameplay). | Moderate (6) | Xbox One, Xbox Series |
+| The title removes users from online game sessions if they disconnect the Xbox controller. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't accept input from a second controller which is connected after removing the batteries from the primary controller. | Critical (12) | Xbox One, Xbox Series |
+| The title returns the user to the main menu after powering off the Xbox controller during active gameplay. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't allow the user to resume active gameplay after powering off the Xbox controller and syncing a new one. | Critical (12) | Xbox One, Xbox Series |
+| Disconnecting the active Xbox controller and then connecting another to continue requires that user to find the in-title account picker in order to assign themselves to the controller, resulting in having to exit an in-progress gameplay session. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- Stability issues to be logged under XR-001 — Title Stability.
+- Suggested probability of 3 for two controllers. Suggested probability of 2 for three or more controllers. Increase/decrease where it's felt appropriate to do so (for example, depending on game area/mode/opportunity to occur).
+
+### 115-03 Removal of Users
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| The title doesn't update to the relevant user context when the active user changes. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't prompt the user with an account picker or return to the front end after signing out of the active profile. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- No current FMA Notes to consider.

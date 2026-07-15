@@ -1,62 +1,212 @@
 ---
 title: "XR-129 Intelligent Delivery Content Management"
 sidebarTitle: "XR-129 Intelligent Delivery"
-description: "Titles that use Intelligent Delivery to ship platform-specific, language-specific, or optional content must declare the delivery layout correctly and consume only the chunks that are actually installed."
+description: "Titles that support Intelligent Delivery must handle scenarios gracefully when content that is not currently installed is needed, using PackageInstallChunksAsync or AddChunkSpecifiersAsync."
 icon: "truck-fast"
-keywords: ["XR-129", "Intelligent Delivery", "content chunks", "platform variants", "language chunks", "optional chunks"]
+keywords: ["XR-129", "Intelligent Delivery", "PackageInstallChunksAsync", "AddChunkSpecifiersAsync", "language packs", "on-demand content", "streaming install", "Features and Recipes"]
 ---
 
-## Intent
+# XR-129: Intelligent Delivery Content Management \*
 
-**Intelligent Delivery** lets titles ship only the content each customer needs: their platform (Series X vs Series S vs Xbox One), their language, and their opted-in optional content (HD textures, campaign expansions). This saves install size and download time — but only works if the title correctly declares its delivery layout and only touches installed content at runtime.
+Version 1.3, 4/1/2021
 
-## Applies to
+Titles that support intelligent delivery must handle scenarios gracefully when content that is not currently installed is needed. Titles can accomplish this by calling `PackageInstallChunksAsync` in the GDK or `AddChunkSpecifiersAsync` in the XDK when additional content needs to be installed from disc or Xbox Live.
 
-Titles that use Intelligent Delivery for platform-specific, language-specific, or optional content.
+For more information on Streaming Install or Intelligent Delivery with the GDK, read the Streaming Install and Intelligent Delivery overview in the GDK documentation.
 
-## Requirement
+## More Information
 
-Your title **MUST**:
+With intelligent delivery, titles can use the device-specific, language-specific, or on-demand install of game content. Titles that allow for in-game alternation of features/settings that would need content not installed automatically must:
 
-- Declare the **Intelligent Delivery layout** in the package manifest — platform chunks, language chunks, optional chunks, and dependencies among them.
-- **Query which chunks are installed** at runtime via the platform APIs before touching content in a chunk.
-- Handle the case where an **optional chunk isn't installed** — either offer to install it, fall back to a lower-quality alternative, or gate the feature.
-- Handle **partial installs** correctly — the customer might have installed English audio and Spanish text but not Spanish audio; the title must not fail on the mismatch.
-- **Coordinate chunk install / uninstall** with the platform's storage manager — don't fight the platform's decisions.
+- Not crash or become unresponsive when the content is not available.
+- Initiate the install correctly by using the `PackageInstallChunksAsync` (GDK) or `AddChunkSpecifiersAsync` (XDK) API.
 
-Your title **MUST NOT**:
+It is highly recommended that the title display progress about the installation of content initiated by the title, using `XPackageCreateInstallationMonitor` (GDK) or the events and methods of the `PackageTransferWatcher` object obtained by using the `AddChunkSpecifiersAsync` API (XDK).
 
-- Assume the entire package is installed.
-- Reference content by path assuming a specific chunk mapping.
-- Ship a delivery layout that doesn't match what the runtime consumes.
-- Fail to detect Intelligent Delivery configuration errors at runtime; they must be caught in cert.
+**Example scenarios:**
 
-## Tested scenarios
+**Language Packs**
 
-- Install only the initial-play chunks. Verify title reaches playable state.
-- Install an optional HD texture chunk mid-session. Verify the title picks it up on next natural refresh.
-- Uninstall an optional chunk. Verify the title falls back gracefully.
-- Try mismatched language chunks (audio in one language, text in another). Verify handling.
+The user is using en-US as their console language setting, and you offer fr-FR, it-IT, es-SP, fr-CA, de-AU and ja-JP languages also, via intelligent delivery. By default, because the user has their console set to en-US, the platform will install the en-US language chunks as the base installation.
 
-## Best practices
+However, if your title offers language selection in an in-game menu, your title must trigger the installation of additional language content if the user selects a different language from what was initially installed.
 
-- **Design chunks around distinct customer preferences**: platform, language, optional-content packs.
-- **Declare dependencies** in the manifest so the platform installs prerequisite chunks first.
-- **Test with partial installs** — don't only test with everything installed.
+**Devices**
 
-## Related XRs
+The user originally installed the game on an external drive as an Xbox One S title. The user moves the external drive to an Xbox One X console. The platform will automatically install the Xbox One X chunks prior to the launch marker, but any content not in the launch set that is specific to Xbox One X will be streamed in while the title is runnable from its launch set. Your title must check that the chunks for the device type are installed, and handle this scenario gracefully while waiting for them. Additionally, titles that offer device-specific optimizations, such as improved textures, should consider this scenario as part of their content-management experience.
 
-- [XR-034](/publishing/fma/xr-034) — Streaming install initial play marker.
-- [XR-037](/publishing/xr/xr-037) — Package dependencies.
-- [XR-123](/publishing/xr/xr-123) — In-session content install.
-- [XR-130](/publishing/xr/xr-130) — Xbox Console Families (Intelligent Delivery \+ Smart Delivery).
+**On-Demand Content**
 
-## If your title fails XR-129
+The user is playing a game that has a multiplayer campaign, a character editor, and a level editor. Your title has marked these as on-demand assets in your layout file. Your title should indicate in the menu entries for these modes that the content needs to be installed. If the user selects one of these menu entries, or the title otherwise needs the content, the title must request that the content be installed. Users can cancel a request to install the content, and titles must gracefully handle this return value from `AddChunkSpecifiersAsync`.
 
-See [FMA: XR-129 Intelligent Delivery Content Management](/publishing/fma/xr-129).
+## Implementation Guidance and Best Practices
 
-## Related
+## Additional Resources
 
-- [Packages](/publishing/packages)
-- [Package management](/publishing/how-to-package-management)
-- [XBOX requirements](/publishing/xbox-requirements)
+## Certification Test Cases
+
+### 129-01 Intelligent Delivery of Language Packs
+
+**Tools Needed**
+
+- 1 x Xbox One
+- 1 x Xbox One S
+- 1 x Xbox One X
+- 1 x Xbox Series X Dev Kit (using Xbox Series X|S retail console mode)
+
+**Test Steps**
+
+1. Set Xbox One console to a supported language.
+2. Install the title.
+3. Launch the title.
+4. Navigate the title and ensure the experience matches that of the console selected language.
+5. If the title offers an in-game menu option to switch languages, select each language to install each of those language chunks.
+6. Repeat steps 1\\u20135 for all supported languages.
+7. Repeat steps 1\\u20136 on all generations of devices.
+
+**Expected Result**
+
+The expected language packs are installed as expected.
+
+**Pass Examples**
+
+1. The title installs the expected language pack based on the console language setting.
+2. Selecting a different language from a menu option installs the correct language pack.
+3. The title remains stable and does not crash or become unresponsive.
+
+**Fail Examples**
+
+1. The title does not install the expected language pack based on the console language setting.
+2. Selecting a different language from a menu option does not install the correct language pack.
+3. The title crashes or becomes unresponsive.
+
+### 129-02 Intelligent Delivery of Device-Specific Content
+
+**Tools Needed**
+
+- 1 x Xbox One
+- 1 x Xbox One S
+- 1 x Xbox One X
+- 1 x Xbox Series X Dev Kit (using Xbox Series X|S retail console mode)
+
+**Test Steps**
+
+1. Set Xbox One console to a supported language.
+2. Install title.
+3. Launch the title.
+4. Navigate the title and ensure only Xbox One specific content is installed.
+5. Repeat steps 1\\u20134 on all generations of devices and ensure all generation-specific content is installed.
+6. Repeat steps 1\\u20135 for all supported languages.
+
+**Expected Result**
+
+The expected device-specific content is installed as expected.
+
+**Pass Examples**
+
+1. The title installs the expected device-specific content.
+2. The title remains stable and does not crash or become unresponsive.
+
+**Fail Examples**
+
+1. The title does not install the expected device-specific content.
+2. The title crashes or becomes unresponsive.
+
+### 129-03 Migration of Device-Specific Content
+
+**Tools Needed**
+
+- 1 x Xbox One
+- 1 x Xbox One S
+- 1 x Xbox One X
+- 1 x Xbox Series X Dev Kit (using Xbox Series X|S retail console mode)
+
+**Test Steps**
+
+1. \[Xbox One Console\] Set Xbox One console to a supported language.
+2. \[Xbox One Console\] Install title to an external USB device.
+3. \[Xbox One Console\] Launch the title.
+4. \[Xbox One Console\] Navigate the title and ensure only Xbox One specific content is installed.
+5. Move the USB device to an Xbox One X console.
+6. \[Xbox One X Console\] Take the update to install Xbox One X specific content.
+7. \[Xbox One X Console\] Launch the title and ensure the title gracefully handles the install of additional Xbox One X content.
+8. Move the USB device back to an Xbox One console.
+9. \[Xbox One Console\] Navigate the title and ensure the title gracefully handles both platform content being installed.
+10. Repeat steps 5\\u20139 on an Xbox Series X|S.
+
+**Expected Result**
+
+The expected device-specific content is installed as expected.
+
+**Pass Examples**
+
+1. The title installs the expected device-specific content.
+2. The title remains stable and does not crash or become unresponsive.
+
+**Fail Examples**
+
+1. The title crashes or becomes unresponsive.
+
+### 129-04 Intelligent Delivery of On-Demand Content
+
+**Tools Needed**
+
+- 1 x Xbox One
+- 1 x Xbox One S
+- 1 x Xbox One X
+- 1 x Xbox Series X Dev Kit (using Xbox Series X|S retail console mode)
+
+**Test Steps**
+
+1. Set Xbox One console to a supported language.
+2. Install title.
+3. Launch the title.
+4. Install all on-demand content.
+5. Repeat steps 1\\u20134 for all supported languages.
+6. Repeat steps 1\\u20135 on all generations of devices.
+
+**Expected Result**
+
+The on-demand content is installed as expected.
+
+**Pass Examples**
+
+1. The title installs the on-demand content as expected.
+2. The title remains stable and does not crash or become unresponsive.
+
+**Fail Examples**
+
+1. The title does not install the on-demand content as expected.
+2. The title crashes or becomes unresponsive.
+
+### 129-05 Features and Recipes
+
+**Tools Needed**
+
+- 1 x Xbox One
+- 1 x Xbox One S
+- 1 x Xbox One X
+- 1 x Xbox Series X Dev Kit (using Xbox Series X|S retail console mode)
+
+**Test Steps**
+
+1. Install the base title without any optional content associated with Features and Recipes.
+2. Navigate to all areas of the title, attempt to access content not installed and ensure the title remains stable.
+3. For each Feature exposed in the system UI, install the Feature and attempt to access it within the title and ensure the title remains stable.
+4. For each Feature not exposed in the system UI, install the Feature view via the in-title UI option and ensure the title remains stable.
+5. For each Recipe, ensure the user owns any related store entitlements and perform a fresh install.
+6. Ensure that any Features contained within the Recipe are installed and accessible within the title.
+
+**Expected Results**
+
+The title remains stable when optional content is not installed and the title allows access to optional content when installed.
+
+**Pass Examples**
+
+1. The title remains stable when optional content is not installed.
+2. The title allows access to optional content when installed.
+
+**Fail Examples**
+
+1. The title crashes or becomes unresponsive when optional content is not installed.
+2. The title does not allow access to optional content when installed.

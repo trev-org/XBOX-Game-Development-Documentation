@@ -1,0 +1,40 @@
+---
+title: "XR-117 Beta / Game Preview Notification"
+sidebarTitle: "XR-117 Beta Notification"
+description: "Beta and Game Preview titles must display a splash screen or notification after launch and before gameplay that communicates pre-release status and support boundaries."
+icon: "flask"
+keywords: ["XR-117", "beta", "game preview", "pre-release", "splash screen", "support boundaries"]
+---
+
+**XR-117 is tested in Certification.** Titles that are in beta stage must have a splash screen or message displayed within the experience, after launch but before gameplay or application usage, that communicates:
+
+- The title is beta/pre-release software.
+- Some platform features might not work correctly.
+- Some game features might not work correctly and might crash.
+
+The notification must also outline the support boundaries for the title.
+
+Beta and Game Preview titles are subject to a subset of the XRs. See [Beta & Game Preview cert](/publishing/cert-beta-game-preview) for the reduced XR set.
+
+## Test cases
+
+### 117-01 Beta / Game Preview Notification to Users
+
+1. Sign in to an Xbox profile and launch the title.
+2. Verify that before the user can participate in gameplay or application usage, a message is displayed communicating, at minimum:
+   - The title is beta/pre-release software.
+   - Some platform features might not work correctly.
+   - Some game features might not work correctly and might crash.
+   - The support boundaries for the title.
+
+**Pass:** The user is notified of the title’s beta / pre-release status before being able to engage with any functionality within the title.
+
+**Fail:**
+
+- The title doesn’t display a notification of its beta / pre-release status.
+- The user can access title functionality before seeing the notification.
+
+## Related
+
+- [Beta & Game Preview cert](/publishing/cert-beta-game-preview)
+- [XBOX Game Preview](/publishing/xbox-game-preview)

@@ -1,74 +1,125 @@
 ---
 title: "Failure Mode Analysis (FMA) reference overview"
 sidebarTitle: "FMA overview"
-description: "How to read a Failure Mode Analysis, what each field means, and how to work through fixing an FMA before resubmission."
+description: "The Xbox Certification FMA framework — severity, probability, and repeatability scoring used to consistently classify issues as CFR, SRI, or ION."
 icon: "triangle-exclamation"
-keywords: ["FMA", "failure mode analysis", "cert failure", "TFB", "resubmit", "deviation"]
+keywords: ["FMA", "failure mode analysis", "severity", "probability", "repeatability", "CFR", "SRI", "ION", "certification scoring"]
 ---
 
-A **Failure Mode Analysis (FMA)** is the report Microsoft's test team delivers when your submission fails one or more XRs. It's not a rejection letter — it's a structured document that tells you what failed, how it was tested, and what to do next. Every XR that fails produces one or more entries in the FMA.
+# Xbox Certification Failure Mode Analysis (FMA)
 
-This section indexes per-XR FMA guidance pages: for each XR your title might fail, we've captured the common failure modes, the fix patterns, and what the FMA text will look like. Use these pages when a submission fails to accelerate root-cause analysis.
+_Improving the consistency, quality, and relevance of decision making in test._
 
-For the process of reading an FMA and resubmitting see [XR FMA](/publishing/xr-fma). For the XR reference itself see [XBOX requirements](/publishing/xbox-requirements). For cert terminology (TFB, deviation, etc.) see [Cert terminology](/publishing/console-cert-terminology).
+## Abstract
 
-## Structure of an FMA entry
+Certification needs to ensure that decision-making is accurate and consistent, while ensuring that the team invests time only in issues that offer true value.
 
-Every entry in an FMA contains:
+## Introduction
 
-| Field | Meaning |
+The Certification team makes thousands of decisions every year to determine the seriousness and noncompliance of issues.
+
+Making consistent decisions is a challenge in a business that's both cross-regional and home to several layers of internal assessment, from testers on the floor up through leads, managers, and software engineers.
+
+FMA offers a strict framework to enable all who are involved to make key decisions quickly and consistently while saving a significant amount of time by flagging those issues deemed too minor to be fully documented.
+
+## Overview
+
+FMA provides a framework for assigning three different scores to each issue: **severity**, **probability**, and **repeatability**. The sum of these scores determines the issue type as one of the following types.
+
+- **Condition for Resubmission (CFR):** These issues are serious enough that the title can't be shipped until the developer fixes the issue in a resubmission, or the issue can be fixed through a Content Update delivered in a specific time frame, often by day one of end-user interaction.
+- **Standard Reporting Issue (SRI):** These issues are serious, but they aren't severe enough to stop the submission from being published.
+- **Issue of Note (ION):** These SRI issues can't be mapped directly to an existing test case.
+
+The logical progression to decide where each issue resides is partially based on the wording of the test cases and on a personal assessment of the probability and repeatability of the event that's occurring in the retail environment.
+
+To serve all areas of decision making, the key concepts of severity, probability, and repeatability are brought together in one place. Although possible, this approach creates a need for a database with potentially tens of thousands of entries to cover all eventualities.
+
+It's important to split issues into their component parts to avoid an excessive number of line entries that are needed to describe an outcome. For Certification, FMA uses a system that has the following variables.
+
+- **Severity:** Six potential outcomes
+- **Probability:** Six potential outcomes
+- **Repeatability:** Six potential outcomes
+
+Severity (as detailed in the next section) is made up of descriptive strings and thus requires a scenario database to order the data. Both probability and repeatability are mathematically extracted from the issue itself.
+
+By keeping this separation, you can order 216 possibilities using only six severity scenarios per test case. This number might be more, depending on the complexity of the test case, but not by a great deal.
+
+By writing six statements and applying the separate mathematics of probability and repeatability, you get the same value as writing 216 separate scenarios. You get the benefit of manageability and ease of use.
+
+## The first building block of FMA: Severity
+
+Severity enables you to define how serious an issue is without considering anything outside of the event.
+
+FMA analysis breaks down the varying levels of severity into a user-friendly stack. Focusing on Certification's needs, the following severity warning was produced.
+
+| Severity rating | Meaning |
 | --- | --- |
-| **XR number and title** | The XR that failed, e.g. `XR-064 Joinable Game Sessions and Online Play`. |
-| **Severity** | Ship-blocker (must fix), recommendation (should fix), or informational. Ship-blockers block publish. |
-| **Test case executed** | Which specific test case within the XR triggered the failure. An XR can have multiple test cases. |
-| **Repro steps** | The exact sequence the tester used. This is your primary reproduction guide. |
-| **Test environment** | Device family, GDK version, sandbox, test account, controller, network configuration. |
-| **Expected behavior** | What the title should have done. |
-| **Actual behavior** | What the title actually did. |
-| **Attachments** | Screenshots, video, crash dumps, network captures. |
-| **Related XRs** | Adjacent XRs that may also fail with the same root cause. |
-| **Recommended fix** | Where Microsoft can suggest a fix pattern, this section provides guidance. |
+| -4 | No relevant effect on user or platform. |
+| 1 | Very minor effect on user or platform. |
+| 2 | Minor impact on user or platform. |
+| 6 | Moderate impact on user or platform. |
+| 12 | Critical impact on user or platform. |
+| 22 | Catastrophic (High Business Impact / HBI). For example, the product becomes inoperative. |
 
-## The FMA workflow
+These six potential categories define each issue, from no impact to very high impact. An overall rating exercise created weighted ratings for each category.
 
-<Steps>
-  <Step title="Read the whole FMA before starting">
-    Do not fix the first entry and resubmit. Every entry matters and often multiple entries share a root cause.
-  </Step>
-  <Step title="Cluster entries by root cause">
-    A single bug can produce multiple TFBs. Cluster entries that share the same repro conditions or engine subsystem.
-  </Step>
-  <Step title="Reproduce each cluster locally">
-    Use the FMA's test environment as a guide. Reproduce on the same device family, sandbox, and account type.
-  </Step>
-  <Step title="Fix at the root, not the symptom">
-    A symptomatic patch that hides the failure will surface again in another test case. Fix the underlying issue.
-  </Step>
-  <Step title="Consider a deviation for edge cases">
-    If a specific TFB is a genuine misunderstanding or edge case not covered by the current XR intent, request a **deviation** with justification. Approved deviations don't count as failures.
-  </Step>
-  <Step title="Regression-test after each cluster fix">
-    Fixing one XR failure can introduce a regression in another. Run the affected [BVT](/publishing/console-bvt-guide) categories after every fix.
-  </Step>
-  <Step title="Update Supplemental Info before resubmitting">
-    Reference the original submission ID. Note which XRs you addressed. If you fixed X but not Y, disclose it in [Supplemental info](/publishing/supplemental-info).
-  </Step>
-</Steps>
+The ratings make for a robust part of the framework because it's relatively easy to consistently assign issues to the correct category across multiple individuals. Instead of settling for this approach, we instead chose to modify the steps per test case to create a system that's highly user-friendly and able to reflect the idiosyncrasies of specific test cases.
 
-## Per-XR FMA guidance
+An example is Headset State Change (HSC).
 
-Use the [XBOX Requirements](/publishing/xbox-requirements) index to find the specific FMA page for your failing XR. Each page covers:
+Severity statements take two specific forms. The first form covers most issues in focused statements. For example, _"The title exhibits moderate audio corruption/distortion following a change in headset state that detracts from the user experience."_ This style allows the test teams to accurately assign the correct category to the issue in relation to severity.
 
-- The FMA text patterns you'll see for that XR.
-- Common root causes.
-- Fix patterns.
-- How to structure your resubmission for that XR.
+The second style is more specific. For example, _"The title ceases to output audio through either the TV or headphones following a change in headset state."_ This style captures specific behaviors that are often seen in labs, leaving no doubt as to how to assign the issue.
 
-## Related
+## The second building block of FMA: Probability
 
-- [XR FMA](/publishing/xr-fma) — The process-level FMA guide.
-- [XBOX requirements](/publishing/xbox-requirements) — Full XR catalog with links to per-XR FMA pages.
-- [Cert terminology](/publishing/console-cert-terminology).
-- [Supplemental info](/publishing/supplemental-info).
-- [Submit to certification](/publishing/submit-to-certification).
-- [Top failing tests](/publishing/xr-top-failing).
+Probability enables us to assess how likely an end user is to be potentially exposed to a given issue. A similar grid to the one used for Severity is used, with modifications.
+
+| Probability | Rating |
+| --- | --- |
+| **Extremely Unlikely** to occur: 0–10% of users go through the steps that might manifest the issue. | -3 |
+| **Remote:** 11–20% of users go through the steps that might manifest the issue. | 2 |
+| **Occasional:** 21–40% of users go through the steps that might manifest the issue. | 3 |
+| **Moderate:** 41–70% of users go through the steps that might manifest the issue. | 4 |
+| **Frequent:** 71–90% of users go through the steps that might manifest the issue. | 6 |
+| **Almost Inevitable:** 91–100% of users go through the steps that might manifest the issue. | 8 |
+
+Examples:
+
+1. The issue occurs when launching the title. Probability = 8.
+2. The issue occurs when joining an online session. Probability = 4.
+3. The issue occurs in one specific submenu within one game mode and doesn't occur anywhere else. Probability = -3.
+
+The evaluation includes some subjectivity. However, the system remains reliable and produces the correct final result, even when testers make slightly different judgments.
+
+## The third building block of FMA: Repeatability
+
+Repeatability shows how likely an end user is to experience a given problem again after the original manifestation. A similar grid to those used for severity and probability is used, with modifications.
+
+| Repeatability | Rating |
+| --- | --- |
+| Issue won't happen a second time | -3 |
+| Low | 2 |
+| Moderate | 3 |
+| High | 4 |
+| Almost certain to occur after the initial event | 5 |
+| Certain to reoccur after the initial event | 6 |
+
+As with Probability, use the frequency values from the test outcome. For example:
+
+**Frequency:**
+
+- Console 1: 5/5
+- Console 2: 4/5
+
+To calculate the value, sum up the successful reproduction attempts (the first numbers) and divide by the sum of the total number of attempts (the second numbers). Multiply this number by 6 to give the final value. In the example, the calculation looks like this: 9 ÷ 10 × 6 = 5.4, meaning that the final repeatability value is 5.
+
+## FMA scoring explained
+
+When you use the three systems correctly, you get three numbers. Add these numbers together to get the final score, which maps to an issue type:
+
+| Score range | Issue type |
+| --- | --- |
+| 18 to 36 | **CFR** — Condition for Resubmission |
+| 14 to 17 | **SRI** — Standard Reporting Issue |
+| 13 and below | **INT** — Internal / Issue of Note |

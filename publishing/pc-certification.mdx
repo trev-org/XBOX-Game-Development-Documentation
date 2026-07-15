@@ -10,6 +10,8 @@ PC and mobile titles that use Xbox Live services on the Microsoft Store go throu
 
 For console-side cert see [Certification](/publishing/certification) and [XBOX requirements](/publishing/xbox-requirements). For PC-only XStore runtime concerns see [XStore on PC](/publishing/xstore-pc).
 
+**Current source version:** PC 6.0 (November 1, 2025). The most recent change added [XR-007 (PC) Cross-Network Data Usage](/publishing/xr/xr-007-pc) as a PC-scoped subset of the console [XR-007](/publishing/xr/xr-007) that carries the business-side cross-network rules but not the console technical requirements.
+
 ## Where PC differs from console
 
 | Area | Console | PC / mobile |
@@ -62,23 +64,28 @@ For the console equivalent see [Top failing tests](/publishing/xr-top-failing).
 
 ## Xbox Network Services data-processing addendum (PC and mobile)
 
-PC and mobile titles that use Xbox Live services process personal data through the Xbox Network. The **Xbox Network Services data-processing addendum** is the standing legal instrument that governs this processing. It:
+PC and mobile titles that use Xbox Live services process personal data through the Xbox Network. The **Xbox Network Services data-processing addendum** (DPA) is the standing legal instrument that governs this processing.
 
-- Applies **automatically** to every publisher agreement that covers PC / mobile releases using Xbox Live services — you don't have to sign it separately for each title.
-- Documents the data categories processed (gamertag, Xbox User ID, achievement state, presence, communications metadata, telemetry) and the retention periods.
-- Establishes Microsoft as the data processor for that data with your publisher entity as controller for gameplay-generated data.
-- Aligns with GDPR (EU/UK), CCPA/CPRA (California), and PIPL (China) obligations where applicable.
+Highlights:
+
+- Applies **automatically** to every publisher agreement that covers PC / mobile releases using Xbox Live services — you don't sign it separately for each title.
+- Both you and Microsoft are **independent Controllers** (not joint) of the Personal Data each independently Processes.
+- Documents every data category processed (XUID, IP, presence, communications metadata, telemetry, billing data, and more), the applicable Standard Contractual Clauses selections, and the retention and deletion rules.
+- Requires you to comply with GDPR, CCPA/CPRA, UK GDPR, and Swiss data-protection law where applicable, including annual attestation of compliance or a Microsoft-initiated compliance review.
+
+**Read the full addendum:** [Xbox Network Services Data Processing Addendum for PC and mobile games](/publishing/xbox-network-data-processing-addendum).
 
 ### What you must do
 
-- Reference the addendum by name in your **privacy policy** for any PC / mobile title using Xbox Live services. See [Properties: Basic info](/publishing/properties-basic-info) for the privacy policy URL requirement.
+- Reference the DPA in your **privacy policy** for any PC / mobile title using Xbox Live services. See [Properties: Basic info](/publishing/properties-basic-info) for the privacy-policy URL requirement.
 - Ensure your **support contact** (also in [Properties: Basic info](/publishing/properties-basic-info)) is monitored and can respond to data-subject requests forwarded from Microsoft.
 - Do not export Xbox Network personal data to third-party analytics or ad networks without an explicit customer opt-in.
 - Do not attempt to re-identify Xbox users by cross-referencing gamertag with other data sets.
+- Be prepared to submit an annual attestation of compliance, or participate in a compliance review, at Microsoft's request.
 
 ### Change history and versioning
 
-The addendum is versioned. Material changes flow through your Microsoft representative before they take effect. If the addendum version updates in a way that affects your title, you may need to update your privacy policy language accordingly.
+The DPA is versioned. Material changes flow through your Microsoft representative before they take effect. If the DPA updates in a way that affects your title, you may need to update your privacy policy language accordingly.
 
 ## Related
 

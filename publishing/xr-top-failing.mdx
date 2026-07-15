@@ -7,7 +7,28 @@ description: "Most-failed XBOX Requirements in recent submissions — stability,
 
 Most certification failures cluster around a small set of recurring problems. Addressing them before submission cuts your turnaround dramatically.
 
+The distribution below reflects the most recent Microsoft-published data for console and PC submissions.
+
 ## Console: top failing tests
+
+Ranked by share of all failures in recent cert cycles:
+
+| Rank | Test case | Share |
+| --- | --- | --- |
+| 1 | [XR-001](/publishing/xr/xr-001) — 001-01 Title Stability | 38% |
+| 2 | [XR-003](/publishing/xr/xr-003) — 003-02 Title Integrity | 14% |
+| 3 | [XR-045](/publishing/xr/xr-045) — 045-01 Respect User Privileges | 11% |
+| 4 | [XR-064](/publishing/xr/xr-064) — 064-02 Joining a Game Session from the Same Game | 8% |
+| 5 | [XR-055](/publishing/xr/xr-055) — 055-01 Achievements | 7% |
+| 6 | [XR-124](/publishing/xr/xr-124) — 124-01 Game Invitations | 6% |
+| 7 | [XR-015](/publishing/xr/xr-015) — 015-01 User Communication | 3% |
+| 8 | [XR-052](/publishing/xr/xr-052) — 052-06 Cloud Storage: Roaming | 3% |
+| 9 | [XR-052](/publishing/xr/xr-052) — 052-05 Correct User Association | 2% |
+| 10 | [XR-022](/publishing/xr/xr-022) — 022-01 Official Naming Standards | 2% |
+| 11 | [XR-001](/publishing/xr/xr-001) — 001-02 Title Stability after Suspend | 2% |
+| 12 | [XR-064](/publishing/xr/xr-064) — 064-01 Joining a Game Session from Outside the Game | 2% |
+
+## Guidance
 
 ### 1. XR-001 Title Stability
 
@@ -84,12 +105,42 @@ User context lost on resume; second controller can't join mid-session.
 
 ## PC: top failing tests
 
-PC-specific failures concentrate around:
+Ranked by share of all failures in recent PC cert cycles:
 
-- **XR-007 PC Cross-Network Data Usage** — declare cross-network data flows in the privacy policy.
-- **XR-074 PC variant** — same as console: handle XBOX / partner service connectivity loss.
+| Rank | Test case | Share |
+| --- | --- | --- |
+| 1 | Microsoft Store policy 10.4.2 — App Crash or Freeze | 34% |
+| 2 | [XR-055](/publishing/xr/xr-055) — 055-01 Achievements | 18% |
+| 3 | [XR-064](/publishing/xr/xr-064) — 064-02 Joining a Game Session from the Same Game | 13% |
+| 4 | [XR-045](/publishing/xr/xr-045) — 045-01 Respect User Privileges | 9% |
+| 5 | [XR-052](/publishing/xr/xr-052) — 052-05 Correct User Association | 4% |
+| 6 | [XR-003](/publishing/xr/xr-003) — Title Integrity | 4% |
+| 7 | [XR-064](/publishing/xr/xr-064) — 064-01 Joining a Game Session from Outside the Game | 3% |
+| 8 | [XR-015](/publishing/xr/xr-015) — 015-01 User Communication | 3% |
+| 9 | [XR-022](/publishing/xr/xr-022) — 022-01 Official Naming Standards | 3% |
+| 10 | [XR-018](/publishing/xr/xr-018) — 018-01 Reporting Inappropriate Content and UGC Text-String Verification | 3% |
+| 11 | [XR-067](/publishing/xr/xr-067) — 067-01 Maintaining Session State | 2% |
+| 12 | Microsoft Store policy 10.1 — Another Platform | 2% |
+| 13 | [XR-052](/publishing/xr/xr-052) — 052-06 Cloud Storage: Roaming | 2% |
+
+### 10.4.2 App Crash or Freeze (top PC failure)
+
+The title crashes or hangs when launched or during gameplay.
+
+**Test scenarios that catch it:**
+
+- Install the title from the Store (not just side-loaded from a dev sandbox — the two paths sometimes behave differently).
+- Test multiple resolutions (windowed and full screen): 1366×768, 1440×900, 1080P, 1440P, 4K.
+- Test random input on all screens.
+- Rapidly enter and back out of game menus.
+- Test with AMD, Intel, and Nvidia GPUs and current graphics drivers.
+
+### PC-specific mistakes
+
+- **XR-018 UGC filtering not applied on PC** — reuse the [`StringService`](/services/xsapi) API on PC just like on console.
 - **Sandbox not switched back to RETAIL** before submission — packages tested in a dev sandbox can fail certification.
 - **Packaging issues from `makepkg`** — missing dependencies, wrong content IDs, no `Submission Validator` log.
+- **Cross-network data usage** — see [XR-007 (PC)](/publishing/xr/xr-007-pc); declare cross-network data flows in the privacy policy.
 
 ## Pre-submission checklist
 

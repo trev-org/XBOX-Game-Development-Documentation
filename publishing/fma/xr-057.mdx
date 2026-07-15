@@ -1,27 +1,29 @@
 ---
 title: "FMA: XR-057 No Additional Purchase Requirements for Base Achievements"
 sidebarTitle: "FMA XR-057"
-description: "How to fix XR-057 failures where the base game's achievements require paid add-ons to earn."
+description: "FMA scenario severities for XR-057 No Additional Purchase Requirements for Base Achievements."
 icon: "trophy"
-keywords: ["FMA XR-057", "achievement pay to earn", "gated achievement", "base gamerscore"]
+keywords: ["FMA XR-057", "base achievement", "DLC", "purchase requirement", "gamerscore"]
 ---
 
-[XR-057 reference](/publishing/xr/xr-057) is the reference.
+# XR-057: No Additional Purchase Requirements for Base Achievements
 
-## Common FMA text patterns
+## FMA scenario severities
 
-- **"Base achievement \[X\] cannot be earned without DLC \[Y\]"** — pay-to-earn on the base.
-- **"Base gamerscore total includes achievements only unlockable with add-on"** — misattributed.
+See the [XR-057 reference](/publishing/xr/xr-057) for the underlying certification requirement.
 
-## Fixing
+### 057-01 No Additional Purchase Requirements for Base Achievements
 
-- Move DLC-specific achievements to the **DLC achievement schema**, not base.
-- Rebalance base achievements to be earnable on the base game only.
-- Update Store metadata's gamerscore total accordingly.
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| No current scenario. | Critical (12) |  |
+| The user is required to purchase add-on content in order to unlock a base achievement. | Catastrophic (22) | Xbox One, Xbox Series, Windows |
 
-## Related
+**Notes**
 
-- [XR-057 reference](/publishing/xr/xr-057)
-- [XR-055](/publishing/fma/xr-055)
-- [XR-062](/publishing/xr/xr-062)
-- [Add-ons](/publishing/add-ons)
+- Base achievements must be attainable using only the base title.
+- Add-on content may include its own additional achievements, which are separate from the base title's achievement set.

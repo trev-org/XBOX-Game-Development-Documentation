@@ -1,28 +1,29 @@
 ---
 title: "FMA: XR-047 User Profile Access"
 sidebarTitle: "FMA XR-047"
-description: "How to fix XR-047 Profile Access failures: restricted profile data shown, presence exposed against privacy setting, stale profile cache."
+description: "FMA scenario severities for XR-047 User Profile Access."
 icon: "id-card"
-keywords: ["FMA XR-047", "profile privacy", "presence", "activity feed", "friend list"]
+keywords: ["FMA XR-047", "user profile", "player card", "system UI", "gamertag"]
 ---
 
-[XR-047 reference](/publishing/xr/xr-047) is the reference. This page is fix-oriented.
+# XR-047: User Profile Access
 
-## Common FMA text patterns
+## FMA scenario severities
 
-- **"Presence shown for account with 'no one' presence setting"** — privacy bypass.
-- **"Activity feed included restricted target"** — wrong scope.
-- **"Stale profile shown after target changed privacy"** — no invalidation.
+See the [XR-047 reference](/publishing/xr/xr-047) for the underlying certification requirement.
 
-## Fixing
+### 047-01 User Profile Access
 
-- Query profile data **at display time**, not aggressively cached.
-- Honor privacy per-field: presence, activity, achievements-visible-to-friends, real name.
-- Refresh on privacy-change events.
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| The title displays other users' profiles but doesn't show the appropriate player card or corresponding system UI. | Moderate (6) | Xbox One, Xbox Series |
+| The title doesn't allow the user to access their own profile. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't allow the user to access other users' profiles. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
 
-## Related
+**Notes**
 
-- [XR-047 reference](/publishing/xr/xr-047)
-- [XR-014](/publishing/xr/xr-014)
-- [XR-046](/publishing/xr/xr-046)
-- [XR-048](/publishing/xr/xr-048)
+- No current FMA Notes to consider.

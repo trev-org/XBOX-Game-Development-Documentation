@@ -1,0 +1,177 @@
+---
+title: "XR-045 Xbox network and Account Privileges"
+sidebarTitle: "XR-045 Privileges"
+description: "Titles must check the Xbox network service for privileges to complete certain actions and must respect Xbox Family member privilege settings for child accounts."
+icon: "key"
+keywords: ["XR-045", "privileges", "multiplayer privilege", "cross-network privilege", "XUserCheckPrivilege", "XUserResolvePrivilegeWithUiAsync", "Xbox Family"]
+---
+
+# XR-045: Xbox network and Account Privileges \*
+
+Version 2.0, 03/01/2023
+
+Xbox network provides users with an expected level of privacy and online safety for themselves and their children. In order to deliver on that promise, titles must check the Xbox network service for privileges to complete certain actions on the Xbox network service or in a title experience.
+
+While privilege checking and adherence applies to all accounts, it's important to note the experience and expectations for child accounts specifically. For child accounts, restrictions on certain activities may be blocked due to age-based defaults and/or configurations by the child's family organizer (parent or guardian). Children cannot make changes themselves, however, with certain activities it is possible and expected the title invokes the necessary system UI to allow young players to request an exception via an approval flow for that associated activity. In such circumstances, for instance, a young player may be blocked from multiplayer globally, but the family parent or guardian could approve multiplayer for the specific title via the system UI; then the child would and should be able to access this game mode for that specific title.
+
+| Activity | ID | Privilege Name | Notes |
+| --- | --- | --- | --- |
+| Playing in a multiplayer game session | 254 | `XPRIVILEGE_MULTIPLAYER_SESSIONS` | Allows a user to join online multiplayer gameplay sessions with real-world users (not bots) in scenarios such as: synchronous player-vs-player gameplay in the same session, asynchronous turn-based gameplay, team-based gameplay, user-initiated matchmaking, sending or accepting invitations, and join-in-progress sessions. This privilege does not pertain to local multiplayer games run on the same device. |
+| Playing in a cross-network game play session | 185 | `AuthPrivileges.CrossNetworkPlay` | Allows a user to participate in a gameplay session with other real-world players who are not signed into Xbox services in scenarios such as: synchronous player-vs-player gameplay in the same session, asynchronous turn-based gameplay, team-based gameplay, user-initiated matchmaking, sending or accepting invitations, and join-in-progress sessions. |
+| Communication with anyone | 252 | `XPRIVILEGE_COMMUNICATIONS` | Allows a user to communicate with any other Xbox Live users through voice or text. |
+| Shared gaming sessions | 189 | `XPRIVILEGE_SESSIONS` | Allows a user to participate in connected single-player experiences in shared environments or in scenarios where a title is a hybrid free-to-play and paid multiplayer title and uses this privilege to gate those experiences on Xbox consoles. Single-player experiences must not have any features covered under privilege 252 or 254. Use of this privilege is a title capability that requires platform approval. |
+| User-generated content (UGC) | 247 | `XPRIVILEGE_USER_CREATED_CONTENT` | Allows a user to see other users' UGC online, download other users' UGC, or share their own UGC online. Does not restrict usage of previously downloaded UGC. |
+| Sharing to a social network | 220 | `XPRIVILEGE_SOCIAL_NETWORK_SHARING` | Xbox consoles only: Allows a user to share information, including game progress, Kinect-generated content, game clips, and so on outside of Xbox Live. |
+
+Free-to-play titles, demos, or betas can be configured to allow multiplayer gameplay (ID 254) for players who are not Game Pass subscribers. This is done via a service-side configuration and can be initiated by contacting your Microsoft representative. These titles must continue to check for the multiplayer game privilege to ensure that parental controls and player choices are respected.
+
+## More Information
+
+<Note>
+  Refer to the Client-side use of Xbox services user privileges documentation for a detailed look at technical guidance and best practices.
+</Note>
+
+If your service processes Xbox network-issued tokens, you should enforce on your service that the users in the session have the appropriate privileges to perform the requested action by inspecting the `prv` claim for those users inside the token.
+
+If a title offers one or more of the activities listed in the above table, the title must check privileges associated with the particular activity. If a user does not have the privilege, the user must not be allowed to use the associated activity. Privileges are granted for the duration of the session/action or the time before the Xbox network token is refreshed, whichever is shorter.
+
+Depending on the development platform (GDK, XDK, XSAPI) game titles are expected to call the appropriate APIs to ensure either (1) the system UI is invoked which informs the user of the blocked privilege along with affordances to request permissions for certain privileges from a parent or guardian, if on a child account; or, (2) provide prescriptive and actionable error messages.
+
+**Using the GDK on PC or Xbox consoles:** To check if a user has a privilege using the GDK, titles should use the `XUserCheckPrivilege` and `XUserResolvePrivilegeWithUiAsync` APIs.
+
+**Using the Xbox One XDK:** To check if a user has a privilege on Xbox One, titles use the `Store::Product::CheckPrivilegeAsync` API. If the privilege check is a result of a user action, such as entering a multiplayer game mode, the `attemptResolution` parameter must be set to `true` (or not set at all). The platform checks the privilege and, if the user does not have it, attempts to determine the reason why.
+
+If the API returns `false`, the user does not have the privilege and the system has not successfully resolved the issue. In such cases, the title must block the privileged activity but can assume that the system has already appropriately informed the user either that they do not have the appropriate permission for the activity or that there is an issue regarding the user's privilege.
+
+In cases where the privilege check is done not as a result of user action but, for example, as part of a silent background call or to decorate the UX, the API should be called with `attemptResolution` set to `false`. As a result, the user is not messaged and the system does not intervene to correct any privilege issues.
+
+**Using XSAPI directly with UWP, Win32, mobile or other platforms:** The user does not have the privilege if it is absent from the `prv` claim and the title should prevent the user from continuing with the privileged activity. If the check was triggered by the user requesting access to the privileged activity, such as trying to start or join a multiplayer session, the title should show an informative message to let them know they cannot participate.
+
+## Implementation Requirements
+
+| Activity | ID | Privilege Name | How to handle |
+| --- | --- | --- | --- |
+| Playing in a multiplayer game session | 254 | `XPRIVILEGE_MULTIPLAYER_SESSIONS` | **GDK/XDK:** Title invokes the system UI to alert the user of any privilege conflicts (`XUserCheckPrivilege` and `XUserResolvePrivilegeWithUiAsync` for GDK; `Store::Product::CheckPrivilegeAsync` for XDK). **XSAPI:** Suggested messaging "Sorry, you're currently prevented from playing online multiplayer games." If the account is managed by a parent or guardian, they can customize Xbox privacy settings for the profile in Settings \> Account \> Family settings \> Manage family members. |
+| Playing in a cross-network game play session | 185 | `AuthPrivileges.CrossNetworkPlay` | **GDK/XDK:** Title invokes the system UI to alert the user of any privilege conflicts. **XSAPI:** Suggested messaging "Sorry, you're currently prevented from playing with people on platforms other than the Xbox network." |
+| Communication with anyone | 252 | `XPRIVILEGE_COMMUNICATIONS` | **GDK:** Title must use `XUserCheckPrivilege` and display an informative message. **XDK:** Title invokes the system UI. **XSAPI:** Suggested messaging "Sorry, you're currently prevented from talking with other people on the Xbox network." |
+| Shared gaming sessions | 189 | `XPRIVILEGE_SESSIONS` | **GDK:** Title must use `XUserCheckPrivilege` and display an informative message. **XDK:** Title invokes the system UI. **XSAPI:** Suggested messaging "Sorry, you're currently prevented from playing online multiplayer games." |
+| User-generated content (UGC) | 247 | `XPRIVILEGE_USER_CREATED_CONTENT` | **GDK:** Title must use `XUserCheckPrivilege` and display an informative message. **XDK:** Title invokes the system UI. **XSAPI:** Suggested messaging "Sorry, you're currently prevented from seeing content other people make." |
+| Sharing to a social network | 220 | `XPRIVILEGE_SOCIAL_NETWORK_SHARING` | **GDK/XDK:** Title invokes the system UI. **XSAPI:** Suggested messaging "Sorry, you're currently prevented from sharing on social networks." |
+
+**Xbox network connectivity issues:** If the title receives a failure (either through the API or because it cannot retrieve an Xbox Live token) because the Xbox service is unreachable, the title should block access to the requested action. In such instances, the title should fail gracefully, as described in XR-074, "Loss of Connectivity to Xbox and Partner Services."
+
+## Best Practices
+
+## Additional Resources
+
+For more information about privileges and the user token, see "User Token" in the Microsoft Game Development Kit (GDK) or the Xbox Application Development Kit documentation.
+
+For the purposes of this XR, a social network is a site or service outside of Xbox network that allows an individual to share content with other users by default. If the default option on the external site is enabled sharing with friends or everyone, then for the purposes of this XR, it is not necessary that the external site allow the user to choose to limit sharing at the time of upload.
+
+## Exemptions
+
+Paid transactional video offerings can be offered to all Xbox users regardless of their video content privilege settings. If the app offers both premium content and paid transactional video offerings, the premium content must adhere to this requirement.
+
+If the app is a public service broadcaster within the country/region where the app is offered on the Xbox platform, all non-commercialized content offerings must be made available to all Xbox users in that country/region, regardless of the users' video content privilege settings.
+
+Titles that offer asynchronous multiplayer between an Xbox One console and a non-console device are not required to check the Multiplayer privilege for experiences on the non-console device.
+
+## Certification Test Cases
+
+### 045-01 Respect User Privileges
+
+**Test Steps**
+
+1. Sign in to an Xbox profile and launch the title.
+2. For each of the privileges identified in the XR Remarks, identify if the title supports the associated activity.
+3. For each possible setting of each applicable privilege identified in step 2, perform the following:
+   - Exit the title and change the user's settings for the privilege.
+   - Restart the console.
+   - Sign into the same profile and launch the title.
+   - Visit all relevant areas of the title, use all title features relevant to the privilege and verify that the title respects the user's current privilege setting.
+   - Attempt to access all offline and online areas using a Silver Xbox profile.
+
+**Expected Result**
+
+Titles must honor the user's privilege settings.
+
+**Pass Examples**
+
+1. The title respects the user's privilege settings.
+2. The title treats a partial-allow privilege setting as if the privilege is disabled/disallowed (e.g. when the UGC privilege is set to Friends Only, the title behaves as if the privilege is set to Blocked).
+3. For titles using the XDK, the title invokes the system UI to alert the user of any privilege conflicts. When the system UI cannot be invoked (privileges 252, 189, 247) the title shows an informative message.
+4. For titles using the GDK, the title invokes the system UI to alert the user of any privilege conflicts. When the system UI cannot be invoked (252, 189, 247), the title shows an informative message.
+5. For titles using XSAPI, the title shows an informative message.
+
+**Fail Examples**
+
+1. The title persists a user's privilege settings and does not reflect the user's actual privileges after they have been changed.
+2. The title treats a partial-allow privilege setting as if it is set to its least restrictive setting (e.g. UGC set to Friends Only behaves as Allowed).
+3. For titles using the XDK or GDK, the title uses in-game messaging to alert the user of any privilege conflicts and does not display the System UI.
+4. For titles using XSAPI, the title does not show an informative message to let the user know they cannot participate.
+
+### 045-02 Respect User Privileges - Xbox Family
+
+**Test Setup and Configuration**
+
+Xbox Family, which includes the following Microsoft accounts:
+
+- Adult (greater than 18 years) designated as Organizer.
+- Child (less than 13 years) with the _Child Default_ privilege settings:
+
+| Activity | Child Default Privilege Setting |
+| --- | --- |
+| You can join multiplayer games | Block |
+| You can join cross-network play | Block |
+| You can communicate with voice, text, or invites | Friends |
+| You can communicate outside of Xbox network with voice and text | Block |
+| You can see and upload community creations | Block |
+| You can share outside of Xbox | Block |
+
+**Test Steps**
+
+1. Sign into the adult and child Microsoft accounts and launch the title with the child account.
+2. For each of the privileges identified in the XR Remarks, identify if the title supports the associated activity.
+3. For each possible setting of each applicable privilege identified in step 2, perform the following:
+   - Verify the associated activity is allowed/not-allowed based on the account privileges. For example: The title supports multiplayer, and the child account has the multiplayer privilege blocked. Verify the title blocks all multiplayer activity for the child and the parental permission prompts (system UI) are displayed when the child attempts to participate in multiplayer activities.
+   - Exit the title and change the child's privilege settings for the privilege activities the title supports; going from blocked to allowed.
+   - Restart the console.
+   - Sign into the same profile and launch the title.
+   - Visit all relevant areas of the title, use all title features relevant to the privilege and verify that the title respects the user's current privilege setting.
+4. Repeat steps 2–3 with a parent account **not** signed into the console.
+
+**Expected Results**
+
+Titles must respect all Xbox Family member's privilege settings.
+
+**Pass Examples**
+
+1. The title respects a child's privilege settings.
+2. The title allows a child to participate in an activity when the privilege for that activity is allowed.
+3. The title does not allow a child to participate in an activity when the privilege for that activity is blocked.
+4. The title allows a child to participate in an activity that is blocked but permission for that activity is allowed by the parent (via the parental permission UI).
+5. The title does not allow a child to participate in an activity that is blocked and permission for that activity is not allowed by the parent.
+6. The title treats a partial-allow privilege setting as if the privilege is disabled/disallowed.
+7. For titles using the XDK, the title invokes the system UI to alert the user of any privilege conflicts. When the system UI cannot be invoked (privileges 252, 189, 247), the title shows an informative message.
+8. For titles using the GDK, the title invokes the system UI to alert the user of any privilege conflicts. When the system UI cannot be invoked, the title shows an informative message.
+9. For titles using XSAPI, the title shows an informative message.
+
+**Fail Examples**
+
+1. The title does not respect the child's privilege settings.
+2. The title does not invoke the proper UI to alert and inform the child of privilege conflicts.
+3. The title allows a child to participate in an activity when the privilege for that activity is blocked.
+4. The title does not allow a child to participate in an activity when the privilege for that activity is allowed.
+5. The title allows a child to participate in an activity that is blocked and permission for that activity is not allowed by the parent.
+6. The title does not allow a child to participate in an activity that is blocked and permission for that activity is allowed by the parent.
+7. The title persists a user's privilege settings and does not reflect the user's actual privileges after they have been changed.
+8. The title treats a partial-allow privilege setting as if it is set to its least restrictive setting.
+9. For titles using the XDK, the title does not invoke the system UI.
+10. For titles using the GDK, the title does not invoke the system UI.
+11. For titles using XSAPI, the title does not show an informative message.
+
+## Change history
+
+| Date | Document version | Change description |
+| --- | --- | --- |
+| March 1, 2023 | 2.0 | Updated to include the requirements and validation of Xbox Family member's account privileges. Test case 045-02 added to validate Xbox Family member's privilege settings. |

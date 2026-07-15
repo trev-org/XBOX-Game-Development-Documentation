@@ -1,0 +1,39 @@
+---
+title: "XR-070 Friends Lists"
+sidebarTitle: "XR-070 Friends Lists"
+description: "Titles must use the Xbox network Friends list as their primary friends list, sourced from Xbox APIs. Publisher-account friends can be shown as a secondary or blended list with clear disambiguation."
+icon: "user-group"
+keywords: ["XR-070", "friends list", "people system", "Xbox network", "publisher friends", "blended friends", "iconography"]
+---
+
+**XR-070 is tested in Certification.** Titles must use the Xbox network Friends list as the primary list of friends. Titles must obtain the friends list from Xbox APIs and must not store the friends list in a permanent nature on game servers.
+
+Titles can display a secondary list of friends from a central publisher account for players not on the Xbox network, or not on the user’s Xbox network friends list. If the title displays a blended list, iconography or other clarifying marks must be used to disambiguate Xbox network friends from friends on other networks.
+
+For implementation details, see the [People System (Friends List) overview](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/live/features/friends-and-presence/people-system/live-people-system-nav).
+
+## Test cases
+
+### 070-01 Xbox Friends List
+
+1. Locate any lists of people displayed within the title and verify they contain the Xbox network Friends list.
+2. If the title displays a blended friends list, verify Xbox network friends are visually disambiguated from publisher-account friends.
+
+**Pass examples:**
+
+- The title uses the Xbox network Friends list as the primary list of friends via Xbox APIs.
+- The title exposes secondary lists (recent players, guild members) that aren’t positioned as the user’s core friends list.
+- The title displays a friends list filtered to friends who own or are currently playing the title.
+- A blended list contains both Xbox network and publisher-account friends with icons or badges to distinguish them.
+
+**Fail examples:**
+
+- The title doesn’t use Xbox APIs to source the friends list.
+- The title stores the friends list persistently on game servers.
+- A blended list mixes Xbox network friends with publisher-account friends with no visual disambiguation.
+
+## Related
+
+- [XR-045 Xbox network and Account Privileges](/publishing/xr/xr-045)
+- [XR-067 Maintaining Multiplayer Session State](/publishing/xr/xr-067)
+- [XR-124 Game Invitations](/publishing/xr/xr-124)

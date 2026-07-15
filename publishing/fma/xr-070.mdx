@@ -1,28 +1,31 @@
 ---
-title: "FMA: XR-070 Xbox Friends List"
+title: "FMA: XR-070 Friends Lists"
 sidebarTitle: "FMA XR-070"
-description: "How to fix XR-070 Friends List failures: friend list not queried correctly, wrong friends shown, blocked users appearing, privacy privilege bypassed on friend list."
+description: "FMA scenario severities for XR-070 Friends Lists."
 icon: "user-group"
-keywords: ["FMA XR-070", "friends list", "social API", "friend query", "blocked friend"]
+keywords: ["FMA XR-070", "friends list", "Xbox APIs", "publisher account", "duplication"]
 ---
 
-## Common FMA text patterns
+# XR-070: Friends Lists
 
-- **"Friends list did not update after add/remove"** — no refresh on social change events.
-- **"Blocked user appeared in friends list"** — filter not applied.
-- **"Friend list included non-friends"** — wrong query scope.
+## FMA scenario severities
 
-## Common root causes
+See the [XR-070 reference](/publishing/xr/xr-070) for the underlying certification requirement.
 
-| Symptom | Root cause | Fix |
+### 070-01 Xbox Friends List
+
+| Scenario | Severity | Platform |
 | --- | --- | --- |
-| Stale list | No refresh on `XblSocialAddedRelationshipChangeSubscription` | Wire the subscription; refresh on event |
-| Blocked appears | Filter not applied post-query | Filter blocked XUIDs after query |
-| Wrong scope | Called `GetPeople` or wrong API | Use the correct social API scoped to the friend relationship |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| The title contains a contacts list that positions itself as the user's core list. It duplicates the Xbox Friends service with only one core list containing non-Xbox network friends only. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't use Xbox APIs to display a list of friends. | Critical (12) | Xbox One, Xbox Series |
+| The title stores a user's Friends list in a permanent nature on game servers. | Critical (12) | Xbox One, Xbox Series |
+| The title displays a blended friends list containing both Xbox network and publisher account friends and doesn't disambiguate them. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
 
-## Related
+**Notes**
 
-- [XR-014](/publishing/xr/xr-014)
-- [XR-047](/publishing/xr/xr-047)
-- [XR-064](/publishing/xr/xr-064)
-- [XR-124](/publishing/fma/xr-124)
+- This test case focuses on duplication of lists, as opposed to other functionality of the Friends list such as blocking, muting, or reporting. Other XRs cover these functionalities.

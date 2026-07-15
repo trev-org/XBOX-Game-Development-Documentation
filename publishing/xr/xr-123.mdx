@@ -1,64 +1,85 @@
 ---
-title: "XR-123 Installation / Unlock of Game Add-Ons or Consumables During Gameplay"
+title: "XR-123 Installation and Unlock of Game Add-Ons or Consumables During Gameplay"
 sidebarTitle: "XR-123 In-session DLC"
-description: "When add-ons or consumables become available mid-session — through purchase, promo redemption, family sharing, or Game Pass — the title must grant access without requiring restart or exhibiting undefined behavior."
+description: "Titles that offer downloadable content must allow users to download, unlock, and use content without terminating or relaunching the game, including during suspend and constrained states."
 icon: "download"
-keywords: ["XR-123", "DLC during gameplay", "add-on install", "license changed", "consumable balance", "entitlement change"]
+keywords: ["XR-123", "DLC", "downloadable content", "consumables", "in-game purchase", "DLC arrival", "background download", "streaming install"]
 ---
+
+# XR-123: Installation and Unlock of Game Add-Ons or Consumables During Gameplay \*
+
+Version 2.0, 11/01/2025
+
+Titles that offer downloadable content (DLC) must allow users to download/unlock and use the content without having to terminate and relaunch the game.
+
+For more information on accessing and enumerating DLC in game, read the Downloadable content (DLC) packages section of the GDK documentation.
+
+## More Information
+
+Titles should subscribe to DLC arrival events and respond to them by allowing players to consume the content within the game. This includes all scenarios in which the download and installation are completed during active gameplay, or while the title is either suspended or constrained.
+
+Titles can choose to prompt a user to return to a menu through an in-game prompt to load new DLC.
+
+Titles that use DLC to unlock content in the main game package must be tolerant of cases where the main game package is still installing and the supporting content isn't yet available. In such cases, users should be able to see that they have access to the DLC, and if they try to play it, the title should inform the user that the title is still installing content.
 
 ## Intent
 
-Customers buy DLC, redeem promo codes, join a family group, or start a Game Pass subscription while a title is running. Their new entitlement should apply to the running session without requiring the customer to close and reopen the title. XR-123 requires titles to detect and honor entitlement changes mid-session.
+Users who purchase additional content for games should be able to consume it seamlessly, without disrupting their in-game experience.
 
-## Applies to
+## Certification Test Cases
 
-Every title with DLC, add-ons, consumables, or Game Pass-only content.
+### 123-01 Installation/Unlock of Game Add-Ons or Consumables During Gameplay
 
-## Requirement
+On retail consoles, a game will be suspended under the following conditions:
 
-Your title **MUST**:
+- When the console enters Connected Standby by being turned off with the power mode set to Instant-on.
+- When the game remains out of focus for ten minutes. For example, launching an application such as Settings and keeping it in focus for ten minutes.
 
-- Subscribe to platform events that signal **entitlement changes**: `XStoreRegisterPackageLicenseLost`, `XStoreQueryAddOnLicensesAsync` result changes.
-- Re-query entitlements at **natural break points**: opening the shop UI, returning to the main menu, before starting a mode that requires an entitlement.
-- Grant access to content on **entitlement acquisition** without requiring the customer to restart.
-- **Install DLC packages during gameplay** (for `durable with package` add-ons). The platform downloads the package; the title mounts and consumes it when install completes.
-- Handle **entitlement loss** gracefully — refund, family sharing removal, subscription end. Lock the affected content on next reference; do not corrupt current session state.
-- Refresh **consumable balances** when a purchase completes so the customer sees their new balance without restart.
+For the purposes of this test case, both methods should be verified at step 7.
 
-Your title **MUST NOT**:
+**Test Steps**
 
-- Cache entitlements across a session so a mid-session purchase requires restart.
-- Ship the customer a locked-down UI that says "restart to unlock" when the platform doesn't require it.
-- Continue granting access to content after an entitlement is revoked.
-- Crash on an entitlement change.
+1. Launch the title and proceed into active gameplay.
+2. Initiate a game add-on or consumable purchase from the Xbox Store.
+3. Allow the background download to complete.
+4. Ensure that the user is able to continue with gameplay and the title is not affected by the background download completing.
+5. Ensure that the content can be used without having to terminate and relaunch the game.
+6. Repeat steps 1\\u20135 with the download completing while the title is constrained.
+7. Repeat steps 1\\u20135 with the download completing while the title is suspended.
+8. If the title supports an in-game store feature, repeat steps 1\\u20135 using this feature to initiate an add-on or game download.
 
-## Tested scenarios
+**Expected Result**
 
-- Start the title without a specific add-on. Purchase the add-on. Verify access appears without restart.
-- Redeem a promo code mid-session. Verify entitlement.
-- Simulate a family-sharing change that revokes an entitlement mid-session. Verify graceful behavior.
-- Subscribe to Game Pass mid-session. Verify Game Pass-only features unlock.
-- Purchase a consumable. Verify the balance refreshes in the in-game shop.
+Titles that offer game add-ons or consumables must allow users to download/unlock and use the content without having to terminate and relaunch the game.
 
-## Best practices
+**Pass Examples**
 
-- **Query entitlements on shop-open, mode-select, and title-resume** — the three natural refresh points.
-- **Handle the license-lost event immediately** — lock content, log the event, present UI at the next appropriate break.
-- **For durable-with-package** DLC, listen for the install-complete event and mount the package when ready.
+1. The user is able to download and use the content without having to terminate and relaunch the game.
+2. The title prompts a user to return to a menu through an in-game prompt to load the new DLC.
 
-## Related XRs
+**Fail Examples**
 
-- [XR-036](/publishing/xr/xr-036) — In-title pricing.
-- [XR-037](/publishing/xr/xr-037) — Package dependencies.
-- [XR-045](/publishing/xr/xr-045) — Privileges (some content is privilege-gated).
-- [XR-129](/publishing/xr/xr-129) — Intelligent Delivery.
+1. The user must terminate and re-launch the game in order to use the content.
 
-## If your title fails XR-123
+### 123-02 Installation/Unlock of Game Add-Ons or Consumables as Part of Main Game Package During Streaming Install
 
-See [FMA: XR-123 Installation of DLC During Gameplay](/publishing/fma/xr-123).
+**Test Steps**
 
-## Related
+1. Validate that the title supports game add-on or consumable.
+2. Install game add-on or consumable of each type ahead of the full game's installation.
+3. Begin installing the main game package and launch from the initial play marker (if a play marker is supported).
+4. Attempt to use the DLC before the title finishes installing.
 
-- [XStore deep dive](/publishing/xstore-deep-dive)
-- [Add-ons](/publishing/add-ons)
-- [XBOX requirements](/publishing/xbox-requirements)
+**Expected Result**
+
+The user should be able to see that they have access to the game add-on or consumable, and if they try to play it, the title must either allow use or inform the user that the title must fully install before the DLC can be used.
+
+**Pass Examples**
+
+1. The user can see they have access to the content.
+2. If the user tries to play the content, they are notified the title is still installing.
+
+**Fail Examples**
+
+1. The content is not visible.
+2. The content is visible but no reason is given when the user tries to play the content.

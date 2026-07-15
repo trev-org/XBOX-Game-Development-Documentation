@@ -1,0 +1,58 @@
+---
+title: "XR-055 Achievements and Gamerscore"
+sidebarTitle: "XR-055 Achievements & Gamerscore"
+description: "Titles must ship with the required minimum number of achievements and Gamerscore at launch, respect per-achievement and lifetime limits, and ensure every achievement is unlockable through gameplay."
+icon: "trophy"
+keywords: ["XR-055", "achievements", "gamerscore", "achievement limits", "semi-annual additions", "lifetime limit"]
+---
+
+**XR-055 is tested in Certification.** All games targeting Xbox consoles are required to have Achievements and meet the following requirements. Demos aren’t allowed to have achievements; however, they have the option of supporting Hero Stats.
+
+## Requirement
+
+Titles must ship the required number of achievements and their associated Gamerscore at launch. You can add achievements and Gamerscore at any time after launch — with or without new content — but not beyond the calendar and lifetime limits below.
+
+- **A single achievement can’t exceed 200 Gamerscore.**
+- **Every achievement in the title must be achievable.**
+- Unlocking achievements in the base game or a content update must represent a thorough exploration of, or engagement with, game content.
+
+| Item | Launch | Semi-annual additions | Lifetime limit |
+| --- | --- | --- | --- |
+| Minimum achievements | 10 | 0 | 10 |
+| Maximum achievements | 100 | 100 | 500 |
+| Gamerscore | 1000 | 1000 | 5000 |
+
+<Note>
+  “Semi-annual” means January–June and July–December. Base-game achievements and Gamerscore do not count against the semi-annual limits.
+</Note>
+
+## Test cases
+
+### 055-01 Achievements
+
+1. Review the total Gamerscore and total number of achievements supported by the title.
+2. Play through the title and attempt to earn every achievement.
+3. Repeat step 2 after resuming from connected standby.
+4. Repeat step 2 while disconnected from Xbox services.
+
+**Pass:**
+
+- Every achievement can be earned.
+- Achievements unlock only when their criteria are met.
+- Achievements represent a thorough exploration of, or engagement with, game content.
+- The launch build has 1000 Gamerscore spread across 10–100 achievements.
+
+**Fail:**
+
+- An achievement doesn’t unlock when its criteria are met, or unlocks before its criteria are met.
+- Achievements can be trivially unlocked without engaging with core gameplay.
+- The launch build has more or fewer than 10–100 achievements, or less/more than 1000G.
+- A single achievement exceeds 200 Gamerscore.
+- Achievements fail to unlock after resuming from connected standby or after reconnecting to Xbox services.
+
+## Related
+
+- [XR-057 Unlocking Achievements](/publishing/xr/xr-057)
+- [XR-058 Achievements Across Multiple Titles or Platforms](/publishing/xr/xr-058)
+- [XR-060 Modifying Active Achievements](/publishing/xr/xr-060)
+- [XR-062 Achievement Names and Descriptions](/publishing/xr/xr-062)

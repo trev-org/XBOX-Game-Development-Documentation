@@ -1,0 +1,711 @@
+---
+title: "XR-017 Title Ratings"
+sidebarTitle: "XR-017 Title Ratings"
+description: "Describes the requirements of each rating board as it pertains to Xbox, covering IARC, long-form certificates, regional guidance, and timelines."
+icon: "shield-check"
+keywords: ["XR-017", "title ratings", "IARC", "ESRB", "PEGI", "USK", "CERO", "GRAC", "age ratings", "parental controls"]
+---
+
+# XR-017: Title Ratings
+
+## Contents
+
+- [Title Ratings for Xbox](#title-ratings-for-xbox)
+- [Ratings Setup Guidance](#ratings-setup-guidance)
+- [Supported Ratings Boards](#supported-ratings-boards)
+- [Global Ratings Display](#global-ratings-display)
+- [Timelines and Test Cases](#timelines-and-test-cases)
+
+## Title Ratings for Xbox
+
+This document focuses on two essential concepts pertaining to content classifications and restrictions on Xbox consoles:
+
+- **Rating:** Specifies the age level for which different types of content are deemed appropriate by different regions' ratings boards.
+- **Parental controls:** A profile setting on Xbox consoles that defines the highest rating level of content that a user can play or view within an application.
+
+There are 2 different means of obtaining ratings:
+
+- **IARC** (International Age Rating Coalition) covers many markets when distribution is digital-only. Participation is free at the point of use and publishers complete a questionnaire in Partner Center to generate a rating.
+- **Rating certificates** are required for many markets when distribution is via physical disc. Also referred to as obtaining 'long-form' or 'traditional' ratings.
+
+### What are ratings?
+
+Ratings are subjective classifications applied to titles or applications, based on:
+
+- **Content:** violence, drug use, coarse language, nudity, or sexual activity.
+- **Functionality:** social features, privacy, modes of interacting with social networks, loot boxes, reward systems, or other pressures to play.
+- **User-generated content:** the nature of content accessible through the application created by other users and any restrictions applying to it.
+
+### Content policies
+
+Microsoft has store policies that prohibit offensive, pornographic, illegal, and other types of inappropriate content. Review both the current [content policies](https://learn.microsoft.com/windows/apps/publish/store-policies#content-policies) and any specific exclusions in your licensing agreement with Microsoft.
+
+### Multigeneration releases
+
+When releasing your game simultaneously on multiple console generations (Xbox One and Xbox Series X|S) or adding a generation later, process may vary by ratings board and region. Contact the appropriate age rating authority directly for specific questions.
+
+- Xbox Series X|S is considered a new platform by most ratings authorities, requiring a separate ratings classification.
+  - Unchanged content: most authorities classify via their additional platform process (fees may apply).
+  - Materially changed content: most authorities require a full submission (fees may apply).
+- Partners are responsible for ensuring all required age rating certificates are provided via Partner Center.
+
+### About IARC
+
+Administered by many of the world's game rating authorities, IARC provides a globally streamlined age classification process for digital games and mobile apps. See the [Age Ratings](https://learn.microsoft.com/windows/uwp/publish/age-ratings) page for implementation details or the [IARC website](https://www.globalratings.com/about/) for more info. Challenge IARC rating decisions via the link provided within Partner Center when the IARC rating is generated.
+
+### Setting your rating in your product
+
+All ratings are set during ingestion in Microsoft Partner Center. Ratings elements should **not** be declared in the AppXManifest; as of May 11, 2020, doing so is cause for certification rejection. Content updates for existing titles that already have ratings declared in the AppXManifest can remain unchanged, or you may remove the ratings element completely.
+
+### How ratings are pulled
+
+- **Xbox digital store:** pulled from the age ratings module in Partner Center (IARC or manually overridden with uploaded certificates).
+- **Physical disc:** overridden long-form ratings are pulled from Partner Center at time of submitting a disc request. Only overridden ratings are added to the disc.
+- **AppXManifest:** declaring ratings within the AppXManifest is no longer permissible.
+
+### Console ratings logic
+
+- If the console is **online**, store ratings take priority over any ratings on the disc.
+- If the console is **offline** and the AppxManifest has no ratings element, the console uses ratings on the disc image (from catalog.js pulled from Partner Center).
+- If the console is **offline** and the AppxManifest has the ratings element but some/all ratings are missing, disc image ratings are ignored and the game is treated as unrated in those regions.
+- If the console is **offline** but was previously online when the game was installed, cached ratings from the digital store are used (refreshed every 10 days).
+
+### Ratings terminology
+
+**Rating:** the high-level rating for the game. Xbox consoles map parental controls to these ratings and prevent users from accessing higher-rated content.
+
+**Rating descriptors:** specific details about game substance of particular interest to parents/guardians.
+
+**Parental controls:** a setting on Xbox consoles that defines the rating level of games a user can play or view.
+
+**Trailers/videos:** videos playable within the Xbox console UI.
+
+**Game add-on:** content built by the publisher (DLC) downloadable through the Xbox network. Downloading the add-on alone does not allow access; the underlying game is required.
+
+**Catalog listing (store listing, GDP/PDP):** the "wrapper" for a game on the Xbox Store — ratings, art assets, localized titles/descriptions, features.
+
+**Demos, betas, and trial experiences:** limited-functionality releases of a portion of a game, distributed digitally to drive purchase intent.
+
+## Ratings setup guidance
+
+### Pre-orders
+
+Pre-orders for digital-only products display IARC-generated ratings. Pre-orders for products intended for physical release must display the rating from the respective board's certificate. If unavailable, the approach varies by rating authority — e.g., ESRB requires an RP rating (at the correct tier); PEGI allows an IARC-generated PEGI rating with a "Provisional" designation.
+
+### Betas/Game previews
+
+Betas and Game Preview program titles are digital-only. IARC should be used in supported markets. For non-IARC regions, certificates are required.
+
+### Demos
+
+Digital-only regions display IARC-assigned ratings. Physical release regions must display the rating from the respective board's certificate; if not obtained, select rating pending.
+
+<Warning>
+  Any **free product** (including betas or demos) rated as CERO Z or IARC 18\+ is **not allowed to release on Xbox in Japan** regardless of the distribution method.
+</Warning>
+
+Demos should follow the rating of the main title. If the main game is RP, the demo should be as well, and match the final rating once assigned.
+
+### Game trailers
+
+Only UNRATED trailer needs to be uploaded to Partner Center. Microsoft adds the necessary age ratings 'pre-roll' to the trailer.
+
+<Note>
+  This exception is only for Partner Center/Microsoft Store PDP. Any trailer that is not destined for the Microsoft Store product page must still display embedded rating information, where required, per the appropriate authorities' guidelines.
+</Note>
+
+Any game trailer showcasing CERO Z or IARC 18\+ rated gameplay is **not allowed to release on Xbox in Japan** regardless of distribution method.
+
+## Ratings breakdown
+
+### Supported ratings boards
+
+| Release Region(s) | Ratings Authority | Rating Pending | Pre-Order | Ratings | Store Rating Values (JSON) |
+| --- | --- | --- | --- | --- | --- |
+| Australia | ACB | Unrated | Digital: IARC / Physical: CTC | G, PG, M (Unrestricted); MA 15\+, R 18\+ (Restricted) | COB-AU:G / PG / M / MA / R18 |
+| Brazil | DJCTQ | Unrated | Digital/Physical: IARC | L, 6, 10, 12, 14, 16, 18 | DJCTQ:L / 6 / 10 / 12 / 14 / 16 / 18 |
+| Chile | CCC | 18\+ | Digital/Physical: IARC | ER, TE, 8\+, 14\+, 18\+, RP, UR (mapped from ESRB) | CCC:ER / TE / 8 / 14 / 18 / RP / UR |
+| Europe (excl. Germany) | PEGI | PEGI Provisional (long-form only) | Digital: IARC / Physical: PEGI Provisional | 3, 7, 12, 16, 18, ! (Parental Guidance); Provisional variants | PEGI:3 / 7 / 12 / 16 / 18 / ! / 3P / 7P / 12P / 16P / 18P |
+| Germany | USK | Unrated | Digital: IARC / Physical: Rating pending | 0 All Ages, 6, 12, 16, 18 Not for Youth | USK:Everyone / 6 / 12 / 16 / 18 |
+| Indonesia | IGRS | Unrated | Digital/Physical: IARC | 3\+, 7\+, 13\+, 15\+, 18\+, Refused Classification | IGRS:3 / 7 / 13 / 15 / 18 / RC |
+| Japan | CERO | Unrated | Digital: IARC / Physical: Rating pending | A, B, C, D, Z | CERO:A / B / C / D / Z |
+| New Zealand | OFLC | Unrated | Digital: IARC / Physical: CTC | G, PG, M (Unrestricted); R13, R15, R16, R18, RP13, RP16, RP18 | OFLC-NZ:G / PG / M / R13 / R15 / R16 / R18 / RP13 / RP16 / RP18 |
+| Russia | PCBP | Unrated | Digital/Physical: IARC | 0\+, 6\+, 12\+, 16\+, 18\+ | PCBP:0 / 6 / 12 / 16 / 18 |
+| Saudi Arabia | Gmedia | Unrated | Digital: IARC / Physical: TBC | 3, 7, 12, 16, 18, 21, TBC | GCAM:3 / 7 / 12 / 16 / 18 / 21 / TBC |
+| Singapore | IMDA/PEGI | Unrated | Digital: IARC / Physical: IMDA | 3, 4, 12, 16, 18 | PEGI:3 / 12 / 16 / 18 |
+| South Africa | FPB | N/A | Digital/Physical: IARC | PG, 7-9 PG, 10-12 PG, 13, 16, 18 | FPB:PG / PG7 / PG10 / 13 / 16 / 18 |
+| South Korea | GRAC/GCRB | Unrated | Digital: IARC / Physical: Rating Pending | All, 12, 15, 19 | GRB:All / 12 / 15 / 19 |
+| Taiwan | DGSC | Unrated | Digital: IARC (must register on DGSC) / Physical: Rating pending | 0\+ (General), 6\+ (Protected), 12\+ (PG12), 15\+ (PG15), 18\+ (Restricted) | CSRR:G / P / PG12 / PG15 / R |
+| United Arab Emirates | NMA | Unrated | Digital/Physical: IARC | 3, 7, 12, 16, 18, 21 | IARC:3 / 7 / 12 / 16 / 18 |
+| US and Canada | ESRB | Rating pending: Everyone\+, 13\+ or 17\+ | Digital: IARC / Physical: Rating pending | EC, E, E10\+, T, M, Rating Pending, RP Likely Teen 13\+, RP Likely Mature 17\+ | ESRB:EC / E / E10 / T / M / RPEveryone / RPTeen / RPMature |
+
+<Note>
+  **South Korea:** Titles with an IARC-generated 19\+ (restricted) rating are auto-blocked from the Xbox Store as a traditional GRAC rating is required. Selecting Rating Pending shows generic IARC ratings. In 2024, the GRAC restricted rating changed from 18 to 19.
+</Note>
+
+### Global ratings display
+
+Generic IARC ratings are used for regions supported by the Microsoft Store that are not listed below.
+
+| Country/Region | Store Locale | Ratings Board (Physical) | Digital Store Ratings | Cert. Required for Physical | Notes |
+| --- | --- | --- | --- | --- | --- |
+| Albania | EN-AL | PEGI | PEGI (via IARC) | Yes |  |
+| Algeria | FR-DZ | N/A | IARC Generic | Not currently |  |
+| Argentina | ES-AR | ESRB | ESRB (via IARC) | Yes |  |
+| Australia | EN-AU | ACB/IARC | ACB (via IARC) | Yes | IARC rating can be used to obtain an approved tool certificate from ACB for physical releases. |
+| Austria | DE-AT | PEGI | PEGI (via IARC) | Yes |  |
+| Belgium | FR-BE/NL-BE | PEGI | PEGI (via IARC) | Yes |  |
+| Bosnia and Herzegovina | BS-BA | PEGI | PEGI (via IARC) | Yes |  |
+| Brazil | PT-BR | DJCTQ | DJCTQ (via IARC) | Yes |  |
+| Bulgaria | BG-BG | PEGI | PEGI (via IARC) | Yes |  |
+| Canada | EN-CA/FR-CA | ESRB | ESRB (via IARC) | Yes |  |
+| Chile | ES-CL | CCC | CCC (mapped from ESRB) | Yes (see notes) | Chile uses ESRB mapping; over-stickered physical product with CCC equivalent. |
+| China | ZH-CN | N/A | IARC Generic | See notes | Game reviews conducted by the Central Bureau of Communications and Propaganda. |
+| Colombia | ES-CO | ESRB | ESRB (via IARC) | Yes |  |
+| Croatia | HR-HR | PEGI | PEGI (via IARC) | Yes |  |
+| Cyprus | EN-CY | PEGI | PEGI (via IARC) | Yes |  |
+| Czech Republic | EN-CZ | PEGI | PEGI (via IARC) | Yes |  |
+| Denmark | DA-DK | PEGI | PEGI (via IARC) | Yes |  |
+| Estonia | EE-ET | PEGI | PEGI (via IARC) | Yes |  |
+| Finland | FI-FI | PEGI | PEGI (via IARC) | Yes |  |
+| France | FR-FR | PEGI | PEGI (via IARC) | Yes |  |
+| Georgia | EN-GE | PEGI | IARC Generic | Yes | Georgia not an official PEGI region. |
+| Germany | DE-DE | USK | USK (via IARC) | Yes |  |
+| Greece | EN-GR/EL-GR | PEGI | PEGI (via IARC) | Yes |  |
+| Hong Kong SAR | EN-HK/ZH-HK | PEGI | IARC Generic | Yes |  |
+| Hungary | EN-HU | PEGI | PEGI (via IARC) | Yes |  |
+| Iceland | IS-IS | PEGI | PEGI (via IARC) | Yes |  |
+| India | EN-IN | PEGI | IARC Generic | Yes (see notes) | Not official PEGI region; physical products usually use PEGI labels. |
+| Indonesia | ID-ID | IGRS | IGRS (via IARC) | Yes | In 2026, Indonesia joined IARC. |
+| Ireland | EN-IE | PEGI (see notes) | PEGI (via IARC) | Yes | IFCO submission only required for PEGI 18 physical releases. |
+| Israel | EN-IL | PEGI | PEGI (via IARC) | Yes |  |
+| Italy | IT-IT | PEGI | PEGI (via IARC) | Yes |  |
+| Japan | JA-JP | CERO | IARC Generic (see notes) | Yes | Pick "No Rating Selected" in Partner Center. |
+| Latvia | LV-LV | PEGI | PEGI (via IARC) | Yes |  |
+| Liechtenstein | DE-LI | PEGI | PEGI (via IARC) | Yes | Not official PEGI region. |
+| Lithuania | LT-LT | PEGI | PEGI (via IARC) | Yes |  |
+| Luxembourg | FR-LU | PEGI | PEGI (via IARC) | Yes |  |
+| Malta | EN-MT | PEGI | PEGI (via IARC) | Yes |  |
+| Mexico | ES-MX | SMECCV | ESRB (via IARC) | Yes (see notes) | Uses rating equivalency system mapping SMECCV from ESRB. |
+| Moldova | RO-MD | PEGI | PEGI (via IARC) | Yes |  |
+| Montenegro | EN-ME | PEGI | PEGI (via IARC) | Yes |  |
+| Netherlands | NL-NL | PEGI | PEGI (via IARC) | Yes |  |
+| New Zealand | EN-NZ | OFLC | ACB (via IARC) | Yes | Pick "No Rating Selected" in Partner Center. |
+| North Macedonia | EN-MK | PEGI | PEGI (via IARC) | Yes |  |
+| Norway | NB-NO | PEGI | PEGI (via IARC) | Yes |  |
+| Poland | PL-PL | PEGI | PEGI (via IARC) | Yes |  |
+| Portugal | PT-PT | PEGI | PEGI (via IARC) | Yes |  |
+| Romania | RO-RO | PEGI | PEGI (via IARC) | Yes |  |
+| Russia | RU-RU | PCBP (self-rated) | PCBP (via IARC) | Not currently | Legal requirement to display PCBP or PEGI icon on packaging. |
+| Saudi Arabia | AR-SA | Gmedia | Gmedia (via IARC) | Yes (see notes) | Gmedia joined IARC in 2026. |
+| Serbia | EN-RS | PEGI | PEGI (via IARC) | Yes |  |
+| Singapore | EN-SG/ZH-SG | IMDA | IARC Generic | Yes (see notes) | IMDA rating for ADV16/M18; PEGI/ESRB acceptable below ADV16. |
+| Slovakia | EN-SK | PEGI | PEGI (via IARC) | Yes |  |
+| Slovenia | SL-SI | PEGI | PEGI (via IARC) | Yes |  |
+| South Africa | EN-ZA | FPB | PEGI (via IARC) | Yes | Pick "No Rating Selected" in Partner Center. |
+| South Korea | KO-KR | GCRB (under 19), GRAC (19\+) | GCRB (via IARC) | Yes | Digital content rated 19 must be rated with GRAC. |
+| Spain | ES-ES | PEGI | PEGI (via IARC) | Yes |  |
+| Sweden | SV-SE | PEGI | PEGI (via IARC) | Yes |  |
+| Switzerland | DE-CH/FR-CH | PEGI | PEGI (via IARC) | Yes |  |
+| Taiwan | ZH-TW | DGSC (self-rated) | DGSC (via IARC) | Yes | Retail and digital products must display DGSC ratings. |
+| Türkiye | TR-TR | PEGI | PEGI (via IARC) | Yes | Not official PEGI region. |
+| Ukraine | UK-UA | PEGI | PEGI (via IARC) | Yes |  |
+| United Arab Emirates | AR-AE | NMA | IARC Generic | Yes | Formerly UAEMC, MRO, NMC. |
+| United Kingdom | EN-GB | PEGI | PEGI (via IARC) | Yes |  |
+| United States | EN-US | ESRB | ESRB (via IARC) | Yes |  |
+
+## Rating boards and regions
+
+### USA and Canada (ESRB)
+
+- **Authority:** Entertainment Software Rating Board
+- **Website:** [esrb.org](https://www.esrb.org)
+- **Game Ratings Search:** [esrb.org/search](https://www.esrb.org/search/)
+- **Contact:** [esrb.org/privacy/contact](https://www.esrb.org/privacy/contact/)
+
+| Rating text | Audience |
+| --- | --- |
+| **EC (Early Childhood)** | Ages 3 and older (retired) |
+| **E (Everyone)** | All ages |
+| **E10\+ (Everyone 10\+)** | Ages 10 and older |
+| **T (Teen)** | Ages 13 and older |
+| **M (Mature)** | Ages 17 and older |
+| **AO (Adults Only)** | Ages 18 and older |
+| **Rating Pending** | All ages |
+| **Rating Pending Likely Teen 13\+** | Ages 13 and older |
+| **Rating Pending Likely Mature 17\+** | Ages 17 and older |
+
+#### Requirements for downloadable content
+
+If a **game add-on** (Xbox console DLC) required for base gameplay has a different rating than the core game, the publisher must obtain an updated rating from ESRB and submit it with the content. If the DLC rating is higher than the core game, the core game rating must be increased to match. If the game add-on is optional with different rating/content descriptors, the new rating information must be communicated to consumers where it will be accurately associated with the downloadable content.
+
+#### Ratings process for code to content (C2C) cards
+
+If the game will be sold at brick-and-mortar stores, the publisher must obtain a ratings certificate from the ESRB.
+
+#### Requirements for music game add-ons
+
+Game add-ons for music games must contain the following text:
+
+- **English:** (Online Music Not Rated by the ESRB)
+- **French:** (Musique en ligne non classée par l'ESRB)
+- **Spanish:** (Música en línea sin clasificación por parte de la ESRB)
+
+#### Restrictions for game trailers
+
+The ESRB considers trailers to be advertising material:
+
+> **No advertisement should contain any content that is likely to cause serious or widespread offense to the average consumer.**
+
+Trailers with excessive violence, blood/gore, headshots, or chainsaw kills may be rejected regardless of consistency with the overall title.
+
+#### Rating requirements for demos and betas
+
+Demo/betas must display the appropriate ESRB Rating Pending logo and/or Rating Pending Notice at 50% vertical height for four seconds prior to demo start.
+
+<Note>
+  Demos/betas with the ESRB logo can only be released in the US and Canada. Rating information is not required on-screen if it's clearly displayed on the webpage/digital storefront and visible before the user accesses or downloads the demo.
+</Note>
+
+#### Rating certificate expirations
+
+ESRB may require re-rating 10 years after original certificate for continued updates (major update, new platform, new bundle). Applies only to games rated after April 1, 2018.
+
+### Europe (PEGI)
+
+- **Authority:** Pan European Game Information
+- **Website:** [pegi.info](https://pegi.info/)
+- **Game Ratings Search:** [pegi.info/search-pegi](https://pegi.info/search-pegi)
+- **Contact:** [pegi.info/page/contact-us](https://pegi.info/page/contact-us)
+
+**Official Regions:** Albania, Austria, Belgium, Bosnia and Herzegovina, Bulgaria, Croatia, Cyprus, Czech Republic, Denmark, Estonia, Finland, France, Greece, Hungary, Iceland, Ireland, Italy, Kosovo, Latvia, Lithuania, Luxembourg, Malta, Moldova, Montenegro, the Netherlands, North Macedonia, Norway, Poland, Portugal, Romania, Serbia, Slovakia, Slovenia, Spain, Sweden, Switzerland, Ukraine, United Kingdom.
+
+| Rating text | Audience |
+| --- | --- |
+| **3** | Ages 3 and older |
+| **7** | Ages 7 and older |
+| **12** | Ages 12 and older |
+| **16** | Ages 16 and older |
+| **18** | Ages 18 and older |
+| **!** (Parental Guidance) | Ages 12 and older |
+
+#### Unofficial PEGI regions
+
+PEGI is also used by Georgia, India, Liechtenstein, and Türkiye.
+
+#### Rating certificate expirations
+
+PEGI may require re-rating 10 years after original certificate for continued updates.
+
+#### PEGI Provisional
+
+Used for unrated games that will acquire a long-form PEGI rating for full release. Must be replaced by the final long-form rating once acquired.
+
+#### New PEGI Rating Criteria (2026)
+
+As of June 2026, PEGI introduced new criteria for online interactive risks:
+
+- **Purchases of in-game content:** time/quantity-limited offers → PEGI 12. NFTs or blockchain → PEGI 18.
+- **Paid random items:** default PEGI 16 (some cases PEGI 18).
+- **Play-by-appointment:** reward mechanisms (daily quests) → PEGI 7. Punishment mechanisms → PEGI 12.
+- **Safe online gameplay:** entirely unrestricted communication (no blocking/reporting) → PEGI 18.
+
+More info: [PEGI news](https://pegi.info/news/pegi-expands-age-rating-criteria-interactive-risk-categories).
+
+### Germany (USK)
+
+- **Authority:** Unterhaltungssoftware Selbstkontrolle
+- **Website:** [usk.de/en](https://usk.de/en/)
+- **Contact:** [usk.de/en/contact](https://usk.de/en/contact/)
+
+| Rating text | Audience |
+| --- | --- |
+| **Ohne Altersbeschränkung** | All ages |
+| **Freigegeben ab 6 Jahren** | Ages 6 and older |
+| **Freigegeben ab 12 Jahren** | Ages 12 and older |
+| **Freigegeben ab 16 Jahren** | Ages 16 and older |
+| **Keine Jugendfreigabe** | No release for minors |
+
+Games are rated by USK if distributed on disc. Digital-only games use IARC-generated USK ratings on Microsoft storefronts.
+
+#### Xbox Series X|S USK scenarios
+
+An Xbox Series rating is only required for:
+
+1. A new product for Xbox Series only (standard procedure)
+2. A new product with both Xbox One and Xbox Series on disc (standard procedure)
+3. An old product with an existing Xbox One rating that gets an Xbox Series retail release (statement procedure)
+
+#### Rating-denied playable content
+
+If playable content is denied a rating from USK, that content and all associated content (trailers, demos, videos) cannot be released in Germany.
+
+#### Enforcement and fines
+
+German laws for protection of youth carry severe penalties. Infringements can constitute criminal offenses or trigger administrative fines.
+
+### Australia (ACB)
+
+- **Authority:** Australian Classification Board (formerly COB)
+- **Website:** [classification.gov.au](https://www.classification.gov.au/)
+
+| Rating text | Audience |
+| --- | --- |
+| **CTC** (Check The Classification) | Unclassified |
+| **G** (General) | All ages (unrestricted) |
+| **PG** (Parental Guidance) | Ages 8 and older (unrestricted) |
+| **M** (Mature) | Ages 15 and older (unrestricted) |
+| **MA 15\+** (Mature Accompanied) | Ages 15 and older (legally restricted) |
+| **R 18\+** (Restricted) | Ages 18 and over (legally restricted) |
+| **E** | Exempt |
+
+#### Approved tool certificates
+
+ACB accepts rating decisions by approved tools such as IARC as valid classification for both digital and physical releases (Australia only). If a game was IARC-classified, the developer applies for a tool certificate from the board and uploads it to Partner Center as a manual rating.
+
+### New Zealand (OFLC)
+
+- **Authority:** Office of Film and Literature Classification (formerly FVLB)
+- **Website:** [classificationoffice.govt.nz](https://www.classificationoffice.govt.nz/)
+
+| Rating text | Audience |
+| --- | --- |
+| **G** (General) | All ages (unrestricted) |
+| **PG** (Parental Guidance) | Ages 8 and older (unrestricted) |
+| **M** (Mature) | Ages 16 and older (unrestricted) |
+| **R13, R15, R16, R18** (Restricted) | 13, 15, 16 or 18 years and over (legally restricted) |
+| **RP13, RP16, RP18** (Restricted to Persons) | Persons 18\+ unless accompanied by Parent/Guardian |
+
+All restricted games must carry a NZ classification label. Unrestricted games do not need to — they're exempt under section 8 of the Classification Act. If ACB rating is less than MA15\+, the same ACB certificate can be used for the physical NZ release.
+
+### Brazil (DJCTQ)
+
+- **Authority:** Departamento de Justiça, Classificação, Títulos e Qualificação (ClassInd)
+- **Website:** [gov.br classificação](https://www.gov.br/mj/pt-br/assuntos/seus-direitos/classificacao-1)
+
+| Rating text | Audience |
+| --- | --- |
+| **L** | All ages |
+| **6** | Ages 6 and older |
+| **10** | Ages 10 and older |
+| **12** | Ages 12 and older |
+| **14** | Ages 14 and older |
+| **16** | Ages 16 and older |
+| **18** | Ages 18 and older |
+
+#### DJCTQ 6 Rating
+
+In 2026, DJCTQ added a '6' age rating, applying to long-form ratings and IARC-generated ratings.
+
+#### Loot boxes
+
+As of 2026, games with in-game purchases including random items (loot boxes, card packs) are required to be rated 18.
+
+### Japan (CERO)
+
+- **Authority:** Computer Entertainment Rating Organisation
+- **Website:** [cero.gr.jp/en](https://www.cero.gr.jp/en/)
+
+| Rating text | Audience |
+| --- | --- |
+| **A** | All ages |
+| **B** | Ages 12 and older |
+| **C** | Ages 15 and older |
+| **D** | Ages 17 and older |
+| **Z** | Ages 18 and older |
+
+<Warning>
+  **Restrictions for Japan:**
+
+  - In-game content rated higher than the base game must not be distributed to Japan.
+  - CERO Z or IARC 18\+ content cannot be distributed as part of trailers or demos.
+  - IARC 18\+ Free To Play games are **NOT** allowed on the Japanese Microsoft Store.
+</Warning>
+
+IARC ratings are accepted for digital-only releases to Japan (including IARC 18\+). CERO ratings are still required for disc releases.
+
+### South Korea (GRAC)
+
+- **Authorities:** Game Rating Administration Committee (GRAC) and Game Content Rating Board (GCRB)
+- **Websites:** [grac.or.kr/english](https://www.grac.or.kr/english/) and [gcrb.or.kr](https://www.gcrb.or.kr/English/default.aspx)
+
+| Rating text | Audience |
+| --- | --- |
+| **전체 이용가** | All ages |
+| **12세 이용가** | Ages 12 and older |
+| **15세 이용가** | Ages 15 and older |
+| **청소년 이용불가** | Ages 19 and older (legally restricted) |
+
+GCRB rates content at and below 19\+, GRAC rates only 19\+ content. Before January 2026, GCRB was limited to under 19\+; it has since expanded.
+
+<Warning>
+  On January 9, 2024, the Enforcement Decree changed the rating for content not suitable for minors from 18 to 19. All new restricted packaged product must carry the 19 rating.
+</Warning>
+
+#### Certificate Requirements
+
+Rating certificate required at submission for disc distribution. Digital-only content may obtain a rating via IARC unless rated 19, which then requires GRAC.
+
+When releasing on multiple Xbox platforms (Xbox One, Xbox Series X|S, Windows), one certificate suffices provided content is the same.
+
+#### Age Validation and I-PIN
+
+Since December 2012, all Xbox users in Korea must validate their age using I-PIN or equivalent as part of profile setup.
+
+#### 19\+ IARC-generated GRAC ratings
+
+If the IARC-generated GRAC rating is 19\+ the title is **automatically blocked from the Xbox Store in Korea** until a traditional GRAC certificate is obtained and uploaded.
+
+#### Enforcement and fines
+
+Fines up to KRW 20,000,000 or penal servitude of two years per violation.
+
+#### Guideline on the disclosure of probability information
+
+Games offering "probabilistic items" must disclose the probability of obtaining items and adhere to the [Guideline on the Disclosure of Probability Information](https://www.grac.or.kr/board/Inform.aspx?searchtype=004&type=view&bno=823&searchtext=).
+
+### Taiwan (DGSC)
+
+- **Authority:** Digital Games Self-regulation Committee (also TCA, TESRI, GSRR, CSRR)
+- **Website:** [gamerating.org.tw](https://www.gamerating.org.tw/)
+
+| Rating text | Audience |
+| --- | --- |
+| **0\+** (General) | All ages |
+| **6\+** (Protected) | Ages 6 and over |
+| **12\+** (PG12) | Ages 12 and over |
+| **15\+** (PG15) | Ages 15 and over |
+| **18\+** (Restricted) | Ages 18 and over |
+
+DGSC ratings are mandatory for all titles/content released in Taiwan (retail and digital). All games are self-rated — publishers determine ratings themselves. Publishers must register the game rating and content descriptors on the government website.
+
+### Russia (PCBP)
+
+- **Authority:** RARS (Russian Age Rating System)
+
+| Rating text | Audience |
+| --- | --- |
+| **0** | All ages |
+| **6** | Ages 6 and older |
+| **12** | Ages 12 and older |
+| **16** | Ages 16 and older |
+| **18** | Ages 18 and older |
+
+RARS is a self-rating system — there is no Russian ratings board. Legal requirement to display either a PCBP rating icon or PEGI rating icon on packaging.
+
+### Saudi Arabia (Gmedia)
+
+- **Authority:** General Authority of Media Regulation (formerly GCAM)
+- **Website:** [gmedia.gov.sa/en](https://gmedia.gov.sa/en)
+
+| Rating text | Audience |
+| --- | --- |
+| **3** | Ages 3 and older |
+| **7** | Ages 7 and older |
+| **12** | Ages 12 and older |
+| **16** | Ages 16 and older |
+| **18** | Ages 18 and older |
+| **21** | Ages 21 and older |
+
+#### Gmedia and IARC
+
+In 2026, Gmedia joined IARC. Digital-only products on Microsoft storefronts now get Gmedia ratings from the IARC questionnaire.
+
+#### Gmedia Ratings on Boxed Products
+
+- All new-to-market boxed, disc-based games must show Gmedia rating on the front of packaging as part of outer wrap.
+- The Gmedia rating is the **only** rating to be shown on the box in Saudi Arabia. Displaying other rating logos is not allowed.
+- Console bundles use a sticker Gmedia rating.
+- Gmedia rating certificate required at time of certification submission for disc releases.
+
+#### Gmedia 21 Rating
+
+In 2025, Gmedia added a 21 rating.
+
+### United Arab Emirates (NMA)
+
+- **Authority:** National Media Authority (formerly UAEMC, MRO, NMC)
+- **Website:** [nma.gov.ae](https://nma.gov.ae/)
+
+| Rating text | Audience |
+| --- | --- |
+| **3** | Ages 3 and older |
+| **7** | Ages 7 and older |
+| **12** | Ages 12 and older |
+| **16** | Ages 16 and older |
+| **18** | Ages 18 and older |
+| **21** | Ages 21 and older |
+
+In January 2026, the board updated its name from UAE Media Council to National Media Authority.
+
+All games released physically in UAE (including C2C cards) must be rated by NMA. Boxed products require NMA rating printed on the box. Digital ONLY releases show generic IARC ratings.
+
+### Chile (CCC)
+
+- **Authority:** Consejo de Calificación Cinematográfica
+
+| Rating text | Audience | ESRB Mapping |
+| --- | --- | --- |
+| **ER** | Games recommended for children/teenagers, educational | N/A |
+| **TE** | All Ages | EC Early Childhood \+ E Everyone |
+| **8\+** | Ages 8 and older | E10\+ Everyone 10\+ |
+| **14\+** | Ages 14 and older | T Teen |
+| **18\+** | Ages 18 and older | M Mature \+ AO Adults Only |
+
+On the Microsoft Store the Chile rating is mapped from the ESRB rating. Manufacturers/importers must place warnings on packaging occupying at least 25% of both sides.
+
+### Mexico (SMECCV)
+
+- **Authority:** Sistema Mexicano de Equivalencias de Clasificación de los Contenidos de Videojuegos
+
+| Rating text | Audience | ESRB Equivalent |
+| --- | --- | --- |
+| **A** | Everyone | E Everyone |
+| **B** | Ages 12 and older | E10\+ Everyone 10\+ |
+| **B15** | Ages 15 and older | T Teen |
+| **C** | Ages 18 and older | M Mature |
+| **D** | Adults only | AO Adults Only |
+
+Applies only to packaged retail. Physical copies must be labeled with new Mexican rating icons under plastic wrapping (from August 2021). Publishers continue to upload ESRB certificates to Partner Center. Displaying both ESRB and SMECCV on packaging is prohibited.
+
+### South Africa (FPB)
+
+- **Authority:** Film and Publication Board
+- **Website:** [fpb.org.za](https://www.fpb.org.za/)
+
+| Rating text | Audience |
+| --- | --- |
+| **PG** | All ages |
+| **7-9 PG** | Ages 7 and older |
+| **10-12 PG** | Ages 10 and older |
+| **13** | Ages 13 and older |
+| **16** | Ages 16 and older |
+| **18** | Ages 18 and older |
+
+FPB rating required for all physical releases (including C2C cards). For digital releases, a PEGI certificate is also acceptable in Partner Center.
+
+### China (CADPA), Hong Kong SAR and Macao SAR
+
+- **Authority:** China Audio-Video and Digital Publishing Association (CADPA)
+
+Currently no mandatory legal requirement for video game ratings in China. CADPA introduced a pilot content rating system in December 2020 (Online Game Age-Appropriateness Warning) with three categories: 8, 12, 16\+ (green, blue, yellow labels). Not a mandatory legal requirement. Xbox digital store displays generic IARC.
+
+**Releasing in China:** Non-Chinese companies must partner with a Chinese-owned partner. The Central Bureau of Communications and Propaganda now handles game reviews.
+
+**Hong Kong SAR and Macao SAR:** No game classification system. Games unsuitable for minors must include warnings. Subject to "obscene and indecent item control regulations."
+
+### Singapore (IMDA)
+
+- **Authority:** Infocomm Media Development Authority
+- **Website:** [imdaonline.imda.gov.sg](https://imdaonline.imda.gov.sg/classification/)
+
+| Rating text | Audience |
+| --- | --- |
+| **ADV16** | Ages 16 and older |
+| **M18** | Ages 18 and older |
+
+IMDA reviews all titles but only requires over-stickering on boxed product for ADV16 or M18 games. For titles lower than 16, boxed copy shows ESRB or PEGI rating. Singapore ratings display as IARC generic on Microsoft online storefronts.
+
+### Ireland (IFCO)
+
+- **Authority:** Irish Film Classification Office
+- **Website:** [ifco.ie](https://www.ifco.ie/)
+- **Contact:** [info@ifco.gov.ie](mailto:info@ifco.gov.ie)
+
+Games rated PEGI 18 AND being released physically in Ireland must be submitted to IFCO 3-4 weeks prior to release. IFCO does not use bespoke classification symbols — PEGI rating logos/descriptors are used for all packaging. If IFCO does not approve, the game is effectively banned in Ireland.
+
+IFCO is not a supported rating authority in Partner Center. Disc ratings rely on the disc's PEGI rating.
+
+### Indonesia (IGRS)
+
+- **Authority:** Indonesia Game Rating System
+- **Website:** [igrs.id](https://igrs.id/)
+
+| Rating text | Audience |
+| --- | --- |
+| **3\+** | Ages 3 and above |
+| **7\+** | Ages 7 and above |
+| **13\+** | Ages 13 and above |
+| **15\+** | Ages 15 and above |
+| **18\+** | Ages 18 and above |
+
+In 2026, IGRS was established and joined IARC. Digital-only products on Microsoft storefronts get IGRS ratings via the IARC questionnaire.
+
+## Timelines and test cases
+
+### Timeline guide
+
+| Region/Authority | Submission Complete Guide | Game Builds Required | Other Requirements |
+| --- | --- | --- | --- |
+| North America (ESRB) | RTC –11 Weeks | Yes | Video and language scripts/examples |
+| South Korea (GRAC/GCRB) | RTC –9 Weeks | Yes | Video |
+| South Africa (FPB) | RTC –9 Weeks | Yes | Video, screenshots, game description |
+| Europe (PEGI) | RTC –7 Weeks | Yes | Video, screenshots, game description |
+| Germany (USK) | RTC –7 Weeks | Yes | Video, German UI text and script |
+| Australia (ACB/COB) | RTC –7 Weeks | Yes | Video |
+| New Zealand (OFLC/FVLB) | RTC –7 Weeks | Yes | Video |
+| Singapore (IMDA) | RTC –7 Weeks | No | ESRB Submission Form, Video |
+| Japan (CERO) | RTC –7 Weeks | No | Video |
+| Brazil (DJCTQ) | RTC –4 Weeks | No | Video, screenshots, game description |
+| Saudi Arabia (Gmedia) | RTC –4 Weeks | No | Video, screenshots, game description |
+| United Arab Emirates (NMA) | RTC –4 Weeks | No | Video, screenshots, game description |
+| Republic of Ireland (IFCO) | RTC –4 Weeks | Yes (if PEGI 18) | Video, screenshots, game description |
+| **ALL RATING CERTIFICATES DUE** | **RTC –3 Weeks** | — | — |
+| Taiwan (DGSC) | Self-rated | — | — |
+| Russia (PCBP) | Self-rated | — | — |
+
+**RTC** = Release to Certification (aka RTX, Release to Xbox). Approx. two weeks before RTM.
+
+**RTM** = Release to Manufacturing. When discs and packaging are created.
+
+## Certification Test Cases
+
+### 017-01 Age Rating Validation
+
+<Note>
+  For digital only titles or for testing without green discs, refer to test case BVT 000-13.
+</Note>
+
+**Configuration:**
+
+1. Title must be a disc submission and test discs must be available.
+2. The Submission Materials (Certificates)
+3. Title's age ratings as declared in Microsoft Partner Center
+
+**Test steps**
+
+1. Compare ratings values in Partner Center against ratings certificates in submission materials. Each ratings value should have a corresponding certificate.
+2. TEST DISCS REQUIRED — Insert disc into a dedicated offline console set to RETAIL and install the title.
+3. For each ratings body supported: set the console Location within Settings, sign into an Xbox profile with the corresponding age restriction, and launch the title.
+
+**Expected result**
+
+With a console Location matching each supported age-rating region:
+
+- The title must challenge the user when the console age rating is set lower than the title's certificate value.
+- The title must boot without challenging when the age rating is equal to the certificate value.
+
+### BVT-13 Age Rating Validation
+
+**Configuration:**
+
+1. Title must be Final (Base or Content Update).
+2. Submission Materials available for review.
+3. Access to product age ratings in Microsoft Partner Center.
+
+**Test steps**
+
+1. Verify these documents/information are available: Submission Validator log for the submission's XVC, age rating declarations in Partner Center, age rating certificates.
+2. Open the Submission Validator log and ensure no warnings/failures for the `Manifest-Ratings` component test.
+3. Review the product's age rating information in Partner Center. For each value, verify a corresponding rating certificate has been provided.
+
+**Expected result**
+
+1. All files must be supplied and relevant to this submission type.
+2. All ratings must have a corresponding certificate.
+3. Base final submissions after May 11, 2020 must not have an age ratings element in AppxManifest.
+4. Content updates for titles certified before May 11, 2020 must not add or remove ratings from AppxManifest except to completely remove the element.
+
+## Questions
+
+For any questions, please contact [agepc@microsoft.com](mailto:agepc@microsoft.com).

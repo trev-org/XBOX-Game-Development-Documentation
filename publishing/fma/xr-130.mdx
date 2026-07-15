@@ -1,0 +1,94 @@
+---
+title: "FMA: XR-130 Xbox Console Families and Generations"
+sidebarTitle: "FMA XR-130"
+description: "FMA scenario severities for XR-130 Xbox Console Families and Generations — controller input, save game roaming, online segmentation, featured game modes, and compatibility mode."
+icon: "server"
+keywords: ["FMA XR-130", "console family", "Xbox Series X|S", "save roaming", "compatibility mode", "quick resume"]
+---
+
+# XR-130: Xbox Console Families and Generations
+
+## FMA scenario severities
+
+See the [XR-130 reference](/publishing/xr/xr-130) for the underlying certification requirement.
+
+### 130-01 Controller Input
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| The title accepts input from only a keyboard and/or mouse in certain areas of the title. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- No current FMA Notes to consider.
+
+### 130-02 Save Game Roaming
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| A game save doesn't fully load for games that share the same TitleID across generations (Xbox One and Xbox Series X) for content available on both generations. | Critical (12) | Xbox One, Xbox Series |
+| A game save made in one generation (Xbox One or Xbox Series X) doesn't fully load across all device types in that generation. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- No current FMA Notes to consider.
+
+### 130-03 Online Segmentation
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| Xbox network online players are segmented based on their console type. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- No current FMA Notes to consider.
+
+### 130-04 Featured Game Modes
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| One or more consoles from the same generation of devices provides different game modes based on their same generation console type. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- No current FMA Notes to consider.
+
+### 130-05 Compatibility Mode
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| The title doesn't allow users to enter, play, or complete a multiplayer session between the same console generation or cross generation when supported. | Critical (12) | Xbox One, Xbox Series |
+| The title is built on GDK and doesn't function as expected when quick resumed on an Xbox Series X\|S. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't retain a user's saved data after a full title reboot on an Xbox Series X\|S. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't roam a user's saved data generated on a console from the Xbox One family of devices to an Xbox Series X\|S (and back) without a loss in data. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't suspend or resume as expected on an Xbox Series X\|S. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- Titles which support multiplayer functionality are expected to, and MUST, work within the same console generation (that is, Series X|S must work together and consoles from the Xbox One family of devices must work together). Cross generational functionality is OPTIONAL.
+- By design, all ERA titles are capped at 60fps on Gen9 devices. ERA\+ titles may request to go to 120hz within the manifest to increase this limit.

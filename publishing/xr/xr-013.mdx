@@ -1,0 +1,239 @@
+---
+title: "XR-013 Linking Microsoft Accounts with Publisher Accounts"
+sidebarTitle: "XR-013 Account Linking"
+description: "Titles that use partner-hosted services or accounts requiring credentials must support all Xbox users and offer to link the publisher account with the user's Microsoft account, using secure authentication and single sign-on."
+icon: "link"
+keywords: ["XR-013", "account linking", "publisher account", "Microsoft account", "XSTS", "PXUID", "single sign-on", "COPPA"]
+---
+
+# XR-013: Linking Microsoft Accounts with Publisher Accounts \*
+
+Version 1.5, 8/1/2024
+
+On Xbox, titles that use partner-hosted services or accounts that require credentials must support all Xbox users and offer to link that account with the user's Microsoft account. Outside of Xbox consoles, titles can choose to allow account linking to support their game experience.
+
+If publisher account sign in is enabled within the title, the following rules apply:
+
+## Publisher Account Sign In
+
+- **Accommodate All Users**
+  If a publisher account sign in is required for game features (single player, multiplayer, cross network gameplay, leader boards), sign in and sign up must support all user types, ages, and regions where the game title is offered and where those features are allowed by local/regional laws irrespective of age rating.
+  - A game publisher may choose not to support a particular region, age, etc. for their publisher account. If a region, age group, or other group of players cannot create or sign into an account the title cannot require those users to sign in with an account for game features.
+  - If a particular account setting is not supported in a title-based sign-up experience (e.g., age or region) the title must gracefully handle by providing messaging to sign up on an external site or mobile optimized experience where that user is supported.
+- **Gain Consent and Provide Terms for Account Information Usage**
+  Titles must request to use and gain consent to use information from the player's Microsoft account to auto populate sign up/account creation experiences. Users must be provided with all applicable terms of use, privacy and other policies within the title (or a notice with a link to such information) during a publisher account creation process.
+- **Disclose Requirements**
+  If a publisher account is required for gameplay or additional features, it must be disclosed in the title's product description and any physical packaging including any restrictions such as age. In title, the game must define the reason and use of the publisher account. If a publisher account limits or restricts the experience for child accounts, it is suggested to add this text to the store details page for buyer awareness:
+  > _Certain features of the game, including online multiplayer, communication and other online features, may not be accessible by Xbox child accounts. At Xbox, a child means players under the age of 13, unless local laws specify differently._
+
+## Publisher Account / Microsoft Account Linking
+
+- **Authentication using the Xbox Secure Token Service (XSTS)**
+  XSTS tokens must be used to provide identity information for authentication when linking the user's publisher account to the user's Microsoft account.
+- **Gain Consent and Provide Choice**
+  Users must be notified of the account linking of the user's publisher account to the user's Microsoft account. The user must be given the choice to opt-out if linking their accounts. Users must have the ability to de-link accounts.
+- **Accommodate All Users**
+  If a publisher account sign in is required for game features, sign in and sign up must support all user types, ages, and regions where the game title is offered and where those features are allowed by local/regional laws irrespective of age rating.
+
+<Note>
+  Publishers may implement additional fraud prevention mechanisms such as two-factor authentication interrupts when a linked account signs in from a new device for the first time. This behavior is not a violation of this XR.
+</Note>
+
+## More Information
+
+**Account authentication.** Titles performing account linking or account creation on the console must follow secure authentication procedures. Authentication can happen within the title or a partner website, or it can happen independently using a token to link authenticated accounts.
+
+**Accommodate all users.** Titles must accommodate account linking for all users if a linked account is required for gameplay. Publishers are responsible for ensuring the link to their service is handled in a manner that is compliant with the Children's Online Privacy Protection Act (COPPA) for titles shipping in the US.
+
+**Unlinking.** Users must have the ability to unlink publisher or service accounts from their Microsoft account. Linked Account Management is permitted in title, on the web, or in a third-party experience.
+
+**Single sign-on.** Titles must implement single sign-on with any device after an account link has been made for a user.
+
+**Intent.** Ensure that users have a consistent and safe experience when linking their Microsoft account to a publisher or service account.
+
+## Implementation Guidance and Best Practices
+
+### Account linking fundamentals
+
+Account linking refers to establishing a relationship between a user's Microsoft account and their account on another service. With account linking, data is shared between the two accounts. Although the value and purpose of the linked account will vary greatly from title to title, account linking typically enables account holders to use Xbox consoles to access services offered by the linked account.
+
+### Potential risks associated with account linking
+
+The convenience of account linking comes with risks. Not taking proper precautions when creating and linking accounts can lead to abuse, fraud, privacy violations, and other harmful risks to user safety.
+
+#### Fraud
+
+Fraud typically involves an attacker finding a way to link a victim's account to one that the attacker owns. After the accounts are linked, the attacker can gain access to services or information available in the victim's account, such as a credit card number or other personally identifiable information (PII).
+
+<Warning>
+  Allowing account linking based only on a user entering their Gamertag on a publisher website — without any account authentication — makes it possible for attackers to link to _any_ Gamertag and gain access to that user's paid service or PII.
+</Warning>
+
+The best way to mitigate the potential for fraud is to require that both accounts be authenticated before completing the account linking.
+
+#### Violation of privacy
+
+Title publishers that manage users' PII poorly, or that collect and share data from a linked account without user consent, can be subject to significant fines from the Federal Trade Commission (FTC) and major public-relations consequences.
+
+Account-linking practices that pose privacy risks include:
+
+- Collecting and sharing PII from a linked account without user consent.
+- Gathering data from a user's account to create PII (such as time or location data).
+- Sharing a user's protected data (such as height, weight, age, or gender) without proper consent.
+
+If your title collects or displays PII, discuss setting up a review with an Xbox Privacy Manager with your Microsoft contact.
+
+#### Safety risks
+
+Poor implementation of account linking can create risks to user safety. For example, COPPA requires websites and online services to obtain parental consent before gathering any data from a user who is under age 13 in the United States. If linking violates COPPA and the data is not kept secure, the child's personal safety could be at risk.
+
+### Requirements for account linking
+
+All Xbox console titles that enable account linking must meet this XR. The requirement covers four main points: account authentication, account age, unlinking, and single sign-on.
+
+#### Account-link authentication
+
+Titles must authenticate both the Microsoft account and the publisher account being linked before establishing an account link, and must follow secure authentication procedures.
+
+#### Accommodate account linking for all users if a linked account is required for gameplay
+
+Titles must accommodate account linking for all users if a linked account is required for gameplay. Publishers are responsible for ensuring that the link to their service is handled in a manner that is COPPA-compliant for titles shipping in the United States.
+
+#### Validate the user's age prior to creating accounts
+
+Before offering account creation features, titles must validate the user's age.
+
+<Tip>
+  Titles must check a user's age group by calling the `XUserGetAgeGroup` function, which does not require an exception to use.
+</Tip>
+
+At Microsoft, a child account is any Microsoft account that's affiliated with an adult Microsoft account when the age of the child or teen is less than the age of majority for their country or region. The Xbox console breaks the definition of _child_ into two categories: Child and Teen. The actual ages that apply depend upon the country or region indicated in the child account.
+
+| Member | Value | Description |
+| --- | --- | --- |
+| Adult | 3 | User is an adult. |
+| Teen | 2 | User is a teen. |
+| Child | 1 | User is a child. |
+| Unknown | 0 | User age is unknown. |
+
+#### Unlinking
+
+Users must have the ability to unlink publisher or service accounts from their Microsoft account. Titles can handle the unlinking process within the title, within a web experience, or within a hub app. There is no explicit requirement to facilitate unlinking within the title — only that players have _a_ method to unlink.
+
+#### Single sign-on experience
+
+Titles must implement single sign-on after an account link has been made. Single sign-on means that the title automatically signs the user in to their linked account when using the title. To keep sensitive or private information from being stored locally on the console, titles should use the Xbox Secure Token Service (XSTS) to facilitate single sign-on.
+
+## Do's and Don'ts
+
+### Authentication
+
+**Do**
+
+- Link accounts by using the user's Partner XUID (PXUID) instead of their Gamertag. Users can change Gamertags, but their PXUID remains the same.
+- Validate ownership of the Gamertag to link accounts — create a relationship between the user's PXUID and the publisher's internal ID number.
+- Give users the option to read the publisher or service's Terms of Use (TOU) and Privacy Statement while the account linking is taking place and the account-linking screens are displayed.
+
+**Don't**
+
+- Use a user's Xbox User ID (XUID) for account linking. XUID is considered PII and should not be stored for account-linking purposes. The Pairwise ID should be used instead.
+- Allow the user to log in to the publisher account site using an authentication mechanism that is based on the user's Gamertag. With that kind of mechanism, it would be possible for a user to log in using someone else's Gamertag and link their own publisher account with someone else's Microsoft account.
+
+<Note>
+  The user's XUID might be needed for making service-to-service calls between a publisher's server and Xbox services. For these scenarios the XUID can be temporarily stored while it is needed. Reach out to your Microsoft contacts if you are using service-to-service calls.
+</Note>
+
+### Account linking for child and teen accounts
+
+**For child accounts:**
+
+- Require parental consent before creating an account for a user who is classified as a Child in their country or region.
+- Provide explicit notice about the content ratings for the title, website, or service, and complete information about the capability of the title or site to integrate with social media.
+
+_Parental consent_, which includes explicit acceptance of the publisher's TOU and Privacy Statement, must be provided on the publisher's website, **not** on Xbox network.
+
+<Note>
+  Publishers are responsible for complying with all laws and regulations applicable to child accounts in all countries and regions in which their products and services are sold and made available.
+</Note>
+
+**For teen accounts:**
+
+- Provide teen customers who create a linked account with complete information about the title or site's capabilities for integrating with social media.
+- Ask teens to notify their parents about having created the account. We recommend requiring teens to accept the TOU and Privacy Statement on the publisher's website, not through the title.
+
+### User age
+
+**Do**
+
+- Enforce all applicable legal and regulatory requirements regarding child online privacy and safety (for example, [COPPA](https://www.ftc.gov/business-guidance/resources/complying-coppa-frequently-asked-questions) in the United States).
+- Block younger users from creating accounts on websites or services that are clearly aimed at mature or adult audiences.
+- Separate by title rating any content accessible through publisher-managed accounts.
+- Use the **lower** of the two user ages if the age on the user's Microsoft account differs from the age on their publisher account.
+- If the publisher's site gathers a user's age when setting up an account, and the user's age is under 13, the site should:
+  - Inform the user that they do not meet the site's age requirements.
+  - Drop a session cookie so that the user cannot refresh the page and provide a different age.
+  - Destroy any PII already gathered for the user.
+
+### Unlinking
+
+**Do**
+
+- Give users the ability to break the association between their PXUID and the account ID on the publisher site.
+- Inform users about how their PII or Gamertag can be associated with the social service, provide options for how their information will be used, and require explicit user action to associate and/or display the user's Gamertag on the site.
+- Give users the ability to disassociate their PXUID and their publisher ID from both the console and the publisher's web portal.
+- Provide users with full control of their account linking either through the title, website, or dedicated hub app — including parental consent (if applicable), linking and unlinking, single sign-on, and review of the applicable TOU and policies.
+
+### Single sign-on
+
+**Do**
+
+- Ask users for their log-in information when they launch the application for the first time on the console. Do not silently reuse a linked publisher account credential from one application to sign into another.
+
+**Don't**
+
+- Store any PII on the console.
+
+## References
+
+- Xbox services security token claims
+- Xbox services authentication for title services
+- `XUserGetAgeGroup` and `XUserAgeGroup` enum
+- [Children's Online Privacy Protection Act (COPPA)](https://www.ftc.gov/news-events/topics/protecting-consumer-privacy-security/kids-privacy-coppa)
+
+## Certification Test Cases
+
+### 013-01 Linking Microsoft Accounts with Publisher Accounts
+
+**Test Steps**
+
+1. Verify the title supports or requires non-Xbox accounts or login for services or functionality.
+2. Using a newly created Xbox profile, use the publisher provided service account or login to enter non-Xbox account credentials during initial setup.
+3. Verify the title allows the user to view the terms of use in the app or informs the user how to view the terms of use, prior to completing the account linking process.
+4. Verify that the user is not prompted to re-enter their non-Xbox account credentials in any location.
+5. Sign out and sign back in while the title is running.
+6. Repeat Step 4.
+7. Terminate and reactivate the title using the same profile.
+8. Repeat Step 4.
+9. Terminate the title.
+10. Verify that the title does not store non-Xbox account credentials locally by deleting any saved files that may have been created by the title.
+11. Reactivate the title and repeat Step 4.
+12. On a different console, launch the title using the same profile and repeat Step 4.
+13. Verify the user can unlink their Xbox profile from the non-Xbox account.
+14. Repeat steps 1–13 with an Xbox child account (under the age of 13) that falls within the game's age rating.
+
+**Expected Result**
+
+Titles must allow publisher accounts to be created for all users who fall within the game's age rating. The user should only have to provide their credentials once and be allowed to view the terms of use, or be informed how to view the terms of use, prior to completing the account linking process. Users are provided with a mechanism to unlink their Xbox profile from their non-Xbox account.
+
+**Pass Examples**
+
+1. The title never asks the user to re-enter their non-Xbox account or login credentials at any point after they have initially entered them and the title provides a notification of the terms of use both during the linking process and for as long as the accounts are linked.
+2. The title allows publisher accounts to be created for all users who fall within the game's age rating.
+
+**Fail Examples**
+
+1. The title requires the user to enter their non-Xbox account or login credentials every time the title is launched.
+2. The title requires the user to enter their non-Xbox account or login credentials when running the title from another console.
+3. The title does not provide a method for viewing the terms of use during the account linking process.
+4. The title does not provide a method for unlinking their Xbox profile from their non-Xbox account.
+5. The title does not allow publisher accounts to be created for all users who fall within the game's age rating.

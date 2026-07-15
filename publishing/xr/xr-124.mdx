@@ -1,0 +1,67 @@
+---
+title: "XR-124 Game Invitations"
+sidebarTitle: "XR-124 Game Invitations"
+description: "Games that support joinable multiplayer experiences must allow players to send game invitations from within the game using the Xbox network platform, including in cross-network scenarios."
+icon: "envelope-open-text"
+keywords: ["XR-124", "invites", "game invitations", "multiplayer", "MPSD", "cross-network", "suspended state", "constrained state"]
+---
+
+**XR-124 is tested in Certification.** Games that support joinable multiplayer experiences must allow players to send game invitations using the Xbox network platform from within the game to other Xbox network users, including scenarios where cross-network players are present.
+
+For implementation details, see the [Invites overview](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/live/features/multiplayer/invites/live-multiplayer-invites-overview).
+
+## Requirement
+
+- Titles that support joinable multiplayer must expose an in-game invite flow.
+- Invites must use the Xbox network platform.
+- A title may restrict who can send invites (for example, team captain only) as long as some in-game path to invite exists.
+- Cross-network multiplayer sessions must still allow invitations to Xbox network users.
+- Confirmation-of-destructive-action prompts are not required for accepting invites, since the platform initiates the join.
+
+## Test cases
+
+### 124-01 Game Invitations
+
+**Setup:**
+
+- Two Xbox profiles on separate devices, added as Xbox friends.
+
+On retail consoles, a game is suspended when the console enters Connected Standby (Instant-on off) or the game is out of focus for ten minutes. Both suspension paths should be verified at step 5.
+
+**Steps:**
+
+1. Sign users A and B into their respective devices.
+2. Both users launch the title.
+3. User A creates a game session and locates the in-game invite option.
+4. User A sends a game invite to user B.
+5. User B accepts an invite from each of the following states, to join user A’s session:
+   - Anywhere from initial boot to the initial interactive state
+   - Main menu (if featured)
+   - Single-player gameplay (if featured)
+   - Multiplayer gameplay (if featured)
+   - Suspended on the main menu
+   - Suspended during single-player gameplay
+   - Constrained on the main menu
+   - Constrained during any gameplay
+6. Confirm both profiles are placed into the same game experience together after each invite.
+
+**Pass:**
+
+- An in-game option lets players send invitations for joinable sessions.
+- No confirmation-of-destructive-action prompt is required when accepting an invite in-game.
+- If required DLC isn’t installed, the invite completes but the join is clearly messaged as blocked pending DLC.
+- Only the host can send invitations if the host role is clearly identified.
+
+**Fail:**
+
+- No in-game invitation flow exists for joinable sessions.
+- The title provides multiplayer sessions on Xbox but no mode supports game invitations.
+- Accepting an invite doesn’t place the player into the correct session.
+- Missing DLC blocks the invite without any messaging to the player.
+
+## Related
+
+- [XR-064 Joinable Game Sessions and Online Play](/publishing/xr/xr-064)
+- [XR-067 Maintaining Multiplayer Session State](/publishing/xr/xr-067)
+- [XR-115 Addition and Removal of Users or Controllers During Gameplay](/publishing/xr/xr-115)
+- [XR-045 Xbox network and Account Privileges](/publishing/xr/xr-045)

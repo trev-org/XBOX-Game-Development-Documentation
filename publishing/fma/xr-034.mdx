@@ -1,37 +1,36 @@
 ---
 title: "FMA: XR-034 Streaming Install Initial Play Marker"
 sidebarTitle: "FMA XR-034"
-description: "How to fix XR-034 Streaming Install failures: title not playable at initial play marker, missing chunk dependencies, wrong install size claim."
+description: "FMA scenario severities for XR-034 Streaming Install Initial Play Marker."
 icon: "download"
-keywords: ["FMA XR-034", "streaming install", "initial play marker", "chunk manifest"]
+keywords: ["FMA XR-034", "streaming install", "initial play marker", "launch chunk", "interactive gameplay"]
 ---
 
-See also [XR-037 reference](/publishing/xr/xr-037). This page is fix-oriented for streaming install initial-play failures.
+# XR-034: Streaming Install Initial Play Marker
 
-## Common FMA text patterns
+## FMA scenario severities
 
-- **"Title crashed at initial play marker; required additional chunk"** — title referenced content not in the initial chunks.
-- **"Initial play marker declared too small"** — the title's actual runnable-state requires more than declared.
-- **"Title hung at loading screen with initial-play install"** — waiting on content not yet installed.
-- **"Advertised install size does not match streaming layout"** — chunk manifest incorrect.
+See the [XR-034 reference](/publishing/xr/xr-034) for the underlying certification requirement.
 
-## Common root causes
+### 034-01 Streaming Installation
 
-| Symptom | Root cause | Fix |
+| Scenario | Severity | Platform |
 | --- | --- | --- |
-| Crash at initial play | Initial chunks don't contain everything needed to reach a playable state | Move required assets into chunk 0; adjust manifest |
-| Hang at loading | Sync wait on a not-yet-installed chunk | Check chunk availability before referencing content |
-| Wrong install size | Manifest doesn't match actual layout | Regenerate manifest from the packaging tool |
+| The title doesn't provide an interactive gameplay experience upon reaching the initial play marker on an Xbox profile with existing title related save data. | Not Relevant (-4) | Xbox One, Xbox Series |
+| The title displays an inaccurate loading bar during streaming installation. | Very Minor (1) | Xbox One, Xbox Series |
+| Various game modes are unavailable during installation without informative messaging. | Minor (2) | Xbox One, Xbox Series |
+| The title exhibits functionality issues when entering noninstalled areas during streaming installation. | Minor (2) | Xbox One, Xbox Series |
+| The title fails to properly render environments and textures when the user progresses through gameplay during streaming installation. | Moderate (6) | Xbox One, Xbox Series |
+| During streaming installation, the user reaches a point in the game that prevents progress as data isn't yet available. After streaming installation is complete, in order to continue, the user must lose up to a moderate amount of progress without terminating the title. | Moderate (6) | Xbox One, Xbox Series |
+| The title doesn't provide an interactive gameplay experience upon reaching the initial play marker. | Critical (12) | Xbox One, Xbox Series |
+| The title doesn't launch upon reaching the initial play marker. | Critical (12) | Xbox One, Xbox Series |
+| During streaming installation, the user reaches a point in the game that prevents progress as data isn't yet available. After streaming installation is complete, in order to continue gameplay or access those menu options, the user must terminate the title or lose a significant amount of gameplay progress, regardless of messaging. | Critical (12) | Xbox One, Xbox Series |
+| No current scenario. | Catastrophic (22) | Xbox One, Xbox Series |
 
-## Fixing
+**Notes**
 
-- Audit the **initial play marker** — what's the customer-visible playable state? Everything to reach it must be in chunk 0.
-- Add **runtime chunk-availability checks** before referencing content in later chunks.
-- **Regenerate the chunk manifest** with your packaging tool and verify against runtime consumption.
-
-## Related
-
-- [XR-037 reference](/publishing/xr/xr-037)
-- [XR-129](/publishing/xr/xr-129)
-- [Packages](/publishing/packages)
-- [Package management](/publishing/how-to-package-management)
+- Log stability issues and similar problems under their own XR.
+- Titles that include an initial launch chunk must include an interactive gameplay experience. This requirement includes, but isn't limited to, engaging in a tutorial, playing the first level, entering and progressing through general active gameplay, and similar experiences. Titles released before August 2020 are exempt from this requirement, and might include videos, loading bars, and generally launching to the main menu as the main launch experience.
+- Titles aren't required to implement an initial play marker, regardless of size. If a title chooses to include an initial launch chunk, it must be fully functional in accordance with current XR standards.
+- When a user installs a CU at the same time as the game disc, the launch chunk might appear bigger. This appearance isn't an issue.
+- The suggested probability is 4. Use a lower value for areas of the title where the opportunity for the issue to occur lessens.

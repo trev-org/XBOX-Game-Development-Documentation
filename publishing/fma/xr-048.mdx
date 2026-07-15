@@ -1,28 +1,29 @@
 ---
 title: "FMA: XR-048 Profile Settings Usage"
 sidebarTitle: "FMA XR-048"
-description: "How to fix XR-048 Profile Settings failures: preferred language not honored, region mismatch, content filter bypassed on child accounts."
+description: "FMA scenario severities for XR-048 Profile Settings Usage."
 icon: "gear"
-keywords: ["FMA XR-048", "profile settings", "preferred language", "content filter", "region"]
+keywords: ["FMA XR-048", "profile settings", "controller layout", "closed captions", "system settings"]
 ---
 
-[XR-048 reference](/publishing/xr/xr-048) is the reference. This page is fix-oriented.
+# XR-048: Profile Settings Usage
 
-## Common FMA text patterns
+## FMA scenario severities
 
-- **"Title defaulted to English despite account preferred language"** — profile language ignored.
-- **"Mature content shown to child account with strict filter"** — content filter bypassed.
-- **"Pricing shown in dev region despite account region"** — region ignored.
+See the [XR-048 reference](/publishing/xr/xr-048) for the underlying certification requirement.
 
-## Fixing
+### 048-01 Profile Settings Usage
 
-- Load **preferred language** at title start; use it as the default unless the customer overrides.
-- Query **content filters** at content-gate time.
-- Use **account region** for market-specific behavior, not the console region.
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| The title's suggested implementation of settings would break/disable functionality of the title's own settings (for example, using a system controller mapping that disables an in-title mapping). | Not Relevant (-4) | Xbox One, Xbox Series |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| The title doesn't use the user's profile settings for closed captions or subtitles. | Moderate (6) | Xbox One, Xbox Series |
+| The title doesn't automatically implement the user's profile settings for controller layouts and requires the user to manually make the changes within an in-title menu. | Moderate (6) | Xbox One, Xbox Series |
+| No current scenario. | Critical (12) |  |
+| No current scenario. | Catastrophic (22) |  |
 
-## Related
+**Notes**
 
-- [XR-048 reference](/publishing/xr/xr-048)
-- [Supported languages](/publishing/supported-languages)
-- [XR-045](/publishing/xr/xr-045)
-- [XR-047](/publishing/xr/xr-047)
+- No current FMA Notes to consider.

@@ -1,0 +1,38 @@
+---
+title: "XR-034 Streaming Install Initial Play Marker"
+sidebarTitle: "XR-034 Initial Play Marker"
+description: "Titles that declare an initial play marker for Streaming Install must provide a playable gameplay experience when launched at that marker — not a progress bar, video, or main menu."
+icon: "flag-checkered"
+keywords: ["XR-034", "streaming install", "initial play marker", "intelligent delivery", "first playable", "launch chunk"]
+---
+
+**XR-034 is tested in Certification.** Titles that include an initial play marker must provide a **gameplay experience** when launched from the initial play marker.
+
+For implementation details, see the [Streaming Install and Intelligent Delivery overview](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/packaging/overviews/streaming_install-intelligent_delivery).
+
+## Requirement
+
+When a user launches your title after only the initial play marker chunk has installed, the title must deliver an interactive gameplay experience — for example, a tutorial, the first level, or a quick multiplayer match in one mode. Non-interactive experiences (progress bars, video loops, image sequences, or the main menu alone) do not satisfy this XR.
+
+## Test cases
+
+### 034-01 Streaming Installation
+
+1. Sign in to an Xbox profile.
+2. Install the title and launch it as soon as the initial play marker is installed — but before the full package has finished.
+3. Attempt to enter every area of the title.
+
+**Pass:** The title provides interactive gameplay (tutorial, first level, quick multiplayer match) at the initial play marker.
+
+**Fail examples:**
+
+- Only a progress bar is shown.
+- Videos or image sequences play with no interactivity.
+- Only the main menu is accessible.
+- Any other non-interactive experience.
+
+## Related
+
+- [XR-129 Intelligent Delivery Content Management](/publishing/xr/xr-129)
+- [XR-123 Installation / Unlock of Game Add-Ons or Consumables During Gameplay](/publishing/xr/xr-123)
+- [Packages](/publishing/packages)

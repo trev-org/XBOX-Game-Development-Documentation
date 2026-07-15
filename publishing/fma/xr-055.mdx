@@ -1,41 +1,39 @@
 ---
 title: "FMA: XR-055 Achievements"
 sidebarTitle: "FMA XR-055"
-description: "How to fix XR-055 Achievement failures: unlocks not firing, wrong achievement fired, unlock but no service write, secret achievement leaked."
+description: "FMA scenario severities for XR-055 Achievements."
 icon: "trophy"
-keywords: ["FMA XR-055", "achievement unlock", "achievement fail", "secret achievement", "gamerscore write"]
+keywords: ["FMA XR-055", "achievement", "gamerscore", "achievement art", "unlock", "system UI"]
 ---
 
-For the achievement authoring guidance see [DP 2013 achievements](/publishing/dp2013-achievements). For the earnability policy see [XR-057](/publishing/xr/xr-057).
+# XR-055: Achievements
 
-## Common FMA text patterns
+## FMA scenario severities
 
-- **"Achievement did not unlock on trigger event"** — unlock condition or write path broken.
-- **"Toast fired but service write did not succeed"** — client-side visual unlock without server persistence.
-- **"Wrong achievement unlocked for the trigger"** — ID mismatch.
-- **"Secret achievement description shown as locked text"** — secret flag not honored.
-- **"Achievement earnable more than once"** — no idempotency on the write.
+See the [XR-055 reference](/publishing/xr/xr-055) for the underlying certification requirement.
 
-## Common root causes
+### 055-01 Achievements
 
-| Symptom | Root cause | Fix |
+| Scenario | Severity | Platform |
 | --- | --- | --- |
-| No unlock | Trigger not wired to write path | Verify the achievement write API is called on trigger |
-| Toast without write | Client optimistic UI \+ failed service call | Fire toast only after write success (or fire on trigger \+ retry write) |
-| Wrong ID | Achievement ID drift between build and services schema | Regenerate IDs from Partner Center; verify build matches sandbox |
-| Secret leak | Secret flag not set in services schema | Set the secret flag in Partner Center; regenerate manifest |
-| Duplicate | Not idempotent | Achievement writes are idempotent by design; check the correct API used |
+| The title doesn't award an achievement using the appropriate Xbox network service, but instead uses a system toast to inform the user. | Not Relevant (-4) | Xbox One, Xbox Series, Windows |
+| The title erroneously awards an achievement using the appropriate Xbox network service and the retail Xbox network user profile isn't updated as such. | Not Relevant (-4) | Xbox One, Xbox Series, Windows |
+| A very minor visual/UI issue exists with an achievement (for example, achievement description or artwork is slightly cut off). | Very Minor (1) | Xbox One, Xbox Series, Windows |
+| A minor visual/UI issue exists with an achievement (for example, achievement description or artwork is partially cut off but is still readable/recognizable). | Minor (2) | Xbox One, Xbox Series, Windows |
+| An achievement unlocks and is properly reflected on the retail Xbox network user profile, however the title fails to display the corresponding system-generated toast notification. | Minor (2) | Xbox One, Xbox Series, Windows |
+| An achievement's title, description, or unlock criteria contains a typo or grammatical error. | Minor (2) | Xbox One, Xbox Series, Windows |
+| A moderate visual/UI issue exists with an achievement (for example, achievement description or artwork is mostly cut off and is difficult to read/recognize). | Moderate (6) | Xbox One, Xbox Series, Windows |
+| An achievement description doesn't accurately describe the unlock criteria for the achievement. | Moderate (6) | Xbox One, Xbox Series, Windows |
+| An achievement is inconsistently awarded when the correct criteria are met (for example, the achievement unlocks intermittently for the same completed task). | Moderate (6) | Xbox One, Xbox Series, Windows |
+| A critical visual/UI issue exists with an achievement (for example, the achievement's artwork is missing or is a placeholder). | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title awards an achievement for actions or criteria not intended by the achievement's description. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title fails to award an achievement when the appropriate criteria are met. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title awards an achievement, but the associated gamerscore isn't updated on the retail Xbox network user profile. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title awards more gamerscore than defined in the achievement's configuration. | Catastrophic (22) | Xbox One, Xbox Series, Windows |
+| The title awards achievements or gamerscore that aren't defined in the title's achievement configuration. | Catastrophic (22) | Xbox One, Xbox Series, Windows |
 
-## Fixing
+**Notes**
 
-- Wire every achievement's **trigger event to the write API** with logging.
-- **Verify service write success** before showing a persistent unlock UI.
-- Confirm the **services schema is published** to the target sandbox.
-- Test both **first unlock** and **already-unlocked** paths.
-
-## Related
-
-- [XR-057](/publishing/xr/xr-057)
-- [XR-062](/publishing/xr/xr-062)
-- [DP 2013 achievements](/publishing/dp2013-achievements)
-- [Sandboxes](/publishing/sandboxes)
+- Achievement art must be provided at the correct resolution and adhere to any relevant metadata standards.
+- Modifications to achievement configuration must be submitted and approved through Partner Center.
+- Any changes to achievements after release (unlock criteria, description, art) must be documented and approved.

@@ -1,0 +1,72 @@
+---
+title: "FMA: XR-015 Managing Player Communication"
+sidebarTitle: "FMA XR-015"
+description: "FMA scenario severities for XR-015 Managing Player Communication — User Communication, Muting Support, and Blocked Users."
+icon: "comments"
+keywords: ["FMA XR-015", "communication privilege", "muting", "blocked users", "voice chat", "text chat"]
+---
+
+# XR-015: Managing Player Communication
+
+## FMA scenario severities
+
+See the [XR-015 reference](/publishing/xr/xr-015) for the underlying certification requirement.
+
+### 015-01 User Communication
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| The title displays an incorrect error message but functionality works as expected. | Minor (2) | Xbox One, Xbox Series, Windows |
+| The title blocks access to modes when the user has the 'Communicate with voice, text or invites' privilege set to 'Block' and doesn't display an informative error message. | Moderate (6) | Xbox One, Xbox Series, Windows |
+| The title blocks access to modes when the user has the 'Communicate with voice, text or invites' privilege set to Block. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title allows users to receive a text chat message when the voice and chat communications privilege are set to blocked. (Pre-set messages included in the title are exempt.) | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title displays an incorrect error message coupled with incorrect functionality. | Critical (12) | Xbox One, Xbox Series, Windows |
+| Allowing or blocking a specific method of communication doesn't correctly allow or block the use of that method. | Critical (12) | Xbox One, Xbox Series, Windows |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- In-title friend requests/clan invites don't count as communication and aren't required to be blocked by the privilege.
+
+### 015-02 Muting Support
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| The title unmutes an Xbox network user that was muted after proceeding into active gameplay. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title doesn't mute voice communication from a muted Xbox network user. | Critical (12) | Xbox One, Xbox Series, Windows |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- Applies only to users within the Xbox network.
+- The title doesn't need to offer an in-game method of muting a user. This XR is to test the system implementation (Friends list/gamercard/Gamebar). If the in-title mute button doesn't function, this is logged under XR-003 Title Integrity and doesn't fall under the scope of this test case.
+- Muting or unmuting a user might not be instantaneous. Muting or unmuting a user might take up to 4 hours to come into effect. If communications relating to a muted user don't behave as expected, ensure that at least 4 hours have passed and that the title has been restarted.
+- Permissions checks are generally performed upon entering a lobby, so muting while in a lobby isn't expected to have any immediate effect, regardless of waiting 4 hours.
+- Suggested probability of 4. Increase or decrease where it's felt appropriate to do so (for example, depending on game area/mode).
+
+### 015-03 Blocked Users
+
+| Scenario | Severity | Platform |
+| --- | --- | --- |
+| No current scenario. | Not Relevant (-4) |  |
+| No current scenario. | Very Minor (1) |  |
+| No current scenario. | Minor (2) |  |
+| No current scenario. | Moderate (6) |  |
+| The title allows a user to receive voice and/or text communication from an Xbox network user that has been blocked. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title continues to block communication between two Xbox network profiles after a communications block has been removed. | Critical (12) | Xbox One, Xbox Series, Windows |
+| The title allows a user to receive game invitations from a user who has been blocked. | Critical (12) | Xbox One, Xbox Series, Windows |
+| No current scenario. | Catastrophic (22) |  |
+
+**Notes**
+
+- Applies only to users within the Xbox network.
+- The title doesn't need to offer an in-game method of blocking a user. This XR is to test the system implementation (Friends list/gamercard/Gamebar). If the in-title block button doesn't function, this is logged under XR-003 Title Integrity and doesn't fall under the scope of this test case.
+- Blocking or unblocking a user might not be instantaneous. Blocking or unblocking a user might take up to 4 hours to come into effect. If communications relating to a blocked user don't behave as expected, ensure that at least 4 hours have passed and that the title has been restarted.
+- Permissions checks are generally performed upon entering a lobby, so blocking while in a lobby isn't expected to have any immediate effect, regardless of waiting 4 hours.
+- Suggested probability of 4. Increase or decrease where it's felt appropriate to do so (for example, depending on game area/mode).
