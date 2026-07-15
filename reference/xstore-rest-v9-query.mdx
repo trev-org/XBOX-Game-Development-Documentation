@@ -118,6 +118,13 @@ POST https://collections.mp.microsoft.com/v9.0/collections/publisherQuery
 | 404 | `ProductNotFound` | Product not associated with your publisher |
 | 429 | `TooManyRequests` | Back off ([FGRL](/publishing/xstore-fgrl)) |
 
+## Related conceptual documentation
+
+- [Query user entitlements from your services](/publishing/xstore-query-entitlements) — end-to-end pattern for server-side ownership checks.
+- [Detecting Xbox Game Pass](/publishing/xstore-detecting-game-pass) — using `publisherQuery` to check for Game Pass entitlement.
+- [Authenticating your service](/publishing/xstore-authenticating-service) — AAD token and User Store ID acquisition.
+- [Fine-grained rate limiting (FGRL)](/publishing/xstore-fgrl) — required backoff behavior.
+
 ## Related
 
 - [Query user entitlements from your services](/publishing/xstore-query-entitlements)

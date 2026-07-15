@@ -70,6 +70,16 @@ See [Fine-grained rate limiting](/publishing/xstore-fgrl) for the full pattern.
 | `429 TooManyRequests` | Rate limited | Honor `Retry-After` |
 | `5xx` | Transient service error | Retry with exponential backoff |
 
+## Related conceptual documentation
+
+- [XStore commerce overview](/publishing/xstore-commerce-overview) — how Partner Center, XStore, and the S2S REST APIs fit together.
+- [Authenticating your service to the Microsoft Store](/publishing/xstore-authenticating-service) — AAD app registration, client-credentials flow, and User Store ID.
+- [Query user entitlements from your services](/publishing/xstore-query-entitlements) — server-side ownership checks.
+- [Managing consumables from your service](/publishing/xstore-managing-consumables) — authoritative consume flow.
+- [Managing refunds and chargebacks (clawback)](/publishing/xstore-managing-refunds) — reconciling refunds against granted rewards.
+- [Managing subscription products from your service](/publishing/xstore-managing-subscriptions) — recurrence state and cancellation.
+- [Fine-grained rate limiting (FGRL)](/publishing/xstore-fgrl) — required backoff pattern for all Store REST calls.
+
 ## Related
 
 - [XStore commerce overview](/publishing/xstore-commerce-overview)
