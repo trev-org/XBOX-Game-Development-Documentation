@@ -600,11 +600,53 @@
             "group": "Tools",
             "pages": [
               {
-                "group": "Overview & Visual Studio",
-                "icon": "toolbox",
+                "group": "Visual Studio",
+                "icon": "code",
                 "pages": [
                   "tools/overview",
-                  "tools/visual-studio"
+                  "tools/visual-studio",
+                  "tools/vs-version-support",
+                  {
+                    "group": "VS tool windows",
+                    "icon": "window-restore",
+                    "pages": [
+                      "tools/xbox-gaming-explorer",
+                      "tools/xbox-system-monitor",
+                      "tools/xbox-game-view"
+                    ]
+                  },
+                  {
+                    "group": "VS project & properties",
+                    "icon": "sliders",
+                    "pages": [
+                      "tools/vs-project-templates",
+                      "tools/vs-property-pages",
+                      "tools/xbox-gaming-project-control"
+                    ]
+                  },
+                  {
+                    "group": "Compiler & toolchain",
+                    "icon": "microchip",
+                    "pages": [
+                      "tools/compiler-technology",
+                      "tools/address-sanitizer",
+                      "tools/table-of-intrinsics",
+                      "tools/preprocessor-definitions",
+                      "tools/compiler-switch-recommendations",
+                      "tools/vs-clang"
+                    ]
+                  },
+                  {
+                    "group": "VS debugging & deployment",
+                    "icon": "bug",
+                    "pages": [
+                      "tools/vs-debugging",
+                      "tools/vs-debugging-remote-windows",
+                      "tools/vs-cross-gen",
+                      "tools/deploy-resources",
+                      "tools/multiple-build-configurations"
+                    ]
+                  }
                 ]
               },
               {
@@ -614,38 +656,131 @@
                   "tools/pc-tools",
                   "tools/wdapp",
                   "tools/launching-on-pc",
-                  "tools/pc-remote-tools"
+                  "tools/pix-for-windows",
+                  "tools/pc-remote-tools",
+                  {
+                    "group": "PC command-line tools",
+                    "icon": "terminal",
+                    "pages": [
+                      "tools/wdcapture",
+                      "tools/xgamesaveutil"
+                    ]
+                  }
                 ]
               },
               {
                 "group": "XBOX Service Tools",
                 "icon": "screwdriver-wrench",
-                "pages": []
+                "pages": [
+                  "tools/pc-sandbox-switcher",
+                  "tools/player-data-reset",
+                  "tools/test-account-tool",
+                  "tools/trace-analyzer",
+                  "tools/xbox-service-tools",
+                  "tools/config-as-source",
+                  "tools/connected-storage",
+                  "tools/global-storage",
+                  "tools/mp-session-history-viewer",
+                  "tools/dev-account-tool",
+                  "tools/xbox-common-events",
+                  "tools/dev-entitlement",
+                  "tools/fiddler-web-calls"
+                ]
               },
               {
                 "group": "Console Tools",
                 "icon": "sitemap",
-                "pages": []
+                "pages": [
+                  "tools/xbox-manager",
+                  "tools/device-portal",
+                  "tools/dev-home",
+                  "tools/devkit-agent",
+                  {
+                    "group": "Console command-line tools",
+                    "icon": "terminal",
+                    "pages": [
+                      "tools/console-command-line-tools",
+                      "tools/xb-tools-reference",
+                      "tools/console-wd-tools",
+                      "tools/xb-command-prompt"
+                    ]
+                  }
+                ]
               },
               {
-                "group": "Profiling & Debug",
+                "group": "PIX for XBOX",
                 "icon": "magnifying-glass-chart",
-                "pages": []
+                "pages": [
+                  "tools/pix-for-xbox",
+                  {
+                    "group": "PIX capture types",
+                    "icon": "folder-open",
+                    "pages": [
+                      "tools/pix-timing-captures",
+                      "tools/pix-gpu-captures",
+                      "tools/pix-gpu-trace",
+                      "tools/pix-live-view"
+                    ]
+                  },
+                  {
+                    "group": "PIX analysis",
+                    "icon": "gauge",
+                    "pages": [
+                      "tools/pix-shader-debugging",
+                      "tools/pix-bottlenecks",
+                      "tools/pix-drpix",
+                      "tools/pix-directstorage"
+                    ]
+                  },
+                  {
+                    "group": "PIX counters & API",
+                    "icon": "code",
+                    "pages": [
+                      "tools/pix-counters",
+                      "tools/pix-hw-counters",
+                      "tools/pix-api-reference"
+                    ]
+                  }
+                ]
               },
-              "tools/pix-for-windows",
-              "tools/pc-sandbox-switcher",
-              "tools/player-data-reset",
-              "tools/test-account-tool",
-              "tools/trace-analyzer",
-              "tools/xbox-service-tools",
-              "tools/pix-for-xbox",
-              "tools/xbwatson",
-              "tools/xbox-manager",
-              "tools/dev-home",
-              "tools/device-portal",
-              "tools/console-command-line-tools",
+              {
+                "group": "Optimization & debugging",
+                "icon": "chart-line",
+                "pages": [
+                  "tools/profile-guided-optimization",
+                  "tools/xbwatson",
+                  "tools/title-performance-overlay",
+                  "tools/xbox-video-server"
+                ]
+              },
               "tools/shader-compiler",
-              "tools/profile-guided-optimization"
+              {
+                "group": "Hang Investigation",
+                "icon": "bug",
+                "pages": [
+                  "tools/hix-overview",
+                  "tools/xhit"
+                ]
+              },
+              {
+                "group": "Packaging & Deployment",
+                "icon": "box",
+                "pages": [
+                  "tools/makepkg",
+                  "tools/makepri",
+                  "tools/splitpkg",
+                  "tools/packageutil",
+                  "tools/package-uploader"
+                ]
+              },
+              {
+                "group": "Additional Tools",
+                "icon": "puzzle-piece",
+                "pages": [
+                  "tools/additional-tools",
+                  "tools/middleware-providers"
+                ]
+              }
             ]
           }
         ]

@@ -1,0 +1,23 @@
+---
+title: "Make Package Resource Index (makepri.exe)"
+sidebarTitle: "Make Package Resource Index (makepri.exe)"
+description: "Generate PRI resource-index files so localized strings and images are discoverable at runtime."
+icon: "file-lines"
+---
+
+**`makepri.exe`** builds Package Resource Index (`.pri`) files. GDK titles use PRI for localized strings, images, and scale-factor assets.
+
+## Basic invocation
+
+```text
+makepri new /pr C:\Layouts\MyGame\Assets /cf priconfig.xml /of resources.pri
+```
+
+## Notes
+
+- Called automatically by `makepkg` when a project references PRI content.
+- Regenerate whenever the resource set changes.
+
+## Related
+
+- [makepkg](/tools/makepkg)

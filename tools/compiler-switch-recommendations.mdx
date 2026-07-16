@@ -1,0 +1,41 @@
+---
+title: "Compiler and linker switch recommendations for GDK"
+sidebarTitle: "Compiler switches"
+description: "Recommended MSVC and Clang compiler + linker flags for GDK Debug, Profile, and Release configurations."
+icon: "sliders"
+---
+
+Starting-point switch sets for GDK builds. Adjust per project.
+
+## Release (MSVC)
+
+```text
+/O2 /Ob3 /GL /Zc:__cplusplus /Zc:preprocessor /permissive- /guard:cf-
+```
+
+Linker:
+
+```text
+/OPT:REF /OPT:ICF /LTCG /DEBUG /INCREMENTAL:NO
+```
+
+## Profile (MSVC)
+
+Same as Release, plus `/Zi /Ob2` to keep inlining but preserve line info.
+
+## Debug
+
+```text
+/Od /Zi /RTC1 /JMC
+```
+
+## Notes
+
+- Do **not** ship `/GS-` in Release.
+- `/guard:cf-` is currently required on XBOX targets — CFG is not supported by the platform.
+- Enable [Address Sanitizer](/tools/address-sanitizer) only in Debug/Profile.
+
+## Related
+
+- [Compiler technology](/tools/compiler-technology)
+- [VC\+\+ compiler resources](/tools/compiler-resources)

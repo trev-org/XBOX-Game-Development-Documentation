@@ -1,0 +1,25 @@
+---
+title: "Store Development Entitlement Tool (DevEntitlementTool.exe)"
+sidebarTitle: "Dev Entitlement Tool"
+description: "Grant, revoke, and query Store entitlements for test accounts against dev sandboxes."
+icon: "key"
+---
+
+**`DevEntitlementTool.exe`** manages Microsoft Store entitlements for test accounts, so QA can verify DLC, add-ons, and store gating.
+
+## Common commands
+
+```text
+DevEntitlementTool grant  --user <gamertag> --productId <id>
+DevEntitlementTool revoke --user <gamertag> --productId <id>
+DevEntitlementTool list   --user <gamertag>
+```
+
+## Notes
+
+- Works only in developer sandboxes.
+- Requires signed-in developer account (`XblDevAccount`).
+
+## Related
+
+- [Developer Account tool](/tools/dev-account-tool)

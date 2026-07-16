@@ -1,0 +1,23 @@
+---
+title: "Visual Studio property pages for GDK development"
+sidebarTitle: "VS property pages"
+description: "Reference for the GDK-specific MSBuild property pages surfaced in Visual Studio project properties."
+icon: "sliders"
+---
+
+GDK projects add several dedicated property pages under **Configuration Properties**.
+
+## Notable pages
+
+| Page | What to set |
+| --- | --- |
+| **Xbox Deployment** | Target console, deployment mode (loose files vs. package), sync options |
+| **Xbox Packaging** | Package layout name, split package options, layout content ID |
+| **Xbox Compilation** | Shader compile options, PGO instrument/optimize toggle |
+| **Xbox Debugging** | Working directory on device, startup app, command-line arguments |
+
+## Common tasks
+
+- **Set the deployment target** — Xbox Deployment → Console name.
+- **Enable PGO instrumentation** — Xbox Compilation → PGO mode = Instrument.
+- **Change the deploy destination folder** — Xbox Deployment → Layout root.

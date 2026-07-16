@@ -1,0 +1,30 @@
+---
+title: "PIX Timing Captures for XBOX"
+sidebarTitle: "PIX Timing Captures"
+description: "CPU-focused PIX captures on XBOX — threads, context switches, PIX events, sampling profiler, critical path, and metrics."
+icon: "stopwatch"
+---
+
+**Timing Captures** are PIX's CPU-side capture format. They record thread activity, context switches, PIX events, and file I/O over a wall-clock window.
+
+## What you get
+
+- **Timeline** — per-thread activity with color-coded PIX events.
+- **CPU sampling profiler** — sampled call stacks aggregated by hot function.
+- **Critical path** — highlight the longest dependency chain reaching a PIX event.
+- **Context switches** — kernel scheduling decisions per core.
+- **Metrics view** — counters (frame time, memory, page faults) on a shared axis.
+- **Summary view** — aggregated frame stats.
+
+## Capture
+
+- **From PIX** — Connect → **Take Timing Capture** with duration.
+- **Programmatically** — `PIXBeginCapture(PIX_CAPTURE_TIMING, ...)`.
+- **From ETL** — [convert existing ETL](/tools/pix-convert-etl).
+
+## Related
+
+- [Timing Capture memory analysis](/tools/pix-timing-memory)
+- [Timing Capture bookmarks](/tools/pix-timing-bookmarks)
+- [Timing Capture comparisons](/tools/pix-timing-compare)
+- [SQLite query interface](/tools/pix-timing-sqlite)

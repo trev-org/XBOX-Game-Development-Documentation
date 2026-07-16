@@ -1,0 +1,25 @@
+---
+title: "PIX counters"
+sidebarTitle: "PIX counters"
+description: "Software counters PIX exposes for CPU, GPU, memory, and I/O metrics."
+icon: "gauge-high"
+---
+
+PIX exposes a large set of **software counters** for use in Timing Captures and GPU Trace. These are portable across dev kits and don't require hardware-counter setup.
+
+## Categories
+
+- **Frame** — frame time, present interval, vsync miss.
+- **CPU** — core utilization, thread ready %, wait time.
+- **GPU** — GPU busy %, wavefront occupancy avg, memory bandwidth.
+- **Memory** — VRAM commit, system RAM commit, allocations/sec.
+- **I/O** — DirectStorage requests/sec, Win32 file I/O bytes/sec.
+- **Networking** — socket bytes in/out.
+
+## Custom counters
+
+Emit your own counters via `PIXReportCounter(id, value)` so gameplay metrics land on the same axis as PIX-native metrics.
+
+## Related
+
+- [Hardware counter table](/tools/pix-hw-counters)

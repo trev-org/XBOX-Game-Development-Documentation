@@ -1,0 +1,25 @@
+---
+title: "Package Uploader"
+sidebarTitle: "Package Uploader"
+description: "Upload built .xvc / .msixvc packages to Partner Center for internal flighting and cert submission."
+icon: "cloud-arrow-up"
+---
+
+The **Package Uploader** pushes packages from your dev machine to Partner Center. Once uploaded, the package can go into internal flights, cert submission, or Store publishing.
+
+## Two forms
+
+- **CLI** — headless upload for CI pipelines.
+- **GUI** — drag-and-drop desktop wrapper.
+
+## Typical CI usage
+
+1. Build with `makepkg`.
+2. Run **Package Uploader CLI** with a Partner Center service principal.
+3. Poll the upload status via the returned ID.
+4. Trigger a Store submission separately.
+
+## Related
+
+- [makepkg](/tools/makepkg)
+- [packageutil](/tools/packageutil)

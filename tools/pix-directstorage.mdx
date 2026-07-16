@@ -1,0 +1,21 @@
+---
+title: "Analyze DirectStorage performance in PIX"
+sidebarTitle: "PIX DirectStorage"
+description: "Inspect DirectStorage requests, decompression cost, and NVMe write violations in PIX Timing Captures on XBOX."
+icon: "database"
+---
+
+PIX's **DirectStorage** view breaks down each queued read — offset, size, path through BCPack decompression, and latency percentiles.
+
+## What it surfaces
+
+- Requests per second by path.
+- Read amplification (bytes fetched vs. bytes requested).
+- Decompression throughput vs. hardware capability.
+- Contention with the [Win32 file I/O](/tools/pix-win32-fileio) path.
+- [NVMe write monitor](/tools/pix-nvme-write) violations.
+
+## Companion analyses
+
+- **Archive-file accesses** — pair with the mapping-file view to see reads into virtual archives.
+- **Startup captures** — pair with [capture-from-launch](/tools/pix-capture-from-launch) to profile install/first-run I/O.

@@ -1,0 +1,29 @@
+---
+title: "PIX GPU Trace Captures for XBOX"
+sidebarTitle: "PIX GPU Trace"
+description: "Long-running low-overhead GPU timing captures with hardware counters, bandwidth, and occupancy for XBOX."
+icon: "chart-line"
+---
+
+**GPU Trace** captures many frames of GPU timing plus hardware counters at low overhead. Use it to find bottlenecks that only appear in real gameplay.
+
+## What it records
+
+- Per-draw GPU busy timing.
+- Wavefront occupancy per stage.
+- Memory bandwidth (VRAM, L2 hit rate).
+- Front-end vs. back-end wait states.
+- Shader export bottlenecks.
+
+## Analyze
+
+- Correlate spikes to specific draws.
+- Filter by pass or event marker.
+- Overlay hardware counters against title-emitted PIX events.
+
+## Related
+
+- [GPU Trace UI](/tools/pix-gpu-trace-ui)
+- [PIX counters](/tools/pix-counters)
+- [Table of hardware counters](/tools/pix-hw-counters)
+- [Bottlenecks](/tools/pix-bottlenecks)

@@ -1,0 +1,27 @@
+---
+title: "DevKit Agent"
+sidebarTitle: "DevKit Agent"
+description: "DevKit Agent — the background service on XBOX dev kits that hosts remote-tools communication for deploy, launch, capture, and diagnostics."
+icon: "microchip"
+---
+
+**DevKit Agent** is the system component that runs on every XBOX dev kit and dev-mode console to service tool traffic from your PC. It hosts the endpoints that `xb*` command-line tools, XBOX Manager, Device Portal, PIX, and Visual Studio talk to.
+
+## What it does
+
+- Accepts control traffic (deploy, launch, kill, reboot).
+- Streams debug output, ETW traces, and captures back to the PC.
+- Coordinates media capture, gamepad input redirect, and remote streaming.
+- Provides identity and pairing for tools that authenticate to the console.
+
+## Diagnostics
+
+| Symptom | Check |
+| --- | --- |
+| `xbconnect` fails | Reboot the dev kit; run `xbversioninfo` to confirm agent version |
+| PIX cannot attach | Confirm dev kit is on a compatible recovery matching the GDK |
+| Tools time out intermittently | Move console to wired network; disable Wi-Fi during dev work |
+
+## Version alignment
+
+The DevKit Agent version is tied to the console recovery. Always keep the recovery aligned with the GDK version installed on your PC — mismatches break tool RPCs.

@@ -1,0 +1,35 @@
+---
+title: "PIX API reference"
+sidebarTitle: "PIX API reference"
+description: "PIXBeginCapture, PIXEndCapture, PIXReportCounter, and event-markup APIs used from title code to drive PIX programmatically."
+icon: "code"
+---
+
+The **PIX3 API** is used from title code to emit event markers, custom counters, and trigger programmatic captures.
+
+## Core APIs
+
+| API | Purpose |
+| --- | --- |
+| `PIXBeginEvent` / `PIXEndEvent` | Named ranges on the timeline |
+| `PIXSetMarker` | Point-in-time marker |
+| `PIXReportCounter` | Emit a custom counter value |
+| `PIXBeginCapture` / `PIXEndCapture` | Start / end a capture (Timing, GPU, or GPU Trace) |
+| `PIXNotifyWakeFromFenceSignal` | Drop a marker on a signaled fence for critical-path analysis |
+
+## Header
+
+`#include <pix3.h>` (in the GDK install).
+
+## Recommended pattern
+
+```cpp
+PIXBeginEvent(commandList, PIX_COLOR(0,255,0), "ShadowPass");
+// ... draws ...
+PIXEndEvent(commandList);
+```
+
+## Related
+
+- [PIX for XBOX](/tools/pix-for-xbox)
+- [PIX counters](/tools/pix-counters)

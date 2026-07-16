@@ -1,0 +1,26 @@
+---
+title: "XBOX video server"
+sidebarTitle: "XBOX video server"
+description: "XBOX video server — stream live console video to your PC for capture and review during profiling and QA runs."
+icon: "video"
+---
+
+The **XBOX video server** streams live video from a dev kit or dev-mode console to your PC. It is the transport used by XBOX Manager, Device Portal, and PIX when they display or record console video, and it can be driven independently by the `xbcapture` and `wdcapture` tools.
+
+## Uses
+
+- Live preview of the console output next to the debugger.
+- Long-duration capture sessions for QA repros and regression evidence.
+- Frame-accurate video accompanying a PIX Timing Capture.
+
+## Enabling
+
+1. Confirm the dev kit is on a wired network to your PC.
+2. Run `xbconfig VideoCaptureEnabled=1` on the console.
+3. Choose the video server as the source in the tool you are using (XBOM, WDP, PIX, or the `xbcapture` CLI).
+
+## Related
+
+- [Console CLI tools](/tools/console-command-line-tools) — `xbcapture`, `xbgamestream`
+- [XBOX Manager](/tools/xbox-manager) — Media capture panel
+- [Device Portal](/tools/device-portal) — Media capture page

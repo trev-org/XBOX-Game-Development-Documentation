@@ -1,0 +1,31 @@
+---
+title: "Address Sanitizer support for XBOX"
+sidebarTitle: "Address Sanitizer"
+description: "Enable Address Sanitizer (ASan) for GDK targets to catch memory-safety bugs at runtime."
+icon: "shield-halved"
+---
+
+**Address Sanitizer (ASan)** is supported for both PC and XBOX GDK targets in Debug and Profile configurations.
+
+## Enable
+
+1. In VS property pages, set **C/C\+\+ → Enable Address Sanitizer = Yes**.
+2. Link with `/fsanitize=address`.
+3. Rebuild.
+
+## What ASan catches
+
+- Heap-buffer-overflow / underflow
+- Use-after-free
+- Stack-buffer-overflow
+- Global-buffer-overflow
+- Double-free
+
+## Runtime cost
+
+Expect roughly a 2× slowdown and 2–3× memory footprint. Reserve ASan for repro runs, not full playtests.
+
+## XBOX notes
+
+- Requires a Debug or Profile console layout — not shipped in Release.
+- The ASan runtime is part of the GDK; do not mix with a Windows-side ASan runtime.

@@ -1,0 +1,27 @@
+---
+title: "GDK command prompts"
+sidebarTitle: "GDK command prompts"
+description: "Pre-configured shortcuts for the GDK command prompt environments that put the xb* tools on PATH."
+icon: "terminal"
+---
+
+The GDK installer creates several **command prompt** Start-menu shortcuts. Each one preconfigures environment variables and PATH so the tools work without a full VS shell.
+
+## Available prompts
+
+| Prompt | Purpose |
+| --- | --- |
+| **Microsoft GDK Command Prompt** | Neutral — both PC and XBOX tools on PATH |
+| **Microsoft GDK PC Command Prompt** | `wdapp`, PC tools, `xgamesaveutil` |
+| **Microsoft GDK Xbox Command Prompt** | `xb*` tools, agent-facing PATH |
+
+## Environment variables set
+
+- `GameDK` — GDK install root
+- `GXDKLatest` — latest console GDK version folder
+- `GRDKLatest` — latest PC GDK version folder
+- `PATH` — augmented with tool folders
+
+## Related
+
+- [xb\* tools reference](/tools/xb-tools-reference)

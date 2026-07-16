@@ -1,0 +1,27 @@
+---
+title: "XBOX Connected Storage tool (XblConnectedStorage.exe)"
+sidebarTitle: "Connected Storage"
+description: "Inspect and manipulate Connected Storage blobs for XBOX test accounts."
+icon: "cloud"
+---
+
+**`XblConnectedStorage.exe`** reads and writes Connected Storage blobs for a test account so QA can seed save states.
+
+## Common commands
+
+```text
+XblConnectedStorage list   --account <gamertag> --scid <scid>
+XblConnectedStorage export --account <gamertag> --scid <scid> --container Save01 --out save.bin
+XblConnectedStorage import --account <gamertag> --scid <scid> --container Save01 --in  save.bin
+XblConnectedStorage delete --account <gamertag> --scid <scid> --container Save01
+```
+
+## Uses
+
+- Seed known-good save states before a QA run.
+- Reproduce a customer bug from a captured save.
+- Reset a corrupt container without wiping the account.
+
+## Related
+
+- [Player Data Reset](/tools/player-data-reset)

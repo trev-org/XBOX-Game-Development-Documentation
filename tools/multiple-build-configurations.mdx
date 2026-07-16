@@ -1,0 +1,19 @@
+---
+title: "Multiple build configurations in a single deployment"
+sidebarTitle: "Multi-config deployment"
+description: "Ship Debug, Profile, and Release binaries side by side in one XBOX layout for A/B testing."
+icon: "layer-group"
+---
+
+Some QA workflows need Debug and Release binaries in the same deployment so testers can toggle between builds without redeploying.
+
+## How to enable
+
+1. In each configuration's [property page](/tools/vs-property-pages), set a distinct **executable name** (for example `Game.exe`, `Game_Debug.exe`).
+2. Reference each executable in `MicrosoftGame.config` under `<Executable>` entries.
+3. Deploy from the project's parent configuration.
+
+## Notes
+
+- Only one executable can be the startup app; the others must be launched explicitly.
+- Watch layout size — shipping multiple configurations doubles binary footprint.

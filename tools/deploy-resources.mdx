@@ -1,0 +1,22 @@
+---
+title: "Deploy game resource files with Visual Studio"
+sidebarTitle: "Deploy resources"
+description: "Configure loose-file resource deployment for XBOX and PC titles from within Visual Studio."
+icon: "cloud-arrow-up"
+---
+
+GDK projects deploy resource files (textures, audio, config) to the target as part of the build via MSBuild `<ItemGroup>` entries.
+
+## Add a resource
+
+1. Add the file to the project.
+2. Set **Item Type** = `CopyFileToFolders`.
+3. Set **Deployment Content** = `true`.
+4. Set the output subfolder relative to the deployment root.
+
+## Loose vs. packaged
+
+- **Loose file** deploys copy files individually and support fast iteration.
+- **Packaged** deploys go through `makepkg` and produce a signed layout.
+
+Toggle mode in the [VS property pages](/tools/vs-property-pages) → Xbox Deployment.

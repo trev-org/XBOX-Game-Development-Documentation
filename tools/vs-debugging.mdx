@@ -1,0 +1,36 @@
+---
+title: "Debugging GDK projects with Visual Studio"
+sidebarTitle: "Debugging with VS"
+description: "F5 debug workflow, natvis, remote symbol resolution, and mixed-mode debugging for XBOX and PC GDK titles."
+icon: "bug"
+---
+
+Visual Studio is the primary debugger for GDK titles on both PC and XBOX targets.
+
+## Key features
+
+- **F5 launch and attach** for PC (Gaming.Desktop.x64) and XBOX (Gaming.Xbox.\*).
+- **Mixed-mode debugging** across native C\+\+, HLSL, and managed helpers.
+- **Natvis visualizers** for GDK types (`XUser`, `XGameSave*`, XSAPI handles).
+- **Symbol server** integration for retail-signed PDBs.
+- **Concurrency Visualizer** and CPU sampling.
+
+## Remote debug on PC
+
+See [Debugging PC projects on remote Windows devices](/tools/vs-debugging-remote-windows).
+
+## Deployment errors
+
+Common VS \+ GDK deployment errors are surfaced in the **Output → Deploy** pane. Typical failure modes:
+
+- **Console unreachable** — check IP, `xbconnect`, and firewall on the host PC.
+- **Signature or package mismatch** — clean the target's install folder and redeploy.
+- **File in use** — the previous instance is still running; kill via `xbapp terminate` or from XBOX Manager.
+- **Insufficient space** — the dev partition is full; free space with `xbapp uninstall` or from XBOX Manager Applications.
+
+Match error codes against the GDK release notes for the version-specific list.
+
+## Related
+
+- [Multiple build configurations in single deployment](/tools/multiple-build-configurations)
+- [XBOX Manager](/tools/xbox-manager)

@@ -1,0 +1,28 @@
+---
+title: "PIX table of hardware counters"
+sidebarTitle: "PIX hardware counters"
+description: "Hardware counters available for XBOX Series X|S and Xbox One in PIX GPU Trace captures."
+icon: "table"
+---
+
+Hardware counters read directly from the console GPU. Available in GPU Trace, not in GPU Captures.
+
+## Common counters
+
+| Counter | Meaning |
+| --- | --- |
+| `GPU Busy` | % time GPU has work in flight |
+| `Wave Occupancy` | Active wavefronts / max |
+| `L1 Cache Hit` | L1 texture cache hit rate |
+| `L2 Cache Hit` | L2 hit rate |
+| `VRAM BW Read` | External memory read bandwidth |
+| `VRAM BW Write` | External memory write bandwidth |
+| `ROP Busy` | ROP unit utilization |
+| `Prim Rate` | Primitives / cycle |
+
+Counters differ between Xbox One and Series X|S — the PIX UI filters them to what the selected console supports.
+
+## Related
+
+- [GPU Trace](/tools/pix-gpu-trace)
+- [Bottlenecks](/tools/pix-bottlenecks)

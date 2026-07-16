@@ -1,0 +1,36 @@
+---
+title: "On-console wd* command-line tools"
+sidebarTitle: "Console wd tools"
+description: "Reference for the wd* CLI tools that run directly on an XBOX dev kit — packages, capture, config, credentials, and more."
+icon: "terminal"
+---
+
+The **wd\*** tool family runs directly on the console (via SSH-equivalent transport, xbrun, or a title-hosted shim). Use them when you need to drive the console from itself — for automated tests, on-console scripts, or when a PC is not attached.
+
+## Tools
+
+| Tool | Purpose |
+| --- | --- |
+| **wdapp.exe** | Install / register / launch / uninstall packages on the console |
+| **wdcapture.exe** | Media capture (screenshot \+ short video) |
+| **wdcapturesession.exe** | Long-duration recorded capture sessions |
+| **wdconfig.exe** | Read / write console configuration values |
+| **wdCred.exe** | Manage stored credentials |
+| **wdgamestream.exe** | Manage game streaming state |
+| **wdpanel.exe** | Read and update the front-panel display |
+| **wdRecovery.exe** | Console recovery operations |
+| **wdRun.exe** | Launch a package with arguments |
+| **wdtrace.exe** | ETW-style event tracing |
+| **wduser.exe** | Manage on-console user accounts |
+
+## Calling wd tools from your title
+
+A GDK title can spawn wd tools directly for scripted post-launch behaviors — e.g., automated smoke tests. Use `wdRun` from title code, and read tool output through the standard console redirection.
+
+<Warning>
+  The wd tools are for development scenarios only. Do not ship a title that depends on them.
+</Warning>
+
+## Also see
+
+- [PC-side xb\* CLI tools](/tools/console-command-line-tools)

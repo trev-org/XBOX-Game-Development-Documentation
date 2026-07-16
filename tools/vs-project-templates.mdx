@@ -1,0 +1,28 @@
+---
+title: "Visual Studio project templates for GDK development"
+sidebarTitle: "Project templates"
+description: "Reference for the GDK project templates that ship with the Visual Studio integration for PC and Xbox targets."
+icon: "folder-tree"
+---
+
+The GDK installs a set of Visual Studio project templates that pre-configure MSBuild platforms, `MicrosoftGame.config`, and required references.
+
+## Templates
+
+| Template | Target | Notes |
+| --- | --- | --- |
+| **Gaming.Desktop.x64** | Windows PC | wdapp-registered PC title |
+| **Gaming.Xbox.XboxOne.x64** | Xbox One family | Legacy console target |
+| **Gaming.Xbox.Scarlett.x64** | Xbox Series X\|S | Current-gen console target |
+| **Cross-Gen** | Xbox One \+ Series X\|S | Multi-platform single project |
+
+Each template sets up:
+
+- Correct MSBuild platform and toolset
+- Starter `MicrosoftGame.config`
+- Reference to the `Microsoft.gdk.*` NuGet packages
+- Standard build events for packaging
+
+## Creating a project
+
+**File → New → Project → Game development with C\+\+** and pick the template.

@@ -7,27 +7,58 @@ icon: "chart-line"
 
 **Profile-guided optimization (PGO)** rebuilds your title's code with hot-path information from a real gameplay trace. The compiler reorders basic blocks, lays out functions to fit instruction cache lines, and inlines based on actual runtime behavior rather than static heuristics.
 
-On XBOX Series X|S you can expect single-digit-percent CPU gains across the title — free performance for an hour of build-pipeline work.
+On XBOX Series X|S you can expect **3–10% CPU wins** in shipping code paths — free performance for an hour of build-pipeline work. Gains concentrate in AI, physics, and gameplay loops.
 
-## Two-step build
+## How it works
+
+PGO is a three-phase build:
 
 1. **Instrumented build** — build the title with `/GENPROFILE` (MSVC) or the equivalent Clang flag. The binary writes a `.pgc` profile data file as it runs.
 2. **Gameplay run** — play through representative scenarios (boot, main menu, first level, combat, cutscene, suspend/resume). The longer and more representative the run, the better the optimization.
 3. **Optimized build** — rebuild with `/USEPROFILE` pointing at the merged `.pgc` data. The compiler uses it to lay out code optimally.
 
-## What to profile
+## Phase 1 — instrument
+
+1. In VS property pages, set **Xbox Compilation → PGO mode = Instrument**.
+2. Rebuild. The linker emits an instrumented binary and a `.pgd` template.
+3. Deploy to a dev kit or PC runtime.
+
+## Phase 2 — capture a representative run
+
+- The instrumented binary is ~15–25% slower and larger.
+- Play through the code paths that matter for shipping performance — don't just idle at the main menu.
+- On exit, the runtime emits a `.pgc` file per process instance.
+
+**What to profile**
 
 - Boot and first-frame paths — they dominate load-time perception.
 - The most-played 30 seconds of gameplay — the main combat or traversal loop.
 - Memory-heavy scenes — large level loads, save serialization, network reconnect.
 
-## Tips
+## Phase 3 — merge
+
+```text
+pgomgr /merge:*.pgc game.pgd
+```
+
+Merge as many representative runs as you can — more data broadens hot-path coverage.
+
+## Phase 4 — optimize rebuild
+
+1. In VS, switch **PGO mode = Optimize**.
+2. Ensure `game.pgd` is on the linker's PGO search path.
+3. Rebuild. The linker uses the profile to lay out hot code and inline hot functions aggressively.
+
+## Tips and pitfalls
 
 - Re-run PGO at major milestones (vertical slice, alpha, beta, release candidate) — the code changes enough that stale profile data quickly stops helping.
-- Check the optimized binary into source control next to the profile data so a clean CI build is reproducible.
+- Check the optimized `.pgd` into source control (or a CI artifact store) so a clean CI build is reproducible.
 - PGO is orthogonal to LTO/LTCG — use both.
+- Do not merge profiles from mismatched binaries — always rebuild the instrumented and optimize passes from the same source snapshot.
+- Capturing only the main menu will cause the optimizer to de-prioritize gameplay code.
 
 ## See also
 
 - [Visual Studio](/tools/visual-studio)
+- [Compiler switch recommendations](/tools/compiler-switch-recommendations)
 - [PIX for XBOX](/tools/pix-for-xbox) — to find the right scenarios to profile

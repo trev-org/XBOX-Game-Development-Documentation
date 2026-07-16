@@ -15,41 +15,126 @@ FXC tops out at Shader Model 5.1 and is no longer receiving feature work. DXC is
 - Mesh and amplification shaders.
 - Ray tracing (DXR / XDXR).
 - Sampler Feedback.
-- XBOX HLSL extensions and intrinsics.## Using DXC
-
-Invoke `dxc.exe` directly or through the Visual Studio HLSL build rules. Common flags:
-
-```text
-dxc -T ps_6_6 -E main -Fo shader.dxil -Fh shader.h -O3 shader.hlsl
-```
+- XBOX HLSL extensions and intrinsics.
 
 The XBOX toolchain ships a console-specific build of DXC; use it (not the public PC DXC) for binaries that target XBOX PSOs.
 
-## FXC to DXC porting
+## Using DXC
 
-The FXC → DXC port guide covers:
+Invoke `dxc.exe` directly or through the Visual Studio HLSL build rules.
 
-- Different reflection metadata format.
-- `register(b#)` semantics changes for constant buffers in SM6.
-- `groupshared` initialization rules.
-- `Texture2D<float4>` strict typing.
-- Updated entry-point declaration syntax.
+**Minimal invocation**
+
+```text
+dxc.exe -T ps_6_6 -E PSMain -Fo pixel.cso -Zi pixel.hlsl
+```
+
+**Common switches**
+
+| Switch | Meaning |
+| --- | --- |
+| `-T <profile>` | Shader profile, e.g., `ps_6_6`, `cs_6_7`, `ms_6_6` |
+| `-E <entry>` | Entry-point function name |
+| `-Fo <file>` | Output DXIL binary |
+| `-Fh <file>` | Output C header with byte array |
+| `-Zi` | Embed debug info (needed for PIX / VS shader debugging) |
+| `-Qembed_debug` | Force embed rather than external PDB |
+| `-Fd <path>` | Emit external PDB |
+| `-O3` | Optimization level (default) |
+| `-Od` | No optimization (debug) |
+| `-HV 2021` | HLSL version selection |
+
+Add `-DXBOX` to activate XBOX defines and HLSL extensions.
+
+## Port HLSL shaders from FXC to DXC
+
+DXC is a **source-compatible** compiler for HLSL, but a small number of legacy patterns need attention when moving from FXC.
+
+**Key differences**
+
+| Area | FXC behavior | DXC behavior |
+| --- | --- | --- |
+| Precision | `min16float` was silently promoted | Real 16-bit types — opt in with `-enable-16bit-types` |
+| Matrix majorness | Default column-major, some legacy shaders assumed row | DXC is strict; use `#pragma pack_matrix` |
+| SM 5.x-only intrinsics | Compiled cleanly | Fail with clear diagnostic — use SM 6.x equivalent |
+| Wave intrinsics | Not supported | First-class, SM 6.0\+ |
+| Register class overlap | Sometimes tolerated | Rejected; use `[[vk::binding]]` or explicit `register()` |
+| Reflection metadata | FXC format | Different — retool any reflection pipelines |
+| Constant buffers | `register(b#)` semantics | Semantics changed in SM6 |
+| `groupshared` | Permissive | Stricter initialization rules |
+| `Texture2D<float4>` | Loose typing | Strict typing |
+| Entry-point declaration | Legacy syntax | Updated syntax |
+
+**Recommended workflow**
+
+1. Compile with DXC, `-Wno-error` to see all warnings.
+2. Fix warnings incrementally, starting with implicit conversions.
+3. Enable `-enable-16bit-types` if the shader benefits.
+4. Diff PIX GPU captures FXC vs. DXC to confirm perf and correctness.
 
 Most code compiles unchanged. Plan for a clean-up pass on warnings.
 
-## XBOX-specific HLSL
+## XBOX HLSL preprocessor defines
 
-Three XBOX-only surfaces you should know:
+The XBOX toolchain sets preprocessor macros so you can `#ifdef` platform-specific paths. Guard all XBOX-only code so shared shaders stay portable:
 
-- **XBOX defines** — preprocessor macros set by the XBOX toolchain so you can `#ifdef _GAMING_XBOX_SCARLETT` for Series X|S-only code paths.
-- **XBOX intrinsics** — hand-tuned HLSL builtins that map to XBOX GPU instructions you cannot express in stock HLSL.
-- **XBOX HLSL extensions** — language extensions (e.g., extended type qualifiers, hardware-specific resource bindings).
+```hlsl
+#if defined(__XBOX_SCARLETT__)
+// Series X|S-only path
+#endif
+```
 
-Keep the XBOX-only code paths behind clear `#ifdef`s so the same HLSL still compiles for PC.
+Typical defines include platform family (`_GAMING_XBOX_SCARLETT`, `_GAMING_XBOX_XBOXONE`), feature levels, and toolchain flags.
+
+## XBOX HLSL intrinsics
+
+XBOX targets expose HLSL intrinsics that surface hardware features not in the standard SM 6.x intrinsic set.
+
+**Categories**
+
+- **Wave / cross-lane** — wide-wave broadcast, permute, shuffle, and prefix helpers optimized for the console GPU.
+- **Memory** — cache-hint loads (`__XB_LoadDwordCoherent`, `__XB_LoadDwordUncached`), scratch memory reads.
+- **Barrier** — explicit LDS / GDS / L1 / L2 flush intrinsics.
+- **Format** — unpack \+ swizzle helpers for RGB9E5, R11G11B10F, packed 8-bit vectors.
+- **Sampler** — gradient-controlled sample, LOD bias override.
+
+Always guard with the platform define:
+
+```hlsl
+#if defined(__XBOX_SCARLETT__)
+float v = __XB_LoadDwordCoherent(uav, offset);
+#endif
+```
+
+## XBOX HLSL language extensions
+
+Beyond intrinsics, XBOX DXC provides a set of language extensions for shader authoring.
+
+**Attributes**
+
+| Attribute | Effect |
+| --- | --- |
+| `[precise]` (extended) | Forbid re-association of operations across the marked expression |
+| `[unroll_manual(N)]` | Deterministic unroll count regardless of optimizer heuristics |
+| `[xbox_no_wave32]` | Force the shader into wave64 mode |
+
+**Packed types**
+
+Extended shorthand for common packed formats:
+
+- `xb_min16float3` — R11G11B10F-friendly triple
+- `xb_packed_snorm4` — 8:8:8:8 signed-normalized
+
+**Control-flow hints**
+
+- `[branch_switch]` — emit as a jump table
+- `[loop_swp]` — request software pipelining
+
+Guard with `#if defined(__XBOX__)`.
 
 ## See also
 
 - [Graphics overview](/gdk/graphics-overview)
 - [Mesh shaders](/gdk/mesh-shaders)
 - [Ray tracing](/gdk/raytracing)
-- [Porting guides](/gdk/porting-guides) — FXC → DXC porting
+- [Porting guides](/gdk/porting-guides)

@@ -1,0 +1,30 @@
+---
+title: "Config as Source tools (XblConfig.exe)"
+sidebarTitle: "Config as Source (XblConfig)"
+description: "Manage XBOX services configuration as versioned source using XblConfig.exe — sandbox promotions, achievements, stats, and social."
+icon: "file-code"
+---
+
+**`XblConfig.exe`** is the CLI for **Config as Source**, the workflow that treats your XBOX services configuration as JSON that lives next to your title code in source control.
+
+## Verbs
+
+| Verb | Purpose |
+| --- | --- |
+| `download` | Pull the current sandbox configuration to disk |
+| `commit` | Upload local changes to a sandbox |
+| `diff` | Compare local vs. sandbox |
+| `promote` | Move config between sandboxes (DEV → CERT → RETAIL) |
+| `validate` | Schema \+ business-rule validation |
+
+## Typical flow
+
+1. `XblConfig.exe download --sandbox XDKS.1 --dir ./xbl-config`
+2. Edit JSON, commit to git.
+3. `XblConfig.exe commit --sandbox XDKS.1 --dir ./xbl-config`
+4. `XblConfig.exe promote --from XDKS.1 --to RETAIL`
+
+## Related
+
+- [Trace Analyzer](/tools/trace-analyzer)
+- [XBOX service CLI tools reference](/tools/xbox-service-tools)

@@ -1,0 +1,30 @@
+---
+title: "PIX shader debugging on XBOX"
+sidebarTitle: "PIX shader debugging"
+description: "Step HLSL against captured wavefronts, use Edit and Continue, and diagnose shader exceptions inside PIX GPU Captures."
+icon: "code"
+---
+
+PIX provides HLSL-level shader debugging both in captures and live.
+
+## Modes
+
+| Mode | Data source | Use case |
+| --- | --- | --- |
+| **Capture debug** | GPU Capture | Post-mortem inspection of a specific draw |
+| **On-demand Live** | Attached live GPU | Break at will into any running shader |
+| **Live on Shader Exception** | Attached live GPU | Break automatically on div-by-zero, OOB, etc. |
+| **Shader Exception Detection in GPU Captures** | GPU Capture | Find exceptions retrospectively |
+
+## Edit and Continue
+
+Edit the HLSL, hit **Recompile**, and PIX re-runs the wavefront on the captured inputs so you can iterate without re-capturing.
+
+## Shader PDBs
+
+Provide a symbol path with the private shader PDBs for source-level stepping. See [Shader PDBs](/tools/pix-shader-pdbs).
+
+## Related
+
+- [Shader Trace](/tools/pix-shader-trace)
+- [HIX](/tools/hix-overview)

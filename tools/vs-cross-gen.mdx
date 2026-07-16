@@ -1,0 +1,26 @@
+---
+title: "Cross-gen build configurations for Xbox One and Series X|S"
+sidebarTitle: "Cross-gen builds"
+description: "Configure a single Visual Studio project to build for both Xbox One and Xbox Series X|S with shared code."
+icon: "code-branch"
+---
+
+GDK projects can target **Xbox One** and **Xbox Series X|S** from the same solution. Cross-gen builds share source but produce separate binaries and packages.
+
+## Configuration matrix
+
+| Configuration | Platform |
+| --- | --- |
+| Debug / Profile / Release | Gaming.Xbox.XboxOne.x64 |
+| Debug / Profile / Release | Gaming.Xbox.Scarlett.x64 |
+
+## Preprocessor defines
+
+- `_GAMING_XBOX_XBOXONE` — Xbox One family
+- `_GAMING_XBOX_SCARLETT` — Xbox Series X|S
+
+Guard hardware-specific code paths with these defines.
+
+## Packaging
+
+`makepkg` produces one package per platform. See [makepkg](/tools/makepkg).

@@ -1,0 +1,30 @@
+---
+title: "Manage xgamefiles data on PC (xgamesaveutil.exe)"
+sidebarTitle: "xgamesaveutil"
+description: "CLI to inspect, export, and clear XGameSave data for GDK PC titles."
+icon: "floppy-disk"
+---
+
+**`xgamesaveutil.exe`** manages **XGameSave** storage for GDK PC titles from the command line.
+
+## Verbs
+
+| Verb | Purpose |
+| --- | --- |
+| `list` | List containers and blobs |
+| `read` | Read a blob to a file |
+| `write` | Import a file as a blob |
+| `delete` | Remove containers or blobs |
+| `export` | Bulk export a container |
+| `import` | Bulk import |
+
+## Example
+
+```text
+xgamesaveutil list  --title "MyGame"
+xgamesaveutil read  --title "MyGame" --container Save01 --blob main --out save.bin
+```
+
+## Related
+
+- [wdapp](/tools/wdapp)

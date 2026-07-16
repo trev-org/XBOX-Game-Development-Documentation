@@ -1,0 +1,25 @@
+---
+title: "Global Storage tool (GlobalStorage.exe)"
+sidebarTitle: "Global Storage"
+description: "Manage title-wide (global) storage blobs used for shared configuration and title-authored resources."
+icon: "globe"
+---
+
+**`GlobalStorage.exe`** manages the title-owned global storage namespace — blobs shared across all users of a title, used for tuning data, remote config, or content pointers.
+
+## Verbs
+
+| Verb | Purpose |
+| --- | --- |
+| `list` | Enumerate blobs and containers |
+| `upload` | Push a local file as a blob |
+| `download` | Read a blob |
+| `delete` | Remove a blob or container |
+
+## Sandboxing
+
+All operations require a sandbox scope; test in DEV before promoting to RETAIL.
+
+## Related
+
+- [Config as Source](/tools/config-as-source)

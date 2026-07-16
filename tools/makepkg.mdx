@@ -1,0 +1,38 @@
+---
+title: "Make Package (makepkg.exe)"
+sidebarTitle: "Make Package (makepkg.exe)"
+description: "Package loose GDK layouts into signed .xvc / .msixvc packages for submission and testing with makepkg.exe."
+icon: "box"
+---
+
+**`makepkg.exe`** turns a loose GDK layout into a signed package suitable for cert submission or dev-kit install.
+
+## Package types
+
+| Extension | Target |
+| --- | --- |
+| `.xvc` | XBOX console |
+| `.msixvc` | PC via Store install |
+
+## Basic invocation
+
+```text
+makepkg pack /d C:\Layouts\MyGame /pd C:\Packages
+```
+
+## Common switches
+
+| Switch | Meaning |
+| --- | --- |
+| `/d` | Source layout directory |
+| `/pd` | Package destination directory |
+| `/f` | Layout include/exclude filter file |
+| `/l` | Localization pack |
+| `/gameos` | Target GDK Game OS version |
+| `/streaminstall` | Author streaming install chunks |
+
+## Related
+
+- [makepri](/tools/makepri)
+- [splitpkg](/tools/splitpkg)
+- [packageutil](/tools/packageutil)

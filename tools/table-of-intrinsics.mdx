@@ -1,0 +1,31 @@
+---
+title: "Table of XBOX compiler intrinsics"
+sidebarTitle: "Table of intrinsics"
+description: "Reference table of CPU intrinsics available on Xbox One and Xbox Series X|S, with cross-compiler equivalents."
+icon: "table"
+---
+
+This page indexes the CPU intrinsics documented for XBOX targets. See the GDK bin folder for the full generated header (`gxdk_intrinsics.h`).
+
+## Categories
+
+- **SSE / AVX / AVX2** — available on both XBOX generations, with AVX2 tuned on Scarlett.
+- **BMI1 / BMI2** — bit-manipulation intrinsics, available on Scarlett.
+- **FMA** — fused multiply-add, Scarlett only.
+- **Prefetch and cache-hint** — platform-specific helpers.
+- **Atomics** — `_Interlocked*` family with acquire/release variants.
+
+## Compatibility guard
+
+```cpp
+#if defined(_GAMING_XBOX_SCARLETT)
+// AVX2 / FMA safe
+#elif defined(_GAMING_XBOX_XBOXONE)
+// SSE4.2 baseline
+#endif
+```
+
+## Related
+
+- [Compiler technology](/tools/compiler-technology)
+- [Compiler switch recommendations](/tools/compiler-switch-recommendations)

@@ -1,0 +1,44 @@
+---
+title: "Screen and session capture on PC (wdcapture)"
+sidebarTitle: "wdcapture"
+description: "Capture screenshots, short videos, and long-duration sessions from a running GDK PC title with wdcapture.exe and wdcapturesession.exe."
+icon: "camera"
+---
+
+The GDK ships two capture tools for PC titles:
+
+- **`wdcapture.exe`** — screenshots and short video clips.
+- **`wdcapturesession.exe`** — long-running session recording with chunked encoding.
+
+## wdcapture — screenshots and short clips
+
+**Typical usage**
+
+```text
+wdcapture screenshot --title "MyGame" --out shot.png
+wdcapture video      --title "MyGame" --duration 30 --out clip.mp4
+```
+
+**Options**
+
+| Option | Purpose |
+| --- | --- |
+| `--title` | Registered title name |
+| `--out` | Output file |
+| `--duration` | Video length in seconds |
+| `--fps` | Capture frame rate |
+| `--include-audio` | Add game audio to the mp4 |
+
+## wdcapturesession — long-duration sessions
+
+`wdcapturesession.exe` records extended sessions with efficient chunked encoding. Each session writes rolling chunks so a crash never loses more than the last chunk interval.
+
+```text
+wdcapturesession start --title "MyGame" --dir C:\Sessions\Run01
+wdcapturesession stop  --title "MyGame"
+```
+
+## Related
+
+- [wdapp](/tools/wdapp)
+- [PC tools overview](/tools/pc-tools)

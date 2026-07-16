@@ -5,12 +5,45 @@ description: "PIX for profiling PC GDK titles — DirectX 12, Windows 10+."
 icon: "magnifying-glass-chart"
 ---
 
-The PIX shipped in the GXDK profiles **XBOX One development kits**. For PC GDK profiling, install [**PIX for Windows**](https://devblogs.microsoft.com/pix/) separately.
+**PIX for Windows** is the DirectX 12 profiler for GDK PC titles. The PIX shipped in the GXDK profiles **XBOX One development kits**; for PC GDK profiling, install PIX for Windows separately.
 
 <Warning>
   PIX for Windows runs on **Windows 10 and later** and supports only **DirectX 12**.
 </Warning>
 
-PIX for Windows and PIX for XBOX can coexist on the same dev PC.
+PIX for Windows and [PIX for XBOX](/tools/pix-for-xbox) can coexist on the same dev PC.
 
-See the [PIX online documentation](https://devblogs.microsoft.com/pix/documentation/) for installation, capture types, and analysis features.
+## Install
+
+Download from [aka.ms/PIXdownloads](https://aka.ms/PIXdownloads) or install via the GDK. See the [PIX online documentation](https://devblogs.microsoft.com/pix/documentation/) for detailed installation and analysis features.
+
+## Attach to a title
+
+1. Register the title with `wdapp register`.
+2. Launch with `wdapp launch`.
+3. In PIX, **File → New Timing Capture** or **New GPU Capture** and pick the running process.
+
+## Symbol paths
+
+Set **PIX → Home → Settings → Symbol paths** to your PDB store so Timing Capture stacks resolve. `_NT_SYMBOL_PATH` is also honored.
+
+## Capture types
+
+PIX for Windows supports the same primary capture types as PIX for XBOX, adapted for D3D12 on Windows.
+
+| Type | Best for |
+| --- | --- |
+| **Timing Capture** | CPU frame breakdown, thread activity, sampling profiler |
+| **GPU Capture** | Per-draw D3D12 inspection, pipeline state, shader debugging |
+| **GPU Trace** | Long-running GPU counter timelines (AMD RGP-style) |
+
+Deep semantics match the XBOX equivalents; see:
+
+- [Timing Captures](/tools/pix-timing-captures)
+- [GPU Captures](/tools/pix-gpu-captures)
+- [GPU Trace](/tools/pix-gpu-trace)
+
+## Windows-specific notes
+
+- GPU Trace hardware counters depend on your GPU vendor (AMD / NVIDIA / Intel).
+- WARP and non-hardware devices are not supported by GPU Trace.

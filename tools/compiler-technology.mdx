@@ -1,0 +1,36 @@
+---
+title: "XBOX compiler technology"
+sidebarTitle: "Compiler technology"
+description: "Overview of the MSVC and Clang toolchains used by the GDK, PDB layout, and target-specific codegen."
+icon: "microchip"
+---
+
+The GDK ships two supported C\+\+ toolchains for XBOX targets:
+
+- **MSVC** (default) — the same compiler used for PC, tuned for Zen 2 (Scarlett) and Jaguar (XboxOne).
+- **Clang/LLVM** — available on all targets; see [Clang with the GDK](/tools/vs-clang).
+
+## Codegen highlights
+
+- Both toolchains emit AVX2 by default on Scarlett; SSE4.2 on XboxOne.
+- Whole-program optimization (LTCG) is on for Release builds.
+- [Profile-Guided Optimization](/tools/profile-guided-optimization) is supported end-to-end.
+
+## PDBs
+
+GDK builds emit both a private PDB (full source) and a stripped public PDB. Keep the private PDBs in a symbol store keyed on GUID \+ age.
+
+## Visual C\+\+ compiler resources
+
+The GDK uses the standard Visual C\+\+ toolchain, so most compiler questions are answered by the general MSVC documentation.
+
+- [MSVC language conformance](https://learn.microsoft.com/cpp/overview/visual-cpp-language-conformance)
+- [MSVC compiler options index](https://learn.microsoft.com/cpp/build/reference/compiler-options)
+- [Linker options index](https://learn.microsoft.com/cpp/build/reference/linker-options)
+- [MSVC ABI](https://learn.microsoft.com/cpp/build/x64-calling-convention)
+
+## Related
+
+- [Compiler \+ linker switch recommendations](/tools/compiler-switch-recommendations)
+- [Table of intrinsics](/tools/table-of-intrinsics)
+- [Preprocessor definitions](/tools/preprocessor-definitions)

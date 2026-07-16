@@ -1,0 +1,37 @@
+---
+title: "Title Performance Overlay"
+sidebarTitle: "Title Performance Overlay"
+description: "Render live frame time, frame rate, and GPU/CPU breakdown directly on your XBOX title for continuous perf feedback."
+icon: "gauge-high"
+---
+
+The **Title Performance Overlay** draws real-time performance metrics on top of your running title so you can watch frame time move as you play. It is available on all XBOX dev kits and integrates with PIX for XBOX and Dev Home.
+
+## Metrics shown
+
+- Instantaneous frame time (ms) and frame rate.
+- CPU thread utilization per core.
+- GPU busy percentage.
+- Present interval and dropped frames.
+- VRAM / system RAM commit.
+
+## Enable the overlay
+
+1. In **Developer Home → Performance**, toggle **Show performance overlay**.
+2. Choose the metric set (basic, extended, or custom).
+3. Position and opacity are configurable per developer account.
+
+Alternatively enable via `xbconfig`:
+
+```text
+xbconfig PerformanceOverlayEnabled=1
+```
+
+## PIX integration
+
+When PIX is connected, the overlay adopts PIX color ranges so the on-screen numbers match the PIX System Monitor — handy when demonstrating performance to designers without opening PIX.
+
+## Related
+
+- [PIX for XBOX](/tools/pix-for-xbox)
+- [Developer Home](/tools/dev-home)

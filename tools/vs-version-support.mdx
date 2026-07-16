@@ -1,0 +1,53 @@
+---
+title: "Visual Studio version support for the GDK"
+sidebarTitle: "VS version support"
+description: "Compatibility matrix and setup notes for using Visual Studio 2019, 2022, and 2026 with the Microsoft Game Development Kit."
+icon: "code"
+---
+
+The GDK supports Visual Studio 2019, 2022, and 2026 for both PC (`Gaming.Desktop.x64`) and console (`Gaming.Xbox.*`) targets. Install the GDK **after** Visual Studio so MSBuild platforms register into the correct instance.
+
+## Required components (all versions)
+
+- **Desktop development with C\+\+**
+- **Game development with C\+\+**
+- MSVC toolset matching the version (v142 / v143 / later)
+- Windows SDK matching the GDK minimum
+
+## Visual Studio 2026
+
+Fully supported by the current GDK.
+
+- Uses MSVC v143 or later.
+- The GDK toolchain uses the VS 2026 MSVC by default; override with the platform toolset dropdown to pin to VS 2022 or VS 2019 for cross-compile parity.
+- Some legacy XDK-era wizards are removed — use the GDK project templates.
+
+**Post-install steps**
+
+1. Install the GDK after VS 2026 so MSBuild platforms register into the correct instance.
+2. Run `gdk-vs-integration.cmd` from the GDK install folder if the Xbox platforms do not appear.
+3. Confirm the **Xbox Gaming Explorer** and **XBOX Gaming Project Control** windows are available under **View → Other Windows**.
+
+## Visual Studio 2022
+
+Fully supported GDK development environment.
+
+- Uses **MSVC v143**.
+- Install GDK _after_ VS 2022 so platform integration is picked up.
+- To cross-target 2019 output, install the v142 toolset side by side.
+- The GDK ships MSBuild props under `Program Files\Microsoft Visual Studio\2022\<edition>\MSBuild\Microsoft\VC\v170\Platforms\Gaming.*`.
+
+## Visual Studio 2019
+
+Supported for legacy branches.
+
+- Uses **MSVC v142** (19.29) with GDK 2210 or later.
+- Windows 10 SDK 19041 or later.
+- Some newer GDK compiler features (e.g., latest Address Sanitizer semantics) require VS 2022 or newer.
+- Debug engine parity is maintained for both PC and console targets.
+
+## Also see
+
+- [Visual Studio integration overview](/tools/visual-studio)
+- [Project templates](/tools/vs-project-templates)
+- [Property pages](/tools/vs-property-pages)

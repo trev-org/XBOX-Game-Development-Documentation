@@ -1,0 +1,24 @@
+---
+title: "Inspect XBOX Live web service calls with Fiddler"
+sidebarTitle: "Fiddler for XBL"
+description: "Configure Fiddler to decrypt XBOX Live service traffic during development for triage and telemetry sanity checks."
+icon: "magnifying-glass"
+---
+
+During development, you can point XBOX Live REST calls through **Fiddler** to see request/response headers, bodies, and timings.
+
+## Setup
+
+1. Install Fiddler and enable HTTPS decryption.
+2. Trust the Fiddler root certificate on the dev kit or PC.
+3. Set the console/PC proxy to Fiddler's address.
+4. Run your title — XBOX Live traffic now appears in the Fiddler timeline.
+
+## Notes
+
+- Never leave Fiddler proxying enabled for QA or shipped builds.
+- Some calls are pinned and won't route through a proxy — those are best inspected with [Trace Analyzer](/tools/trace-analyzer).
+
+## Related
+
+- [Trace Analyzer](/tools/trace-analyzer)

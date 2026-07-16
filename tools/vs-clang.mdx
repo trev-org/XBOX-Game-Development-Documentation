@@ -1,0 +1,26 @@
+---
+title: "Use Clang / LLVM with the GDK"
+sidebarTitle: "Clang with GDK"
+description: "Configure the Clang toolset in Visual Studio for GDK PC and XBOX builds, including known differences from MSVC."
+icon: "code"
+---
+
+GDK supports Clang / LLVM for both PC and XBOX targets. Clang is a drop-in alternative to MSVC with parity on codegen quality for most title code.
+
+## Enable
+
+1. Install the **C\+\+ Clang tools for Windows** VS individual component.
+2. In the property page, set **Platform Toolset = ClangCL**.
+3. Rebuild.
+
+## Differences vs. MSVC
+
+- `#pragma` set differs; Clang ignores unknown pragmas silently unless `-Werror=pragmas` is set.
+- Warning numbers use `-W` flags, not `/w1<N>`.
+- Some intrinsics have alternate spellings — the [table of intrinsics](/tools/table-of-intrinsics) marks these.
+
+## When to prefer Clang
+
+- Cross-platform code shared with Linux / Mac branches.
+- Consumers of standard-library features that lag in MSVC.
+- Diagnostic quality (Clang's warnings are often more actionable).

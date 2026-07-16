@@ -1,0 +1,19 @@
+---
+title: "Split Package (splitpkg.exe)"
+sidebarTitle: "Split Package (splitpkg.exe)"
+description: "Author streaming-install chunks so the console can play the title before the whole package finishes downloading."
+icon: "scissors"
+---
+
+**`splitpkg.exe`** produces the streaming-install chunk layout so players can start a title before the whole download completes.
+
+## Workflow
+
+1. Author a chunk manifest (`splitpkg.xml`) that lists which content lands in which chunk.
+2. Run `splitpkg` against a built package.
+3. Test chunk boundaries in dev kits with **Chunk Simulator** in XBOM.
+
+## Related
+
+- [makepkg](/tools/makepkg)
+- [packageutil](/tools/packageutil)

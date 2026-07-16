@@ -1,0 +1,54 @@
+---
+title: "XBOX xb* command-line tools reference"
+sidebarTitle: "xb* tools reference"
+description: "Complete reference of the PC-side xb* command-line tools that drive dev kits — deploy, launch, capture, trace, and configure."
+icon: "terminal"
+---
+
+The **xb\*** family of PC-side tools drives every XBOX dev kit workflow from your PC. Every action XBOX Manager, PIX, or Visual Studio performs can be scripted with these.
+
+## Reference table
+
+| Tool | Purpose |
+| --- | --- |
+| **xbapp** | Install, launch, kill, uninstall packages |
+| **xbcapture** | Screenshot \+ short-video capture |
+| **xbcleanup** | Remove installed apps \+ stale layouts |
+| **xbconfig** | Read / write console settings |
+| **xbconnect** | Pair a dev kit with your PC |
+| **xbcp** | File copy to/from the console |
+| **xbcopy** | Batch copy with sync |
+| **xbcred** | Manage stored console credentials |
+| **xbdbgmon** | Live debug-string monitor (`OutputDebugString`) |
+| **xbdel** | Delete a file on the console |
+| **xbdiaginfo** | Collect diagnostic bundle |
+| **xbdir** | Directory listing |
+| **xberror** | Look up HRESULT / Win32 error codes |
+| **xbgamestream** | Manage game streaming state |
+| **xbmkdir** | Create a directory on the console |
+| **xbperf** | CPU performance counters |
+| **xbprovision** | Provision a fresh dev kit |
+| **xbreboot** | Reboot / cycle recovery |
+| **xbremoterecovery** | OS recovery over network |
+| **xbrmdir** | Delete a directory |
+| **xbrun** | Execute a process on the console |
+| **xbstorage** | Manage XGameSave storage |
+| **xbstress** | System-stress harness |
+| **xbtlist** | Process list |
+| **xbtrace** | ETW trace controller |
+| **xbttd** | Time-Travel Debugging capture |
+| **xbtplinksvc** | Transfer Protocol Service |
+| **xbupdatehosts** | Update the console hosts file |
+| **xbuser** | User account management |
+| **xbversioninfo** | Print console and agent versions |
+
+## Common workflows
+
+- **Deploy \+ launch loop**: `xbcp` → `xbrun` (or use `xbapp launch`).
+- **Symbol-resolved crash triage**: `xbcp` the dump, then symbolicate in xbWatson.
+- **Automated smoke test**: `xbreboot`, `xbapp install`, `xbrun`, `xbdbgmon`, `xbapp uninstall`.
+
+## Related
+
+- [Console CLI tools overview](/tools/console-command-line-tools)
+- [Console wd tools (on-console)](/tools/console-wd-tools)

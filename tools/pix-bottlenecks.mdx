@@ -1,0 +1,30 @@
+---
+title: "PIX GPU bottlenecks"
+sidebarTitle: "PIX Bottlenecks"
+description: "Automated GPU bottleneck classifier in PIX — identify ALU, bandwidth, fixed-function, or wavefront-occupancy stalls."
+icon: "gauge"
+---
+
+The **Bottlenecks** view classifies GPU work into a small set of categories so you know where to spend optimization budget.
+
+## Categories
+
+| Category | Meaning |
+| --- | --- |
+| **ALU** | Shader math is the bottleneck |
+| **Bandwidth** | External memory traffic |
+| **Fixed function** | Depth test, blend, tessellator, RT setup |
+| **Occupancy** | Not enough wavefronts to hide latency |
+| **Front-end** | Vertex fetch / IA-heavy work |
+| **Export** | Render target export saturated |
+
+## How to use
+
+1. Take a **GPU Trace** capture.
+2. Open the Bottlenecks pane.
+3. Sort draws by dominant bottleneck to find candidates.
+
+## Also see
+
+- [GPU Trace](/tools/pix-gpu-trace)
+- [PIX counters](/tools/pix-counters)

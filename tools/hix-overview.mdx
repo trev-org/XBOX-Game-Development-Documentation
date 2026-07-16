@@ -1,0 +1,108 @@
+---
+title: "Hang Investigation for XBOX (HIX)"
+sidebarTitle: "HIX overview"
+description: "HIX — the XBOX toolset for diagnosing GPU and CPU hangs on dev kits, including live shader debugging and dump analysis."
+icon: "bug"
+---
+
+**Hang Investigation for XBOX (HIX)** is a set of workflows and tools that diagnose title hangs on dev kits — TDRs (GPU timeouts), infinite loops in shaders, dead-locks on the CPU side, and crash-adjacent stalls that never fault.
+
+## When to reach for HIX
+
+| Symptom | First tool |
+| --- | --- |
+| Frame stops advancing, GPU pegged | Live Shader Debugging (below) |
+| Frame stops advancing, GPU idle | VS debugger / [xbWatson](/tools/xbwatson) dump |
+| Shader exception (division by zero, OOB read) | Live Debugging on Shader Exceptions (below) |
+| Repro is timing-sensitive and hard to catch | On-demand Live Debugging (below) |
+| Post-mortem TDR from a QA machine | [XHIT](/tools/xhit) |
+
+HIX has two complementary flows:
+
+- **Live debugging** — attach to a running (or already-hung) title, inspect wavefront state, step HLSL, and resume. Requires a debug-configured console and Visual Studio.
+- **Post-mortem ([XHIT](/tools/xhit))** — analyze a saved hang dump captured by the platform when a TDR occurs.
+
+## Live Shader Debugging
+
+**Live Shader Debugging** attaches to a live GPU on the dev kit and lets you inspect and step through the shader code that is currently executing (or hung). It is the primary weapon for diagnosing infinite loops, mis-computed loop bounds, and stuck wavefronts that produce a TDR.
+
+**What you can do**
+
+- Inspect wavefronts currently in flight across the GPU.
+- View the HLSL source and the disassembled shader ISA side by side.
+- Read registers (SGPRs, VGPRs) and local memory for any lane.
+- Step, continue, and set breakpoints on a running wavefront.
+
+**Prerequisites**
+
+1. Console configured for shader debugging (`xbconfig ShaderDebugging=1`).
+2. Title compiled with debug shader PDBs available on the symbol path.
+3. Recent Visual Studio with GDK extensions installed.
+
+**Workflow**
+
+1. Reproduce the hang or set up a repro run.
+2. In Visual Studio, **Debug → Attach to Xbox Live Debug Target**.
+3. When the GPU hangs, choose **Break All**. The Live Shader Debugger window enumerates wavefronts.
+4. Select a hung wavefront to inspect its HLSL and register state.
+
+## Live Shader Debugging in Visual Studio
+
+Visual Studio hosts the Live Shader Debugger UI for HIX.
+
+**Enable it.** Install the GDK Visual Studio extension. When a project targets `Gaming.Xbox.*`, the **Debug → Windows → Live Shader Debugger** menu becomes available.
+
+**Windows and panels**
+
+- **Wavefronts** — active wavefronts grouped by shader stage.
+- **Watches / Locals** — per-lane values (SGPR/VGPR).
+- **Disassembly** — target ISA with source-line mapping.
+- **Call stack** — for compute and mesh shaders that call helper functions.
+
+**Tips**
+
+- Compile shaders with `-Zi -Qembed_debug` to get useful source stepping.
+- Prefer to keep a PDB store — VS reads shader PDBs automatically when the compile path is preserved.
+
+## On-demand Live Debugging
+
+**On-demand Live Debugging** lets you break into shader execution _at any time_ — not only when the GPU is hung. Useful when you can predict the moment a problematic draw is about to execute but the title is not TDRing.
+
+**Usage**
+
+1. Attach to the target with the Live Shader Debugger.
+2. From the toolbar, click **Break Now** (or press the configured hotkey).
+3. VS pauses the GPU and enumerates in-flight wavefronts as if a hang had occurred.
+
+**Good use cases**
+
+- Diagnosing shaders that produce visual artifacts but do not hang.
+- Inspecting compute dispatches with data-dependent output.
+- Confirming that an expected wavefront actually runs (miscompiled dead code).
+
+## Live Debugging on Shader Exceptions
+
+Enable **shader exception breaks** so the debugger halts the moment a shader raises an exception, rather than letting the fault propagate into a downstream hang or artifact.
+
+**Supported exception categories**
+
+| Category | Examples |
+| --- | --- |
+| Arithmetic | divide by zero, NaN propagation |
+| Memory | out-of-bounds SRV/UAV read, mis-aligned load |
+| Control | infinite-loop watchdog trip |
+| HW faults | resource state mismatch, invalid descriptor |
+
+**Enabling**
+
+1. Compile shaders with `-enable-hlsl-debug` (or the equivalent DXC flag).
+2. In VS **Debug → Exceptions**, expand **XBOX Shader Exceptions** and check the categories to break on.
+3. Attach with the Live Shader Debugger and run the repro.
+
+See also: [PIX Shader Debugging](/tools/pix-shader-debugging) — post-mortem equivalent for GPU captures.
+
+## Related
+
+- [XHIT](/tools/xhit) — post-mortem dump analysis
+- [xbWatson](/tools/xbwatson) — CPU crash dump collection
+- [PIX for XBOX](/tools/pix-for-xbox) — shader debugging inside GPU captures

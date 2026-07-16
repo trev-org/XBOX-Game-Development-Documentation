@@ -1,0 +1,33 @@
+---
+title: "PIX GPU Captures for XBOX"
+sidebarTitle: "PIX GPU Captures"
+description: "Frame-scoped PIX GPU capture on XBOX — draw list, pipeline state, resource viewers, and shader debugging."
+icon: "image"
+---
+
+**GPU Captures** record a single frame's worth of D3D12 activity in full detail. Use them for correctness bugs and per-draw cost.
+
+## Views
+
+- **Events** — tree of PIX events / draw calls.
+- **Pipeline** — IA, VS, HS, DS, GS, PS, CS, RS, OM state at the selected event.
+- **Resources** — every SRV, UAV, RTV, DSV visible with format and mip.
+- **State** — pipeline state object contents.
+- **API Objects** — raw ID3D12 object graph.
+- **Mesh, Texture, BVH viewers** — inspect draw payloads.
+
+## Debugging
+
+- **Shader debugging** on the captured wavefront.
+- **Edit \+ continue** to iterate on a shader without re-capturing.
+- **Dr. PIX** correctness checker on the full capture.
+
+## Capture
+
+UI trigger or `PIXBeginCapture(PIX_CAPTURE_GPU, ...)` from title code.
+
+## Related
+
+- [GPU Trace](/tools/pix-gpu-trace)
+- [PIX Bottlenecks](/tools/pix-bottlenecks)
+- [Dr. PIX](/tools/pix-drpix)

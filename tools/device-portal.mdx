@@ -28,7 +28,69 @@ The **Windows Device Portal on XBOX** is a browser-based UI served by your dev k
 
 ## Enabling Device Portal
 
-Device Portal is on by default on dev kits but disabled on dev-mode retail consoles. Enable it from **Dev Home → Settings → Device Portal**, then connect with the credentials shown.
+Device Portal is on by default on dev kits but disabled on dev-mode retail consoles.
+
+1. On the dev kit, open **Dev Home → Settings**.
+2. Toggle **Enable Device Portal**.
+3. Set an admin username / password.
+4. Note the shown URL, e.g., `https://<console-ip>:11443`.
+
+**Trust the certificate.** Device Portal uses a per-console self-signed cert. Export it once and trust it on your PC to avoid the browser warning on every visit.
+
+## File explorer
+
+The **File Explorer** page is a web-based file browser for the console. Uploads, downloads, delete, and rename all work in-browser.
+
+Common uses:
+
+- Pull a crash dump from `\\dev\dumps`.
+- Upload a config override to an overlay folder.
+- Delete stale layouts to reclaim space.
+
+## Performance page
+
+The **Performance** page renders live graphs of CPU per-core, GPU busy, memory commit, and disk / SSD activity.
+
+Open the page on a second monitor during long playtests — it is the lowest-friction "is the console healthy?" indicator. See also [Title Performance Overlay](/tools/title-performance-overlay).
+
+## HTTP monitor
+
+The **HTTP monitor** captures every HTTP/HTTPS request the console makes, without needing a proxy.
+
+Uses:
+
+- Verify XBOX Live REST calls fire during login / sign-in.
+- Confirm which endpoints your title depends on.
+- Diagnose failed TLS handshakes.
+
+See also: [Fiddler for XBL](/tools/fiddler-web-calls), [Trace Analyzer](/tools/trace-analyzer).
+
+## Crash data
+
+The **Crash Data** page lists every crash dump the console has collected and lets you download them individually.
+
+- Pull a fresh dump for [xbWatson](/tools/xbwatson) triage without needing an `xbcp`.
+- Confirm that hang dumps are being captured (see [HIX](/tools/hix-overview) and [XHIT](/tools/xhit)).
+
+## Overlay folders
+
+**Overlay folders** let you inject or override files into an installed package without redeploying the whole layout. Useful for shader iteration, config tuning, and localization tests.
+
+**Manage from Device Portal**
+
+1. Open **Overlay Folders** in WDP.
+2. Select the target package.
+3. Upload files to override, or delete overrides.
+
+Also available via **Developer Home → Overlay folders** or `xbcp` to the overlay path.
+
+## Script authoring
+
+The **Script Authoring** tool bundles Device Portal's REST endpoints into a browser IDE where you can save reusable scripts.
+
+- Author a smoke-test flow that hits several endpoints.
+- Automate a hang-repro sequence.
+- Prototype an automation before moving it to [XBOM automation](/tools/xbox-manager).
 
 ## See also
 

@@ -1,0 +1,37 @@
+---
+title: "GDK preprocessor definitions"
+sidebarTitle: "Preprocessor definitions"
+description: "Compile-time defines injected by the GDK MSBuild rules — target family, generation, features, and toolchain flags."
+icon: "hashtag"
+---
+
+GDK MSBuild rules inject a set of `#define` values so the same source can guard XBOX vs. PC and Xbox One vs. Series X|S paths.
+
+## Target family
+
+| Define | Meaning |
+| --- | --- |
+| `_GAMING_DESKTOP` | Gaming.Desktop.x64 (PC) |
+| `_GAMING_XBOX` | Any Gaming.Xbox.\* platform |
+| `_GAMING_XBOX_XBOXONE` | Xbox One family |
+| `_GAMING_XBOX_SCARLETT` | Xbox Series X\|S |
+
+## Features
+
+| Define | Meaning |
+| --- | --- |
+| `_GAMING_XBOX_HDD` | Rotational HDD available (XboxOne only) |
+| `_HAS_XBOX_DIRECTSTORAGE` | DirectStorage available on target |
+| `_HAS_XBOX_HW_RAY_TRACING` | RT hardware present (Scarlett) |
+
+## Runtime / config
+
+| Define | Meaning |
+| --- | --- |
+| `_DEBUG` | Standard MSVC debug marker |
+| `NDEBUG` | Standard MSVC release marker |
+| `_GAMING_XBOX_PROFILE` | Profile configuration active |
+
+## Related
+
+- [Cross-gen builds](/tools/vs-cross-gen)

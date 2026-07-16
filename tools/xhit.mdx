@@ -1,0 +1,27 @@
+---
+title: "XBOX Hang Investigation Tool (XHIT)"
+sidebarTitle: "XHIT"
+description: "XHIT — open XBOX GPU hang dumps to inspect the failing draw, wavefront state, and hardware context after the fact."
+icon: "file-magnifying-glass"
+---
+
+**XHIT** is the post-mortem hang analyzer. When a TDR fires on an XBOX dev kit, the platform can save a hang dump. XHIT loads that dump and reconstructs the state of the GPU at the moment of the hang.
+
+## What XHIT shows
+
+- The command list and specific command that was executing.
+- Wavefront register state at the time of hang.
+- Resource / descriptor bindings at the point of failure.
+- Shader disassembly with the failing instruction highlighted.
+
+## Workflow
+
+1. Configure the console to save hang dumps (`xbconfig HangDumpsEnabled=1`).
+2. When a hang reproduces, retrieve the `.xdmp` file via `xbcp` or Device Portal.
+3. Open the dump in **XHIT.exe**.
+4. Correlate the failing shader against your PDB store to see HLSL.
+
+## Related
+
+- [xbWatson](/tools/xbwatson) — CPU dump collection
+- [PIX for XBOX](/tools/pix-for-xbox) — capture-driven GPU analysis

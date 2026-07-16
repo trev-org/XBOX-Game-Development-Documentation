@@ -5,16 +5,36 @@ description: "Use wdapp to install, register, and launch GDK PC titles — plus 
 icon: "rocket"
 ---
 
-## Install
+Before a GDK PC title can be launched by the platform, it must be registered or installed via [**`wdapp`**](/tools/wdapp). Registration binds a `MicrosoftGame.config` file to a loose-file layout on disk; installation processes a signed MSIXVC package.
+
+## Install or register
 
 | Approach | Use case |
 | --- | --- |
-| [`wdapp install`](/tools/wdapp) | Install an MSIXVC package. Add `/bootstrapper` for the retail Bootstrapper flow. |
-| [`wdapp register`](/tools/wdapp) | Register a loose-file folder. Required for Start menu / desktop tile icons (June 2022 GDK\+). |
+| `wdapp install` | Install an MSIXVC package. Add `/bootstrapper` for the retail Bootstrapper flow. |
+| `wdapp register` | Register a loose-file folder. Required for Start menu / desktop tile icons (June 2022 GDK\+). |
+
+**Register a loose layout**
+
+```text
+wdapp register C:\Layouts\MyGame\MicrosoftGame.config
+```
+
+**Unregister**
+
+```text
+wdapp unregister <package-name>
+```
+
+**Verify**
+
+```text
+wdapp list
+```
 
 ## Launch
 
-- [`wdapp launch`](/tools/wdapp) by AUMID or executable path
+- `wdapp launch` by AUMID or executable path
 - **Windows Device Portal → Installed Apps → Start**
 - Launch the executable directly (June 2022 GDK\+)
 
@@ -51,8 +71,13 @@ Pass the **full path** to the `.msixvc` file.
 
 ### 0x0000007B — STATUS\_INVALID\_IMAGE\_FORMAT
 
-Executable architecture doesn’t match `DesktopRegistration/ProcessorArchitecture` in `MicrosoftGame.config`.
+Executable architecture doesn't match `DesktopRegistration/ProcessorArchitecture` in `MicrosoftGame.config`.
 
 ### 0x80072F78 — WININET\_E\_INVALID\_SERVER\_RESPONSE
 
 Firewall / proxy blocking `settings-win.data.microsoft.com`. Allow it.
+
+## Related
+
+- [wdapp](/tools/wdapp)
+- [PC tools overview](/tools/pc-tools)

@@ -7,19 +7,39 @@ keywords: ["GDK tools", "PIX", "Visual Studio", "xbWatson", "XBOX Manager", "Dev
 related: ["/tools/visual-studio", "/tools/pix-for-xbox", "/tools/pix-for-windows", "/tools/xbox-manager", "/tools/dev-home", "/tools/console-command-line-tools"]
 ---
 
-The Microsoft Game Development Kit (GDK) ships with a comprehensive set of development tools spanning three categories: PC-side utilities for registering and launching titles, XBOX service tools for managing sandboxes and player data, and deep Visual Studio integration for building, debugging, and profiling. Whether you are iterating on a loose-file desktop build or diagnosing XBOX Live service call patterns, these tools cover the full development lifecycle.
+The Microsoft Game Development Kit (GDK) ships with a comprehensive set of development tools that cover every stage of the title lifecycle — build, deploy, profile, debug, package, and ship. This overview groups the tools by role so you can jump to the right area quickly.
 
 <CardGroup cols={2}>
-  <Card title="PC Tools" icon="computer" href="/tools/pc-tools">
-    Register and launch PC titles with **wdapp.exe**, profile DirectX 12 performance with **PIX for Windows**, and manage devices through **Windows Device Portal**.
+  <Card title="Visual Studio + build" icon="code" href="/tools/visual-studio">
+    Project templates, MSBuild platforms, VS 2019 / 2022 / 2026 support, Clang, ASan, and the Xbox Gaming Project Control window.
   </Card>
 
-  <Card title="XBOX Service Tools" icon="server" href="/tools/xbox-service-tools">
-    Manage sandboxes, reset player data, inspect web calls with Fiddler, and authenticate developer accounts using the full suite of XBOX service CLI tools.
+  <Card title="PC tools" icon="computer" href="/tools/pc-tools">
+    Register, launch, and iterate on PC titles with **wdapp**, remote-Windows tools, PC PIX, and screen capture.
   </Card>
 
-  <Card title="Visual Studio" icon="code" href="/tools/visual-studio">
-    Use GDK project templates, custom MSBuild platforms, and the XBOX Gaming Project Control window for a streamlined F5 debug experience in Visual Studio 2019 and 2022.
+  <Card title="Console tools" icon="sitemap" href="/tools/xbox-manager">
+    **XBOX Manager**, **Device Portal**, **Developer Home**, `xb*` and on-console `wd*` command-line tools, and DevKit Agent.
+  </Card>
+
+  <Card title="XBOX service tools" icon="server" href="/tools/xbox-service-tools">
+    Sandboxes, player data reset, test accounts, Config as Source, Connected Storage, Common Events, Fiddler, and Trace Analyzer.
+  </Card>
+
+  <Card title="Profiling + debug" icon="magnifying-glass-chart" href="/tools/pix-for-xbox">
+    PIX for XBOX and Windows, GPU Trace, Dr. PIX, PGO, xbWatson, Title Performance Overlay, and the XBOX video server.
+  </Card>
+
+  <Card title="Hang investigation" icon="bug" href="/tools/hix-overview">
+    **HIX** — live shader debugging, shader-exception breaks, and post-mortem hang dump analysis with XHIT.
+  </Card>
+
+  <Card title="Shader compiler" icon="wand-magic-sparkles" href="/tools/shader-compiler">
+    DXC for HLSL Shader Model 6.x, XBOX defines, intrinsics, HLSL extensions, and the FXC → DXC port guide.
+  </Card>
+
+  <Card title="Packaging + deployment" icon="box" href="/tools/makepkg">
+    `makepkg`, `makepri`, `splitpkg`, `packageutil`, and the Package Uploader for submission.
   </Card>
 </CardGroup>
 

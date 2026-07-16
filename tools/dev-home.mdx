@@ -20,9 +20,93 @@ icon: "house-laptop"
 | **Report a Problem** | Submit a bug to Microsoft directly from the console, with optional traces. |
 | **Manage overlay folders** | Mount and unmount loose-file overlay directories for fast iteration without re-packaging. |
 
+## Home page
+
+The **Home** page shows console identity and status at a glance:
+
+- Console name and serial.
+- Current sandbox.
+- Network IPs and status.
+- OS \+ agent version.
+- Quick links to Settings, Xbox Live, Performance.
+
+## XBOX Live page
+
+The **XBOX Live** page shows every signed-in account, its sandbox, and its entitlements.
+
+- Confirm the right test account is signed in before a repro.
+- See which sandbox each account is associated with.
+- Sign accounts out.
+
+See also: [Test Account tool](/tools/test-account-tool), [PC Sandbox Switcher](/tools/pc-sandbox-switcher).
+
+## Settings page
+
+The **Settings** page centralizes every configurable setting on the dev kit.
+
+- **Developer**: sandbox, dev mode, Device Portal.
+- **Streaming**: game streaming enable, quality.
+- **Capture**: video server, hang dumps, ETW.
+- **Networking**: DNS, proxy, hosts entries.
+- **Reset**: factory reset the kit.
+
+See also: [Device Portal](/tools/device-portal), [xbconfig](/tools/xb-tools-reference).
+
+## Networking page
+
+The **Networking** page shows both interfaces (wired \+ Wi-Fi) and offers full config:
+
+- IPv4 / IPv6 config (DHCP or static).
+- DNS servers.
+- Proxy (dev use only).
+- Custom hosts entries — useful for local endpoint testing.
+
+See also: [xbupdatehosts](/tools/xb-tools-reference).
+
+## Performance page
+
+The **Performance** page controls the on-console overlay and shows a few live console counters.
+
+- Enable / disable [Title Performance Overlay](/tools/title-performance-overlay).
+- Choose metric set (basic, extended, custom).
+- Position and opacity.
+- Reset custom counter selection.
+
+See also: [PIX System Monitor](/tools/pix-for-xbox).
+
+## Streaming page
+
+The **Streaming** page controls dev-time game streaming from the console for Remote Play validation.
+
+- Enable streaming.
+- Bitrate cap for testing on constrained networks.
+- Client whitelist.
+- Session diagnostics (recent connection log).
+
+See also: [xbgamestream](/tools/xb-tools-reference).
+
 ## Overlay folders
 
-Overlay folders are the single biggest productivity feature on a kit — they let your build read fresh assets from a network share without you re-packaging or re-deploying. Configure them in Dev Home or via `xbapp`.
+**Overlay folders** are the single biggest productivity feature on a kit — they let your build read fresh assets from a network share without you re-packaging or re-deploying. Dev Home exposes on-console management of the same overlay feature available in [Device Portal](/tools/device-portal).
+
+- Enable / disable overlay for a package.
+- Clear all overlays.
+- Show the overlay path so you can `xbcp` files into it.
+
+## Report a Problem
+
+**Report a Problem** collects the current dev-kit state into a diagnostic bundle for filing with Microsoft support.
+
+**What it collects**
+
+- Console \+ agent versions.
+- Recent debug logs.
+- Crash / hang dumps in the last N minutes.
+- Optional user-attached screenshot or video.
+
+Bundles upload directly to your linked Partner Center account; you receive a case ID.
+
+See also: [xbdiaginfo](/tools/xb-tools-reference).
 
 ## See also
 

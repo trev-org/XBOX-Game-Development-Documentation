@@ -20,12 +20,122 @@ icon: "sitemap"
 - **Console Automation** — PowerShell scripting against the fleet for nightly soak tests.
 - **Multiplayer testing** — coordinate matchmaking and party tests across grouped consoles.
 
-## Why it matters
-
 Without XBOM you would manage each console individually through command-line tools. With XBOM you can update fifty consoles, change their sandbox, and re-deploy a build in a single workflow.
+
+## Managing consoles
+
+XBOM discovers dev kits on the network and lets you organize them into groups.
+
+**Add a console**
+
+1. **Add → Discover** or type the IP directly.
+2. Enter credentials on first connect (`xbcred` stores them).
+3. Assign a friendly name and group.
+
+**Groups** apply actions to many consoles at once — sync layout, reboot, launch, or apply configuration.
+
+The **default** console is the target for `xb*` commands that omit `--console`.
+
+## Console updates
+
+XBOM applies OS recoveries and firmware updates from the same UI you use to manage consoles.
+
+1. Select consoles or a group.
+2. **Recovery → Apply** and pick the matching recovery version.
+3. XBOM sequences reboots and confirms success on each.
+
+**Best practices**
+
+- Match recovery to your installed GDK.
+- Update small groups first to catch regressions.
+- Keep a rollback recovery cached locally.
+
+## Console settings
+
+The **Settings** panel exposes every `xbconfig` value as a UI editor. Apply changes to one console or a group at once.
+
+Common toggles:
+
+- Sandbox selection
+- Performance overlay
+- Video capture enable
+- Hang dump capture
+- Streaming
+
+## Applications and files
+
+The **Applications** tab shows every package installed on the selected console(s). From here you can:
+
+- Launch, kill, or uninstall a package.
+- Sync a loose layout.
+- Browse the on-console file system (a GUI wrapper around `xbdir` / `xbcp`).
+- Push a file to a specific location.
+
+## Remote control and group input
+
+The **Remote Control** panel lets you drive one or many dev kits without a physical controller. Useful for QA automation, multi-console repros, and demonstrations.
+
+**Single-console**
+
+- Keyboard \+ mouse mapped to a virtual gamepad.
+- Optional touchpad/joystick device passthrough.
+
+**Group control**
+
+- One set of inputs replays to every console in the group — handy for multiplayer stress tests.
+- Input recorder for deterministic re-runs.
+
+## Media capture
+
+The **Media Capture** tab drives the [XBOX video server](/tools/xbox-video-server) with a GUI.
+
+- Screenshot (PNG / JPEG).
+- Record video with configurable duration and frame rate.
+- Simultaneous capture across a group.
+- Save to a shared output folder.
+
+## Test accounts
+
+The **Profiles / Test Accounts** panel signs test XBOX Live accounts into consoles or groups without visiting each kit.
+
+- Sign in a stored test account.
+- Sign out all users on a console.
+- Batch provision a full group with a test account per console.
+- Rotate accounts on a schedule.
+
+See also: [Test Account tool](/tools/test-account-tool).
+
+## Console Automation
+
+**Console Automation** runs a scripted set of actions across a group — reboot, deploy, launch, capture, teardown — and reports pass/fail per console.
+
+**Script model**
+
+- YAML or JSON step lists.
+- Each step maps to an `xb*` command or an XBOM built-in.
+- Parallel execution across groups.
+- Result aggregation with per-console logs.
+
+**Uses**
+
+- Overnight regression runs.
+- Repro farming for flaky bugs.
+- Multi-console multiplayer soak tests.
+
+## Multiplayer testing
+
+The **Multiplayer** panel coordinates test flows across many dev kits at once.
+
+- Sync-launch a title on N consoles.
+- Sign each console with a different test account.
+- Deterministic input to walk each account into matchmaking.
+- Capture MPSD session snapshots at each phase.
+
+See also: [MP Session History Viewer](/tools/mp-session-history-viewer).
 
 ## See also
 
 - [Developer Home (Dev Home)](/tools/dev-home) — on-console settings and tools
 - [Windows Device Portal on XBOX](/tools/device-portal) — web-based console management
 - [Command-line tools](/tools/console-command-line-tools)
+- [DevKit Agent](/tools/devkit-agent)
