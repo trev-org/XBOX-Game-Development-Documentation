@@ -1,0 +1,187 @@
+---
+title: "Dynamic Power States (DPS)"
+sidebarTitle: "Dynamic Power States"
+description: "Let the GPU driver scale power state based on rendering workload — a one-call opt-in that can deliver 10–15% additional savings on top of Sustainability Toolkit techniques."
+icon: "bolt"
+---
+
+<Warning>
+  DPS is available on **Xbox Series** consoles only. It has no effect on earlier Xbox consoles.
+</Warning>
+
+**Dynamic Power States (DPS)** dynamically adjusts the GPU's power level based on the rendering workload. When the GPU isn't fully utilized, DPS scales the power state back — conserving energy without compromising performance. The graphics driver drives the adjustment automatically, based on recent frame-time history.
+
+Without DPS the GPU is locked at power state **P4**, meaning even an idle GPU draws more power than necessary. DPS unlocks lower power states (P0–P3) whenever the workload allows.
+
+## How it works
+
+1. The game enables GPU dynamic power states.
+2. The GPU calculates normalized frame statistics and stores them as historical data.
+3. The GPU automatically changes power states based on current demand and history, saving energy.
+
+<Note>
+  Games can reduce energy consumption further by adopting the rest of the [XBOX Sustainability Toolkit](/principles/energy-efficiency-essentials).
+</Note>
+
+## Case studies
+
+### Call of Duty: Black Ops 6
+
+Rulon Raymond, Senior Director of Technology for Call of Duty:
+
+> We spent a few days experimenting with DPS and the results were promising. Specifically, we could see an additional **10–15% power savings** in areas **beyond** those we introduced using the XBOX Sustainability Toolkit. We were already throttling parts of the game engine down (for example, while in menus or front-end screens), with no change to the players' framerates, which saved us a lot of power — but DPS allowed us to get additional savings with no effort.
+
+At shipping, the Black Ops 6 team's plan:
+
+- Enable DPS in all areas where power-saving measures were already applied.
+- Expose a flag to enable DPS at all times, off by default, while multi-day performance testing continues.
+
+### Two Point Museum
+
+Ben Hymers, Technical Director and co-founder of Two Point Studios, shipped DPS via a cloud setting managed by the XBOX team — without a code change:
+
+> We tested Dynamic Power States alongside Constrained\+ mode to maximise energy efficiency. Together, these features reduced power draw by approximately **50–58% in the main menu** and cut energy use during constrained mode by **39–63%**. Since rollout, we've observed a notable decrease in average energy consumption without degrading gameplay fidelity. For instance, power consumption for Xbox Series X has decreased from an average of **135 W to 125 W**. Across our player base, this translates to an annual energy saving of ~**6.5 megawatt-hours**, equivalent to watching TV nonstop for 65,000 hours, or nearly 7.5 years straight.
+
+Two Point Museum was the first third-party studio to adopt DPS remotely via cloud configuration.
+
+## Test DPS without changing code (development only)
+
+You can enable DPS globally on a devkit without rebuilding your title:
+
+<Steps>
+  <Step title="Update your devkit">
+    Ensure your devkit has at least the **August 2024 Recovery** installed.
+  </Step>
+  <Step title="Create the flag file">
+    Create an empty file named `DynamicPowerEnable` on your PC.
+  </Step>
+  <Step title="Copy it to the console D: drive">
+    ```sh
+    xbcp DynamicPowerEnable xD:\
+    ```
+  </Step>
+  <Step title="Launch and profile">
+    Launch your game. DPS is now active.
+  </Step>
+  <Step title="Disable DPS when done">
+    ```sh
+    xbdel xD:\DynamicPowerEnable
+    ```
+
+    Relaunch the game.
+  </Step>
+</Steps>
+
+### Watch DPS in real time
+
+Enable the **Title Performance Overlay** via PIX or the console's settings in Xbox Manager.
+
+- If DPS is enabled, the overlay includes a red line and a **GPU power state** metric (0–4) in the bottom-right. **4** means full speed; lower means saving energy.
+- If DPS is disabled, the GPU power state shows `N/A`.
+
+Use PIX's **Power Load %** metric to measure changes in GPU energy usage in specific parts of the game.
+
+<Warning>
+  Titles **cannot** use the `DynamicPowerEnable` file to enable DPS in retail. For retail releases, use `SetDriverHintX` (below).
+</Warning>
+
+## Enable DPS in your game (retail)
+
+Use the existing `SetDriverHintX()` API on the graphics device.
+
+### API
+
+```cpp
+SetDriverHintX(UINT feature, UINT value);
+```
+
+With the **June 2024 GDK** or later, use the enum:
+
+```cpp
+DRIVER_HINT_SET_DYNAMIC_POWER
+```
+
+For **pre-June 2024 GDKs** (or older XDK titles), use the value directly:
+
+```cpp
+0xEFF1C1E7
+```
+
+### Enable DPS
+
+```cpp
+SetDriverHintX(DRIVER_HINT_SET_DYNAMIC_POWER, 1);
+// or:
+SetDriverHintX(0xEFF1C1E7, 1);
+```
+
+### Disable DPS
+
+```cpp
+SetDriverHintX(DRIVER_HINT_SET_DYNAMIC_POWER, 0);
+// or:
+SetDriverHintX(0xEFF1C1E7, 0);
+```
+
+DPS can be toggled during gameplay, but leaving it enabled at all times gives the maximum savings.
+
+<Warning>
+  If your game toggles DPS, **reset the desired value in the PLM `Resume()` handler**. DPS state is not preserved across Suspend/Resume.
+</Warning>
+
+## Detect DPS at runtime with frame statistics
+
+Games can query frame statistics to make rendering decisions (dynamic resolution, etc.) based on DPS behavior.
+
+### GetFrameStatisticsX
+
+A new frame-statistics type is available:
+
+```cpp
+D3D12XBOX_FRAME_STATISTICS_TYPE_POWERSCALING
+```
+
+And its associated structure:
+
+```cpp
+typedef struct D3D12XBOX_POWERSCALING_STATISTICS
+{
+    UINT8 PlaneIndex;
+    UINT64 GPUBusyDurationScaled;
+    double ScaleFactor;
+} D3D12XBOX_POWERSCALING_STATISTICS;
+```
+
+The existing `D3D12XBOX_RENDER_STATISTICS` returns `GPUBusyDuration`:
+
+```cpp
+typedef struct D3D12XBOX_RENDER_STATISTICS
+{
+    UINT8 PlaneIndex;
+    UINT64 GPUWriteCompleteTime;
+    UINT64 GPUBusyDuration;
+} D3D12XBOX_RENDER_STATISTICS;
+```
+
+`GPUBusyDuration` is **normalized** — it assumes the GPU clock is at P4 and is invariant of the current power state. The power-scaling frame statistics **are** subject to power-state changes and will differ from `GPUBusyDuration`.
+
+### Example
+
+A GPU workload that takes 8 ms at P4 extends to 12 ms at P2 (lower clock):
+
+| Value | DPS OFF (P4) | DPS ON (P2) |
+| --- | --- | --- |
+| `GPUBusyDuration` | 8 ms | 8 ms |
+| `GPUBusyDurationScaled` | 8 ms | 12 ms |
+| `ScaleFactor` | 1 | 0.67 |
+
+<Note>
+  The normalized `GPUBusyDuration` is preserved because game engines use it for dynamic resolution computations. Separating **normalized** and **scaled** measurements avoids feedback loops where a lower power state causes dynamic resolution to keep dropping until the lowest is reached.
+</Note>
+
+## Next steps
+
+- [How to use PIX for sustainability profiling](/principles/sustainability-pix-guide)
+- [Sustainability developer overview](/principles/sustainability-developer-overview)
+- [Sustainability devkit guide](/principles/sustainability-devkit-guide)
+- [Energy efficiency essentials](/principles/energy-efficiency-essentials)

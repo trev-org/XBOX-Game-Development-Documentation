@@ -1,0 +1,117 @@
+---
+title: "Sustainability profiling with PIX"
+sidebarTitle: "Sustainability PIX guide"
+description: "Measure your title's power consumption with PIX and Power Monitor — step-by-step setup, capture, and metrics workflow."
+icon: "chart-mixed"
+---
+
+**Performance Investigator for Xbox (PIX)** is the primary tool for graphical performance on XBOX. It also ships with **Power Monitor** so you can profile power consumption in detail — seeing where peaks and troughs occur relative to what is on screen.
+
+For an overview of tools and metrics, see [Sustainability developer overview](/principles/sustainability-developer-overview). For general PIX documentation, see [PIX for XBOX](/tools/pix-for-xbox).
+
+## Prerequisites
+
+- A PC with the latest **GDK** installed, on the same network as your console.
+- **PIX** installed via the GDK.
+- **Power Monitor** selected in PIX.
+- An **Xbox Series X development kit**.
+
+## Set up the console for profiling
+
+<Steps>
+  <Step title="Connect via the GDK Command Prompt">
+    Launch the **GDK Command Prompt** on your PC and connect to the console:
+
+    ```sh
+    xbconnect <tools-ip>
+    ```
+
+    The Tools IP is on the console at **Settings › Console info › Developer settings**.
+  </Step>
+  <Step title="Enable profiling mode in Xbox Manager">
+    Launch **Xbox Manager**, navigate to **Console settings › Debug**, and tick **Enable profiling mode**.
+
+    <Warning>
+      Disable profiling mode after the power test, before resuming normal XR testing.
+    </Warning>
+  </Step>
+  <Step title="Launch PIX">
+    Launch **PIX** on the PC. The app should transition to the console view.
+
+    The console view includes:
+
+    - **Timing Capture Options** — how data is captured and transferred.
+    - **Graphs** — real-time visualization of captured data.
+    - **Counter Control Panel** — remove/add data sets currently graphed.
+    - **Counter Menu** — the full list of counters PIX can capture.
+  </Step>
+</Steps>
+
+## Configure the capture
+
+Inside **Timing Capture Options**, set:
+
+- **Mode**: Streaming Mode
+- **CPU Samples**: 4k/sec (Balanced)
+- **Video Frames**: Enabled
+- **Compress data for transport**: Disabled (unless bandwidth is an issue)
+
+### Choose counters
+
+Remove existing graphs (click the **x** at the top-right of each). From the Counter Menu, drag these onto **Drag a counter here to create a new graph**:
+
+- **GPU% Busy**
+- **Power Load**
+
+## Capture data
+
+<Steps>
+  <Step title="Launch the title">
+    Launch the game. The graph should enumerate with captured data.
+  </Step>
+  <Step title="Start capture">
+    Navigate to the area you want to test. Press **Start Timing Capture** or `Ctrl+T` to start capturing video and data.
+  </Step>
+  <Step title="Play through and stop">
+    Progress through the area. Press **Stop Timing Capture**. The app transitions to the **Timeline** tab, which pairs captured metrics with the captured video.
+  </Step>
+</Steps>
+
+## Read the Metrics tab
+
+Open the **Metrics** tab for a representation of power usage.
+
+### Metric selector
+
+Pick the metrics to graph. For power profiling, use:
+
+- **Power Monitor › Load**
+- **GPU › GPU% Busy**
+
+### Active Metrics
+
+Enable/disable previously selected metrics and change their colors.
+
+<Tip>
+  Ensure the graph aggregates on **Average**. Click the metric in the lower-left of PIX, then in the right-hand panel open the **Graph** tab and confirm the aggregation drop-down is set to **Average**.
+</Tip>
+
+### Working with the graph
+
+Highlight a section of the graph to zoom or align the timeline. Useful actions:
+
+- **Zoom to Selected Range** — fills the graph area with the selected range for a granular view.
+- **Zoom Timeline View to Selected Range** — aligns the video timeline to the selected range so you can see where in the game the data was captured.
+- **Export Graphed Metrics** — exports a CSV of every point (value \+ timestamp). Open in Excel and compute averages with `=AVERAGE(...)`.
+
+## Certification's console configuration
+
+For each title tested in the Certification lab, XBOX retains the same setup to obtain comparable results between titles. Consistency across variables is what makes cross-title comparisons meaningful.
+
+The [Lab platform baselines](/principles/lab-platform-baselines) page reports averages captured with this configuration.
+
+## Next steps
+
+- [Sustainability devkit guide](/principles/sustainability-devkit-guide) — read power directly on the devkit without PIX.
+- [Sustainability developer overview](/principles/sustainability-developer-overview) — which metrics to trust and where the wins hide.
+- [Dynamic Power States](/principles/dynamic-power-states) — verify DPS behavior with PIX.

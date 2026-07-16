@@ -1,0 +1,101 @@
+---
+title: "XAG 117: Visual distractions and motion settings"
+sidebarTitle: "117 · Motion & distractions"
+description: "Let players pause or stop moving/blinking/auto-updating content, and provide field-of-view, camera-shake, motion-blur, and camera-sensitivity settings to reduce motion sickness."
+icon: "eye-slash"
+---
+
+## Goal
+
+Ensure players can pause or completely stop content that scrolls, blinks, auto-updates, or otherwise moves. Provide adjustable settings for field of view, camera movement/sensitivity, and other camera or screen movement. Benefits players prone to motion sickness, players distracted by moving content, and players who can't read quickly enough before auto-updates.
+
+## Overview
+
+This XAG covers two areas:
+
+1. **Text or visual elements that blink, scroll, auto-update, or move** without player input. These can cause motion sickness, be missed by players who read slowly, and be hard for screen readers to handle.
+2. **In-game experiences that elicit motion sickness.** When visual perception of body movement (walking-bob, weapon-sway, head-bob) conflicts with the player's actual stationary body, motion sickness follows.
+
+Intentional settings around field of view, camera bobbing, motion blur, weapon sway, and automatic camera changes are critical to accessible experiences.
+
+## Scoping questions
+
+### Animated UI content when text is present
+
+- Moving or animated backgrounds behind text/UI critical to gameplay?
+- Blinking or flashing content behind text/UI?
+- Auto-updating content like leaderboards or rankings?
+
+### Non-gameplay visual behaviors
+
+Does your game include behaviors (outside core gameplay) that move the field of view, camera angle, or UI without player initiation?
+
+- First vs. third person point of view choice?
+- Adjustable camera angle?
+- Automatic camera view or angle changes (auto-centering)?
+- Camera shake, head bob?
+- Repetitive side-to-side or up-and-down on-screen movement?
+- Weapon sway or similar movement behaviors?
+
+## Implementation guidelines
+
+### Moving, blinking, scrolling, auto-updating content when text is present
+
+**Auto-updating content:**
+
+- A method to control the frequency of updates. Example: Microsoft Store on Xbox lets players disable Autoplay Video and Autoplay Sound.
+- A method to pause, stop, or hide auto-updating content.
+
+**Moving, blinking, scrolling, or flashing content:**
+
+- A mechanism to entirely disable it.
+- A mechanism to pause or hide it. Example: _HyperDot_'s "Animate Background" toggle.
+
+<Note>
+  Ancillary gameplay surrounding a text-based UI experience isn't in scope, though providing an adjustable-opacity background behind text during active gameplay (e.g., Sea of Thieves) increases readability.
+</Note>
+
+### Camera and motion settings
+
+- **Avoid or allow disabling** camera shake, camera bobbing, motion blur, and mouse blur. Examples:
+  - _Halo Infinite_ sliders (0–100%) for radial blur, screen shake, full screen effects, and speed lines.
+  - _Cyberpunk 2077_ adjusts additive/secondary camera motions.
+- **Avoid repetitive side-to-side or up-and-down** on-screen movement outside core gameplay (weapon sway, camera bobbing). Example: _Elder Scrolls Online_ adjustable first-person head-bob intensity.
+
+### Field of view
+
+- Provide adjustable field-of-view settings.
+
+<Note>
+  Adjustable FOV lets players choose an angle least likely to make them sick based on sitting distance and other factors.
+</Note>
+
+Examples:
+
+- _Halo Infinite_ FOV slider with contextual explanation of the "fishbowl" effect at higher angles.
+- _Assassin's Creed Valhalla_ Close Camera setting for third-person view.
+- _Minecraft_ FOV angle up to 110 degrees.
+
+### Camera movement settings
+
+- Provide horizontal and vertical camera sensitivity settings (Halo Infinite look sensitivity sliders).
+- Provide the ability to disable automatic camera movement. Example: _Sea of Thieves_ Auto Centre Camera toggle plus delay and speed sliders.
+
+### First vs. third person
+
+- Allow players to choose between 1st and 3rd person camera views.
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players with low vision | ✓ |
+| Players with little or no color perception | ✓ |
+| Players with cognitive or learning disabilities | ✓ |
+| Players with epilepsy, players with motion sensitivity | ✓ |
+
+## Resources
+
+- [Provide an option to turn off / hide all non-interactive elements](http://gameaccessibilityguidelines.com/provide-an-option-to-turn-off-hide-all-non-interactive-elements)
+- [Provide an option to turn off / hide background movement](http://gameaccessibilityguidelines.com/provide-an-option-to-turn-off-hide-background-movement)
+- [Avoid any difference between controller movement and camera movement](http://gameaccessibilityguidelines.com/avoid-or-provide-option-to-disable-any-difference-between-controller-movement-and-camera-movement-such-as-weaponwalk-bobbing-or-mouse-smoothing/)

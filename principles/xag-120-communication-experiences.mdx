@@ -1,0 +1,86 @@
+---
+title: "XAG 120: Communication experiences"
+sidebarTitle: "120 · Communication experiences"
+description: "Make the entire pathway to, configuration of, and use of communication features accessible — not just the chat feature itself."
+icon: "users"
+---
+
+## Goal
+
+Ensure all players can navigate to, configure, and use communication features in games that support one-to-one or one-to-many player interactions. Especially important for players who are d/Deaf or hard-of-hearing, non-verbal, or have low or no vision.
+
+## Overview
+
+Accessible communication features like STT chat, TTS chat, and others are important — but they aren't useful if the player can't reach them. The navigation path to communication features and the process of configuring their settings must also be accessible. A player who can't get to a settings menu to enable TTS chat can still be blocked from using it, even when the feature exists.
+
+## Scoping questions
+
+Does your game include any of the following?
+
+- The ability for players to communicate with other players online (party chat, game chat, text chat, invites)?
+- A navigation path through the UI to reach the menu where communication features are configured?
+- A navigation path through the UI to reach points in the game where communication is available (e.g., joining a live server in Minecraft)?
+
+## Implementation guidelines
+
+When a game offers one-to-one or one-to-many communication (voice chat, text chat, etc.), the following scenarios must be accessible per all relevant XAGs.
+
+### Navigating to communication features
+
+The necessary UI path for accessing, launching, or using communication features should be accessible.
+
+- If navigating through the main menu to enable communications, the selection, launching UI, and any subsequent menus on the path should be usable by a player with a disability.
+  - **Example scenario:** Navigating from main menu → multiplayer screen → matchmaking → loading → in-match communication. Every step falls in scope.
+- If character selection/creation, joining a server, or other actions are required to reach communication features, that UI must be accessible.
+  - Example: _Sea of Thieves_ — the entire pathway from initial launch to communicating with other players is accessible (XAGs 101/102 for visuals, XAG 106 for narration, XAG 107 for input, XAGs 112–114 for UI, XAGs 115–117 for errors/time limits/motion).
+
+### Configuring the communication experience
+
+All UI for enabling or managing settings that affect communication features should be accessible:
+
+- **Communication-related accessibility settings** — toggling STT/TTS chat, adjusting screen brightness/contrast.
+- **Audio/other settings** that affect communication — volume settings for player chat, TTS chat, ambient volume, music (Gears 5 Text Chat toggle; Sea of Thieves Crew Chat Volume, Push to Talk; Grounded Large Text).
+- **Notification management** — how long notifications appear on screen; toggling certain notifications on or off.
+
+The pathways to these controls, and the mechanisms themselves (drop-down menus, sliders, buttons), must follow related XAGs.
+
+<Tip>
+  Games like _Forza Horizon 4_, _Grounded_, and _Minecraft Dungeons_ surface accessibility settings on initial launch or from the main menu, making it easier for players with disabilities to quickly configure communication settings.
+</Tip>
+
+### Using communication features
+
+All UI required for meaningful participation in communications must be usable by a player with a disability:
+
+- Sending and accepting friend requests.
+- Searching for friends and other players.
+- Actions and status of other players — muting, online/offline, availability, blocking.
+- Opening/closing chat windows, focusing and using chat features, selecting and sending predefined chat-wheel messages, reporting abuse.
+
+**Examples:**
+
+- _Sea of Thieves_ chat wheel — players with screen narration hear a preview of each predefined message on focus so they know what they'll send.
+- _Sea of Thieves_ accessible text entry — the game narrates when the text-entry box receives focus or is closed so players know they're entering a message that will broadcast.
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players without vision | ✓ |
+| Players with low vision | ✓ |
+| Players with little or no color perception | ✓ |
+| Players without hearing | ✓ |
+| Players with limited hearing | ✓ |
+| Players without speech | ✓ |
+| Players with cognitive or learning disabilities | ✓ |
+| Players with limited reach and strength | ✓ |
+| Players with limited manual dexterity | ✓ |
+| Players with prosthetic devices | ✓ |
+| Players with limited ability to use time-dependent controls | ✓ |
+| Players who don't want to share their voice online for privacy reasons, players without a microphone or headset | ✓ |
+
+## Resources
+
+- [Azure PlayFab Party overview](/gaming/playfab/features/multiplayer/networking/)
+- [PlayFab Party speech-to-text and text display UX guidelines](/gaming/playfab/features/multiplayer/networking/party-speech-to-text-ux-guidelines)
+- [PlayFab Party text-to-speech and text input UX guidelines](/gaming/playfab/features/multiplayer/networking/party-text-to-speech-ux-guidelines)

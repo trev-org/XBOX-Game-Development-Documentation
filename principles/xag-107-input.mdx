@@ -1,0 +1,177 @@
+---
+title: "XAG 107: Input"
+sidebarTitle: "107 · Input"
+description: "Let players operate the game through input mechanisms of their choice — with remapping, alternatives to holds and combos, single-stick modes, and mobile-touch guidance."
+icon: "gamepad"
+---
+
+## Goal
+
+Ensure a player can operate the gaming interface through input mechanisms of their choice.
+
+## Overview
+
+Games often assume certain physical abilities — rapid button mashing, holding triggers for seconds, precise mouse aim, two-stick control. Any of those can exclude a player who can't meet the physical demand.
+
+It's fine to offer a primary input for your game. It's **not** fine to require it. Always provide alternate inputs with equivalent functionality.
+
+## Scoping questions
+
+Wherever the game requires analog input (mouse, stick, trigger), also offer single-press digital equivalents.
+
+- Menu navigation — what inputs are required (mouse, keyboard, D-pad, stick)?
+- Character movement — does it require analog?
+- Analog triggers — does it require them (racing acceleration, etc.)?
+- Are there places where a player must press buttons quickly or hold for 2–3\+ seconds?
+
+## Beyond remapping
+
+Remapping alone doesn't remove every input barrier. Consider:
+
+- **Speed.** Rapid attack windows are hard for players using switch mounts on head, arm, or leg. Allow game-speed reduction.
+- **Complexity.** Multi-button combos and rapid sequences require memory and coordination. Allow **remappable actions**, not just controls (e.g. `pick up item` remapped to `X`, instead of remapping `A + B`).
+- **Duration.** Long holds cause fatigue. Provide toggles / auto-holds (`auto-jump`, `auto-fire`, `auto-sprint`).
+
+## Implementation guidelines
+
+### Navigation
+
+- All UIs (menu and in-game) support both digital and analog navigation.
+- All UIs are navigable using **single, non-simultaneous key presses**.
+- UIs support **keyboard-only** operation, including start, settings, gameplay, and exit.
+
+### Remapping
+
+- Games provide **in-game** remapping of all controls, regardless of platform-level remapping.
+- Includes analog and digital controls, X- and Y-axis inversion **individually** per stick, and PC `Esc`.
+- Ideally, actions can be assigned to any input — not just swapped between existing bindings.
+- Remapped bindings update hints, tips, tutorials, and controller diagrams.
+- Interface components are fully operable with digital input even when the primary is analog.
+
+### Timing and combos
+
+- **Avoid** rapid multi-press mechanics (QTEs).
+- **Avoid** requiring key/button holds for extended periods.
+- **Avoid** requiring simultaneous button presses.
+- Where the above are unavoidable, provide an alternative that is less demanding, or allow the player to bypass or skip that content.
+
+### Gestures and pointer input
+
+- **No required multi-point gestures.** Any pinch/two-finger gesture has a tap / click / long-press alternative.
+- **No required path-based gestures** (swipes, drag-shapes) — alternatives exist.
+- For single-pointer input:
+  - Activation happens on the **up event**, not the down event.
+  - Provide a way to cancel before completion.
+  - If cancel isn't possible, provide undo.
+  - Exception: essential down-event actions (piano keys, firing a weapon) may activate on down.
+
+### Non-traditional inputs
+
+- Any gameplay-critical input using **speech or motion** has an alternative digital input.
+
+### Analog sticks and D-pad
+
+- Don't require two sticks (or stick \+ D-pad) to complete mechanics.
+- If a stick click is used as an input, it must be remappable.
+- If D-pad is used for weapon / item selection, it must be remappable or accessible via menu.
+
+### Sensitivity
+
+- Provide **in-game** sensitivity adjustment for each analog input individually (stick, joystick, trigger, wheel, mouse) with a range of at least ± 50% of the default.
+
+## Mobile input guidelines
+
+A **touch target** is any defined area on-screen that activates a control upon touch.
+
+### Alternative input types
+
+Offer:
+
+- Standard controllers
+- Adaptive controllers
+- Physical keyboards
+- Mouse
+- Platform assistive technologies (switch access, voice input, camera-based head movement)
+
+### Mobile-native accessibility
+
+- **Switch control** support so players using head/arm/leg-mounted switches can scan and select.
+- **Voice control** support so players can activate on-screen inputs by voice.
+
+### Orientation
+
+- Support both portrait and landscape. Players with mounted devices may be locked to one orientation.
+
+### Customization
+
+- Allow adjusting size, spacing, and position of all touch targets.
+- Provide a range of pre-set layout options (e.g. Combat Pro, Builder Pro).
+
+### Default touch target sizing
+
+| Device | Minimum size |
+| --- | --- |
+| **Mobile phones** | 15 mm × 15 mm (or 15 mm diameter); 59 px @ 100 DPI, 118 px @ 200 DPI, 236 px @ 400 DPI |
+| **Tablets** | 24 mm × 24 mm (or 24 mm diameter); 94 px @ 100 DPI, 189 px @ 200 DPI, 378 px @ 400 DPI |
+
+Scale linearly as DPI increases. Space targets widely enough to prevent accidental activation, ideally with a buffer of inactive screen around each.
+
+### Cancel and correction
+
+- Allow **Short Press and Drag** to cancel a button press.
+- Provide an **Undo** button for reversible actions.
+- Let players release a held object by pulling it outside the playable area.
+
+### Sensitivity and simplification
+
+- Allow tuning of swipe sensitivity, camera zoom, etc.
+- Offer simplified control schemes / options that reduce the number of touch controls (`auto pick up`, `auto fire`, one-tap fire modes).
+
+### Avoid / provide alternatives for
+
+- Prolonged touch holds
+- Dragging / swiping
+- Rapid taps
+- Multi-point gestures
+- Multi-finger simultaneous presses
+- Speech input
+- Gyroscopic tilt / shake
+
+### Timing
+
+- Control activation happens on **touch-end** (finger lift) or **mouse-up**, not down.
+
+### Text input
+
+- Support **speech-to-text / dictation** in text-input fields and text chat.
+
+### Customization accessibility
+
+- The customization UI itself is fully accessible — resizing, moving, re-assigning, and selecting layouts.
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players without vision | ✔ |
+| Players with low vision | ✔ |
+| Players with little or no color perception | ✔ |
+| Players without speech | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players with limited reach and strength | ✔ |
+| Players with limited manual dexterity | ✔ |
+| Players with prosthetic devices | ✔ |
+| Players with limited ability to use time-dependent controls | ✔ |
+| Players with chronic pain, fatigue, or using assistive-tech inputs | ✔ |
+
+## Resources
+
+- [Ensure key actions can be carried out by digital controls](http://gameaccessibilityguidelines.com/ensure-that-all-key-actions-can-be-carried-out-by-digital-controls-pad-keys-presses-with-more-complex-input-eg-analogue-speech-gesture-not-required-and-included-only-as-supplementary-al)
+- [Include an option to adjust sensitivity of controls](http://gameaccessibilityguidelines.com/include-an-option-to-adjust-the-sensitivity-of-controls)
+- [Avoid requiring multiple simultaneous actions](http://gameaccessibilityguidelines.com/ensure-that-multiple-simultaneous-actions-eg-clickdrag-or-swipe-are-not-required-and-included-only-as-a-supplementary-alternative-input-method)
+- [Avoid repeated inputs](http://gameaccessibilityguidelines.com/avoid-repeated-inputs-button-mashingquick-time-events)
+- [Avoid / provide alternatives to requiring buttons to be held down](http://gameaccessibilityguidelines.com/avoid-provide-alternatives-to-requiring-buttons-to-be-held-down)
+- [Provide a macro system](http://gameaccessibilityguidelines.com/provide-a-macro-system/)
+- [Simple control schemes compatible with switch / eye-tracking](http://gameaccessibilityguidelines.com/provide-very-simple-control-schemes-that-are-compatible-with-assistive-technology-devices-such-as-switch-or-eye-tracking)
+- [Do not rely on motion tracking of specific body types](http://gameaccessibilityguidelines.com/do-not-rely-on-motion-tracking-of-specific-body-types/)
+- [Use Switch Control on iOS](https://support.apple.com/en-us/HT201370)

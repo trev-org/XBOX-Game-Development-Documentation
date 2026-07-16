@@ -1,0 +1,54 @@
+---
+title: "XAG 110: Haptic feedback"
+sidebarTitle: "110 · Haptic feedback"
+description: "Let players turn off haptics and adjust intensity; never use haptics as the sole channel for important information."
+icon: "wave-square"
+---
+
+## Goal
+
+Ensure players can configure haptic feedback — supporting players who benefit from it as an additional output modality **and** players who prefer to disable it due to discomfort or pain.
+
+## Overview
+
+Haptics deepen immersion and act as a bonus channel for players who can't see or hear cues. But haptics can also cause distraction, discomfort, or pain for players with sensory-processing conditions or chronic pain. And not every input device even has motors (Xbox Adaptive Controller, most mice).
+
+So: **haptics are always additional, never sole**, and **always configurable**.
+
+## Scoping questions
+
+Does your game use haptic feedback? If so:
+
+- Can players **disable** haptic feedback entirely?
+- Can players **adjust the intensity**?
+- Does your game use haptic feedback **alone** to convey any information? (It shouldn't — provide additional channels.)
+
+## Implementation guidelines
+
+If haptic feedback is a supported feature, players can:
+
+- **Turn it off.**
+- **Adjust intensity** across a wide range (from off to maximum).
+- **Rely on other feedback.** Haptic feedback is never the sole channel — always paired with visual and/or auditory indicators.
+
+Consider adding haptic cues as an **optional additional channel** for important visual or audio information. See [XAG 103: Additional channels for visual and audio cues](/principles/xag-103-additional-cues).
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players without vision | ✔ |
+| Players with low vision | ✔ |
+| Players with little or no color perception | ✔ |
+| Players without hearing | ✔ |
+| Players with limited hearing | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players with prosthetic devices (prosthetic hands may not perceive rumble) | ✔ |
+| Players with sensory-processing disorders or chronic pain | ✔ |
+
+## Resources
+
+- [Include toggle/slider for any haptics](http://gameaccessibilityguidelines.com/include-toggle-slider-for-any-haptics/)
+- API: [GameInputHapticFeedbackParams](https://developer.microsoft.com/games/xbox/docs/gdk/GameInputHapticFeedbackParams) _(NDA)_
+- API: [GameInputHapticFeedbackMotorInfo](https://developer.microsoft.com/games/xbox/docs/gdk/GameInputHapticFeedbackMotorInfo) _(NDA)_
+- API: [GameInputHapticWaveformInfo](https://developer.microsoft.com/games/xbox/docs/gdk/GameInputHapticWaveformInfo) _(NDA)_

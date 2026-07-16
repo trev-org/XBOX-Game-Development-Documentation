@@ -1,36 +1,88 @@
 ---
 title: "GDK accessibility overview"
-description: "Tools, features, and services for making GDK games more accessible."
+description: "Guidelines, tools, APIs, and Microsoft services for building accessible XBOX games."
 icon: "universal-access"
 ---
 
-Making your game accessible expands your audience and is supported by GDK APIs, design guidelines, and Microsoft-provided testing services.
+XBOX should be a place where everyone has fun. Inclusive and accessible games make it possible for more players to play. This section pulls the Microsoft Gaming Accessibility program together with the GDK APIs you use to ship it.
 
 ## Where to start
 
-1. **Understand your customer** — see [Gaming and Disability Player Experience Guide](https://learn.microsoft.com/gaming/accessibility/gadpeg)
-2. **Design with [XBOX Accessibility Guidelines (XAGs)](https://learn.microsoft.com/gaming/accessibility/guidelines)**
-3. **Implement** — use the APIs below
-4. **Test** — optionally engage [Microsoft Gaming Accessibility Testing (MGATS)](https://developer.microsoft.com/games/xbox/partner/certification-mgats)
+<Steps>
+  <Step title="Learn">
+    Start with the [Gaming Accessibility Fundamentals learning path](/principles/gaf-info) and the [Gaming and Disability Player Experience Guide](/principles/gadpeg) to understand player experiences.
+  </Step>
+  <Step title="Design">
+    Use the [XBOX Accessibility Guidelines (XAGs)](/principles/xbox-accessibility-guidelines) — 23 best-practice guidelines built with the Gaming and Disability Community.
+  </Step>
+  <Step title="Implement">
+    Use the GDK APIs and services in the table below, and honour system settings via [Speech accessibility user settings](/principles/speech-accessibility).
+  </Step>
+  <Step title="Validate">
+    Request [MGATS](/principles/mgats) for a free evaluation and ship to [XBOX Accessibility Insiders League (XAIL)](/principles/accessibility-resources#connecting-with-customers) for community feedback.
+  </Step>
+  <Step title="Merchandise">
+    Declare [Accessibility feature tags](/principles/accessibility-feature-tags) in Partner Center so players can filter for the features they need.
+  </Step>
+</Steps>
+
+## Program resources
+
+<CardGroup cols={2}>
+  <Card title="XBOX Accessibility Guidelines" icon="list-check" href="/principles/xbox-accessibility-guidelines">
+    XAG 101–123 — the best-practice catalog for accessible XBOX games.
+  </Card>
+
+  <Card title="Gaming and Disability Player Experience Guide" icon="user-group" href="/principles/gadpeg">
+    Barriers and design responses organized by disability type.
+  </Card>
+
+  <Card title="Gaming Accessibility Fundamentals" icon="graduation-cap" href="/principles/gaf-info">
+    Free Microsoft Learn path — 5 modules with a completion badge.
+  </Card>
+
+  <Card title="Disability etiquette" icon="handshake" href="/principles/etiquette">
+    Short training on productive interactions with the Gaming and Disability Community.
+  </Card>
+
+  <Card title="Accessibility feature tags" icon="tags" href="/principles/accessibility-feature-tags">
+    ESA Accessible Games Initiative tags \+ Xbox tags for Partner Center.
+  </Card>
+
+  <Card title="Accessibility of gaming AI" icon="microchip-ai" href="/principles/accessibility-of-gaming-ai">
+    Applying accessibility principles to AI-driven game frontends and backends.
+  </Card>
+
+  <Card title="Workshop toolkit" icon="chalkboard-user" href="/principles/accessibility-workshop-toolkit">
+    Facilitator-ready materials for running inclusive-design workshops.
+  </Card>
+
+  <Card title="Developer resources" icon="folder-open" href="/principles/accessibility-resources">
+    XAC, connecting with players, training, conferences, and talks.
+  </Card>
+
+  <Card title="MGATS" icon="clipboard-check" href="/principles/mgats">
+    Free Microsoft accessibility evaluation before final cert.
+  </Card>
+</CardGroup>
 
 ## Development APIs and services
 
 | Area | API / Service | Platforms |
 | --- | --- | --- |
-| Subtitles / captions / text display | `XAccessibility` | Windows, XBOX |
-| Subtitles contrast | `XAccessibility` (`XHighContrastMode`) | Windows, XBOX |
-| Communication | Azure PlayFab Party | Cross-platform |
-| STT / TTS | PlayFab Party STT/TTS | Cross-platform |
+| Subtitles, captions, text display | `XAccessibility` | Windows, XBOX |
+| High-contrast mode | `XAccessibility` (`XHighContrastMode`) | Windows, XBOX |
+| Real-time voice chat | [Azure PlayFab Party](/gaming/playfab/features/multiplayer/networking/) | Cross-platform |
+| Speech-to-text / text-to-speech chat | PlayFab Party STT/TTS | Cross-platform |
 | Screen narration | `SpeechAccessibility` | Windows, XBOX |
-
-## Release management resources
-
-| Resource | Use case |
-| --- | --- |
-| [**Microsoft Gaming Accessibility Testing (MGATS)**](https://developer.microsoft.com/games/xbox/partner/certification-mgats) | Optional confidential accessibility testing |
-| [**Accessibility Insights**](https://accessibilityinsights.io/) | Free toolset for finding accessibility issues |
-| [**XBOX Accessibility Insiders League (XAIL)**](https://support.xbox.com/help/account-profile/manage-account/xbox-accessibility-insider-league) | Public group of XBOX players who provide feedback |
 
 ## Related API documentation
 
-- [XAccessibility API reference](/reference/xaccessibility) — closed captions, high contrast mode, and the speech-to-text overlay APIs.
+- [XAccessibility API reference](/reference/xaccessibility) — closed captions, high-contrast mode, and speech-to-text overlay APIs.
+- [Speech accessibility user settings](/principles/speech-accessibility) — reading and honouring the platform speech-accessibility switch.
+
+## See also
+
+- [Inclusive Design toolkit (Microsoft)](https://www.microsoft.com/design/inclusive/)
+- [XBOX Developer Programs](https://www.xbox.com/publish)
+- Questions? Contact the [Gaming Accessibility Team](mailto:xaccess@microsoft.com).

@@ -1,0 +1,91 @@
+---
+title: "The Elder Scrolls Online case study"
+sidebarTitle: "Elder Scrolls Online"
+description: "ZeniMax Online capped menu framerate at 30 FPS and applied idle detection — a 5% platform-wide efficiency improvement in the first week after Gold Road launched."
+icon: "scroll"
+---
+
+**Studio:** ZeniMax Online Studios (ZOS)<br />**Shipped:** ESO: Gold Road, June 2024<br />**Contributors:** Adam Koby (Project Technical Director), David Guy (Stability/Graphics Engineer)
+
+Shortly after joining Microsoft, ZOS was introduced to the XBOX Sustainability Toolkit. They tested several hypotheses — discarding a few that hurt player experience or delivered too little — and settled on **contextual menus** and **player inactivity** as the two areas where they could win without compromising gameplay fidelity.
+
+> “We settled on two areas that we felt we could improve without noticeably impacting gameplay fidelity: contextual menus and player inactivity.”
+
+## Contextual menus
+
+The Certification power report showed power draw jumped from ~113 W to ~144 W the moment the player entered menus in Performance Mode on Xbox Series X. PIX Power Monitor traced the delta to the GPU — the world was still being fully rendered and updated behind the menus.
+
+Three strategies were prototyped.
+
+### 1. Globally reduce render resolution while in menus ❌
+
+Used the studio's existing dynamic resolution system to drop the 3D render while keeping the menu at full resolution.
+
+ESO is an MMO — the world must keep running behind the menus. Dropping resolution made it hard to react to events, and the 3D render is used to visualize player equipment while browsing. **Rejected** for player experience.
+
+### 2. VRS Tier 2 to dynamically drop resolution behind UI ❌
+
+Used [Variable-Rate Shading Tier 2](/windows/win32/direct3d12/vrs) to lower render resolution only in areas occluded by the UI panel. No harm to player experience, but the gains with a pre-computed VRS map were sub-1%, and generating the map at runtime would have negated them.
+
+> “We saw small gains with VRS partly due to our own VRS integration, which isn't used in every render pass. While other titles might see better results, we ultimately deemed this approach not viable for our game.”
+
+### 3. Drop framerate to 30 FPS while menus are open ✅
+
+With the game targeting 60 FPS in Performance Mode, capping menus at 30 FPS cut half the rendered frames — directly halving power consumption in menus.
+
+| Scenario | Avg. Power Load | Avg. wattage |
+| --- | --- | --- |
+| Menus at 60 FPS | 63% | 133 W |
+| Menus at 30 FPS | 37% | 78 W |
+| **Benefit** | **−41%** | **−55 W** |
+
+Not applied to menus that render character interactions or animated systems (such as antiquities), because those visuals impact the player experience.
+
+> “This 50% reduction in rendered frames directly created an approximate 50% reduction in power consumption while in menus. This dropped the overall measured power consumption from about 133 W down to nearly 78 W for the Xbox Series X.”
+
+## Player inactivity
+
+ESO's servers already send inactive players back to the main menu after 20 minutes. Between the last input and that transition, plenty of power was being wasted.
+
+After **5 minutes** of no input, ESO now considers the player "idle," drops the resolution by half, and caps framerate to 30 FPS.
+
+| Scenario | Avg. Power Load | Avg. wattage |
+| --- | --- | --- |
+| Original when idle | 65% | 131 W |
+| New when idle | 24% | 51 W |
+| **Benefit** | **−63%** | **−80 W** |
+
+Applied on PC, Xbox Series X|S, and PS5.
+
+### Screen dimming (PC)
+
+Major consoles have OS-level screen dimming; PC does not. On PC builds, ESO dims the screen when the resolution drops. Not directly measurable via the Sustainability Toolkit, but LED/OLED screens are documented to draw less power at lower brightness — the team felt the change was worthwhile.
+
+## Post-launch impact
+
+ESO's Xbox energy footprint since 2021 is well into the tens of millions of kWh. In the **first week** after Gold Road shipped, telemetry showed a **5% improvement** in energy efficiency.
+
+Over the next three years, the Xbox-only savings are estimated to equal:
+
+- Nearly 1M pounds of coal burned, **or**
+- More than 2M miles driven by an average gas vehicle.
+
+ESO is multi-platform, so the true global impact is significantly larger. Series S saw a more modest improvement because many changes target Series X graphical output.
+
+<Note>
+  These improvements are **not optional** — they're on for every player. Because they're imperceptible, ZOS treats them as a strict improvement to the game.
+</Note>
+
+## Takeaways for other studios
+
+- **Kill hypotheses fast.** Two of ZOS's three approaches didn't ship. Frame-rate caps did.
+- **Framerate caps beat resolution drops** when the world behind a menu carries gameplay-relevant information.
+- **Idle detection compounds.** 5-minute inactivity threshold plus half-resolution and half-framerate produced a 63% reduction.
+- **Ship it default-on** when the change is imperceptible.
+
+## Related case studies
+
+- [Halo Infinite](/principles/case-studies-halo)
+- [Fortnite & Unreal Engine](/principles/case-studies-fortnite)
+- [Call of Duty](/principles/case-studies-cod)
+- [Energy Efficiency Essentials](/principles/energy-efficiency-essentials)

@@ -1,0 +1,197 @@
+---
+title: "Lab platform baselines"
+sidebarTitle: "Lab platform baselines"
+description: "Power consumption averages captured by Certification with PIX across in-game areas — main menu, loading screen, cutscenes, active gameplay, constrained state, and multiplayer."
+icon: "flask"
+---
+
+Developers evaluating their game's energy efficiency can compare against the XBOX platform baseline averages, broken down by in-game area. Baselines are captured with **PIX (Performance Investigator for Xbox)** and cross-referenced with power watt meter readings at the wall socket.
+
+If your title's approximate wattage or power consumption percentage in a given area is above these values, prioritize that area for investigation.
+
+<Note>
+  Averages reflect a sample size of **more than 200 titles** tested from October 2022 onwards. This is informational — it is **not** part of Xbox Requirement testing.
+</Note>
+
+## How the baselines are captured
+
+Baselines are generated during Certification's sustainability testing, which is separate from mandatory XR testing. Each title is measured on both Xbox Series X and Xbox Series S using PIX from the GDK.
+
+1. Connect each console to PIX.
+2. Progress through gameplay in every available game mode, visiting every relevant area.
+3. Highlight the timeline for the duration spent in each area and record the average percentage.
+4. Where possible, follow the same routes and actions across Series X and Series S for comparable results.
+
+Developers can reproduce this process on their own Xbox Series X Development Kit. See [How to use PIX for sustainability profiling](/principles/sustainability-pix-guide) for step-by-step instructions.
+
+## Average by in-game area
+
+Averages are split across the most common in-game areas. Definitions are at the bottom of this page.
+
+### In-engine cutscene
+
+| Console | Average power consumption | Approximate wattage |
+| --- | --- | --- |
+| Xbox Series X | 59% | 150 W |
+| Xbox Series S | 53.2% | 71 W |
+
+### Loading screen
+
+| Console | Average power consumption | Approximate wattage |
+| --- | --- | --- |
+| Xbox Series X | 36% | 105 W |
+| Xbox Series S | 35.2% | 60 W |
+
+### Active gameplay
+
+| Console | Average power consumption | Approximate wattage |
+| --- | --- | --- |
+| Xbox Series X | 60.2% | 154 W |
+| Xbox Series S | 56.2% | 74 W |
+
+### Constrained state
+
+| Console | Average power consumption | Approximate wattage |
+| --- | --- | --- |
+| Xbox Series X | 50.7% | 133 W |
+| Xbox Series S | 48.5% | 65 W |
+
+### Contextual menu (pause menu)
+
+| Console | Average power consumption | Approximate wattage |
+| --- | --- | --- |
+| Xbox Series X | 52.5% | 140 W |
+| Xbox Series S | 51.6% | 70 W |
+
+### Main menu
+
+| Console | Average power consumption | Approximate wattage |
+| --- | --- | --- |
+| Xbox Series X | 47% | 123 W |
+| Xbox Series S | 43% | 63 W |
+
+### Multiplayer active gameplay
+
+| Console | Average power consumption | Approximate wattage |
+| --- | --- | --- |
+| Xbox Series X | 57.2% | 150 W |
+| Xbox Series S | 53.6% | 72 W |
+
+### Multiplayer lobby
+
+| Console | Average power consumption | Approximate wattage |
+| --- | --- | --- |
+| Xbox Series X | 48.6% | 131 W |
+| Xbox Series S | 48% | 70 W |
+
+## Averages by AV output
+
+Power consumption varies with title features such as resolution and frame rate. Graphics settings — performance, quality, resolution — drive GPU load significantly. Results below are averaged from **more than 100 test scenarios** on multiple versions of titles across the XBOX catalogue.
+
+### Xbox Series X: 4K at 60 FPS
+
+| Area | Average power usage | Approximate wattage |
+| --- | --- | --- |
+| In-engine cutscene | 59.33% | 151 W |
+| Loading screen | 37.6% | 107 W |
+| Active gameplay | 60.5% | 154 W |
+| Constrained state | 51.5% | 136 W |
+| Contextual menu | 54.3% | 144 W |
+| Main menu | 49.6% | 126 W |
+| Multiplayer active gameplay | 57.5% | 150 W |
+| Multiplayer lobby | 48.9% | 131 W |
+
+### Xbox Series X: 4K at 30 FPS
+
+| Area | Average power usage | Approximate wattage |
+| --- | --- | --- |
+| In-engine cutscene | 58.3% | 143 W |
+| Loading screen | 35.4% | 100 W |
+| Active gameplay | 57.9% | 150 W |
+| Constrained state | 51.2% | 131 W |
+| Contextual menu | 46.2% | 126 W |
+| Main menu | 41% | 108 W |
+| Multiplayer active gameplay | 56.2% | 149 W |
+| Multiplayer lobby | 49.6% | 135 W |
+
+### Xbox Series X: 1080p at 60 FPS
+
+| Area | Average power usage | Approximate wattage |
+| --- | --- | --- |
+| In-engine cutscene | 58.5% | 151 W |
+| Loading screen | 32.4% | 107 W |
+| Active gameplay | 43.6% | 154 W |
+| Constrained state | 39.6% | 107 W |
+| Contextual menu | 45% | 136 W |
+| Main menu | 49.1% | 144 W |
+| Multiplayer active gameplay | 46% | 126 W |
+| Multiplayer lobby | 38.9% | 150 W |
+
+### Xbox Series S: 1440p
+
+| Area | Average power usage | Approximate wattage |
+| --- | --- | --- |
+| In-engine cutscene | 56% | 75 W |
+| Loading screen | 32.5% | 58 W |
+| Active gameplay | 58.6% | 77 W |
+| Constrained state | 50.6% | 70 W |
+| Contextual menu | 52.6% | 73 W |
+| Main menu | 39.8% | 64 W |
+| Multiplayer active gameplay | 56.7% | 73 W |
+| Multiplayer lobby | 44.8% | 75 W |
+
+### Xbox Series S: 1080p
+
+| Area | Average power usage | Approximate wattage |
+| --- | --- | --- |
+| In-engine cutscene | 46% | 66 W |
+| Loading screen | 31.5% | 57 W |
+| Active gameplay | 51.6% | 71 W |
+| Constrained state | 44.7% | 61 W |
+| Contextual menu | 46.2% | 65 W |
+| Main menu | 41.4% | 60 W |
+| Multiplayer active gameplay | 48.7% | 68 W |
+| Multiplayer lobby | 47.1% | 63 W |
+
+### Xbox Series S: 60 FPS (all resolutions)
+
+| Area | Average power usage | Approximate wattage |
+| --- | --- | --- |
+| In-engine cutscene | 54.2% | 71 W |
+| Loading screen | 35.8% | 61 W |
+| Active gameplay | 56.6% | 74 W |
+| Constrained state | 50% | 65.4 W |
+| Contextual menu | 54% | 71 W |
+| Main menu | 47% | 65 W |
+| Multiplayer active gameplay | 54.1% | 72 W |
+| Multiplayer lobby | 50.7% | 71 W |
+
+### Xbox Series S: 30 FPS (all resolutions)
+
+| Area | Average power usage | Approximate wattage |
+| --- | --- | --- |
+| In-engine cutscene | 51.5% | 71 W |
+| Loading screen | 33.9% | 55 W |
+| Active gameplay | 54.2% | 71 W |
+| Constrained state | 45.3% | 65 W |
+| Contextual menu | 45.2% | 66 W |
+| Main menu | 33% | 57 W |
+| Multiplayer active gameplay | 50.1% | 69 W |
+| Multiplayer lobby | 38.1% | 67 W |
+
+## In-game area definitions
+
+- **Main menu** — where the player arrives after the initial interactive state. Offers new game, resume, options.
+- **Contextual menu** — invoked during active gameplay (usually the Menu button).
+- **Loading screen** — displayed when transitioning into or out of active gameplay. Baseline uses the loading screen into active gameplay.
+- **Active gameplay** — actively playing in a single-player mode. Typically the largest opportunity for green code.
+- **In-engine cutscene** — cutscene rendered by the game engine (not a pre-rendered video).
+- **Multiplayer lobby** — the menu for viewing/adding/removing players from a multiplayer session. If a title has no lobby, we substitute an equivalent screen (Social, Friends, Party).
+- **Multiplayer active gameplay** — actively playing in a multiplayer session.
+- **Constrained state** — invoked by pressing the XBOX button and returning Home. The title is minimized and the Home screen displays. A common way to pause when walking away.
+
+## Next steps
+
+- [Global platform baselines](/principles/global-platform-baselines) — real-world telemetry averages.
+- [Sustainability PIX guide](/principles/sustainability-pix-guide) — reproduce this process on your own devkit.
+- [Energy efficiency essentials](/principles/energy-efficiency-essentials) — techniques to bring your title below these averages.

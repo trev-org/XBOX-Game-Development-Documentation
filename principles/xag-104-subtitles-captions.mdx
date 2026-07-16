@@ -1,0 +1,100 @@
+---
+title: "XAG 104: Subtitles and captions"
+sidebarTitle: "104 · Subtitles & captions"
+description: "Ensure players who don't rely on audio can follow all speech and important non-speech audio via subtitles, captions, and sign language."
+icon: "closed-captioning"
+---
+
+## Goal
+
+Ensure all audio portrayed by the game can be understood by players who can't rely on audio — d/Deaf or hard-of-hearing players. That includes FMVs, cutscenes, NPC chatter, and important audio cues (gunfire, footsteps).
+
+## Overview
+
+- **Subtitles** are text equivalents for speech / dialogue.
+- **Captions** are text equivalents for **all** audio — background music, SFX, tone, speaker identity, and directional cues like "over the radio."
+
+Without them, players miss backstory, story context, and objectives.
+
+## Scoping questions
+
+Does your game include:
+
+- FMVs or cutscenes?
+- NPC chatter or dialogue?
+- Audio cues (gunfire, footsteps) that inform gameplay?
+
+## Implementation guidelines
+
+### Subtitles
+
+- **Provided for all spoken content.**
+- **Identify the speaker.** Label the speaker's name each time a new speaker starts. Once established, the label doesn't need to repeat on every subsequent line for the same speaker — only when the speaker changes or after a significant pause (≥ 1–2 minutes).
+- **Spatial indicators.** Use `<` / `>` arrows or explicit descriptors (e.g. `(on radio)`) when the source isn't obvious.
+- **Color** can distinguish speakers, but never as the sole channel — pair with a name label.
+- **Enable by default** at first launch, or let the player enable it before the first cinematic plays.
+- **Narrator lines** don't need a `Narrator:` prefix when there is only one narrator and no other speakers.
+
+### Captions
+
+- **Provided for all important sounds** not already communicated visually.
+- **Spatial indication** (arrows) for off-screen sounds.
+- **Toggleable** and configurable through a discoverable setting.
+- Allow different caption categories (main dialogue, background chatter, ambient noises) to be toggled independently.
+
+### Platform integration
+
+- Whenever possible, use the caption / subtitle settings the player configured at the **platform level** by default. Let players override in-game.
+
+### Text presentation for subtitles and captions
+
+| Property | Requirement |
+| --- | --- |
+| **Size** | Meets [XAG 101](/principles/xag-101-text-display) minimum. Larger defaults are encouraged for fast-moving text. |
+| **Adjustable size** | Scalable to ≥ 200% of the minimum. |
+| **Spacing** | Adequate space between characters. |
+| **Length** | ≤ 40 characters per line. Show ≤ 2 lines at a time (3 in exceptional cases). |
+| **Line breaks** | Prefer manual breaks at editorially sensible points. |
+| **Case** | Mixed case, not ALL CAPS. |
+| **Font** | At least one sans-serif option. |
+| **Background color** | Player-configurable solid background behind text. |
+| **Background opacity** | 0–100% player-configurable. |
+| **Placement** | Placed (typically bottom) so scaled text doesn't obscure gameplay UI. |
+
+### Preview and persistence
+
+- Provide a **visual preview** of subtitle / caption presentation reflecting the player's current configuration, ideally in a realistic game context.
+- **Persist** captions and subtitles into screen recordings, captures, and other UGC so viewers can enable them.
+
+### FMV transcripts
+
+- Full transcripts of FMVs are made available via an accessible website.
+
+### Sign language interpretation
+
+- Provide sign-language interpretation for scripted in-game cutscenes and pre-rendered FMVs with speech.
+- Signing requires localization (ASL, BSL, JSL, etc. differ substantially).
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players without hearing | ✔ |
+| Players with limited hearing | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players in noisy environments or playing muted | ✔ |
+
+## Resources
+
+- [Provide subtitles for all important speech](http://gameaccessibilityguidelines.com/provide-subtitles-for-all-important-speech/)
+- [If any subtitles / captions are used, present them in a clear, easy to read way](http://gameaccessibilityguidelines.com/if-any-subtitles-captions-are-used-present-them-in-a-clear-easy-to-read-way/)
+- [Provide subtitles for supplementary speech](http://gameaccessibilityguidelines.com/provide-subtitles-for-supplementary-speech/)
+- [Ensure subtitles/captions are or can be turned on before any sound is played](http://gameaccessibilityguidelines.com/ensure-subtitles-captions-are-or-can-be-enabled-before-any-sound-is-played)
+- [Allow subtitle/caption presentation to be customized](http://gameaccessibilityguidelines.com/allow-subtitlecaption-presentation-to-be-customised/)
+- [Words-per-minute for the target age-group](http://gameaccessibilityguidelines.com/ensure-that-subtitlescaptions-are-cut-down-to-and-presented-at-an-appropriate-words-per-minute-for-the-target-age-group)
+- [Provide captions or visuals for significant background sounds](http://gameaccessibilityguidelines.com/provide-captions-or-visuals-for-significant-background-sounds/)
+- [Ensure no essential information is conveyed by sounds alone](http://gameaccessibilityguidelines.com/ensure-no-essential-information-is-conveyed-by-sounds-alone)
+- [Provide a visual indication of who is currently speaking](http://gameaccessibilityguidelines.com/provide-a-visual-indication-of-who-is-currently-speaking)
+- [BBC Subtitle Guidelines](https://www.bbc.co.uk/accessibility/forproducts/guides/subtitles/)
+- API: [XClosedCaptionGetProperties](https://developer.microsoft.com/games/xbox/docs/gdk/XClosedCaptionGetProperties) _(NDA)_
+- API: [XClosedCaptionSetEnabled](https://developer.microsoft.com/games/xbox/docs/gdk/XClosedCaptionSetEnabled) _(NDA)_

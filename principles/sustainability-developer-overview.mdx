@@ -1,0 +1,113 @@
+---
+title: "Sustainability developer overview"
+sidebarTitle: "Sustainability developer overview"
+description: "How to approach profiling and optimizing your title's power consumption — which components matter, how to read Power Load %, and where the best savings hide."
+icon: "gauge-high"
+---
+
+XBOX believes games built with sustainability in mind give more gamers the choice to play in an environmentally friendly way. Outside of regulatory requirements, we expect players to actively seek reductions in power consumption while still enjoying the high-quality experiences they know.
+
+This page describes how to think about power usage on Xbox Series consoles and offers guidance on tooling and approaches to profiling your title.
+
+## Console power vs. game performance
+
+Producing powerful gaming consoles and asking developers to consider power reductions can sound contradictory — it isn't. Pushing hardware to its limits provides high-fidelity, immersive experiences and is a core promise of the Xbox Series consoles.
+
+At the same time, offering **choice** to players around energy efficiency — or applying **passive** measures that players won't notice — is entirely compatible with that promise.
+
+<Note>
+  XBOX has no plans to introduce additional [Xbox Requirements (XRs)](/publishing/xbox-requirements) based on a game's power profile.
+</Note>
+
+## Which components consume the most power?
+
+Components inside a console consume power at very different rates. Rough relative comparisons (component running flat out):
+
+| Component | Power ratio |
+| --- | --- |
+| GPU | 6 |
+| All CPU cores | 1 |
+| Memory traffic | 1 |
+| Wi-Fi / Network | 0.05 |
+| SSD | 0.05 |
+
+**The GPU is by far the largest consumer of power.** Most of the recommendations in the Sustainability Toolkit target GPU savings because they are the easiest to change and the most impactful.
+
+## The Power Load % metric
+
+Every console has slightly different absolute power draw due to manufacturing variation, so an exact watt value is hard to pin down. XBOX represents power as a percentage of the console's maximum — the **Power Load %** — which is normalized and comparable across devkits.
+
+When Power Load % goes down, the console is saving power compared to before.
+
+<Warning>
+  Power Load % can only be collected on **Xbox Series X|S** consoles. Earlier consoles lack the required hardware counters.
+</Warning>
+
+## GDK tooling
+
+Since the June 2022 GDK, developers have been able to view Power Load % during gameplay:
+
+- **Devkit front panel main screen** — Power Load % is displayed by default.
+- **Devkit front panel power screen** — scrolling graph of the last ~20 seconds (rolling 0.5 s average). Show by moving the front-panel controller up.
+- **PIX System Monitor counters** — add the **Power Load** counter (same info as the front-panel graph).
+- **PIX Timing Captures** — Power Load % is captured at 1 ms granularity; expect large variations across a frame as the GPU alternates between busy and idle. Visible in the Metrics tab.
+- **`PIXGetPowerMetrics` API** (March 2023 GDK) — returns the rolling-average Power Load % for integration into your own profiling tools.
+
+For step-by-step instructions, see [Sustainability PIX guide](/principles/sustainability-pix-guide) and [Sustainability devkit guide](/principles/sustainability-devkit-guide).
+
+## How to start profiling your title
+
+Profiling for power is a new axis for most teams. A lot of effort goes into hitting a framerate on CPU and GPU — the suggestion here is to add **power consumption** as a second tuning axis.
+
+GPU changes have the largest impact. The most productive changes are usually to **framerate** and/or **rendering resolution**.
+
+Look for areas where the player won't be impacted (or won't notice). Start with an overview of the power profile of your game in these states:
+
+- Loading — boot to main menu, or any large streaming loads.
+- Character creation or setup screens.
+- Idle gameplay.
+- Combat or a stressful area of the title.
+- UI overlaying most of the visible screen — inventory, load-out, item management.
+- Pause menu or in-game contextual menu.
+
+For each situation, read the Power Load % and ask whether it makes sense. Some titles still fully render the game world behind a full-screen UI — that's power consumed with no visible benefit. Consider stopping the world render or reducing its resolution.
+
+Ask whether areas like the pause or full-screen UI need full framerate. Dropping from 60 to 30 FPS in a full-screen UI is rarely noticeable but saves a lot.
+
+### Idle detection
+
+Telemetry shows players are often idle — waiting for an event or stepping away. During idle time the console is still consuming power. Basic idle detection based on the player's last input is worthwhile. Progressive drops in resolution or framerate after a time threshold add savings with no impact.
+
+### Pathological power usage
+
+Uncapped framerate can pin the GPU near 100% utilization. Consider capping at 60 FPS or 120 FPS to give the GPU idle time.
+
+<Tip>
+  If your title is actively updated as a live service, add telemetry around the scenarios above to gauge where players spend time. That data is invaluable when planning where to add power-saving features.
+</Tip>
+
+## Giving players a choice: Eco mode
+
+Players already understand "Quality" and "Performance" modes. Consider adding an **Eco mode** that sacrifices some visual quality **and** performance for substantial power savings.
+
+Every title is different — the specifics belong to the developer. Common options to expose:
+
+- **60 FPS vs. 30 FPS mode**
+- **4K vs. 1080p vs. 960p mode** — especially valuable if your title renders at 4K internally, since players without 4K TVs (or those who prefer to save power on a 4K TV) currently have no way to reduce it.
+- **Idle timeout** — let the player set a duration after which the game progressively reduces resolution or framerate.
+
+Use the GDK tooling to confirm the savings and let players make a conscious choice about their gaming impact.
+
+## If your title isn't being updated or is still in development
+
+Start the conversation early inside your studio. In our experience most studios support sustainability themes but haven't yet had the discussion. Options include:
+
+- Direct savings from the title (Eco mode, passive optimizations).
+- Studio-level savings — turning off lights, PCs, printers, and devkits overnight; reducing air conditioning and other high-power devices.
+
+## Next steps
+
+- [How to use PIX for sustainability profiling](/principles/sustainability-pix-guide)
+- [Sustainability devkit guide](/principles/sustainability-devkit-guide)
+- [Dynamic Power States](/principles/dynamic-power-states)
+- [Energy efficiency essentials](/principles/energy-efficiency-essentials)

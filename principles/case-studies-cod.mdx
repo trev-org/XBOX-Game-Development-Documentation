@@ -1,0 +1,73 @@
+---
+title: "Call of Duty: Modern Warfare II & Warzone case study"
+sidebarTitle: "Call of Duty"
+description: "Infinity Ward's console + PC Eco Mode — three tiers, up to ~50% menu power savings, and 90% console adoption on the default setting."
+icon: "crosshairs"
+---
+
+**Studio:** Infinity Ward<br />**Shipped:** Season 5 update, 2023<br />**Contributors:** Rulon Raymond, Rohit Ravishankar, Mehek Jethani
+
+Call of Duty: Warzone is demanding by design — 150-plus-player lobbies, cutting-edge graphics, and heavy power draw on the highest-end hardware. Infinity Ward used the XBOX Sustainability Toolkit to introduce an optional **Eco Mode** balancing responsiveness and fidelity against energy efficiency.
+
+## Eco Mode overview
+
+The setting offers three options, with **Minimal** as the default:
+
+| Option | Behavior | Avg. saving |
+| --- | --- | --- |
+| **Off** | Previous behavior, no power savings | — |
+| **Minimal (default)** | 3D scene at 66% resolution in in-game menus; framerate capped at 60 Hz | ~20% |
+| **Full** | 3D scene at 50% resolution in menus; framerate capped at 30 Hz | ~50% |
+
+Eco Mode applies only within front-end Multiplayer lobbies in Modern Warfare II and to all lobbies (including DMZ) in Warzone.
+
+### In-game changes
+
+While the pause menu is opened during gameplay, the same settings apply:
+
+- **Minimal** — scene resolution to 66%, matching lobby behavior.
+- **Full** — scene rendering freezes when the multiplayer pause menu is open in active gameplay. Systems like hit damage and audio continue.
+
+## Measured impact (Team Deathmatch private lobby, idle)
+
+| Setting | Avg. GPU busy | Avg. Power Load | Approx. wattage |
+| --- | --- | --- | --- |
+| **Off** | 82% | 74% | 205 W |
+| **Minimal** | 64% | 62% | 185 W |
+| **Full** | 29% | 37% | 135 W |
+
+Graphical fidelity remained visually consistent across settings — art and design reviewed each tier before commit.
+
+## Player adoption (approx. two months after ship)
+
+| Setting | Console | PC |
+| --- | --- | --- |
+| **Minimal (default)** | 90.3% | 77.3% |
+| **Full** | 2.1% | 1.9% |
+| **Off** | 7.6% | 20.8% |
+
+On console, **90% of players stayed on the default**. Of the ~10% who opted out, roughly a quarter opted into Full for even more savings. PC players opted out more often, but the majority still remained in the default power-saving mode.
+
+## Platform-wide result
+
+Global average power consumption for Call of Duty: Modern Warfare II decreased by **~3%** immediately after Eco Mode shipped, with no adverse effect on in-game performance.
+
+## Tools used
+
+- **PIX Power Monitor** — real-time measurement.
+- **`PIXGetPowerMetrics`** — sampled power values in code to drive the graphs above.
+
+See [Sustainability PIX guide](/principles/sustainability-pix-guide) to reproduce.
+
+## Takeaways for other studios
+
+- **Ship power-saving as the default.** Adoption follows the default — 90% on console stayed on Minimal.
+- **Multiple tiers let players choose.** Give power users a Full option and cautious players an Off option.
+- **Menus and lobbies are the easiest wins.** Players spend meaningful time there and don't notice resolution/framerate drops.
+
+## Related case studies
+
+- [Halo Infinite](/principles/case-studies-halo)
+- [The Elder Scrolls Online](/principles/case-studies-elder-scrolls-online)
+- [Fortnite & Unreal Engine](/principles/case-studies-fortnite)
+- [Energy Efficiency Essentials](/principles/energy-efficiency-essentials)

@@ -1,0 +1,125 @@
+---
+title: "Accessibility feature tags"
+sidebarTitle: "Feature tags"
+description: "Standard tags you declare in Partner Center so players can filter the Microsoft Store for the accessibility features they need. Version 2.0.1."
+icon: "tags"
+---
+
+Accessibility feature tags let players filter game catalogs for the accessibility features they need. You declare them in Partner Center using the **Accessibility** feature in the **Gaming Metadata** module.
+
+<Note>
+  Current version: **Accessibility Feature Tags v2.0.1** (published March 14, 2025).
+</Note>
+
+There are two families of tags:
+
+- **[Accessible Games Initiative](https://www.accessiblegames.com) tags** — 24 tags created by the Entertainment Software Association (ESA) and adopted across the industry.
+- **Xbox Accessibility Feature Tags** — 6 additional tags Microsoft created before the Accessible Games Initiative, which have no ESA equivalent. All previous Xbox tags that overlap with ESA tags have been renamed to align.
+
+## How tagging works
+
+<Steps>
+  <Step title="Check the criteria">
+    Every tag has strict player-facing requirements. Confirm your game meets **all** requirements before declaring the tag.
+  </Step>
+  <Step title="Declare in Partner Center">
+    Add tags via **Accessibility** in the Gaming Metadata module of your Catalog Listing.
+  </Step>
+  <Step title="Ship">
+    Tags surface on the Microsoft Store product page. Players can filter by them.
+  </Step>
+  <Step title="Microsoft validates">
+    After publication, Microsoft verifies that the game actually delivers the tagged features. Inaccurate tags will be flagged for removal by your Microsoft representative.
+  </Step>
+</Steps>
+
+<Warning>
+  Only declare tags your game truly meets. Store auditing verifies them, and tags can be revoked if they don't match the shipped experience.
+</Warning>
+
+## Accessible Games Initiative tags (24)
+
+Sourced from the [Accessible Games Initiative](https://www.accessiblegames.com). Each tag has a specific player-facing description, a goal, developer requirements, and Microsoft test criteria — refer to the source spec before declaring.
+
+### Auditory features
+
+| Tag | Player summary |
+| --- | --- |
+| Multiple volume controls | Separate volume sliders for music, speech, SFX, ambient, TTS, voice chat, and accessibility cues, plus a master. |
+| Mono sound | In-game option to send all audio to a single combined channel. |
+| Stereo sound | Directional audio communicates left/right of the player. |
+| Surround sound | Directional audio communicates any direction, beyond left/right. |
+| Narrated menus | All menus, notifications, and non-decorative text are narrated (or a platform screen reader is supported). |
+
+### Gameplay features
+
+| Tag | Player summary |
+| --- | --- |
+| Difficulty levels | Multiple presets with described differences; at least one preset significantly reduces intensity. |
+| Save anytime | Manual saves at any point of gameplay; separate slot from auto-saves; auto-save never overrides manual. |
+
+### Input features
+
+| Tag | Player summary |
+| --- | --- |
+| Basic input remapping | Digital buttons can be swapped or rearranged on every supported input device. |
+| Full input remapping | Any game action can be reassigned to any input, including analog stick swap. |
+| Stick inversion | Y-axis (and where applicable X-axis) inversion for camera and movement sticks. |
+| Playable without button holds | Every mechanic that uses a hold has a toggle or press alternative. |
+| Playable without rapid button presses | Every mechanic that uses mashing has an auto/toggle alternative. |
+| Playable with keyboard only | The full game is playable with a keyboard alone. |
+| Playable with mouse only | The full game is playable with a mouse alone. |
+| Playable with buttons only | The full game is playable using only digital buttons (no analog sticks required). |
+| Playable with touch only | The full game is playable with touch alone. |
+| Playable without motion controls | No mechanic requires motion input. |
+| Playable without touch controls | No mechanic requires touch input. |
+| Chat speech-to-text & text-to-speech | In-game chat supports STT for incoming voice and TTS for outgoing text. |
+
+### Visual features
+
+| Tag | Player summary |
+| --- | --- |
+| Clear text | Text meets contrast, size, and typography minimums for readability. |
+| Large text | An in-game option scales all functional text well beyond default sizes. |
+| Large & clear subtitles | Subtitles are resizable and meet contrast/background requirements. |
+| Color alternatives | Any information conveyed by color is also conveyed by a second channel. |
+| Camera comfort | Motion sickness options — reduce shake, disable motion blur, disable head bob, adjust FOV. |
+
+## Xbox Accessibility Feature Tags (6)
+
+Six additional tags with no Accessible Games Initiative equivalent.
+
+| Tag | Player summary |
+| --- | --- |
+| Additional accessibility information | Free-form field for accessibility notes not covered by other tags. |
+| Accessibility on launch | All accessibility settings are configurable before required gameplay begins. |
+| On-demand tutorials | Tutorial content can be replayed at any time from an accessible menu. |
+| Pausable | Single-player gameplay can be paused instantly at any time (including cinematics). |
+| Adjustable input sensitivity | Stick, trigger, and mouse sensitivity are adjustable in-game. |
+| Single stick gameplay | The full game is playable using just one analog stick. |
+
+## Where to get the full criteria
+
+Every tag ships with:
+
+- **Player-facing description** — what the player will see on the Store PDP.
+- **Goal** — the intended player outcome.
+- **Developer-facing requirements** — the minimum bar to declare the tag.
+- **Tips and context** — recommended practices beyond the minimum.
+- **Microsoft test steps** — the exact validation Microsoft runs post-publication.
+- **Pass / fail examples** — concrete scenarios.
+
+Get the current specification from your Microsoft representative and cross-reference it against your build before declaring any tag.
+
+## Questions or unsure whether you qualify?
+
+- Cross-reference the [XBOX Accessibility Guidelines](/principles/xbox-accessibility-guidelines) — the XAGs are the underlying best practices; the tags describe player-facing outcomes.
+- Email [xpaq@microsoft.com](mailto:xpaq@microsoft.com) with Xbox Partner Accessibility questions.
+- Request a [MGATS](/principles/mgats) evaluation to validate tag readiness before you publish.
+
+## See also
+
+- [XBOX Accessibility Guidelines](/principles/xbox-accessibility-guidelines)
+- [Accessible Games Initiative](https://www.accessiblegames.com)
+- [MGATS](/principles/mgats)
+- [Developer accessibility resources](/principles/accessibility-resources)

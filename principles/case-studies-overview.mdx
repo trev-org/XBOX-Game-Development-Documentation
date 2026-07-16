@@ -1,0 +1,79 @@
+---
+title: "Sustainability case studies overview"
+sidebarTitle: "Overview"
+description: "Energy-efficiency case studies from shipping titles — the techniques used, results measured, and lessons other studios can apply."
+icon: "book-open"
+---
+
+The XBOX Sustainability Toolkit pilot program has produced case studies from shipping titles across multiple genres and studios. Each demonstrates measurable energy savings with no visible impact on gameplay. Use them as templates for your own efficiency work.
+
+## How case studies are structured
+
+Every case study covers:
+
+1. **Baseline** — power draw before optimization, captured via PIX Power Monitor or a Certification power report.
+2. **Technique** — what the studio changed in the title.
+3. **Result** — measured power delta and any frame-time or quality impact.
+4. **Roll-out** — default-on, opt-in, idle-triggered, or another delivery model.
+
+## Published case studies
+
+<CardGroup cols={2}>
+  <Card title="Call of Duty: MW II & Warzone" icon="crosshairs" href="/principles/case-studies-cod">
+    Infinity Ward's console \+ PC **Eco Mode** — three tiers (Off, Minimal, Full) with up to ~50% savings in lobbies. **90% of console players** stayed on the default.
+  </Card>
+
+  <Card title="Halo Infinite" icon="circle" href="/principles/case-studies-halo">
+    343 Industries dropped **pause-menu resolution to 1080p** for a 15% power saving with no visible impact. Also implemented 2.5D menus for ~30% menu savings.
+  </Card>
+
+  <Card title="Minecraft" icon="cube" href="/principles/case-studies-minecraft">
+    Java FPS limiter for AFK/minimized states (~75% power reduction after 10 min idle), plus a console-side framerate cap on the controller-disconnected dialog.
+  </Card>
+
+  <Card title="Fortnite & Unreal Engine" icon="gamepad" href="/principles/case-studies-fortnite">
+    Epic's Sustainability Toolkit work with Unreal Engine — an estimated **73 GWh saved per year** across the Fortnite player base.
+  </Card>
+
+  <Card title="Gears of War: Reloaded" icon="gear" href="/principles/case-studies-gears-of-war-reloaded">
+    The Coalition combined **passive Idle Energy Savings** (−41% on Series X) with player-selectable Eco-Performance and Eco-Quality modes.
+  </Card>
+
+  <Card title="The Elder Scrolls Online" icon="scroll" href="/principles/case-studies-elder-scrolls-online">
+    ZeniMax Online capped menu framerate at 30 FPS and applied idle detection — a 5% platform-wide efficiency improvement in the first week.
+  </Card>
+
+  <Card title="For Honor" icon="shield-halved" href="/principles/case-studies-for-honor">
+    Ubisoft Montreal's **Smart Eco Mode** — default-on kept 95% of players enabled; won "Best Green Tech" from Playing for the Planet in 2024.
+  </Card>
+
+  <Card title="Star Wars Outlaws" icon="jedi" href="/principles/case-studies-star-wars-outlaws">
+    Ubisoft Massive dropped pause-menu framerate to **1 FPS** after 30 seconds of inactivity — pause-menu power draw fell from ~75% to 18–20%.
+  </Card>
+</CardGroup>
+
+## Cross-case patterns
+
+Techniques that worked across multiple titles:
+
+1. **Cap menu and lobby frame rate at 30 Hz (or lower)** — nearly invisible to players, large power win.
+2. **Reduce internal resolution in non-gameplay screens** — upscale to preserve UI sharpness.
+3. **Idle-timer detection** — reduce rendering load when no input received for 30–120 seconds.
+4. **Detect controller disconnect** — if no controller, drop the rendering budget.
+5. **Enable Dynamic Power States** — single API call, zero-effort win. See [Dynamic Power States](/principles/dynamic-power-states).
+6. **2.5D menus** — replace fully-3D menus with 2D backplates plus minimal 3D where needed.
+7. **Default power-saving on** — defaults dominate adoption. For Honor moved adoption from 5% (opt-in) to 95% (default-on) with the same feature.
+
+## Get involved
+
+Email [XboxSustainability@Microsoft.com](mailto:XboxSustainability@Microsoft.com) to:
+
+- Request a Certification Sustainability Power Report.
+- Join the pilot program and contribute a case study.
+- Get help with Power Monitor profiling or DPS integration.
+
+## See also
+
+- [Certification power reports and cross-case patterns](/principles/sustainability-case-studies)
+- [Energy Efficiency Essentials](/principles/energy-efficiency-essentials)
+- [Dynamic Power States](/principles/dynamic-power-states)

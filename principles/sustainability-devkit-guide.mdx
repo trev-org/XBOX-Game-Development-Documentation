@@ -1,0 +1,43 @@
+---
+title: "Measure power consumption with your devkit"
+sidebarTitle: "Sustainability devkit guide"
+description: "Use the Xbox Series devkit front panel, Xbox Manager, and PIXGetPowerMetrics to track power consumption in real time on the console."
+icon: "microchip"
+---
+
+To find energy-efficiency opportunities you need real-time visibility into your title's power consumption on the console. The Xbox Series devkit exposes a single easy-to-read value — **Power Load %** — that represents 0–100% of the devkit's maximum power draw. The value is normalized, so results are comparable across consoles.
+
+For an overview of tooling and how to interpret Power Load %, see [Sustainability developer overview](/principles/sustainability-developer-overview). For general devkit information, see [XBOX Manager](/tools/xbox-manager) and other entries in the Tools tab.
+
+## Front panel display
+
+The Xbox Series devkit's front panel shows **Power %** on the main screen by default. Placing it prominently is intentional — the goal is to prompt internal discussions about power.
+
+A second front-panel screen shows a scrolling graph of Power % over the last ~20 seconds. Show it by moving the front-panel controller up.
+
+Both screens display rolling averages across the last **0.5 seconds**.
+
+<Tip>
+  The front-panel displays are ideal for **producers, QA testers, and anyone who doesn't use profiling tools** but wants to track how well the game manages power at a glance.
+</Tip>
+
+## Xbox Manager
+
+**Xbox Manager** is part of the GDK and can surface the devkit's front panel display in its UI. Open the drop-down in the top-right to expose the front panel display without leaving your PC.
+
+See [XBOX Manager](/tools/xbox-manager) for general usage.
+
+## Sample Power Load % from code
+
+The **March 2023 GDK** added `PIXGetPowerMetrics`, which returns the immediate Power Load % rolling average. Use it to integrate power values into your own studio profiling tools — no need to leave your existing workflow.
+
+```cpp
+// See the GDK reference for the full signature.
+PIXGetPowerMetrics(...);
+```
+
+## Next steps
+
+- [Sustainability PIX guide](/principles/sustainability-pix-guide) — the full GUI workflow with Power Monitor.
+- [Sustainability developer overview](/principles/sustainability-developer-overview) — which components matter and where to look first.
+- [Dynamic Power States](/principles/dynamic-power-states) — opt in to driver-managed GPU scaling.

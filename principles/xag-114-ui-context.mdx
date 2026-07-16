@@ -1,0 +1,87 @@
+---
+title: "XAG 114: UI context"
+sidebarTitle: "114 · UI context"
+description: "Provide clear labels, consistent iconography, tooltips, and helpful context so players understand each UI element's purpose, operation, and expected input."
+icon: "circle-info"
+---
+
+## Goal
+
+Ensure players have enough context to operate a game's interface and understand its UI components and their functions. Especially helpful for players who need more time to read, have limited short-term memory, or are new to the game.
+
+## Overview
+
+UI should provide enough context so players can understand each screen's purpose, how to interact with each element, and what to expect from each interaction. Poorly labeled or unclear UI leads to unintended actions and blocked navigation — for example, when it's not clear what data goes in a form box.
+
+## Scoping questions
+
+- Does your game contain multiple menu screens?
+- Do menus follow a hierarchical order (e.g., Main Menu \> Settings \> Audio \> NPC Volume Control)?
+- Does your game contain input forms (enter password, type team name)?
+- Does your game contain any buttons or links that open another application or window?
+
+## Implementation guidelines
+
+### Hierarchy and context changes
+
+- All screens should provide enough context that a player understands where they are in the UI hierarchy at any time.
+- UI context shouldn't change without being initiated by the player. If a non-initiated change occurs (loading screens completing, joining a realm), provide a notification. Example: Minecraft announces "joining realm" and "complete" via screen narration.
+- Any interaction that shifts focus to another application (opening a web browser, etc.) should be clearly indicated. Example: _Gears POP!_ labels buttons that open a web browser.
+
+### Text alternatives and labels
+
+- Ensure text alternatives (narration, tooltips) convey both the **purpose** and **operation** of UI components. Example: Grounded's Arachnophobia Safe Mode preview reads "Left mouse button for show spider preview."
+- Labels should be visually positioned near their associated element.
+- The visual association between label and element should also be reflected programmatically for screen narration users (see XAG 106).
+
+### Feature parity for assistive technology
+
+- The features and functionality of the player's experience should be the same for everyone, regardless of their use of assistive technology. Screen-reader users, hardware-adaptive input users, etc. should not be restricted to a subset of features.
+
+### Input forms
+
+- Players should understand what data is expected in a form without extra navigation. Example: _Gears POP!_ character-name form shows character count limits, allowed characters, and reminds players the name is visible to others.
+- Provide methods to accelerate input — e.g., type-ahead search for long lists (states, countries).
+
+### Consistent components
+
+- Components reused with the same functionality use consistent iconography, labeling, or text. Example: Forza Horizon 4 uses LB/RB for tab navigation everywhere, and uses a lock icon \+ dimmed appearance \+ "Not Available" text consistently for restricted functions.
+
+### Link text
+
+- Link text alone (independent of surrounding text) should describe where it leads. Avoid "click here" — use "PuzzleBlaster Website" instead.
+
+<Note>
+  Screen readers often let users skip through links one at a time without reading surrounding text — that's why the link text alone must be descriptive.
+</Note>
+
+### Grouping
+
+- For groups of information (e.g., Forza Horizon 4's Quick Chat with Freeroam / In Race Event / Playground Games groups), each group should be meaningfully and uniquely labeled and reflected in narration.
+
+### Context-sensitive help
+
+- Provide context-sensitive help for each element where necessary. Example: Forza Horizon 4's Private Adventure screen describes each button's action inline.
+
+### Text complexity and structure
+
+- Large blocks of text should be split into editorially appropriate sections with descriptive headings and subheadings. Example: Assassin's Creed Valhalla update history uses categorized headings, sub-headings, bullets, and indentation.
+- Provide a mechanism to display specific definitions of game-specific words or phrases used in an unusual or restricted way (idioms, jargon, acronyms, abbreviations). Example: Minecraft's how-to-play index defines items like "Eye of Ender" and "Nether Portal" with text and visuals.
+- UI text critical to understanding gameplay or managing settings should not require a reading ability more advanced than lower secondary education (7–9 years of school).
+  - Narrative text (journals, character dialogue, proper names) is exempt.
+
+### Settings previews
+
+- Provide a visual simulation depicting how a particular setting or option alters the player's UI, ideally in a realistic game environment context. Example: _Immortals Fenyx Rising_ shows in-game previews of each HUD preset (default, light, disabled).
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players without vision | ✓ |
+| Players with cognitive or learning disabilities | ✓ |
+| Casual players, younger players, those new to gaming | ✓ |
+
+## Resources
+
+- [Game Accessibility Guidelines: Include contextual in-game help/guidance/tips](http://gameaccessibilityguidelines.com/include-contextual-in-game-helpguidancetips)

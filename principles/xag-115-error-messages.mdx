@@ -1,0 +1,69 @@
+---
+title: "XAG 115: Error messages and destructive actions"
+sidebarTitle: "115 · Errors & destructive actions"
+description: "Detect and describe input errors, warn players before destructive actions, and let them review, undo, or reset choices before they're committed."
+icon: "triangle-exclamation"
+---
+
+## Goal
+
+Ensure players can identify and correct player-input errors before permanent or destructive action takes place.
+
+## Overview
+
+Input errors (typos, accidental button activations) are common. Players using voice input, adaptive hardware, or with motor or learning disabilities may see them more often. Errors during account creation, purchases, saves, or destructive gameplay decisions (dismantling rare items, dismissing NPC companions) can have permanent consequences — providing review/reverse options helps everyone avoid them.
+
+## Scoping questions
+
+- Does your game require players to enter usernames, passwords, or other criteria-based information?
+- Does your game provide the ability to save information (game progress, settings)?
+- Does your game provide opportunities for in-game purchases?
+- Does your game include text-entry form boxes (character name, password)?
+- Does your game allow irreversible decisions that could harm the experience if performed accidentally?
+
+## Implementation guidelines
+
+### Describe errors clearly
+
+- If an input error is automatically detected (e.g., incorrect password), describe the error and how to correct it in multiple ways (text and voice narration).
+
+<Note>
+  Information that would jeopardize security or purpose of the content is exempt — e.g., don't reveal the correct password. General password criteria hints are okay.
+</Note>
+
+**Example:** _Gears 5_ matchmaking error explains the failure and the underlying cause ("Your squad size exceeds the maximum limit…") so the player can correct it.
+
+### Make errors visually distinct
+
+- Error and warning messages should be easy to visually distinguish from other text on screen. Example: Forza Horizon 4's "Unsaved Changes" warning blurs the background, uses a red focus indicator, large text, and an exclamation icon.
+
+### Emphasize where the error occurred
+
+- Visually emphasize errors and warnings at the point they occurred. Example: PuzzleBlaster password form underlines the failed criterion, adds an asterisk, and includes "not met" text for narration users.
+
+### Review and undo
+
+- If any action will delete or modify stored data, give the player an opportunity to review, correct, or completely reverse the action before committing.
+- Example: _Grounded_ prompts "Unapplied Changes Detected" when exiting settings without applying, and provides a "Factory Default" reset for all settings.
+- Offer a mechanism to review, confirm, and undo permanent or destructive actions (in-game purchases, selling an item, overwriting a save).
+  - Example: _Fallout 76_ uses a two-step confirmation for merchant purchases.
+  - Example: _Cyberpunk 2077_ warns players in character creation if they try to progress with unspent attribute points, since those points would be lost.
+
+### Avoid button-hold confirmations
+
+- Don't require button holds for confirmation of destructive actions. Provide alternate options.
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players without vision | ✓ |
+| Players with low vision | ✓ |
+| Players with cognitive or learning disabilities | ✓ |
+| Players with limited reach and strength | ✓ |
+| Players with limited manual dexterity | ✓ |
+| Players who want to avoid unintended purchases | ✓ |
+
+## Resources
+
+- [Nielsen Norman Group: Preventing User Errors — Avoiding Conscious Mistakes](https://www.nngroup.com/articles/user-mistakes/)

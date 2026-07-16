@@ -1,0 +1,109 @@
+---
+title: "Halo Infinite case study"
+sidebarTitle: "Halo Infinite"
+description: "343 Industries dropped pause-menu resolution to 1080p for a 15% power saving with no visible impact, then explored 2.5D menus for ~30% additional savings."
+icon: "circle"
+---
+
+**Studio:** 343 Industries<br />**Contributors:** Alex Le Boulicaut (Producer), Spencer Kopach (Senior Tech Artist), Andrew Nolan (Graphics Engineer), Trista Patterson (XBOX Director of Sustainability)
+
+343 Industries was **XBOX's first pilot** for A/B experimentation on energy consumption and carbon emissions in game development. Using PIX Power Monitor, the team established a baseline (Xbox Series X at 4K/60 FPS: ~92% GPU, 67.5% Power Load) and iterated from there.
+
+## Armor Hall menus
+
+The team profiled the Armor Hall in four stages.
+
+### Stage 1: 4K @ 60 FPS (baseline)
+
+- Average GPU: 96.2%
+- Average Power Load: 67.5%
+
+### Stage 2: 4K @ 30 FPS
+
+- Average GPU: 49.2%
+- Average Power Load: 42.2%
+- **Power savings: 37.5%**
+
+Framerate drops were considered too visible on non-VRR displays and required additional development time — the team moved on to resolution.
+
+### Stage 3: 1080p @ 60 FPS
+
+- Average GPU: 34.7%
+- Average Power Load: 43.5%
+- **Power savings: 33.6%**
+
+UI stayed at native resolution to protect legibility and accessibility.
+
+### Stage 4: 1080p @ 30 FPS
+
+- Average GPU: 27%
+- Average Power Load: 30%
+- **Power savings: 55.6%**
+
+Baseline Power Load 67.5% → 30% — more than halved.
+
+<Note>
+  343 shipped **resolution reduction only** for the Armor Hall — lowest risk to the player experience with meaningful savings.
+</Note>
+
+## Gameplay pause menu
+
+During investigations the team realized the pause menu still rendered a full 4K image behind the blurred settings overlay — assets the player couldn't see. Lowering the pause menu to 1080p produced:
+
+| Scene | Power draw | Total AC power |
+| --- | --- | --- |
+| Pause menu at 4K/60 (before) | 64% GPU\+CPU | 185 W |
+| Pause menu at 1080p/60 (after) | 55% GPU\+CPU | 165 W |
+
+**15% power saving** with a change invisible to the player.
+
+## 2.5D menus
+
+As part of a broader menu overhaul, 343 tested a 2.5D approach: a 2D backplate with camera-correct perspective plus a 3D character in the foreground.
+
+### Merits
+
+**Pros**
+
+- Minimal components; easy to upgrade.
+- Full support for UGC characters.
+- 2D backplates author in Unity, Unreal, Maya, or any DCC.
+- Backplates can be authored in-house or outsourced.
+- Load times improve.
+- Lower power draw for players.
+
+**Limitations**
+
+- 3D avatars must be lit to match the 2D backplate.
+- Background cannot support motion.
+- No DOF on UGC avatars (bake DOF into the backplate instead).
+
+### Power savings (versus a locked 3D baseline of 64.8%)
+
+| Internal resolution | Frame rate | 2.5D Power Load | Notes |
+| --- | --- | --- | --- |
+| 2400 × 1800 | 60 FPS | 47.5% | Dropping internal res prior to upscale \+ lower FPS delivers most savings |
+| 1920 × 1080 | 30 FPS | 26.3% | Even at locked higher res, 2.5D provides significant savings |
+| 1920 × 1080 | 60 FPS | 35.8% | Dropping internal res prior to upscale delivers more savings |
+
+Locking the resolution upper limit and switching to 2.5D delivered **~30% savings**; further reducing internal resolution unlocked more.
+
+### Development cost
+
+- **8 people** required for evergreen support (11–17 fewer than the previous 3D setup).
+- Total time to completion: **3–4 weeks**.
+- Estimated time cost saved: **2–3 months**.
+
+## Takeaways for other studios
+
+- **Start with resolution.** Lowest player-visibility risk in still or minimally animated scenes.
+- **Look for hidden rendering waste.** 343 was rendering 4K behind a blurred pause overlay.
+- **2.5D menus can reduce both team and hardware cost.** Fewer people to maintain them and lower GPU load.
+- **Protect UI accessibility.** Keep UI on its own buffer at native resolution.
+
+## Related case studies
+
+- [Call of Duty](/principles/case-studies-cod)
+- [Fortnite & Unreal Engine](/principles/case-studies-fortnite)
+- [The Elder Scrolls Online](/principles/case-studies-elder-scrolls-online)
+- [Energy Efficiency Essentials](/principles/energy-efficiency-essentials)

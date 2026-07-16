@@ -1,0 +1,106 @@
+---
+title: "Accessibility of gaming AI experiences"
+sidebarTitle: "Accessibility and AI"
+description: "How accessibility applies to AI-driven game frontends and backends — the pitfalls, the practices, and the opportunities."
+icon: "microchip-ai"
+---
+
+AI has the potential to dramatically improve gaming experiences for players with disabilities — and to inadvertently create new barriers. This page covers where AI accessibility looks the same as any other software, where it differs, and how developers can use AI to advance accessibility rather than undermine it.
+
+<Note>
+  Author: Brannon Zahand (Microsoft). Some content in this article was generated with AI assistance.
+</Note>
+
+## Setting context — what "AI" means here
+
+Historically, "AI" in games meant rule-based systems driving NPC behavior. In this article we're referring to the newer wave: large language models (GPT, BERT), computer vision models (YOLO, ResNet), reinforcement learning models (AlphaGo), and other systems that learn from data and generalize predictions to new inputs.
+
+## Similarities between AI and non-AI frontends
+
+From an accessibility perspective, **AI-driven frontends are generally the same as any other frontend**. They share the same principles, guidelines, and standards. In games, that means both AI and non-AI experiences should follow the [XBOX Accessibility Guidelines](/principles/xbox-accessibility-guidelines) or the [Game Accessibility Guidelines](https://gameaccessibilityguidelines.com/).
+
+Common accessibility practices that apply to both:
+
+- Alternative text for images, icons, and graphics.
+- Clear, consistent labels, headings, and navigation.
+- Sufficient color contrast and font size.
+- Keyboard, mouse, controller, touch, and voice input/output.
+- Multiple modalities for interaction.
+- Adjustable interface settings.
+- Testing with real assistive technologies.
+
+## Pitfalls specific to AI-driven frontends
+
+AI experiences deserve extra scrutiny in a few areas.
+
+### Quality, accuracy, and reliability
+
+Especially when the AI performs sensitive tasks — real- or in-game currency purchases, destructive technical assistance (deleting saves, changing system settings), or safety guidance.
+
+### Explanations, feedback, and error recovery
+
+When AI is uncertain, ambiguous, or wrong, players need clear explanations and quick recovery paths.
+
+### Privacy, security, and consent
+
+AI systems can collect or infer sensitive data. Never make a player's accessibility settings visible to others; never leak inferred disability data across systems.
+
+### Bias, discrimination, and exclusion
+
+Face and skeleton recognition, sentiment analysis, speech recognition, and recommendation systems all carry disability-related bias risks. Test with diverse users, or you'll ship those biases.
+
+## AI-induced inaccessibility in backend systems
+
+Even when the frontend is fine, AI in the backend can introduce indirect accessibility issues.
+
+### Dynamic content generation
+
+AI-generated levels, maps, or challenges trained on data that under-represents players with disabilities can produce experiences that exclude them — for example, procedurally generating an encounter that requires simultaneously pressing many buttons, blocking players with fine-motor disabilities.
+
+### Anti-cheat systems
+
+Anti-cheat AI that flags "unusual" input patterns can misidentify assistive technology (macro pads, co-piloted controllers, faster-than-human switch input) as cheating.
+
+<Warning>
+  Train anti-cheat and behavioral AI on data that includes players who use assistive technology, or build in explicit allowlists for known AT signatures.
+</Warning>
+
+## How to address AI accessibility
+
+<Steps>
+  <Step title="Be user-centered">
+    Involve users with diverse abilities, preferences, and circumstances throughout design, development, and evaluation. Their needs must inform the model, not just the UI.
+  </Step>
+  <Step title="Diversify training data">
+    Include data from players with hearing, vision, speech, fine-motor, cognitive, and mental-health conditions so the model generalizes to them.
+  </Step>
+  <Step title="Be transparent">
+    Provide clear information about how the AI operates and how it makes decisions so users can challenge incorrect assumptions.
+  </Step>
+  <Step title="Validate across modalities">
+    Test with keyboard, mouse, controller, and speech input; and with graphical, audio, and haptic output. Include screen readers, screen magnifiers, adaptive controllers, switch input, and eye tracking.
+  </Step>
+</Steps>
+
+## Opportunities — how AI can _advance_ game accessibility
+
+AI can go further than traditional techniques in several areas:
+
+- **Personalization** — learn a player's preferences and abilities and adapt UI, content, and difficulty automatically.
+- **Predictive text and speech recognition** — improve accuracy for players with mobility or speech disabilities; automatically caption in-game voice chat.
+- **Image and video recognition** — dynamically describe in-game scenes for blind and low-vision players via speech synthesis.
+- **Automated accessibility testing** — find and fix issues earlier and more often; but never _replace_ feedback from real players with disabilities.
+- **In-game support** — chatbots that use current player state to provide context-aware help, reducing abandonment when players get "stuck."
+
+## Resources
+
+- [Equal Entry — AI for Accessibility: Opportunities and Challenges](https://equalentry.com/ai-for-accessibility-opportunities-and-challenges/)
+- [Innovation and AI for Accessibility — Microsoft Accessibility](https://www.microsoft.com/accessibility/innovation)
+- [AI Show Live — Using AI to Make Experiences Accessible and Inclusive](/shows/ai-show/ai-show-live-using-ai-to-make-experiences-accessible-and-inclusive)
+- [Using AI to empower people with disabilities](https://blogs.microsoft.com/on-the-issues/2018/05/07/using-ai-to-empower-people-with-disabilities/)
+- [Brannon Zahand — Humans in AI](https://www.youtube.com/watch?v=Z0YANisVqsM)
+
+## See also
+
+- [XBOX Accessibility Guidelines](/principles/xbox-accessibility-guidelines)
+- [Accessibility feature tags](/principles/accessibility-feature-tags)

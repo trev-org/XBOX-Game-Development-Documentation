@@ -1,0 +1,89 @@
+---
+title: "XAG 108: Game difficulty options"
+sidebarTitle: "108 · Difficulty options"
+description: "Provide multiple difficulty presets, granular assist controls, an ultra-low mode, and non-condescending labels so every player can finish the game."
+icon: "sliders-up"
+---
+
+## Goal
+
+Ensure every player can enjoy and complete your game, regardless of skill level, by providing multiple difficulty options.
+
+## Overview
+
+Difficulty is subjective — what's easy for one player is impossible for another. "Difficult" often just means "a set of specific game mechanics that don't work for me." Younger players, new gamers, and story-first players also want lower difficulty. And difficulty is rarely one dial — a player may want puzzles harder and combat easier.
+
+Multiple presets \+ granular per-mechanic controls let players enjoy every part of the game.
+
+## Scoping questions
+
+Identify the **core mechanics** your game requires (aiming, meter management, close combat, memory, puzzles, timers, spatial memory) and, for each, list **grading options** — the variables you can move up or down to change difficulty (enemy count, target size, meter depletion rate, resource availability, notification frequency, auto-target assists).
+
+<Tip>
+  Consult your studio's user researchers and the Gaming & Disability Community for grading choices specific to your game.
+</Tip>
+
+## Implementation guidelines
+
+### Multiple presets
+
+- Include **multiple difficulty presets — ideally 4\+** — covering a wide value range from very easy (story-first) to very hard.
+
+<Note>
+  A separate "Creative" mode isn't a difficulty preset if it changes the fundamental gameplay experience (unlimited resources, no threats, no achievements). Still provide 4\+ presets **within** the primary game mode.
+</Note>
+
+### Change difficulty any time
+
+- Players can change difficulty at any point without losing progress, whether or not they've started the game.
+
+### Regular saves
+
+- Provide both **manual** and **auto-save** so players can retry without significant loss of progress.
+
+### Granular per-mechanic difficulty
+
+- Allow players to adjust the difficulty of **individual mechanics** — explicit sliders (Puzzle Difficulty, Combat Difficulty) **or** discrete assists (Brake Assist, Auto-Aim, Steering Assist, Traction Control).
+
+### Ultra-low difficulty mode
+
+- Provide an ultra-low mode so a wide range of players can experience the narrative.
+- Consider a **reduced control scheme mode** so players with especially severe disabilities can complete the game.
+
+### Non-denigrating language
+
+- Describe difficulty presets descriptively and respectfully. **No** `Wimp Mode` or similar. Include a description of what to expect at each level.
+
+### Pause
+
+- Single-player, local multiplayer, and local split-screen games are **pausable at any time** except save / load screens.
+- Both active gameplay **and** cinematics (intros, video cutscenes, scripted cutscenes) are pausable.
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players without vision | ✔ |
+| Players with low vision | ✔ |
+| Players with little or no color perception | ✔ |
+| Players without hearing | ✔ |
+| Players with limited hearing | ✔ |
+| Players without speech | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players with limited reach and strength | ✔ |
+| Players with limited manual dexterity | ✔ |
+| Players with prosthetic devices | ✔ |
+| Players with limited ability to use time-dependent controls | ✔ |
+| Young or casual players | ✔ |
+
+## Resources
+
+- [Offer a wide choice of difficulty levels](http://gameaccessibilityguidelines.com/offer-a-wide-choice-of-difficulty-levels)
+- [Allow difficulty level to be altered during gameplay](http://gameaccessibilityguidelines.com/allow-difficulty-level-to-be-altered-during-gameplay-either-through-settings-or-adaptive-difficulty)
+- [Offer a means to bypass gameplay elements that aren't part of the core mechanic](http://gameaccessibilityguidelines.com/offer-a-means-to-bypass-gameplay-elements-that-arent-part-of-the-core-mechanic-via-settings-or-in-game-skip-option)
+- [Include assist modes such as auto-aim and assisted steering](http://gameaccessibilityguidelines.com/include-assist-modes-such-as-auto-aim-and-assisted-steering)
+- [Provide a manual save feature](http://gameaccessibilityguidelines.com/provide-a-manual-save-feature)
+- [Provide an autosave feature](http://gameaccessibilityguidelines.com/provide-an-autosave-feature)
+- [Expose as many variables as possible](http://gameaccessibilityguidelines.com/allow-gameplay-to-be-fine-tuned-by-exposing-as-many-variables-as-possible)
+- [Accessibility isn't easy: what "easy mode" debates miss (IGN)](https://www.ign.com/articles/video-game-difficulty-accessibility-easy-mode-debate?utm_source=twitter)
+- [Difficulty vs accessibility — Ian Hamilton, GAConf 2022](https://youtu.be/6M_OrmXURzE?t=20651)

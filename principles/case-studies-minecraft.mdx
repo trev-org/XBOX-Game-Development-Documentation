@@ -1,0 +1,86 @@
+---
+title: "Minecraft case study"
+sidebarTitle: "Minecraft"
+description: "Mojang's Java FPS limiter for AFK and minimized states (up to 75% power reduction after 10 minutes idle), plus a console framerate cap on the controller-disconnected dialog."
+icon: "cube"
+---
+
+**Studio:** Mojang<br />**Shipped:** August 2024 (Java snapshot)<br />**Contributors:** Nick Horvath (Engineering Systems Manager), Sue Loh (Performance Tech Lead), Timur Nazarov (Java), David Ekermann (Bedrock)
+
+<Note>
+  **Impact math:** A title averaging 160 W played 3 hours/day for a year consumes ~175 kWh per device. Across 100k devices, that equals GHG emissions from ~13.5M pounds of coal burned ([EPA calculator](https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator)). A modest 10% efficiency win at scale is substantial.
+</Note>
+
+Globally, PC gaming consumes ~230 TWh of electricity per year — equivalent to 59M EU households. In the US, gamers spend ~\$6B on electricity and emit ~12M tons of CO₂ annually. Mojang set out to reduce Minecraft's contribution to that footprint.
+
+## Java: the "Reduce FPS when" setting
+
+A new video setting introduces two modes:
+
+- **Minimized** — caps framerate at 10 FPS when the window is minimized.
+- **AFK (default)** — caps framerate at 30 FPS when no player input for over a minute, then further to 10 FPS after 10 minutes total. Also caps at 10 FPS when minimized.
+
+Unlike a global FPS cap, this only engages when the player isn't actively playing.
+
+### AFK mode measurements (NVIDIA GeForce RTX 3080, GPU-only)
+
+| Version | Gameplay | Idle \< 1 min | Idle 1–10 min | Idle \> 10 min |
+| --- | --- | --- | --- | --- |
+| **1.21 (old)** | 101 W | 93 W | 93 W | 93 W |
+| **FPS Limiter (new)** | 100 W | 82 W | 32 W | 25 W |
+| **OS idle baseline** | 17 W | 17 W | 17 W | 17 W |
+
+After 10 minutes of inactivity, Minecraft draws roughly what the OS itself needs — a **~73% reduction** vs. the old idle baseline.
+
+### Minimized measurements
+
+| Version | Gameplay | Minimized |
+| --- | --- | --- |
+| **1.21 (old)** | 101 W | 134 W |
+| **FPS Limiter (new)** | 100 W | 25 W |
+
+<Note>
+  The old build actually drew **more** power when minimized (134 W vs. 101 W in gameplay) — the game continued to render offscreen at full framerate. The new build drops it to 25 W.
+</Note>
+
+## Console: controller disconnected framerate cap
+
+Minecraft telemetry showed the **Controller Disconnected** dialog was on screen surprisingly often, and the game still rendered it at a full 60 FPS.
+
+### Screen time by platform
+
+| Device & area | Screen time | Median FPS |
+| --- | --- | --- |
+| Windows | 7.1% | 60 |
+| Xbox One: controller-disconnected screen | 14% | 60 |
+| Xbox One: pause screen | 1% | 60 |
+| Xbox Series: controller-disconnected screen | 10.6% | 60 |
+| Xbox Series: pause screen | 0.5% | 60 |
+
+The team dropped the framerate on the controller-disconnected dialog to **10 FPS** after 60 seconds visible. Measured via PIX Power Monitor:
+
+| Console | Active gameplay | Stage 1 (60 FPS dialog) | Stage 2 (10 FPS dialog) |
+| --- | --- | --- | --- |
+| **Xbox Series X** | 24% (102 W) | 21% (89 W) | 17% (81 W) |
+| **Xbox Series S** | 31% (62 W) | 26% (52 W) | 19% (48 W) |
+
+The experiment was validated and the change is being made permanent for the single-player scenario in an upcoming Bedrock release, with future work planned for multi-player scenarios and additional dialogs.
+
+## Tools used
+
+- **HWInfo** — PC GPU-only power measurement.
+- **PIX Power Monitor** — Xbox console measurement.
+- **Certification testing** — controlled repeatable capture.
+
+## Takeaways for other studios
+
+- **Instrument for wasted power first.** Telemetry showed the disconnected-controller dialog was on screen 10–14% of Xbox playtime.
+- **Rendering something the player isn't looking at is pure waste.** Minimized windows, disconnected controllers, and long idle sessions are all candidates.
+- **Stage your idle drops.** 30 FPS after 1 minute, 10 FPS after 10 minutes preserves responsiveness for players who return quickly.
+
+## Related case studies
+
+- [Fortnite & Unreal Engine](/principles/case-studies-fortnite)
+- [Call of Duty](/principles/case-studies-cod)
+- [The Elder Scrolls Online](/principles/case-studies-elder-scrolls-online)
+- [Energy Efficiency Essentials](/principles/energy-efficiency-essentials)

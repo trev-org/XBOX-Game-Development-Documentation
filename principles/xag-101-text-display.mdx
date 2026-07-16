@@ -1,0 +1,155 @@
+---
+title: "XAG 101: Text display"
+sidebarTitle: "101 · Text display"
+description: "Optimize text readability with minimum default sizes, configurable style and color, and adequate spacing so players with low vision can read everything."
+icon: "font"
+---
+
+## Goal
+
+Ensure text readability is optimized for all players, including those with low vision, by displaying text at minimum default sizes and spacing and providing configurable style and color options.
+
+## Overview
+
+Roughly **2.9 billion people** have some degree of low vision — blur, cloudiness, or partial vision loss that glasses can't fully correct. Situational impairments (a screen far away, a small mobile display, muted TV, noisy room) also make text hard to read.
+
+If a player can't read menu text, they can be blocked before gameplay even starts. Text also carries HUDs, objectives, hints, NPC lines, and player chat — losing it means losing the game.
+
+## Scoping questions
+
+Is reading required in your game?
+
+- Are navigable menus text-based?
+- Does text appear on-screen during gameplay (HUD, objectives, waypoints, NPC lines)?
+- Can players communicate via text chat, chat wheels, STT/TTS?
+
+## What "text display" covers
+
+- **Size** — how large or small text can be
+- **Face** — bold, italic, light
+- **Weight** — thickness
+- **Style** — font family
+- **Spacing** — between letters, words, lines
+- **Alignment** — horizontal alignment
+- **Case** — sentence case, all caps
+- **Color** — visibility against background (see [XAG 102: Contrast](/principles/xag-102-contrast))
+
+<Tip>
+  The best approach is **player choice**. Provide configuration so each player can tune text to their needs.
+</Tip>
+
+## Measuring text size
+
+Font size in the XAGs is **body height** — the pixel distance from the lowest descender to the highest ascender.
+
+<Steps>
+  <Step title="Capture the text">
+    Screenshot the text in-game and open it in Microsoft Paint.
+  </Step>
+  <Step title="Find the tallest ascender and lowest descender">
+    Locate a word with letters like `g`, `y`, `h`, `b` to establish the full body height.
+  </Step>
+  <Step title="Handle outlines">
+    Include colored-outline pixels only if their contrast to the background exceeds **2:1**. Softer anti-aliasing pixels are not counted.
+  </Step>
+  <Step title="Draw a selection">
+    Draw a rectangular selection from the highest ascender to the lowest descender. Paint reports the pixel height in the lower-left — that number is the font size.
+  </Step>
+</Steps>
+
+## Key areas that must be accessible
+
+- **Menu screens** — labels, sub-labels, descriptors, interaction prompts
+- **Gameplay environments** — HUD meters, instructional cues, inventory keys
+- **Chat input fields** — placeholder text and typed messages
+- **Chat windows** — sent and received messages
+- **Chat wheels** — pre-written comm-wheel options
+- **Subtitles and captions**
+- **Error messages, toasts, and notifications**
+- **Loading screens** with valuable tips
+
+## Implementation guidelines
+
+### Minimum default text size
+
+Measured as body height (descender \+ x-height \+ ascender).
+
+<Note>
+  These are **minimum defaults at launch**. Provide the option to scale larger or smaller at the player's discretion.
+</Note>
+
+| Platform | Resolution / DPI | Minimum body height |
+| --- | --- | --- |
+| **Console** | 1080p | 26 px |
+| **Console** | 4K | 52 px |
+| **PC / VR** | 1080p | 18 px |
+| **PC / VR** | 4K | 36 px |
+| **Mobile / Xbox Game Streaming** | 100 DPI | 18 px |
+| **Mobile / Xbox Game Streaming** | 200 DPI | 36 px |
+| **Mobile / Xbox Game Streaming** | 400 DPI | 72 px |
+
+Mobile devices have much higher DPIs than TVs or PC displays, so comparably sized text needs more pixels. A 5.5" 1080p screen is roughly 400 DPI. Scale linearly as DPI increases.
+
+<Warning>
+  Platform-provided screen magnifiers are **not** a substitute for meeting minimum text size.
+</Warning>
+
+### Icons and glyph sizes
+
+- Text **inside** icons and glyphs (e.g. the `X` in an X-button glyph) meets the same minimum sizes above.
+- Icons and glyphs scale with text scaling up to **200%** of the minimum default.
+- To keep glyphs inside text containers, you may need to grow the surrounding text so the whole glyph fits on the line.
+
+### Text scaling
+
+- Players can resize text up to **200%** of the minimum without losing content, functionality, or meaning.
+- Large header text remains visually differentiated from body text when scaled.
+- Text that scales off-screen has a way to be read (scrolling text, popouts, or appropriate abbreviations).
+- Scaling never forces two-axis scrolling within a single UI. One-direction scrolling is fine.
+- Allowing text to be **smaller** than the default is acceptable when the user opts in.
+
+### Font style
+
+- Include at least one **sans-serif** typeface option.
+- If stylistic fonts are used (dripping blood, gothic, etc.), provide a non-stylized alternative.
+- All fonts include complete character sets for every supported language.
+
+### Text spacing
+
+Greater spacing improves clarity, especially at large sizes. For blocks of text longer than two lines at standard font size:
+
+- Prefer letting players configure line width, line spacing, paragraph spacing, letter spacing, and word spacing themselves.
+- If configuration is not offered, meet these minimums:
+
+| Property | Minimum |
+| --- | --- |
+| **Line width** | ≤ 80 characters (40 for CJK), measured at 100% scale, excluding spaces |
+| **Line spacing (leading)** | ≥ 1.5× within paragraphs, measured ascender-to-ascender |
+| **Paragraph spacing** | ≥ 2× the line spacing |
+| **Letter spacing** | ≥ 0.12× the font size |
+| **Word spacing** | ≥ 0.16× the font size |
+
+### Case and alignment
+
+- **Case** — provide the ability to display text in sentence case rather than ALL CAPS or all lowercase. One- or two-word labels are exempt.
+- **Alignment** — text is left/right aligned per the player's language preference (not centered or fully justified), or players can adjust it.
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players with low vision | ✔ |
+| Players with little or no color perception | ✔ |
+| Players without hearing | ✔ |
+| Players with limited hearing | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players reading on a small / distant / glare-affected / low-contrast display | ✔ |
+
+## Resources
+
+- [Clear Text (accessible.games)](https://accessible.games/accessible-player-experiences/access-patterns/clear-text/)
+- [Distinguish This From That (accessible.games)](https://accessible.games/accessible-player-experiences/access-patterns/distinguish-this-from-that/)
+- [Allow the font size to be adjusted (Game Accessibility Guidelines)](http://gameaccessibilityguidelines.com/allow-the-font-size-to-be-adjusted/)
+- [Provide a choice of text colour, low/high contrast as a minimum](http://gameaccessibilityguidelines.com/provide-a-choice-of-text-colour-lowhigh-contrast-choice-as-a-minimum)
+- [Use simple clear text formatting](http://gameaccessibilityguidelines.com/use-simple-clear-text-formatting/)
+- API: [XGameStreamingGetStreamPhysicalDimensions](https://developer.microsoft.com/games/xbox/docs/gdk/Xgamestreaminggetstreamphysicaldimensions) _(NDA)_

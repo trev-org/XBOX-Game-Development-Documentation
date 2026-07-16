@@ -1,0 +1,129 @@
+---
+title: "XAG 102: Contrast"
+sidebarTitle: "102 · Contrast"
+description: "Meet minimum contrast ratios for text, HUD, and gameplay elements against their backgrounds so players with low vision can interpret them."
+icon: "circle-half-stroke"
+---
+
+## Goal
+
+Provide enough contrast between visual elements and their backgrounds so those elements can be interpreted by players with low vision.
+
+## Overview
+
+Around **2.9 billion people** have low vision. Default UI often lacks sufficient contrast between foreground and background, which excludes players with low vision or color-vision deficiencies from perceiving and using those elements. Losing a mini-map, HUD meter, or targeting reticle to weak contrast means losing gameplay itself.
+
+A **contrast ratio** compares the luminance of a foreground element to its background. Higher ratios are more visible — but some players with cognitive disabilities find very-high-contrast UIs harder to read, so **configurable** contrast is the goal.
+
+## Scoping questions
+
+Are these visible against their background?
+
+- Text in menu UIs
+- HUD elements (health, text, mini-map)
+- Key gameplay elements (targeting icons against varying game backgrounds)
+
+## Where contrast matters
+
+### Text
+
+See [XAG 101: Text display](/principles/xag-101-text-display) for where text appears in games. All of the following need contrast checked:
+
+- Menu UI text
+- Text during active gameplay
+- Party-chat input, placeholders, and messages
+- Subtitles and captions
+- Loading-screen tips
+- Error, toast, and notification text
+
+### Non-text visual elements
+
+- Directional damage indicators and targeting reticles
+- HUD elements (health, mini-map, quest markers)
+- Buttons, sliders, and other controls
+- Symbols and glyphs
+- Character and platform outlines
+- Images that contain key information
+
+<Warning>
+  Red and green together commonly fail for players with common colorblindness. Pair color with shape / text as well — see [XAG 103](/principles/xag-103-additional-cues).
+</Warning>
+
+## How to measure contrast
+
+Use:
+
+- [Accessibility Insights for Windows](https://accessibilityinsights.io/)
+- [Colour Contrast Analyser (CCA)](https://developer.paciellogroup.com/resources/contrastanalyser/)
+- [Color Oracle simulator](https://colororacle.org/)
+- [Contrast-ratio calculator](https://contrast-ratio.com/)
+
+## General ways to improve contrast
+
+- Allow players to put a **solid background** behind on-screen text, and adjust its opacity.
+- Offer color options for on-screen text and HUD elements.
+- Support a **high-contrast mode**.
+- Add borders / outlines around text and characters.
+
+## Implementation guidelines
+
+### Minimum contrast ratios
+
+| Element | Ratio |
+| --- | --- |
+| Standard-size text or visual element | **4.5:1** |
+| Large-scale text and visual elements | **3:1** |
+| Text on inactive / disabled elements | **3:1** |
+| High-contrast mode (all UI elements) | **7:1** |
+| Placeholder or input-field text | **4.5:1** (3:1 large-scale) |
+
+### What counts as "large-scale"
+
+| Platform | Resolution / DPI | Large-scale text |
+| --- | --- | --- |
+| **Console** | 1080p | 52 px |
+| **Console** | 4K | 104 px |
+| **PC / VR** | 1080p | 36 px |
+| **PC / VR** | 4K | 72 px |
+| **Mobile / Xbox Game Streaming** | 100 DPI | 36 px |
+| **Mobile / Xbox Game Streaming** | 200 DPI | 72 px |
+| **Mobile / Xbox Game Streaming** | 400 DPI | 144 px |
+
+Scale linearly as DPI increases.
+
+### Additional rules
+
+- **High-contrast mode.** Provide light and/or dark high-contrast mode. When enabled, contrast against background is **≥ 7:1** for all UI elements. High-contrast mode should:
+  - Increase visibility of important elements
+  - Increase visual separation between different important elements
+  - Increase visual separation between important and unimportant elements
+- **Non-solid backgrounds.** Measure text contrast against the **lowest-contrasting** part of a non-solid background.
+- **Follow system settings.** Where available, read platform-provided contrast settings at launch and adjust the game UI accordingly.
+- **Player-configured colors.** Foreground and background text colors can be set by the player.
+- **Don't rely on color alone.** When color must be used for information, offer player-selectable colors for key game elements.
+- **Images should not contain text.** Except logotypes — text must be its own UI element that can be styled and read by screen readers.
+- **Logotypes** have no minimum contrast requirement.
+- **Purely decorative** elements have no contrast requirement.
+- **Inactive-element text** must still meet the 3:1 minimum (e.g. locked "Bundle only" overlays, disabled options).
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players with low vision | ✔ |
+| Players with little or no color perception | ✔ |
+| Players without hearing | ✔ |
+| Players with limited hearing | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players on a small / distant / glare-affected / low-contrast display | ✔ |
+
+## Resources
+
+- [Provide high contrast between text/UI and background](http://gameaccessibilityguidelines.com/provide-high-contrast-between-text-and-background/)
+- [Provide an option to adjust contrast](http://gameaccessibilityguidelines.com/provide-an-option-to-adjust-contrast)
+- [Provide a choice of text colour, low/high contrast choice as a minimum](http://gameaccessibilityguidelines.com/provide-a-choice-of-text-colour-lowhigh-contrast-choice-as-a-minimum)
+- [Accessibility Insights For Windows](https://accessibilityinsights.io/)
+- [Colour Contrast Analyser (CCA)](https://developer.paciellogroup.com/resources/contrastanalyser/)
+- [Color Oracle](https://colororacle.org/)
+- [Contrast ratio tool](https://contrast-ratio.com/)
+- API: [XHighContrastGetMode](https://developer.microsoft.com/games/xbox/docs/gdk/XHighContrastGetMode) _(NDA)_

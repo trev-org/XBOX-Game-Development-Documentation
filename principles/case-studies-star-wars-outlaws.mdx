@@ -1,0 +1,62 @@
+---
+title: "Star Wars Outlaws case study"
+sidebarTitle: "Star Wars Outlaws"
+description: "Ubisoft Massive dropped pause-menu framerate to 1 FPS after 30 seconds of inactivity — pause-menu power draw fell from ~75% to 18–20%."
+icon: "jedi"
+---
+
+**Studio:** Ubisoft Massive<br />**Shipped:** Post-launch update<br />**Contributors:** Stefan Pijnacker, Gregor Ehrenstein
+
+A Certification power report from Microsoft (available on request for any title) flagged Star Wars Outlaws' pause menu as an outlier. The game ran close to industry standards everywhere else, but the pause menu drew **~75%** of the console's power budget — industry average was 55–60%.
+
+## The insight
+
+On Star Wars Outlaws' pause menu:
+
+- The graphics behind the menu are frozen.
+- Many game systems are already paused.
+
+That meant the team could aggressively drop framerate during pause without players noticing.
+
+## The change: drop to 1 FPS after 30 seconds idle
+
+After **30 seconds** of inactivity on the pause menu, framerate is dropped from the platform-native rate (30/40/60/144 depending on platform) all the way down to **1 FPS**. The moment the player returns, the game immediately resumes at full framerate — no stutter, no input delay.
+
+This mirrors the studio's existing PC behavior for unfocused windows.
+
+## Measured impact
+
+While Eco Mode is active, pause-menu power draw drops from ~75% to **18–20%** of the console budget.
+
+| Console | Before | After |
+| --- | --- | --- |
+| **Xbox Series X** | 180–200 W | **45–50 W** |
+| **Xbox Series S** | 90–110 W | **25–40 W** |
+
+## Real-world equivalencies
+
+An hour idling on Star Wars Outlaws' pause menu on Xbox Series X went from **~0.19 kWh** to **~0.05 kWh** — a **0.14 kWh saving**, equal to ~51 g of CO₂ emissions avoided (US 2024 grid average).
+
+At 10,000 players idling for one hour, that's **510 kg of CO₂ avoided** — equivalent to 1,299 miles driven by an average gas passenger vehicle ([EPA equivalency calculator](https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator)).
+
+All from a relatively small feature.
+
+## Ubisoft Play Green
+
+Star Wars Outlaws' Eco Mode supports [Ubisoft's Play Green strategy](https://www.ubisoft.com/en-us/company/social-impact/environment) and complements industry efforts like XBOX's energy-aware updates and the [Playing for the Planet Alliance](https://playing4theplanet.org/).
+
+## Takeaways for other studios
+
+- **Anywhere the world is frozen, aggressive framerate drops are safe.** Pause menus, inventory screens with static backgrounds, and post-match summaries are candidates.
+- **1 FPS is not a typo.** If nothing on screen is animating, you don't need more.
+- **A short idle timer preserves responsiveness.** 30 seconds is short enough to catch most idle time without annoying quick returners.
+- **Certification power reports are how you find these outliers.** Everything else in the game was fine; only the pause menu stood out.
+
+## Related case studies
+
+- [For Honor](/principles/case-studies-for-honor) (also Ubisoft)
+- [Fortnite & Unreal Engine](/principles/case-studies-fortnite)
+- [Call of Duty](/principles/case-studies-cod)
+- [The Elder Scrolls Online](/principles/case-studies-elder-scrolls-online)
+- [Minecraft](/principles/case-studies-minecraft)
+- [Energy Efficiency Essentials](/principles/energy-efficiency-essentials)

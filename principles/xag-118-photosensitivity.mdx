@@ -1,0 +1,74 @@
+---
+title: "XAG 118: Photosensitivity"
+sidebarTitle: "118 · Photosensitivity"
+description: "Test every game for photosensitive-seizure triggers and eliminate luminance flashes, red flashes, and high-contrast spatial patterns that can trigger seizures or migraine episodes."
+icon: "bolt"
+---
+
+## Goal
+
+Help prevent players from experiencing negative or potentially harmful side effects during gameplay, including photosensitive seizures and migraine episodes.
+
+## Overview
+
+About 1 in 4,000 people can experience a seizure when exposed to certain visual images including flashing lights or patterns. Many players don't know they have photosensitive epilepsy until their first seizure — which is why eliminating triggering content is preferred over splash-screen warnings.
+
+Symptoms include lightheadedness, altered vision, eye or face twitching, jerking of arms or legs, disorientation, confusion, momentary loss of awareness, loss of consciousness, or convulsions. Seizures can lead to injury from falls or striking nearby objects, or death.
+
+Repetitive flashing is also a barrier for autistic players, players prone to migraines, and players with sensory processing disorder.
+
+## Scoping questions
+
+Does your game have any visual elements? All games should be tested for photosensitive seizure triggers, regardless of whether they include intentional flashing.
+
+## Implementation guidelines
+
+Games shouldn't include images or experiences that might cause adverse reactions such as seizures or migraine episodes.
+
+### Luminance flash failure
+
+- **Definition:** A flash is a 10% change in luminance (where 100% is the max luminance of a white screen). The darker luminance value should be below 0.8.
+- **Failure criteria:**
+  - Flashes occur more than ~3 per second.
+  - Flashes take up ~20% or more of the screen.
+  - Lower-intensity flashing can also fail if sustained for an extended period.
+- **How to address:**
+  - Reduce the contrast between the brightest and darkest parts of the flash.
+  - Reduce flash frequency.
+  - Decrease flash size.
+
+### Red flash failure
+
+- **Definition:** A red flash requires a lower change in luminance than a normal flash. It applies when either extreme of the flash is a saturated red (R/(R \+ G \+ B) ≥ 0.8). A flash is defined when the change in (R–G–B) × 320 is greater than 20.
+- **Failure criteria:**
+  - Flashes occur more than ~3 per second.
+  - Flashes take up ~20% or more of the screen.
+  - Sustained lower-intensity red flashing can also fail.
+- **How to address:**
+  - Desaturate the red coloring.
+  - Reduce contrast between the brightest and darkest parts.
+  - Reduce flash frequency.
+  - Decrease flash size.
+
+### Spatial pattern failure
+
+- **Definition:** Alternating bands with high contrast define a spatial pattern.
+- **Failure criteria:**
+  - Contrast difference greater than 10%.
+  - Pattern takes up ~20% or more of the screen.
+- **How to address:**
+  - Reduce the contrast between the bands.
+  - Decrease pattern size.
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players with cognitive or learning disabilities | ✓ |
+| Players who experience photosensitive epileptic seizures or have sensory processing disorder | ✓ |
+
+## Resources
+
+- [Epilepsy Society — Photosensitive epilepsy](https://www.epilepsysociety.org.uk/photosensitive-epilepsy#.XH3QAHdFzIc)
+- [Epilepsy Foundation — Photosensitivity and Seizures](https://www.epilepsy.com/learn/triggers-seizures/photosensitivity-and-seizures)
+- [Harding FPA Test — Cambridge Research Systems](https://www.hardingfpa.com/)

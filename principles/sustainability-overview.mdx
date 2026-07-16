@@ -5,21 +5,87 @@ description: "Why energy efficiency matters on XBOX and where to start lowering 
 icon: "leaf"
 ---
 
-Sustainability on XBOX means lowering the energy cost of running your title without sacrificing gameplay quality. Microsoft sets sustainability goals across hardware and services, and titles play a meaningful role.
+At XBOX, we are dedicated to minimizing the environmental impact of gaming. With a global gaming community of over 3.1 billion, Microsoft and game developers are uniquely positioned to drive meaningful environmental progress — without compromising the integrity or quality of the gaming experience.
 
-## Why it matters
+XBOX was the first console platform to introduce specialized tools for measuring energy consumption and carbon emissions. These tools, built with game creators, aim to demystify and diminish energy costs for gamers and reduce the carbon footprint of game development.
 
-- A small per-title power reduction multiplied across millions of players is significant.
-- Energy-efficient titles run cooler, quieter, and last longer on handheld hardware.
-- Cert includes power-related XRs and Microsoft publishes [case studies](/principles/sustainability-case-studies) from shipping titles.
+## Why energy efficiency matters
 
-## Where to start
+Electricity that powers consumer electronics — including gaming consoles — is generated from a mix of carbon-heavy fossil fuels and renewable sources. Roughly **75%** of the energy and carbon footprint across XBOX's value chain comes from fossil-fuel electricity powering consoles globally, and about **50%** of that segment is attributable to gameplay itself.
 
-- Review the [Energy efficiency essentials](/principles/energy-efficiency-essentials) checklist.
-- Read [case studies](/principles/sustainability-case-studies) from titles like Call of Duty and Halo.
-- Profile with PIX to identify idle GPU / CPU waste.
+Identifying and implementing energy efficiency measures for gameplay — without degrading the experience — is environmentally advantageous and directly benefits players through reduced energy bills and cooler, quieter hardware.
+
+<Note>
+  **"But I'm just one little game?"** Not true. Consider a title averaging 0.35 kW on a PC device, played 10 hours/week, with 80,000 weekly active users:
+
+  - 0.35 kW × 10 hours = **3.5 kWh per week, per user**
+  - (3.5 kWh × 80,000 WAU) × 52 weeks = **14,560,000 kWh per year**
+
+  Using a weighted average global emissions factor of 0.334 kg CO₂e per kWh:
+
+  - 0.334 × 14,560,000 = **4,863 metric tonnes CO₂e per year**
+
+  That's equivalent to ~12.5M car miles driven, 5.4M pounds of coal burned, or carbon sequestered by 5.7k acres of forest. A 10% efficiency improvement is suddenly impactful.
+</Note>
+
+## What we want to achieve
+
+The XBOX Sustainability Toolkit aims to:
+
+- Highlight opportunities for energy efficiency that lower the energy demand and carbon footprint of players.
+- Provide targeted data on the best areas to introduce efficiency improvements.
+- Let developers see the baseline energy performance of their titles on Xbox Series X|S.
+- Deliver detailed, actionable reports where inefficiency is observed.
+- Partner with developers and publishers on a reliable testing process.
+
+## The XBOX Sustainability Toolkit
+
+<CardGroup cols={2}>
+  <Card title="GDK and Power Monitor tools" icon="gauge-high" href="/principles/sustainability-developer-overview">
+    Real-time energy consumption feedback down to the millisecond. Establish a baseline, measure GPU usage granularly, and pinpoint inefficiencies. Includes an API for custom profiling and a devkit front-panel Power Load % readout.
+  </Card>
+
+  <Card title="Dynamic Power States (DPS)" icon="bolt" href="/principles/dynamic-power-states">
+    Let the driver dynamically scale GPU power based on rendering workload. One API call — `SetDriverHintX(DRIVER_HINT_SET_DYNAMIC_POWER, 1)` — can unlock 10–15% additional savings on top of Sustainability Toolkit techniques.
+  </Card>
+
+  <Card title="Certification power reports" icon="clipboard-check" href="/principles/sustainability-case-studies">
+    Certification produces a bespoke Sustainability Power Report measuring your title's power consumption across common in-game areas. Contact your Microsoft rep to request one.
+  </Card>
+
+  <Card title="Partner Center dashboards" icon="chart-line" href="/principles/partner-center-sustainability-data">
+    Studio-level view of power, energy, and carbon footprint for every released title, updated monthly. Compare month-over-month to measure the impact of updates.
+  </Card>
+
+  <Card title="Energy Efficiency Essentials" icon="list-check" href="/principles/energy-efficiency-essentials">
+    A curated checklist of proven techniques from XBOX Game Studios and pilot partners — passive and opt-in optimizations you can adopt today.
+  </Card>
+
+  <Card title="Case studies" icon="book" href="/principles/case-studies-overview">
+    Real results from Call of Duty, Halo, Minecraft, Fortnite, Gears of War, ESO, For Honor, Star Wars Outlaws, and more.
+  </Card>
+</CardGroup>
+
+## Platform baselines
+
+Compare your title against measured platform averages:
+
+- [**Lab platform baselines**](/principles/lab-platform-baselines) — power averages by in-game area (main menu, loading screen, active gameplay, constrained state, and more), captured by Certification with PIX across \>200 titles.
+- [**Global platform baselines**](/principles/global-platform-baselines) — anonymized AC-power telemetry from Xbox Series X|S consoles in the field, broken down by feature (4K, 60 FPS, HDR, VRR) and genre.
+
+## Get involved
+
+We work in collaboration with our fans, game creators, and the industry. If you're interested in learning more or contributing case studies, reach out to [XboxSustainability@Microsoft.com](mailto:XboxSustainability@Microsoft.com) and CC your Microsoft point of contact.
+
+You can also connect with like-minded developers through:
+
+- [United Nations Playing for the Planet Alliance](https://playing4theplanet.org/)
+- [IGDA Climate Special Interest Group](https://www.igdaclimatesig.org/)
 
 ## Related
 
 - [Energy efficiency essentials](/principles/energy-efficiency-essentials)
-- [Sustainability case studies](/principles/sustainability-case-studies)
+- [Dynamic Power States](/principles/dynamic-power-states)
+- [Sustainability developer overview](/principles/sustainability-developer-overview)
+- [Sustainability case studies](/principles/case-studies-overview)
+- [Certification power reports](/principles/sustainability-case-studies)

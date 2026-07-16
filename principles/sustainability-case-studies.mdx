@@ -1,107 +1,77 @@
 ---
-title: "Sustainability case studies and cert testing"
-sidebarTitle: "Sustainability case studies"
-icon: "book"
-description: "Energy-efficiency techniques from real shipping titles — Call of Duty, Halo, Minecraft, Fortnite, Gears of War, ESO, For Honor, Star Wars Outlaws — and the certification power testing process."
+title: "Certification sustainability power reports"
+sidebarTitle: "Certification power reports"
+icon: "clipboard-check"
+description: "How XBOX Certification measures your title's power consumption across in-game areas, and how to request a bespoke Sustainability Power Report."
 ---
 
-The XBOX Sustainability Toolkit pilot program has produced multiple case studies from shipping titles, each demonstrating measurable energy savings with no visible quality impact. Use these as templates for your own efficiency work.
+For late-stage or shipped titles, XBOX Certification can produce a **Sustainability Power Report** measuring your title's power draw across common in-game areas — menus, loading screens, lobbies, cutscenes, active gameplay, constrained state, and multiplayer. The report is the fastest way to identify which parts of your title deviate from the [Lab platform baselines](/principles/lab-platform-baselines).
 
-## How case studies are structured
+## How to request a report
 
-Every case study covers:
+<Steps>
+  <Step title="Contact your Microsoft representative">
+    Reach out to your Microsoft point of contact, or email [XboxSustainability@Microsoft.com](mailto:XboxSustainability@Microsoft.com).
+  </Step>
+  <Step title="Provide the title, sandbox, and scenarios">
+    Share the target sandbox and the specific scenarios you want measured. Common asks: main menu, matchmaking lobby, single-player campaign, multiplayer gameplay, pause menu, constrained state.
+  </Step>
+  <Step title="Certification runs the standardized test">
+    Certification runs your title against standardized test rigs and instrumentation. See [Sustainability PIX guide](/principles/sustainability-pix-guide) for the exact PIX configuration used.
+  </Step>
+  <Step title="Review the per-scenario breakdown">
+    You receive a per-scenario breakdown of power draw with platform-average comparisons.
+  </Step>
+  <Step title="Prioritize with Power Monitor">
+    Use the report to prioritize where local Power Monitor profiling will find the biggest wins.
+  </Step>
+</Steps>
 
-1. **The baseline** — power draw before optimization, captured via the XBOX Power Monitor or a certification report.
-2. **The technique** — what changed in the title.
-3. **The result** — measured power-draw delta and any frame-time / quality impact.
-4. **The roll-out** — default-on, opt-in, idle-triggered, or other delivery model.
+Reports are available **pre-release** (for unreleased titles approaching cert) and **post-release** (for shipped titles considering updates).
 
-For full data and screenshots, contact your Microsoft Sustainability point of contact.
+## What a report includes
 
-## Published case studies
+Each scenario is captured on Xbox Series X and Xbox Series S with:
 
-### Call of Duty
+- **Title average** — your title's average Power Load % in that scenario.
+- **Industry average** — the [Lab platform baseline](/principles/lab-platform-baselines) average for the same scenario.
+- **Wattage** — approximate wall-socket wattage.
+- **Deltas** — where you're above or below the industry average.
 
-Focused on **menu and lobby power**. Capped animated lobby frame rate at 30 Hz and reduced internal resolution while the player isn't in active gameplay. Wins came primarily from passive optimizations that players don't notice.
-
-Key techniques applied:
-
-- Idle-timer detection in front-end screens.
-- Lower-resolution rendering for lobby UI.
-- Dynamic Power States (DPS) enabled for the GPU.
-
-### Halo
-
-Focused on **constrained-state and disconnect handling**. When the title detects controller disconnection or PLM constraint, it drops the rendering budget aggressively.
-
-### Minecraft
-
-Demonstrated **menu 2.5D rendering wins**. Switched from a 3D animated menu to a 2.5D scene (2D backplate \+ 3D character) for ~30% power reduction in menus.
-
-### Fortnite
-
-Focused on **menu and matchmaking screens**. Reduced rendering load during the matchmaking wait state — historically a long, low-activity period.
-
-### Gears of War Reloaded
-
-Applied techniques across **multiple screens and game states**. Combined frame-rate caps, resolution scaling, and DPS into a coordinated power-saving profile.
-
-### Elder Scrolls Online
-
-Focused on **idle and inactive states**. Long-running MMO sessions often have stretches of low activity (banking, crafting, AFK in cities) ideal for power reduction.
-
-### For Honor
-
-Focused on **post-match results screens and menus**. Repetitive screens between matches accumulate significant idle power across a session.
-
-### Star Wars Outlaws
-
-Applied **DPS and idle detection** broadly. Demonstrated that DPS alone delivers meaningful savings on a modern AAA title without any other code changes.
-
-## Cross-case patterns
-
-Techniques that worked across multiple titles:
-
-1. **Cap menu and lobby frame rate at 30 Hz** — nearly invisible to players, large power win.
-2. **Reduce internal resolution in non-gameplay screens** — upscale to preserve UI sharpness.
-3. **Idle-timer detection** — reduce rendering load when no input received for ~30 seconds.
-4. **Detect controller disconnect** — if no controller, drop the rendering budget.
-5. **Enable Dynamic Power States** — single API call (`SetDriverHintX(DRIVER_HINT_SET_DYNAMIC_POWER, 1)`); zero-effort win.
-6. **2.5D menus** — replace fully-3D menus with 2D backplates plus minimal 3D where needed.
-
-## Certification testing process
-
-For late-stage or shipped titles, XBOX Certification can produce a **Sustainability Power Report** measuring power draw across common in-game areas (menus, loading screens, lobbies, gameplay).
-
-Process:
-
-1. Contact your Microsoft point of contact to request a report.
-2. Provide the title, target sandbox, and the scenarios to measure.
-3. Certification runs the title against standardized test rigs and instrumentation.
-4. You receive a per-scenario breakdown of power draw, including platform-average comparisons.
-5. Use the report to prioritize where Power Monitor profiling can find the most savings.
-
-Reports are available pre-release (for unreleased titles approaching cert) and post-release (for shipped titles considering updates).
+For an example of a real report used to guide production decisions, see the [Gears of War: Reloaded case study](/principles/case-studies-gears-of-war-reloaded).
 
 ## Lab vs. global platform baselines
 
 Two baselines inform your reports:
 
-- **Lab baseline** — controlled measurement on standardized hardware, normalized environment. Best for comparing your title to others.
-- **Global platform baseline** — aggregated real-world telemetry from shipping titles. Best for understanding how your title actually behaves at scale.
+- [**Lab baseline**](/principles/lab-platform-baselines) — controlled measurement on standardized hardware in a normalized environment. Best for comparing your title to others.
+- [**Global platform baseline**](/principles/global-platform-baselines) — aggregated real-world telemetry from shipping titles. Best for understanding how your title actually behaves at scale.
 
-The Partner Center sustainability dashboard surfaces global telemetry once your title is live; cert reports use lab measurement.
+The [Partner Center sustainability dashboard](/principles/partner-center-sustainability-data) surfaces global telemetry once your title is live; cert reports use lab measurement.
+
+## Real examples using cert reports
+
+Cert reports have driven the optimizations in multiple shipping titles:
+
+- [**The Elder Scrolls Online**](/principles/case-studies-elder-scrolls-online) — cert report flagged a ~30 W jump in menus, leading to the 30 FPS menu cap.
+- [**Star Wars Outlaws**](/principles/case-studies-star-wars-outlaws) — cert report showed the pause menu at ~75% Power Load vs. an industry average of 55–60%, leading to the 1 FPS pause behavior.
+- [**Gears of War: Reloaded**](/principles/case-studies-gears-of-war-reloaded) — cert measured every mode × area combination to publish comparative data.
+
+See the full library of results in [Case studies](/principles/case-studies-overview).
 
 ## Get involved
 
 Email [XboxSustainability@Microsoft.com](mailto:XboxSustainability@Microsoft.com) to:
 
-- Request a certification sustainability power report.
+- Request a Certification Sustainability Power Report.
 - Join the pilot program and contribute a case study.
 - Get help with Power Monitor profiling or DPS integration.
 - Discuss whether your title is a good fit for new tools as they roll out.
 
 ## See also
 
-- [Gaming sustainability](/principles/sustainability-overview)
-- [XBOX Game Energy Efficiency Essentials](/principles/energy-efficiency-essentials)
+- [Sustainability overview](/principles/sustainability-overview)
+- [Case studies overview](/principles/case-studies-overview)
+- [Lab platform baselines](/principles/lab-platform-baselines)
+- [Global platform baselines](/principles/global-platform-baselines)
+- [Energy Efficiency Essentials](/principles/energy-efficiency-essentials)

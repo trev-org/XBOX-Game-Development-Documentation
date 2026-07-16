@@ -452,14 +452,102 @@
             "pages": [
               "principles/localization-globalization",
               "principles/security-overview",
-              "principles/accessibility-overview",
-              "principles/speech-accessibility",
-              "principles/xbox-accessibility-guidelines",
-              "principles/accessibility-resources",
-              "principles/mgats",
-              "principles/sustainability-overview",
-              "principles/energy-efficiency-essentials",
-              "principles/sustainability-case-studies"
+              {
+                "group": "Accessibility",
+                "icon": "universal-access",
+                "pages": [
+                  "principles/accessibility-overview",
+                  "principles/xbox-accessibility-guidelines",
+                  {
+                    "group": "XAG deep dives",
+                    "icon": "list-check",
+                    "pages": [
+                      "principles/xag-101-text-display",
+                      "principles/xag-102-contrast",
+                      "principles/xag-103-additional-cues",
+                      "principles/xag-104-subtitles-captions",
+                      "principles/xag-105-audio-accessibility",
+                      "principles/xag-106-screen-narration",
+                      "principles/xag-107-input",
+                      "principles/xag-108-difficulty-options",
+                      "principles/xag-109-objective-clarity",
+                      "principles/xag-110-haptic-feedback",
+                      "principles/xag-111-audio-descriptions",
+                      "principles/xag-112-ui-navigation",
+                      "principles/xag-113-ui-focus-handling",
+                      "principles/xag-114-ui-context",
+                      "principles/xag-115-error-messages",
+                      "principles/xag-116-time-limits",
+                      "principles/xag-117-visual-distractions-motion",
+                      "principles/xag-118-photosensitivity",
+                      "principles/xag-119-chat",
+                      "principles/xag-120-communication-experiences",
+                      "principles/xag-121-accessible-feature-documentation",
+                      "principles/xag-122-accessible-customer-support",
+                      "principles/xag-123-mental-health-best-practices"
+                    ]
+                  },
+                  "principles/gadpeg",
+                  "principles/etiquette",
+                  "principles/mgats",
+                  "principles/accessibility-workshop-toolkit",
+                  "principles/gaf-info",
+                  "principles/speech-accessibility",
+                  "principles/accessibility-feature-tags",
+                  "principles/accessibility-of-gaming-ai",
+                  "principles/accessibility-resources",
+                  {
+                    "group": "Playbook for Accessible Gaming Events (PAGE)",
+                    "icon": "calendar-check",
+                    "pages": [
+                      "principles/page-101-registration",
+                      "principles/page-102-venues",
+                      "principles/page-103-social-media",
+                      "principles/page-104-catering",
+                      "principles/page-105-speakers-videos-presentations",
+                      "principles/page-106-web-content-applications",
+                      "principles/page-107-game-demo-stations",
+                      "principles/page-108-attractions-activations",
+                      "principles/page-109-swag-and-merch",
+                      "principles/page-110-staff",
+                      "principles/page-111-transportation",
+                      "principles/page-112-post-event",
+                      "principles/page-checklists"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Sustainability",
+                "icon": "leaf",
+                "pages": [
+                  "principles/sustainability-overview",
+                  "principles/sustainability-developer-overview",
+                  "principles/energy-efficiency-essentials",
+                  "principles/dynamic-power-states",
+                  "principles/sustainability-pix-guide",
+                  "principles/sustainability-devkit-guide",
+                  "principles/lab-platform-baselines",
+                  "principles/partner-center-sustainability-data",
+                  "principles/sustainability-case-studies",
+                  "principles/global-platform-baselines",
+                  {
+                    "group": "Case studies",
+                    "icon": "book",
+                    "pages": [
+                      "principles/case-studies-overview",
+                      "principles/case-studies-cod",
+                      "principles/case-studies-halo",
+                      "principles/case-studies-minecraft",
+                      "principles/case-studies-fortnite",
+                      "principles/case-studies-gears-of-war-reloaded",
+                      "principles/case-studies-elder-scrolls-online",
+                      "principles/case-studies-for-honor",
+                      "principles/case-studies-star-wars-outlaws"
+                    ]
+                  }
+                ]
+              }
             ]
           }
         ]

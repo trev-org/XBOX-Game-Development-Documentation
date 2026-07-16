@@ -1,0 +1,95 @@
+---
+title: "XAG 103: Additional channels for visual and audio cues"
+sidebarTitle: "103 · Additional cues"
+description: "Express important cues through more than one sense so blind, low-vision, deaf, and hard-of-hearing players can perceive them."
+icon: "sitemap"
+---
+
+## Goal
+
+Express visual and audio cues through multiple sensory channels so key information is perceivable by players who are blind or have low vision **and** by players who are deaf or hard of hearing.
+
+## Overview
+
+Cues drive gameplay — gunfire direction, taking damage, interactable objects, new objectives. If any cue is single-sense, players who can't use that sense lose critical information. Ensure important information is expressed through **at least two** of: text, symbols, color, on-screen elements, spatial audio, distinct sounds, haptics, and screen narration.
+
+Color-vision deficiency further complicates visual cues — colors may be muted, indistinguishable, or invisible. Cataracts and other conditions also change color perception.
+
+## Scoping questions
+
+- Do you rely on audio or visual content that causes a negative consequence if missed (e.g. audible gunshots as the only warning to take cover)?
+- Do you use color to distinguish important elements (blue = poison, green = safe)?
+
+## Multisensory communication options
+
+### Visual
+
+<CardGroup cols={2}>
+  <Card title="Text and labels" icon="font">
+    Accessible text ([XAG 101](/principles/xag-101-text-display)) that verbally names on-screen elements reduces cognitive load.
+  </Card>
+
+  <Card title="Symbols and shapes" icon="shapes">
+    Fast-recognition icons paired with text labels help readers and non-readers alike.
+  </Card>
+
+  <Card title="Color" icon="palette">
+    Reinforce other channels — never the sole channel.
+  </Card>
+
+  <Card title="On-screen elements" icon="crosshairs">
+    Damage halos, directional indicators, and enemy markers supplement audio.
+  </Card>
+</CardGroup>
+
+### Audio
+
+- **Spatial audio** — encode direction and distance.
+- **Distinct audio cues** — pings, bells, and stingers for new objectives, contact, kills, hollow swings, etc.
+
+### Haptic
+
+- Rumble patterns can supplement visual and audio cues. See [XAG 110: Haptic feedback](/principles/xag-110-haptic-feedback).
+
+<Warning>
+  Haptics are optional and unsupported on many devices (mouse/keyboard, Xbox Adaptive Controller). Always pair with at least one other channel.
+</Warning>
+
+### Color-vision deficiency
+
+Given the range of color-vision conditions, aim to have **no** cue depend on color alone. When color reliance is unavoidable, let the player pick the colors used for individual game elements.
+
+## Implementation guidelines
+
+- **Visual critical content** is also represented by at least one other sense (spatial audio or haptic).
+- **Content represented through multiple visual affordances** (shape \+ location) still needs a non-visual channel — blind players can't use shape or location alone. Screen narration, spatial audio, or haptic feedback is required.
+- **Menu narration.** When narration is supported, use images with text alternatives for graphical symbols. Do **not** use Unicode font glyphs whose Unicode names differ from your intended meaning (e.g. a "3 o'clock" clock face used to represent "Timed Mode").
+- **Color-conveyed critical content** is also expressed through shape, pattern, icon, or text label.
+- **Player-configurable colors** for information carriers (e.g. rare item highlight, ally vs enemy markers on mini-map).
+- **Disabled-state color change (graying)** is accompanied by another indicator such as a lock icon or a "Not available" text label. See also [XAG 102](/principles/xag-102-contrast) for inactive-element contrast.
+- **Audio critical content** is also represented visually (typed indicator, directional graphic) and/or by haptics.
+- **Text-only dialogue without a spoken track.** Provide the speaker's name and an indication of where the speaker is spatially located in relation to the player's character.
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players without vision | ✔ |
+| Players with low vision | ✔ |
+| Players with little or no color perception | ✔ |
+| Players without hearing | ✔ |
+| Players with limited hearing | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players with limited ability to use time-dependent controls | ✔ |
+| Players on small / distant / glare-affected displays; young players; noisy or muted-audio environments | ✔ |
+
+## Resources
+
+- [Ensure no essential information is conveyed by a fixed colour alone](http://gameaccessibilityguidelines.com/ensure-no-essential-information-is-conveyed-by-a-colour-alone)
+- [Provide a choice of cursor / crosshair colours / designs](http://gameaccessibilityguidelines.com/provide-a-choice-of-cursor-crosshair-colours-designs)
+- [Important supplementary information conveyed by audio is replicated in text/visuals](http://gameaccessibilityguidelines.com/ensure-that-all-important-supplementary-information-eg-the-direction-you-are-being-shot-from-conveyed-by-audio-is-replicated-in-text-visuals/)
+- [Provide captions or visuals for significant background sounds](http://gameaccessibilityguidelines.com/provide-captions-or-visuals-for-significant-background-sounds/)
+- [Use distinct sounds / music design for all objects and events](http://gameaccessibilityguidelines.com/use-distinct-sound-music-design-for-all-objects-and-events/)
+- [Provide a voiced GPS](http://gameaccessibilityguidelines.com/provide-a-voiced-gps/)
+- [Colour Contrast Analyser (CCA)](https://developer.paciellogroup.com/resources/contrastanalyser/)
+- [Color Oracle colorblindness simulator](https://colororacle.org/)

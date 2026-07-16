@@ -1,0 +1,81 @@
+---
+title: "XAG 116: Time limits"
+sidebarTitle: "116 · Time limits"
+description: "Give players adequate time — or the ability to adjust, extend, or disable time limits — for any UI interaction that isn't a core gameplay mechanic."
+icon: "stopwatch"
+---
+
+## Goal
+
+Ensure players have adequate time to read, interpret, and interact with all UI in the game.
+
+## Overview
+
+A time limit requires the player to perceive the warning (visually or via narration), read/interpret it, decide what to do, and physically complete the action — all within the allotted time. Players who are younger and can't read, blind, low vision, have dexterity impairments, or cognitive limitations may need much more time. Consequences of missing a limit can include lost progress, unintentional sign-out, or unusable games.
+
+These guidelines apply only to interactions that are **not** core gameplay mechanics. A three-minute lap timer in a racing game isn't in scope; a "you'll be signed out in 20 seconds" prompt is.
+
+## Scoping questions
+
+Does your game include time limits outside core gameplay? Examples:
+
+- The player is signed out after idle time if they don't select "stay signed in."
+- The player's character dies, and they have 30 seconds to press A to respawn or lose recent progress.
+- On-screen tutorials, notifications, or chat windows disappear after an allotted time.
+
+## Implementation guidelines
+
+### Time limits on UI interactions (not core mechanics)
+
+- Use time limits only when essential and unavoidable.
+- Inform the player, in multiple ways, when a time limit is about to happen.
+- Provide a method to modify the time limit. Players should be able to:
+  - Request a longer session time limit or no time limit before it begins.
+  - Adjust the time limit before encountering it, up to at least **10x** the default.
+  - Be warned before time expires and be given at least **20 seconds** to extend with a simple action ("press A"), and be able to extend at least 10 times.
+  - Turn off the time limit.
+- Example: _Halo Infinite_ lets players set text chat display time up to 120 seconds.
+
+### Duration limits on on-screen elements
+
+For elements like tutorial text windows, speaker dialogue, or speech-to-text communication windows:
+
+- Allow the player to adjust the number of seconds these elements appear (in settings), up to at least 10x the default. Examples: _Gears 5_ text chat duration slider (up to 60 seconds); _The Outer Worlds_ notification duration slider.
+- Or, allow the player to disable duration limits entirely so elements can be dismissed or advanced on input.
+  - Example: _Ori and the Will of the Wisps_ keeps NPC dialogue on screen until the player presses A.
+  - Example: _Dragon Quest XI S_ lets players toggle Autoplay Cutscenes so recently spoken dialogue stays until they advance manually.
+
+### Exceptions
+
+A time limit imposed by the content is exempt if at least one is true:
+
+- The time limit is a required part of a real-time event (auction) with no possible alternative.
+- The time limit is essential to the task (e.g., HyperDot's core-gameplay countdown).
+- The default time limit exceeds 20 hours.
+
+<Note>
+  Real-time multiplayer events like matchmaking-lobby countdowns aren't required to allow extension/adjustment because doing so would affect other players in the session.
+</Note>
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players without vision | ✓ |
+| Players with low vision | ✓ |
+| Players without hearing | ✓ |
+| Players with limited hearing | ✓ |
+| Players with cognitive or learning disabilities | ✓ |
+| Players with limited reach and strength | ✓ |
+| Players with limited manual dexterity | ✓ |
+| Players with prosthetic devices | ✓ |
+| Players with limited ability to use time-dependent controls | ✓ |
+| Casual players, younger players, those new to gaming | ✓ |
+
+## Resources
+
+- [Avoid repeated inputs (button-mashing/quick time events)](http://gameaccessibilityguidelines.com/avoid-repeated-inputs-button-mashingquick-time-events)
+- [Allow players to progress through text prompts at their own pace](http://gameaccessibilityguidelines.com/allow-players-to-progress-through-text-prompts-at-their-own-pace)
+- [Offer a means to bypass gameplay elements that aren't part of the core mechanic](http://gameaccessibilityguidelines.com/offer-a-means-to-bypass-gameplay-elements-that-arent-part-of-the-core-mechanic-via-settings-or-in-game-skip-option)
+- [Include a cool-down period of 0.5 seconds between inputs](http://gameaccessibilityguidelines.com/include-a-cool-down-period-post-acceptance-delay-of-0-5-seconds-between-inputs)
+- [Don't make precise timing essential to gameplay](http://gameaccessibilityguidelines.com/do-not-make-precise-timing-essential-to-gameplay-offer-alternatives-actions-that-can-be-carried-out-while-paused-or-a-skip-mechanism)

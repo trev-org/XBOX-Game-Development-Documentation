@@ -1,0 +1,91 @@
+---
+title: "XAG 119: Speech-to-text and text-to-speech chat"
+sidebarTitle: "119 · STT / TTS chat"
+description: "Support speech-to-text and text-to-speech chat, narrate incoming text and emotes, and respect (and let players override) platform chat accessibility settings."
+icon: "comments"
+---
+
+## Goal
+
+Ensure all players can participate in communication experiences like text chat or voice chat. Especially important for players who are d/Deaf or hard-of-hearing, non-verbal, or have low or no vision.
+
+## Overview
+
+Communication experiences are one-to-one or one-to-many exchanges of information between players — online text chat, party chat during gameplay, multiplayer lobby chat, or messages to a player's inbox.
+
+- Players who are d/Deaf or hard-of-hearing should be able to use **speech-to-text chat** that transcribes spoken language into text on screen in real time.
+- Players who don't communicate verbally (by choice or disability) should be able to use **text-to-speech chat** — a text-entry box where anything they type is read aloud to other players via a synthesized voice. Other players don't need to enable anything; the text is simply spoken aloud.
+
+<Note>
+  Voice chat isn't the same as making text chat accessible. Text chat isn't the same as making voice chat accessible. Players should be able to communicate through the method of their choosing.
+</Note>
+
+## Scoping questions
+
+Does your game include:
+
+- Text chats between players?
+- Voice-based audio chat?
+- Predefined phrases such as chat wheels?
+- Friend requests, invitations, and player-to-player notifications?
+- Non-text communication like emotes or emojis?
+
+## Implementation guidelines
+
+### Speech-to-text chat
+
+Players can enable STT to have all voice-based communication from other players transcribed into text in real time. Example: _Halo Wars 2_ displays a real-time transcription area on the right side of the screen.
+
+### Text-to-speech chat
+
+When enabled, players get a text-entry box; outgoing text is transformed into synthesized audio in real time and broadcast on the voice channel to all other players. Examples: _Sea of Thieves_ and _Gears 5_ both surface a text-entry box; entered text is broadcast to all players via a synthesized voice. Gears 5 also tags messages as "Global" or "Speech" so senders know how their message reached others.
+
+### Text-entry box everywhere communication is available
+
+A text-entry box should be available for players to enter text everywhere communication is possible — including screens outside active gameplay. Both Sea of Thieves and Gears 5 make the text-entry box available across all communication surfaces.
+
+### Screen narration of text-based communication
+
+All incoming text-based communications should be voiced out in real time locally to a player with screen-narration settings enabled. Example: Minecraft Bedrock Edition narrates incoming chat messages aloud when screen narration is on.
+
+### Screen narration of non-text communication
+
+All phrases, emojis, or emotes should be voiced out in real time locally to a player with screen narration enabled.
+
+- Emojis should be voiced with friendly names ("Grinning Face," "Two Hearts") based on [Unicode CLDR Short Names](https://unicode.org/emoji/charts/full-emoji-list.html). Example: Minecraft narrates "Hi! Welcome to my world! Red Heart."
+
+### Player-initiated character voice
+
+All player-initiated character communication spoken aloud (audio voice-over of a predefined chat-wheel message, for instance) should be transcribed into text and displayed locally in real time to a player with STT enabled.
+
+- Reviewing predefined message options must also be accessible: players with screen narration enabled should hear a preview of each message on focus so they know what they'll send.
+
+### Read and support platform settings
+
+Games should, by default, support platform settings that enable STT or TTS chat where those settings exist. Xbox's Ease of Access Game Transcription menu provides platform-level defaults.
+
+### In-game platform setting overrides
+
+All core supported features (STT chat, TTS chat, and screen narration) should be adjustable at the game level, so players can override platform defaults per-game.
+
+- Example: _Sea of Thieves_ lets players individually override platform STT, TTS, and game transcription settings.
+- Example: _Forza Horizon 4_ Screen Reader option provides "System Default," "On," and "Off" per-game.
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players without vision | ✓ |
+| Players with low vision | ✓ |
+| Players without hearing | ✓ |
+| Players with limited hearing | ✓ |
+| Players without speech | ✓ |
+| Players with cognitive or learning disabilities | ✓ |
+| Players who don't want to share their voice online for privacy reasons, players without a microphone or headset | ✓ |
+
+## Resources
+
+- [Azure PlayFab Party overview](/gaming/playfab/features/multiplayer/networking/)
+- [PlayFab Party speech-to-text and text display UX guidelines](/gaming/playfab/features/multiplayer/networking/party-speech-to-text-ux-guidelines)
+- [PlayFab Party text-to-speech and text input UX guidelines](/gaming/playfab/features/multiplayer/networking/party-text-to-speech-ux-guidelines)
+- [Full Emoji List — Unicode.org](https://unicode.org/emoji/charts/full-emoji-list.html)

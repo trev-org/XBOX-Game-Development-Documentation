@@ -1,0 +1,62 @@
+---
+title: "XAG 113: UI focus handling"
+sidebarTitle: "113 · UI focus handling"
+description: "Always show a highly visible focus indicator that never disappears or moves to offscreen elements, so players can tell which UI element has input focus."
+icon: "crosshairs"
+---
+
+## Goal
+
+Ensure that players, including players with low vision, are always aware of which element in a game UI has focus.
+
+## Overview
+
+Focus indicators are visual markers showing which UI element currently has input focus. Any interactive input (e.g., "press A to select") applies to whichever element has focus. Subtle or intermittently visible focus indicators are a barrier for players with low vision, cognitive disabilities, assistive-technology users, and players new to the game. If focus moves to a hidden or offscreen element, players can be blocked from continuing.
+
+## Scoping questions
+
+- What method indicates focus (color, outline, both)?
+- Is that method visible for players with low vision or colorblindness?
+- Is an indication of which control has focus always present?
+- Is the indicator visible on **all** UI backgrounds in the game (colors, images, animations)?
+- Does your game contain dialog boxes that overlay other UI (a common spot where focus indicators get lost)?
+
+## Implementation guidelines
+
+### Highly visible focus indicator
+
+All UI elements should display a highly visible focus indicator when they receive focus. Techniques include:
+
+- Borders around the focused element
+- Increasing element size or font weight on focus
+- Adding a contrasting block fill behind the element
+- Combining multiple techniques for redundancy
+
+**Examples:**
+
+- _The Outer Worlds_ — focus indicator outlines the element, adds a contrasting block fill, and changes font weight and color.
+- _Fallout 76_ — pause menu highlights the item with a high-contrast yellow backdrop plus a small animated character to the left.
+
+### Always visible, never offscreen
+
+- The visual focus indicator should always be visible on screen.
+- Focus indicators shouldn't become invisible on any focusable element.
+- Focus shouldn't move to invisible or offscreen elements.
+- When dialog boxes appear (e.g., Forza Horizon 4's "Unsaved Changes" warning), focus should move to the first interactable control in the dialog, and it shouldn't be possible to move focus to anything outside the dialog while it's open.
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players without vision | ✓ |
+| Players with low vision | ✓ |
+| Players with cognitive or learning disabilities | ✓ |
+| Players with limited reach and strength | ✓ |
+| Players with limited manual dexterity | ✓ |
+| Players with prosthetic devices | ✓ |
+| Casual players, younger players | ✓ |
+
+## Resources
+
+- [Designing for Accessibility: Focus States — DockYard](https://dockyard.com/blog/2020/04/28/designing-for-accessibility-focus-states)
+- [WCAG 2.2 SC 2.4.11: Focus Appearance (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance-minimum.html)

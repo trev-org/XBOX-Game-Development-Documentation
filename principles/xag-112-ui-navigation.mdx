@@ -1,0 +1,94 @@
+---
+title: "XAG 112: UI navigation"
+sidebarTitle: "112 · UI navigation"
+description: "Provide clear, consistent, multi-input UI navigation across the entire game so players using assistive technology or new to gaming aren't blocked from settings and gameplay."
+icon: "compass"
+---
+
+## Goal
+
+Provide players with clear and consistent UI navigation experiences throughout the entirety of a game. This helps players who are neurodiverse, have learning disabilities, are new to gaming, or navigate the experience with assistive technologies.
+
+## Overview
+
+The UI should be consistent and intuitive. Inconsistent layouts or interaction mechanics can easily disorient players using screen readers, voice commands, eye gaze, or digital-only inputs. Ensure that layout and interaction mechanisms use similar orders and structures across all UIs so players can find what they need and configure options.
+
+Focus movement should always be predictable. Non-traditional input users (keyboard-only, mouth-operated joysticks, etc.) can be blocked from gameplay if focus doesn't move in a clear, consistent way.
+
+## Scoping questions
+
+- Does your game contain multiple UI screens or pages?
+- Are UI elements consistently located across each screen (e.g., page title always at the top and read first in narration order)?
+- Are interaction methods consistent across the UI for elements appearing in multiple locations (e.g., "Press A to select")?
+
+## Implementation guidelines
+
+### Accessible pathway to accessibility settings
+
+From initial launch, ensure all pathways to the accessibility features/settings menu are fully accessible. Options include:
+
+- Prompting players to configure accessibility settings as the first screen on launch (e.g., Minecraft Dungeons).
+- Meeting all XAGs by default when the game initially launches (proper text/contrast, narration and subtitles enabled by default, visual distractions disabled by default).
+- Meeting all XAGs by default but using platform settings (e.g., "Let Games Read to Me") to disable certain items based on the player's current platform preferences.
+
+### Consistent, logical order
+
+- UI navigation order is logical and consistent across the full game.
+- Components repeated across pages should appear in the same relative order each time.
+- Interaction prompts (select, back, LT/RT for pages, LB/RB for tabs) stay consistent.
+
+### Multiple input support
+
+- The UI is fully navigable by keyboard and by controller **digital** input alone.
+- All aspects of the game — menus and gameplay — are navigable by multiple inputs (mouse, eye gaze, voice, keyboard, controller) where the platform supports them.
+
+### Focus order
+
+- Focusable components receive focus in an order that's logical and preserves meaning and purpose.
+- Focus order aligns with the meaning/operation of the UI. If independent of meaning, align with the visual design flow.
+- Example: Forza Horizon 4's tile-based main menu doesn't follow a linear path, but pressing down from "Settings" lands on "Drone Mode" — matching the visual flow.
+
+### Menu looping
+
+- After navigating to the last item in a linear UI/menu, focus should return to the first item (and vice versa).
+
+<Note>
+  This applies to **linear** menu structures (focus moves only up/down OR only left/right). Multidirectional grid menus (e.g., 4x4 tile arrangements) should **not** loop. We encourage providing an option to enable/disable menu looping for all menus.
+</Note>
+
+### Finding content in complex sets
+
+- Provide more than one way to locate content in complex sets spanning multiple screens (bestiaries, quest logs, large inventories). Example: Minecraft's crafting menu uses filtered tabs plus a search tab with on-screen keyboard.
+
+### Reflow and scaling
+
+- If visual layout changes (UI scaling or resolution change), navigation order updates to match the visual layout.
+- Text/UI scaling shouldn't require scrolling in two directions to reveal all content (see The Outer Worlds text scaling).
+- When a game map UI is scaled or zoomed, provide an alternative navigation method that doesn't require scrolling — e.g., Halo Infinite's Tacmap missions list, where selecting a mission auto-centers the map on it.
+
+### Persistent way back
+
+- Provide persistent links back to the main menu or the initial interactive screen on all submenus (e.g., Sea of Thieves' consistent "Press B to go back").
+
+### Moving focus away
+
+- If focus can be moved to a UI element by a given input, focus can be moved away using the same input.
+- If moving focus away requires an inconsistent method (e.g., remapping mode requires pressing Esc rather than clicking), the UI must clearly prompt how to do so.
+
+## Potential player impact
+
+| Player | Impacted |
+| :-- | :-: |
+| Players without vision | ✓ |
+| Players with low vision | ✓ |
+| Players with cognitive or learning disabilities | ✓ |
+| Players with limited reach and strength | ✓ |
+| Players with limited manual dexterity | ✓ |
+| Players with prosthetic devices | ✓ |
+| Casual players, younger players | ✓ |
+
+## Resources
+
+- [Game Accessibility Guidelines: Allow the game to be started without navigating multiple menu levels](http://gameaccessibilityguidelines.com/allow-the-game-to-be-started-without-the-need-to-navigate-through-multiple-levels-of-menus)
+- [Inclusive And Accessible User Interface Design](https://trydesignlab.com/blog/40-tips-inclusion-accessibility-user-interface-design/#5)
+- [WCAG 2.1 SC 3.2.3: Consistent Navigation](https://www.w3.org/WAI/WCAG21/Understanding/consistent-navigation.html)

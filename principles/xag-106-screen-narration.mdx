@@ -1,0 +1,96 @@
+---
+title: "XAG 106: Screen narration"
+sidebarTitle: "106 · Screen narration"
+description: "Represent all on-screen visual information aurally via screen narration so blind, low-vision, and non-reading players can use every UI."
+icon: "ear-listen"
+---
+
+## Goal
+
+Ensure all on-screen visual information can also be represented aurally through screen narration. This benefits blind, low-vision, and non-reading players (including younger players or those with learning disabilities).
+
+## Overview
+
+Screen narration reads visible UI aloud through a synthesized voice — menu text, `press A to select` prompts, and important in-game info. It can be **platform-level** (like Windows Narrator) or **game-specific**. Confirm what your platform supports before deciding whether you must build your own.
+
+Other affordances — audio cues, spatial audio, haptics ([XAG 103](/principles/xag-103-additional-cues)) — are often better than narration and should also be explored.
+
+## Scoping questions
+
+Review the categories in [What should support narration](#what-should-support-narration). If your game contains any of them, and losing that text would block a player from configuring, starting, or completing the game, narration support is in scope.
+
+## What should support narration
+
+Support doesn't mean narrate-by-default — it means when a player enables narration, everything listed reads aloud.
+
+- **All on-screen text** — menu labels, sub-labels, roles, values, descriptions
+- **Control interaction prompts** — `Press A to select`
+- **In-game UI** — HUD, inventory, objectives, hints, maps
+- **Player-to-player comms** — incoming party chat, chat-wheel options, canned messages
+- **Images, diagrams, tables** — via text alternatives
+- **Real-time updates** — incoming chats, toasts, error messages, friend join/leave
+
+### When narration should fire
+
+- **Context change** — opening a dialog, switching screens, entering a load screen or gameplay from a load screen
+- **Focus change** — moving between buttons, list items, sliders (announce the newly focused item)
+- **Value / state change** — slider values update as they change
+- **Real-time notifications** — errors, alerts, information changes
+
+## How to narrate an item
+
+A sighted player sees name, role, value/state, position, and interaction affordance. A player using narration should hear the same, typically in this order:
+
+1. **Label / name**
+2. **Control type / role** (`combo box`, `toggle`, `slider`)
+3. **Value / state** (`Off`, `38%`, `collapsed`)
+4. **Indexing** (`6 of 9`) — place at the **end** of the string. Provide a setting to disable enumeration.
+5. **Interaction model** (`A to select`)
+
+<Warning>
+  Don't over-narrate. Front-load key information and don't repeat static text (like a description) on every focus change while the context is the same.
+</Warning>
+
+## Implementation guidelines
+
+- **All core UI text supports narration** — main menu, options, HUD, state changes, players in the game, time-based events. Prefer the platform screen reader; if unavailable, use a speech synthesizer. Recorded audio files are a fallback but not ideal.
+- **Interactable elements enumerate their children** and expose input type and current state / value. Example: `Worlds, Tab, 1 of 3, selected` or `Music Volume, slider, 52%`.
+- **Text alternatives for charts, diagrams, pictures, animations** convey the same information the visual conveys.
+- **Text alternatives describe purpose and operation** of UI components (e.g. `Left mouse button for show spider preview`, not `symbol`).
+- **Purely decorative** non-text is **not** spoken.
+- **Focus order** aligns with UI meaning and operation. In non-linear layouts, focus order aligns with visual flow.
+- **List looping** — in linear (up/down or left/right only) menus, after the last item loop back to the first. In multi-directional menus (tile grids), don't loop. Offer a setting to enable/disable looping.
+- **Cancel / repeat narration** must be quick, regardless of input type.
+- **Interrupt on focus change** — in-progress narration for the previous element stops immediately when the new element gains focus; the new element then reads.
+- **Voice pace and pitch** — allow player adjustment.
+- **Context change is player-initiated** where possible; after context changes, announce the new context.
+- **Timed / recurring notifications** (loading, matchmaking, countdowns) may re-read state every 7–10 seconds without interfering with other narration.
+- **External screen-reader support** requires:
+  - Programmatically expose the game's language (`en-us`, etc.). If NPC dialogue switches languages, expose that too, so pronunciation is correct.
+  - Alt text describes content — don't include the object type in the string (`Brown shield`, not `Image: Brown shield`).
+  - Markup: complete start/end tags, valid nesting, no duplicate attributes, unique IDs.
+  - For all UI components, `name` and `role` are programmatically determinable; states, properties, and values that the user can set are programmatically settable; changes are notified to assistive tech.
+- **Time-based media** has a text alternative describing the media. For live content, a descriptive title is sufficient (e.g. `Clock displaying current time in Pacific Time`), not a real-time value read.
+- **Tables** are made fully accessible — column and row headers are programmatically associated with cells so context is preserved as the player navigates. Avoid a single high-level alt text on the table.
+  - **Single cell:** `Column N, row N. Column header, row header. Cell contents.`
+  - **Move within row:** `Column header, column N, cell contents.`
+  - **Move within column:** `Row header, row N, cell contents.`
+- **Pronunciation guidance** — provide a mechanism for players to understand how to pronounce proper names, technical terms, or words of indeterminate language.
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players without vision | ✔ |
+| Players with low vision | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players not fluent in the game's spoken language; very young players | ✔ |
+
+## Resources
+
+- [Provide separate volume controls or mutes for effects, speech and background / Music](http://gameaccessibilityguidelines.com/provide-separate-volume-controls-or-mutes-for-effects-speech-and-background-music)
+- [How to use Windows Narrator](https://www.howtogeek.com/392013/how-to-use-windows-narrator/)
+- [UI Automation Overview](/windows/win32/winauto/uiauto-uiautomationoverview)
+- [Designing for Screen Reader Compatibility (WebAIM)](https://webaim.org/techniques/screenreader/)
+- [Ensure screenreader support for mobile devices](http://gameaccessibilityguidelines.com/ensure-screenreader-support-for-mobile-devices)
+- [Ensure screenreader support, including menus & installers](http://gameaccessibilityguidelines.com/ensure-screenreader-support-including-menus-installers)

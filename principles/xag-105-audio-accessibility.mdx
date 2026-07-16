@@ -1,0 +1,72 @@
+---
+title: "XAG 105: Audio accessibility"
+sidebarTitle: "105 · Audio accessibility"
+description: "Independent volume controls, spatial audio, mono downmix, and pause support so players can hear what matters."
+icon: "sliders"
+---
+
+## Goal
+
+Ensure players can hear important audio cues, speech from other players and NPCs, and assistive technologies like screen readers. Achieved through separate volume controls for each type of audio output so players can tune the mix to their needs.
+
+## Overview
+
+Background music and effects add atmosphere but can drown out speech and assistive-tech audio for players with hearing loss or attention-related disabilities. Independent volume controls let players lower non-essential audio without losing immersion — and also help players who are easily distracted.
+
+## Scoping questions
+
+- Is your game multiplayer (players talking via party chat)?
+- Does it have NPC chatter or in-game dialogue essential to narrative?
+- Are there sound effects or audio cues important to gameplay?
+- Is there background music, ambient SFX, or other non-speech audio?
+
+## Implementation guidelines
+
+### Independent volume controls
+
+Games provide adjustable volume (and mute) for at least these categories independently:
+
+- Music
+- Voice-over
+- Active sound effects (engine noise, gunshots, footsteps — critical to gameplay)
+- Background / ambient sound effects (non-critical)
+- Narration
+- Voice chat
+
+### Spatial audio
+
+Provide an option to enable **spatial audio** for SFX, narration, and other important sounds so players can determine directionality by audio alone.
+
+### Mono downmix
+
+Provide an option to convert stereo audio to **mono sent to both channels**, so players with single-side hearing loss don't miss content that was panned to one ear.
+
+### Pauseable audio
+
+Players can pause audio events, including cinematics with audio.
+
+<Note>
+  Events under 3 seconds don't need a pause method. Real-time multiplayer gameplay is exempt.
+</Note>
+
+### Duck for assistive tech
+
+Include an option to automatically **lower or mute game audio** when audio from assistive technologies (e.g. a screen reader) is detected.
+
+## Potential player impact
+
+| Player | Impacted |
+| --- | :-: |
+| Players without vision | ✔ |
+| Players with low vision | ✔ |
+| Players with cognitive or learning disabilities | ✔ |
+| Players in noisy rooms or playing with device sound off | ✔ |
+
+## Resources
+
+- [Provide separate volume controls or mutes for effects, speech and background / music](http://gameaccessibilityguidelines.com/provide-separate-volume-controls-or-mutes-for-effects-speech-and-background-music)
+- [Provide a stereo/mono toggle](http://gameaccessibilityguidelines.com/provide-a-stereomono-toggle)
+- [Ensure sound / music choices for each key object / event are distinct from each other](http://gameaccessibilityguidelines.com/ensure-sound-music-choices-for-each-key-objects-events-are-distinct-from-each-other/)
+- [Provide a voiced GPS](http://gameaccessibilityguidelines.com/provide-a-voiced-gps/)
+- [Use surround sound](http://gameaccessibilityguidelines.com/use-surround-sound/)
+- [Keep background noise to a minimum during speech](http://gameaccessibilityguidelines.com/keep-background-noise-to-minimum-during-speech/)
