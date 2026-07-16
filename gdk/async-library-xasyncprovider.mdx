@@ -1,0 +1,156 @@
+---
+title: "XAsyncProvider library overview"
+sidebarTitle: "XAsyncProvider library"
+description: "The XAsyncProvider library is the advanced layer that lets you build custom GDK-style async APIs — handling scheduling, results, cancelability, and cleanup."
+icon: "gears"
+---
+
+`XAsyncProvider` is the most advanced of the three async libraries. It controls **how** async tasks actually run: taking an `XAsyncBlock`, enqueuing callbacks onto its task queue, managing cancelability, and setting up result buffers.
+
+Most callers never need it — GDK APIs already ship a provider. Use `XAsyncProvider` when you want to:
+
+- Author your own APIs in the GDK async style.
+- Add cancellation to a custom async task.
+- Attach return data to a custom async task.
+
+## The provider callback
+
+All behavior centers on the callback you pass to [`XAsyncBegin`](../reference/system/xasyncprovider). It receives an `XAsyncOp` value and must handle five cases:
+
+| Provider case | Responsibility |
+| --- | --- |
+| `Begin` | Fires immediately from `XAsyncBegin`. Schedule the work callback via `XAsyncSchedule`, which enqueues the `DoWork` case on the task queue's work port. |
+| `DoWork` | Runs on the task queue's work port. Perform the work and call `XAsyncComplete` with an HRESULT and result payload size. |
+| `GetResult` | Fires when the caller invokes `XAsyncGetResult`. Copy your saved result into `providerData->buffer`. |
+| `Cancel` | Fires when the caller invokes `XAsyncCancel`. Signal any running work to stop; `DoWork` should complete with `E_ABORT`. |
+| `Cleanup` | Fires when the task is finishing. Delete any per-call state (typically a context struct). |
+
+## Examples
+
+<AccordionGroup>
+  <Accordion title="Set up a custom provider" icon="cube">
+    Call `XAsyncBegin`, pass a context, and implement the callback state machine:
+
+    ```cpp
+    struct Context { uint64_t result; };
+    Context* context = new Context{ 0 };
+    
+    HRESULT hr = XAsyncBegin(async, context, ProviderFuncIdentity, __FUNCTION__,
+        [](XAsyncOp op, const XAsyncProviderData* data) -> HRESULT
+        {
+            Context* ctx = reinterpret_cast<Context*>(data->context);
+            switch (op)
+            {
+            case XAsyncOp::Begin:
+                return XAsyncSchedule(data->async, 0);
+    
+            case XAsyncOp::Cleanup:
+                delete ctx;
+                break;
+    
+            case XAsyncOp::GetResult:
+                memcpy(data->buffer, &ctx->result, sizeof(uint64_t));
+                break;
+    
+            case XAsyncOp::DoWork:
+                ctx->result = 12345678;
+                XAsyncComplete(data->async, S_OK, sizeof(uint64_t));
+                break;
+    
+            case XAsyncOp::Cancel:
+                // Not cancelable in this example.
+                break;
+            }
+            return S_OK;
+        });
+    ```
+
+    `XAsyncComplete`’s size argument reserves a result buffer for the `GetResult` case and enqueues the completion callback. The HRESULT you pass becomes the return of `XAsyncGetStatus`.
+  </Accordion>
+
+  <Accordion title="Wrap the provider in an invocation method" icon="code">
+    Expose your provider as a reusable async function — this is how every GDK async API is written:
+
+    ```cpp
+    HRESULT CustomProviderMethodAsync(XAsyncBlock* async)
+    {
+        void* context; // Real code sets up per-call state.
+        return XAsyncBegin(async, context, CustomProviderMethodAsync, __FUNCTION__,
+            [](XAsyncOp op, const XAsyncProviderData* data)
+            {
+                // Provider state-machine cases here.
+                return S_OK;
+            });
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Return data from the provider" icon="arrow-right-from-bracket">
+    Specify a buffer size in `XAsyncComplete`, then write to the buffer in `GetResult`. Pair with a typed `Result` helper for callers:
+
+    ```cpp
+    // Inside the provider callback:
+    case XAsyncOp::GetResult:
+        memcpy(data->buffer, &ctx->result, sizeof(uint64_t));
+        break;
+    
+    case XAsyncOp::DoWork:
+        ctx->result = 12345678;
+        XAsyncComplete(data->async, S_OK, sizeof(uint64_t));
+        break;
+    
+    // Typed result accessor for callers:
+    HRESULT CustomProviderMethodAsyncResult(XAsyncBlock* async, uint64_t* outResult)
+    {
+        return XAsyncGetResult(async, CustomProviderMethodAsync,
+            sizeof(uint64_t), outResult, nullptr);
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Add cancellation support" icon="ban">
+    Async tasks started via `XAsyncRun` cannot be canceled. Custom providers can add cancel support by watching a signaling primitive:
+
+    ```cpp
+    case XAsyncOp::DoWork:
+    {
+        bool canceled = false;
+        while (true)
+        {
+            DWORD wait = WaitForSingleObject(callData->cancelEvent, 0);
+            if (wait != WAIT_TIMEOUT) { canceled = true; break; }
+            // ...normal work; break on completion.
+        }
+    
+        XAsyncComplete(data->async, canceled ? E_ABORT : S_OK, 0);
+        break;
+    }
+    
+    case XAsyncOp::Cancel:
+        SetEvent(callData->cancelEvent);
+        break;
+    ```
+
+    Callers trigger cancellation with `XAsyncCancel(async);`.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Async model" icon="shuffle" href="/gdk/async-programming">
+    GDK async pattern overview.
+  </Card>
+
+  <Card title="XAsync library" icon="code" href="/gdk/async-library-xasync">
+    Async primitives and consumer helpers.
+  </Card>
+
+  <Card title="XTaskQueue library" icon="list-ol" href="/gdk/async-library-xtaskqueue">
+    Dispatch behavior for provider callbacks.
+  </Card>
+
+  <Card title="XAsyncProvider API reference" icon="book" href="/reference/xasyncprovider">
+    Full function reference.
+  </Card>
+</CardGroup>

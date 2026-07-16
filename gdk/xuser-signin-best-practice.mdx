@@ -47,3 +47,13 @@ Shows the system sign-in UI if no default user can be determined.
 <Note>
   `XUserAddResult` adds a reference to the `XUserHandle`. Pair with `XUserCloseHandle`.
 </Note>
+
+## Which pattern should I use?
+
+- Use **silent** when you want to greet the returning user by name as soon as possible without breaking flow.
+- Use **UI fallback** at the point when your game genuinely needs a user (main menu, save-select, matchmaking).
+
+## Related
+
+- [User identity and XUser](/gdk/xuser-identity)
+- [Establishing the default user](/gdk/establishing-default-user)

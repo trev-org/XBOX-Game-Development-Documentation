@@ -1,0 +1,151 @@
+---
+title: "Game saves system dialogues"
+sidebarTitle: "System dialogues"
+description: "System dialogs users encounter when doing Game Saves operations — sync progress, conflicts, corruption, quota, and network errors."
+icon: "message"
+---
+
+Titles occasionally require a user's input to resolve a Game Saves conflict or to inform them about errors. This article covers the system dialogs users can encounter.
+
+## System dialogs at a glance
+
+| Message | System prompt reason |
+| --- | --- |
+| [Your other Xbox console is taking a long time to sync to the cloud](#your-other-xbox-console-is-taking-a-long-time-to-sync-to-the-cloud) | A separate device is holding a lock on the user's data. |
+| [Which one do you want to use?](#which-one-do-you-want-to-use) | The local Game Saves data is newer than the data in the cloud. |
+| [We couldn't sync your data with the cloud](#we-couldnt-sync-your-data-with-the-cloud) | The user or device is offline when a sync to the cloud occurs. |
+| [We couldn't get your latest saved data](#we-couldnt-get-your-latest-saved-data) | The title can't access Xbox social and gaming services. |
+| [There's a problem with your saved games](#theres-a-problem-with-your-saved-games) | The Game Saves for the user were corrupted. |
+| [Syncing data for ...](#syncing-data) | Data is being downloaded from the cloud into Game Saves local storage. |
+| [Looks like you're signed in on another device](#looks-like-youre-signed-in-on-another-device) | The user is signed in on another device when they try to play on the current device. |
+| [We need to close this game or app](#we-need-to-close-this-game-or-app) | The current device's game save data is stale. |
+| [There's a temporary network problem](#theres-a-temporary-network-problem) | The title couldn't connect to the Xbox network. Also possible the SCID is invalid. |
+
+## Game Saves dialogs
+
+### Your other Xbox console is taking a long time to sync to the cloud
+
+<Frame>
+  ![Lock contention dialog.](/images/lock-contention-dialogue.jpg)
+</Frame>
+
+Before the user syncs their saves, the title acquires a lock on the user's game-save data. If another device still holds the lock, that device might be offline (preventing it from calling `WebReleaseLock`) or might still be processing a large upload.
+
+The user can choose:
+
+- **Try again** — Attempts to acquire the lock again. If unavailable, the same dialog appears.
+- **Sync last saved data** — Releases the lock held by the other device and cancels its sync. The previous session's data is lost. The current device becomes the active device and takes ownership.
+- **Cancel** — Switches the title to offline mode.
+
+### Which one do you want to use?
+
+<Frame>
+  ![Conflict resolution dialog.](/images/conflict-resolution-dialogue.jpg)
+</Frame>
+
+If local storage data conflicts with the cloud version, the user is prompted to choose which data to use. This conflict typically occurs during:
+
+- Cross-device play
+- Offline play vs. online play
+- Title or platform bugs
+
+The user can choose:
+
+- **This console** — Overwrites and deletes the user's data in the cloud.
+- **The Xbox network (cloud data)** — Overwrites the data in local storage.
+
+### We couldn't sync your data with the cloud
+
+<Frame>
+  ![Failed network sync dialog.](/images/sync-failed-network-dialogue.jpg)
+</Frame>
+
+Occurs if the user or device is offline when a sync to the cloud occurs.
+
+The user can choose:
+
+- **Try again** — The game tries to connect again.
+- **Use offline** — Saves data locally for only the current session.
+
+For more information about offline behavior, see [sync flow connection check](/gdk/game-saves-syncing#connection-check).
+
+### We couldn't get your latest saved data
+
+<Frame>
+  ![Xbox service outage dialog.](/images/sync-failed-outage-dialogue.jpg)
+</Frame>
+
+Occurs if the Xbox service for social and gaming is limited.
+
+The user can choose:
+
+- **Try again** — The game tries to connect again.
+- **Use offline** — Saves data locally for only the current session. Saves aren't uploaded.
+
+If the problem persists, the user can check the Xbox status page.
+
+### There's a problem with your saved games
+
+<Frame>
+  ![Corrupted Game Saves dialog.](/images/corrupted-game-saves-dialogue.jpg)
+</Frame>
+
+The Game Saves for the user are corrupted.
+
+The user can choose:
+
+- **Go to settings** — Opens storage management, where users can clear local storage.
+- **Cancel**
+- **Report a problem** — Diagnostics are sent directly to Microsoft.
+
+To diagnose corrupted data during development, investigate it directly with [Game Saves Tools](/gdk/game-saves-tools#manipulating-game-saves).
+
+### Syncing data
+
+<Frame>
+  ![Active syncing dialog.](/images/sync-progress-dialogue.jpg)
+</Frame>
+
+Appears when the device downloads data from the cloud.
+
+The user has one option:
+
+- **Cancel** — Causes the title to be played in [offline mode](/gdk/game-saves-syncing#connection-check).
+
+### Looks like you're signed in on another device
+
+<Frame>
+  ![Signed into another device dialog.](/images/signed-into-another-device.png)
+</Frame>
+
+Appears frequently during game-save operations. If there's an active session on another device, this dialog enables the user to move it to the current device.
+
+The user can choose:
+
+- **Sign in here** — Moves the session to the current device.
+- **Cancel** — Cancels the sign-in flow and returns `E_ABORT: 0x80004004`.
+
+### We need to close this game or app
+
+<Frame>
+  ![Need to close game dialog.](/images/need-to-close-game.png)
+</Frame>
+
+Stale data occurs when the title uses local Game Saves data while offline. This situation can happen when the device reconnects and another device still holds the lock.
+
+### There's a temporary network problem
+
+<Frame>
+  ![Temporary network problem dialog.](/images/temporary-network-error.png)
+</Frame>
+
+Appears when the title encounters connection issues when it attempts to initialize Game Saves.
+
+The user can choose:
+
+- **Try again** — The title attempts to initialize Game Saves again.
+- **Use offline** — The title launches in offline mode, storing all data to local storage. Cloud sync doesn't occur during the session.
+
+This dialog might appear even when the title is connected but can't reach Xbox services — commonly caused by an incorrectly configured Partner Center.
+
+For more information, see [Common error scenarios](/gdk/game-saves-debugging#common-game-saves-error-scenarios).

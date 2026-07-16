@@ -55,6 +55,52 @@ Use `XPackage` from the GDK runtime to inspect chunk state and trigger installs:
 
 Always check `XPackageGetInstallProgress` before gating gameplay on a chunk; do not assume an install request has completed just because the API returned success.
 
+## Specifier reference
+
+<AccordionGroup>
+  <Accordion title="Language specifiers">
+    Tag chunks by language code. The console or PC installs only the languages the user has selected. Localized assets not needed for the current language stay on the CDN.
+
+    Best practices:
+
+    - One chunk per language, sized as evenly as possible
+    - Include a **default language** chunk that is always installed as a fallback
+    - Do not scatter localized strings across per-feature chunks; localised text should live in language chunks
+  </Accordion>
+
+  <Accordion title="Device specifiers">
+    Tag chunks by device family and hardware capability so players only download the assets their console or PC can render.
+
+    Common patterns:
+
+    | Chunk | Devices |
+    | --- | --- |
+    | 4K/HDR assets | Xbox One X, Series X, capable PCs |
+    | High-detail meshes | Series X, PCs meeting min-spec |
+    | Standard assets | All devices |
+
+    Device evaluation is refreshed automatically when a player upgrades hardware or moves a package to a new console.
+  </Accordion>
+
+  <Accordion title="Custom tag specifiers">
+    Free-form tag strings used when built-in specifiers do not fit. Custom tags let you name a group of chunks for later reference by a feature recipe or a runtime install request. Custom tag names are **not encrypted** — do not use sensitive strings.
+  </Accordion>
+
+  <Accordion title="Features and recipes">
+    A **feature** is a named, optional group of chunks — for example, a campaign, a raid pack, or a hi-fi audio pack. Recipes map features to the chunks that must install to enable them.
+
+    Runtime API:
+
+    - `XPackageEnumerateFeatures` — list available features
+    - `XPackageInstallChunks` — install the chunks backing a feature on demand
+    - `XPackageUninstallChunks` — free space by removing an optional feature
+  </Accordion>
+
+  <Accordion title="On-demand content (legacy)">
+    On-demand tags predate Features. New titles should tag optional content with **Features** instead. Existing titles using on-demand tags continue to work.
+  </Accordion>
+</AccordionGroup>
+
 ## Related API documentation
 
 - [XPackage API reference](/reference/xpackage) — `XPackageFindChunkAvailability`, `XPackageInstallChunks`, `XPackageUninstallChunks`, `XPackageEnumeratePackages`, `XPackageGetInstallationProgress`, `XPackageGetUserLocale`, `XPackageRegisterInstallationProgressChanged`, `XPackageChunkSelector`
@@ -62,3 +108,4 @@ Always check `XPackageGetInstallProgress` before gating gameplay on a chunk; do 
 ## See also
 
 - [Packaging](/gdk/packaging)
+- [Deployment schema reference](/gdk/packaging-atoc-schema)

@@ -5,49 +5,126 @@ description: "Create an MSIXVC package for sideload testing and Partner Center s
 icon: "windows"
 ---
 
+Package your PC game as an **MSIXVC** for developer sideload testing and Partner Center submission. This is the classic PC packaging workflow used across all GDK releases.
+
+<Tip>
+  Starting with the **April 2026 GDK**, a new PC format **MSIXVC2** is available as a preview and delivers dramatically smaller update deltas (64–94% smaller) and up to 7.6× faster packaging. New PC titles should evaluate MSIXVC2 — see [Packaging with MSIXVC2](/gdk/packaging-msixvc2).
+</Tip>
+
 ## Prerequisites
 
 - Windows 10 version **18362 or later** for deployment testing
 - Microsoft GDK installed (includes `MakePkg.exe`)
-- Product identity from Partner Center
+- Product identity from Partner Center (`StoreId`, `MSAAppId`, `TitleId`)
+- Developer mode enabled: **Settings → Use developer features → Developer mode**
 
-## 1. Prepare your content
+<Steps>
+  <Step title="Prepare your content">
+    Put all source files (executables, dependencies, assets) in one directory. Remove PDB files, UWP/APPX footprint files, and anything else you do not intend to ship.
 
-Put all source files in one directory. Remove PDB files and UWP/APPX footprint files.
+    Ensure your executables were built with the GDK — Submission Validator reads the embedded GDK version from the `.xbld` PE section. Anti-tamper tools that strip or encrypt `.xbld` must be configured to exclude it (see [Submission Validator](/gdk/submission-validator#embedded-gdk-version)).
+  </Step>
+  <Step title="Create MicrosoftGame.config">
+    Use the [MicrosoftGame.config Editor](/gdk/microsoftgameconfig-editor) or hand-author with the required values:
 
-## 2. Create MicrosoftGame.config
+    | Field | Purpose |
+    | --- | --- |
+    | `Identity` | Package name, publisher, version |
+    | `StoreId` | Product identity from Partner Center |
+    | `MSAAppId` / `TitleId` | Xbox services identity (both must be set when `configVersion >= 1`) |
+    | `ExecutableList` | Retail executables; use `IsDevOnly="true"` for tools you do not ship |
+    | `ShellVisuals` | Store logos, splash, and display name |
+    | `DesktopRegistration` | Win32 registration entries (removed: `modFolder`, `enableWritesToPackageRoot`, `disableRegistryWriteVirtualization`, `disableFilesystemWriteVirtualization`) |
 
-Use the [MicrosoftGame.config Editor](/gdk/microsoftgameconfig-editor) or hand-author with required values: `Identity`, `StoreId`, `MSAAppId`, `TitleId`, `ExecutableList`, `ShellVisuals`, `DesktopRegistration`.
+    ### Required image assets
 
-### Required image sizes
+    | Asset | Size |
+    | --- | --- |
+    | StoreLogo | 100×100 |
+    | Square150x150Logo | 150×150 |
+    | Square44x44Logo | 44×44 |
+    | SplashScreenImage | 1920×1080 |
+  </Step>
+  <Step title="Generate the layout file">
+    Author or generate a `layout.xml` that lists every file in the package and assigns them to chunks:
 
-| Asset | Size |
+    ```bat
+    MakePkg genmap /f layout.xml /d <Your_game_folder>
+    ```
+
+    Add Intelligent Delivery tags (language, device family, features) to chunks that only ship to specific players — see [Intelligent Delivery](/gdk/intelligent-delivery).
+  </Step>
+  <Step title="Build the MSIXVC package">
+    ```bat
+    MakePkg pack /f layout.xml /lt /d <Your_game_folder> /nogameos /pc /pd <Output_Folder>
+    ```
+
+    Key flags:
+
+    | Flag | Purpose |
+    | --- | --- |
+    | `/lt` | Test key — sideload only |
+    | `/lk` | Stable key — required for submission |
+    | `/pc` | Target PC (MSIXVC) |
+    | `/nogameos` | PC packages do not include a GameOS partition |
+    | `/pd` | Output directory |
+
+    Submission Validator runs automatically after packaging. Review `Validator_<title>.xml` in the output folder for failures before uploading.
+  </Step>
+  <Step title="Install and test locally">
+    ```bat
+    Wdapp install <Your_Package.msixvc>
+    ```
+
+    Verify install, launch, streaming-install behaviour, and that Gaming Runtime services (identity, saves, achievements) work end to end.
+  </Step>
+  <Step title="Repackage with /lk for submission">
+    Rebuild with the stable submission key before uploading to Partner Center:
+
+    ```bat
+    MakePkg pack /f layout.xml /lk /d <Your_game_folder> /nogameos /pc /pd <Output_Folder>
+    ```
+
+    Automate the upload with the [Package Uploader](/gdk/package-uploader).
+  </Step>
+</Steps>
+
+## Framework packages
+
+PC packages declare dependencies on shared runtimes (DirectX, Visual C\+\+ redistributables, .NET) as **framework packages**. The Store installs the correct framework alongside your game — do not ship private copies. Declare framework dependencies with `KnownDependency` elements in `MicrosoftGame.config`.
+
+If a binary depends on a Visual C\+\+ redistributable that is not declared as a framework, Submission Validator fails packaging with `ILI_HasMissingDependency`.
+
+## Custom install actions
+
+Win32 games can declare **custom install actions** that run with elevated privileges at install, update, repair, and uninstall time. Use them for driver installation, registry setup, or prerequisites that cannot be expressed as framework dependencies. Custom actions are reviewed during certification.
+
+## Flat File Install (development)
+
+**Flat File Install** launches your game directly from a directory of loose files — no packaging step. It is the fastest development inner loop and can be re-launched after each rebuild without repackaging. Flat File Install is developer-only and cannot be shipped.
+
+## Testing your PC install
+
+- Enable **streaming install simulation** in Gaming Services / Dev Home to force chunks to become available in `layout.xml` order.
+- Use `XPackageGetInstallProgress` to drive an in-game install-status UI.
+- Verify the **first chunk** boots the game to a playable state — certification requires it.
+- Test update installs by installing the previous version, then applying a delta package built with `/updcompat 2`.
+
+## Common Submission Validator failures
+
+| Message | Meaning |
 | --- | --- |
-| StoreLogo | 100x100 |
-| Square150x150Logo | 150x150 |
-| Square44x44Logo | 44x44 |
-| SplashScreenImage | 1920x1080 |
+| `ILI_PcGdkUnsupported` | Binaries were compiled with an unsupported GDK version. |
+| `ILI_HasMissingDependency` | A binary depends on a VC\+\+ redist not declared as a framework. |
+| `ILI_DefaultMSAAppId` / `ILI_DefaultTitleId` | Store identity values are still the template defaults. |
+| `ILI_DeprecatedPCEntries` | `MicrosoftGame.config` uses removed `DesktopRegistration` entries. |
+| `ILI_NoGdkVersionFound` | `.xbld` section is missing — check anti-tamper exclusion rules. |
 
-## 3. Generate the layout file
+See [Submission Validator quality checks](/gdk/submission-validator#quality-checks) for the full catalog.
 
-```bat
-MakePkg genmap /f layout.xml /d <Your_game_folder>
-```
+## Related
 
-## 4. Build the package
-
-```bat
-MakePkg pack /f layout.xml /lt /d <Your_game_folder_name> /nogameos /pc /pd <Output_Folder>
-```
-
-## 5. Enable developer mode \+ install
-
-**Settings → Use developer features → Developer mode**.
-
-```bat
-Wdapp install <Your_Package.msixvc>
-```
-
-## 6. Repackage for submission
-
-The `/LT` flag uses a test key. For submission, re-pack with `/LK` (stable key, recommended).
+- [Packaging with MSIXVC2](/gdk/packaging-msixvc2) — new PC format (April 2026 GDK preview)
+- [Intelligent Delivery](/gdk/intelligent-delivery)
+- [makepkg / makepkg2 reference](/gdk/packaging-deployment-tools)
+- [Package Uploader](/gdk/package-uploader)

@@ -154,3 +154,43 @@ XUser supports cross-platform identity scenarios where a player signs in to your
 ## Headless automation of XUser
 
 For automated testing, dedicated servers, and CI scenarios you can run the GDK in **headless** mode and drive XUser entirely from code — no shell UI, no user-visible sign-in dialogs. Headless automation is intended for development and test only; shipping titles must use the standard interactive sign-in flow.
+
+## Related topics
+
+<CardGroup cols={2}>
+  <Card title="GDK User Models" icon="users" href="/gdk/user-models">
+    Choose between the Simplified and Advanced user models.
+  </Card>
+
+  <Card title="Opting into Default User Required" icon="user-check" href="/gdk/simplified-user-model-opt-in">
+    Opt into the Simplified User Model via `MicrosoftGame.config`.
+  </Card>
+
+  <Card title="Establishing the default user" icon="user-plus" href="/gdk/establishing-default-user">
+    Determine the initial user on launch.
+  </Card>
+
+  <Card title="Changing the default user" icon="user-pen" href="/gdk/changing-default-user">
+    Provide an entry point to switch the active user.
+  </Card>
+
+  <Card title="Users and input devices" icon="gamepad" href="/gdk/users-input-devices">
+    How devices are associated with users.
+  </Card>
+
+  <Card title="Controller loss" icon="battery-empty" href="/gdk/controller-loss">
+    Recover from lost controller pairings.
+  </Card>
+
+  <Card title="User-to-controller association timing" icon="clock" href="/gdk/user-controller-association-timing">
+    When associations form and break.
+  </Card>
+
+  <Card title="Headless automation" icon="robot" href="/gdk/headless-automation">
+    Sign in users without UI for automated tests.
+  </Card>
+
+  <Card title="XUser cross-platform support" icon="globe" href="/gdk/xuser-crossplatform">
+    Remote Connect and Single-Session Enforcement on Steam Deck and other non-Microsoft platforms.
+  </Card>
+</CardGroup>

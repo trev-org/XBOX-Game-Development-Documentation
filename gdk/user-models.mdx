@@ -1,0 +1,57 @@
+---
+title: "GDK User Models"
+sidebarTitle: "User models"
+description: "The Simplified and Advanced user models available in the GDK."
+icon: "users"
+---
+
+Starting with the **June 2022 GDK**, titles on both PC and console can choose whether a default user is required at launch. Previously this was available only on console (starting April 2021 GDK).
+
+## Simplified user model — default user required
+
+If the game opts into requiring a default user, the OS guarantees a signed-in user before launch. If that user signs out, the game is:
+
+- **Suspended** on console
+- **Terminated** on PC
+
+The game **never** receives a sign-out event for the default user.
+
+Benefits:
+
+- Call `XUserAddAsync` with `AddDefaultUserSilently` and be 100% certain of getting that user without UI. Subsequent silent calls return the same default user.
+- Kick off backend calls immediately at launch (user info, presence, save fetch) so results are ready by the time the main menu draws.
+
+Games can still add additional users with `XUserAddAsync`. Unlike the default user, added users **can** receive sign-out events.
+
+<Note>
+  If the game is relaunched from a tile by a user unknown to the game, the previous instance is terminated and a new instance launches for the new user.
+</Note>
+
+## Advanced user model — default user not required
+
+This is the traditional GDK behavior. There is no guarantee of a signed-in user at launch. This model is a good fit for:
+
+- Games where users come and go
+- Games not deeply integrated with XBOX services
+
+## Differences between PC and console (Simplified model)
+
+**Retail:**
+
+| Platform | Behavior when default user signs out |
+| --- | --- |
+| Console | Game is suspended |
+| PC | Game is terminated |
+
+**Development (loose-deployed):**
+
+| Platform | Behavior |
+| --- | --- |
+| Console | Loose-deployed games using the Simplified model won't launch unless a default user is already signed in. |
+| PC | Loose-deployed games can be launched without a user. On the first `XUserAddAsync` with no one signed in, the game is terminated and the PC Bootstrapper launches to sign in. Subsequent launches work normally once the user is signed into the XBOX network. |
+
+## Related
+
+- [Opting into Default User Required](/gdk/simplified-user-model-opt-in)
+- [Establishing the default user](/gdk/establishing-default-user)
+- [Changing the default user](/gdk/changing-default-user)

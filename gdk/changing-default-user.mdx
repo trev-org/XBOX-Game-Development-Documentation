@@ -1,0 +1,29 @@
+---
+title: "Changing the Default User for the Game"
+sidebarTitle: "Changing default user"
+description: "Provide an entry point to switch the active user."
+icon: "user-pen"
+---
+
+**XR-112** requires that games provide an entry point to the Account Picker so players can change the active (default) user. Games using the Simplified User Model with a guaranteed default user at launch are **exempt** from this requirement.
+
+## Best practice for Simplified User Model titles
+
+Even though it's not required, Simplified User Model games often benefit from letting players change the default user. This requires a small amount of code to sign in a new user and relaunch the game as that user:
+
+<Steps>
+  <Step title="Sign in the new user">
+    Call `XUserAddAsync` to get an `XUserHandle` for the new user.
+  </Step>
+  <Step title="Relaunch the game">
+    Call `XLaunchNewGame`, specifying the EXE of the current game and passing the `XUserHandle` you just obtained.
+  </Step>
+</Steps>
+
+After the game restarts, the new user is the default user. If they sign out, the game is suspended (console) or terminated (PC). The game never receives a sign-out event for the default user.
+
+## Related
+
+- `XUserAddAsync`
+- `XLaunchNewGame`
+- [GDK User Models](/gdk/user-models)

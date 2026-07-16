@@ -1,48 +1,95 @@
 ---
 title: "Game saves overview"
-sidebarTitle: "Game saves overview"
-description: "How Game Saves persist local data and sync it to the cloud for cross-device play."
+sidebarTitle: "Overview"
+description: "How Game Saves persist local data and sync it to the cloud so players can move seamlessly across devices."
 icon: "cloud-arrow-up"
 ---
 
-**Game Saves** keep player progress available across devices by saving locally and syncing to the cloud when connected.
+Game Saves enable users to move seamlessly across devices by keeping their progress available whenever they sign in. The system saves data locally, then synchronizes it to the cloud when the device connects to the internet. After the sync is complete, users can access their saved data on any supported device.
 
-## Available APIs
+## Xbox Play Anywhere and Game Saves
 
-| API | Use case | Platforms |
-| --- | --- | --- |
-| **XGameSaveFiles**_(recommended)_ | File path local \+ auto cloud sync | PC \+ XBOX |
-| **No-code cloud saves** | Path declared in `.config`; auto-synced | PC |
-| **XGameSave** | Container/blob model; finer control | PC \+ XBOX |
+Xbox Play Anywhere uses Game Saves to enable users to share game progression seamlessly across Windows devices, Xbox consoles, PCs, and handheld devices. Xbox Play Anywhere relies on consistent save-data synchronization so users can pick up where they left off on any supported device. For more information, see [Xbox Play Anywhere](https://www.xbox.com/games/xbox-play-anywhere).
 
-Use **XGameSaveFiles** for most new titles.
+## Game Saves development lifecycle
 
-## User models
+The Game Saves development lifecycle gives you a structured path to build, validate, and maintain reliable cloud-connected save systems. It walks you through how to introduce Game Saves to a new title and continues through debugging, testing, certification, and post-publishing support.
 
-| Model | Description |
-| --- | --- |
-| **Simple User Model**_(recommended)_ | Default user required; lifetime tied to user |
-| **Advanced User Model** | No default user guaranteed |
+<Steps>
+  <Step title="Get started with Game Saves">
+    Initial onboarding with Game Saves concepts, APIs, storage models, and platform requirements.
+  </Step>
+  <Step title="New title setup">
+    Integrate Game Saves early in development:
 
-## Security
+    - Add user-sign-in–dependent initialization.
+    - Configure identifiers like the SCID and MSAAppID.
+    - Establish your storage design and container structure.
+  </Step>
+  <Step title="Debugging issues during development">
+    Troubleshoot early implementation problems:
 
-- Microsoft does **not** offer an API to access another user's Game Saves
-- Game Saves are not secure when **PC accessibility** is enabled (users can open the file path directly). For sensitive state, use server-side validation.
+    - SCID configuration issues
+    - Handle-lifetime issues
+    - Quota/memory problems
+    - NTSTATUS error interpretation
+  </Step>
+  <Step title="Test planning">
+    Define structured test plans covering read/write correctness, offline behavior, sync logic, system dialog flows, and multi-device scenarios.
+  </Step>
+  <Step title="Testing scenarios">
+    Perform functional and stress testing across connectivity changes, conflict states, user switching, corruption handling, and storage-limit edge cases.
+  </Step>
+  <Step title="Prepare your title for publishing">
+    Validate your Partner Center setup, confirm quotas, ensure system dialogs function correctly, and verify safe-write patterns.
+  </Step>
+  <Step title="Certification requirements">
+    Meet Xbox certification requirements for proper sync behavior, connectivity management, and PII compliance.
+  </Step>
+  <Step title="Manage issues after publishing">
+    Monitor and resolve live-site issues such as sync failures, user data-loss reports, and storage-limit problems.
+  </Step>
+  <Step title="Migration scenarios">
+    Update storage layouts, move between Game Saves APIs, and transition between title versions.
+  </Step>
+</Steps>
 
-## Key terms
+## Game Saves documentation set
 
-| Term | Meaning |
-| --- | --- |
-| **SCID** | Service Configuration Identifier (per-title, from Partner Center) |
-| **MSAAppID** | Microsoft account App ID linking the game to its identity |
-| **Local storage** | Data saved to the device during gameplay |
-| **Title storage / cloud** | Storage that syncs to cloud when online |
-| **Lock** | Mechanism granting one device exclusive write access for a user |
-| **Containers** | Analogous to folders |
-| **Blobs** | Analogous to files |
+<CardGroup cols={2}>
+  <Card title="Developer guide" icon="book" href="/gdk/game-saves-developer-guide">
+    Ecosystem overview, available APIs, user models, security/PII guidance, certification requirements, and storage limits.
+  </Card>
 
-## Related API documentation
+  <Card title="Sync flow" icon="arrows-rotate" href="/gdk/game-saves-syncing">
+    Container/folder atomicity and the six-step synchronization flow, plus offline mode and machine-only providers.
+  </Card>
 
-- [XGameSave API reference](/reference/xgamesave)
-- [XGameSaveFiles API reference](/reference/xgamesavefiles)
-- [XGameSave wrapper API reference](/reference/xgamesave-wrapper)
+  <Card title="Storage systems" icon="database" href="/gdk/game-saves-storage-systems">
+    Title storage (cloud), local save storage, and machine-provider storage, along with per-title quotas.
+  </Card>
+
+  <Card title="System dialogues" icon="message" href="/gdk/game-saves-dialogues">
+    System dialogs users encounter when doing Game Saves operations.
+  </Card>
+
+  <Card title="Walkthroughs & samples" icon="code" href="/gdk/game-saves-walkthroughs">
+    Partner Center setup, safe-write patterns, device management, testing sync, and API/title migration.
+  </Card>
+
+  <Card title="Debugging" icon="bug" href="/gdk/game-saves-debugging">
+    Common error scenarios, SCID issues, handle lifetime, quota/memory limits, and NTSTATUS codes.
+  </Card>
+
+  <Card title="Tools" icon="wrench" href="/gdk/game-saves-tools">
+    Fiddler for network inspection, plus `xbstorage` and `gamesaveutil` command-line tools.
+  </Card>
+
+  <Card title="XGameSaveFiles" icon="folder-open" href="/gdk/xgamesavefiles">
+    Initialization flow, Win32 automatic cloud sync semantics, quotas, and FAQs.
+  </Card>
+
+  <Card title="XGameSave" icon="floppy-disk" href="/gdk/game-saves">
+    Container-and-blob model, provider and update-handle lifecycle, atomicity, and best practices.
+  </Card>
+</CardGroup>

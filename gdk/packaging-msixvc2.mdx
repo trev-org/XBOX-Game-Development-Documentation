@@ -1,0 +1,122 @@
+---
+title: "Packaging with MSIXVC2 (PC preview)"
+sidebarTitle: "Packaging MSIXVC2"
+description: "MSIXVC2 is the next-generation PC package format available in preview from the April 2026 GDK — smaller updates, faster packaging, and a single pack-and-upload command."
+icon: "rocket"
+---
+
+**MSIXVC2** is the next-generation PC packaging format introduced as a preview in the **April 2026 GDK**. It replaces MSIXVC on Windows with a redesigned container that delivers dramatically smaller content updates, much faster packaging, and a unified pack-and-upload workflow.
+
+<Warning>
+  MSIXVC2 is **PC-only** and **preview-only**. You can sideload and publish MSIXVC2 packages to your sandboxes for testing. **Submission Validator prevents MSIXVC2 packages from being submitted to certification for public release.** Contact your Microsoft representative if you need an exception.
+</Warning>
+
+## Why MSIXVC2
+
+| Metric | MSIXVC | MSIXVC2 |
+| --- | --- | --- |
+| Content update size | Baseline | **64–94% smaller** |
+| Packaging speed | Baseline | **Up to 7.6× faster** |
+| Pack \+ upload | Two commands | **Single command** |
+| Console (XVC) support | N/A | N/A (PC only) |
+
+Smaller deltas and faster packaging shorten the inner loop, reduce CDN egress, and lower the time your players wait after clicking Update.
+
+## Format differences
+
+<AccordionGroup>
+  <Accordion title="Container and encryption">
+    MSIXVC2 uses a new container layout that decouples encryption from streaming-install chunk boundaries. This is what enables the drastically smaller update deltas — most binary changes localise to a small number of blocks rather than invalidating whole chunks.
+  </Accordion>
+
+  <Accordion title="Tool surface">
+    - `makepkg2 pack` — build MSIXVC2 packages
+    - `makepkg2 upload` — built-in upload command with **10 authentication methods**, including Entra ID, service principals, and CI secrets
+    - `packageutil2` — inspect and extract MSIXVC2 packages (adds `extract` and `fileinfo` sub-commands)
+
+    `makepkg2` also builds **MSIXVC** (legacy PC) and **XVC** (console) packages, so you can standardise your CI on `makepkg2` regardless of target.
+  </Accordion>
+
+  <Accordion title="MicrosoftGame.config compatibility">
+    Existing `MicrosoftGame.config` files work with `makepkg2 pack` without changes. You do not need to re-author your manifest to try MSIXVC2 — rebuild the same layout with `makepkg2`.
+  </Accordion>
+
+  <Accordion title="Submission Validator behaviour">
+    Submission Validator still runs after `makepkg2 pack`. The same messages catalog applies. Any check that references package binaries reads them from the MSIXVC2 container.
+
+    During the preview, the validator injects a **gate** that blocks MSIXVC2 packages from being accepted for public certification. This gate is expected to be removed when MSIXVC2 exits preview.
+  </Accordion>
+</AccordionGroup>
+
+## Getting started (PC MSIXVC2)
+
+<Steps>
+  <Step title="Install the April 2026 GDK (or later)">
+    MSIXVC2 tooling ships in `makepkg2.exe`, `packageutil2.exe`, and updated `SubmissionValidator.dll`. Confirm your PATH resolves the April 2026 GDK `\Bin` directory.
+  </Step>
+  <Step title="Prepare your content directory">
+    Same rules as MSIXVC — one directory of files, PDBs removed, executables built with the GDK so the `.xbld` PE section is present.
+  </Step>
+  <Step title="Author or reuse MicrosoftGame.config">
+    No schema changes are required for MSIXVC2. Use the [MicrosoftGame.config Editor](/gdk/microsoftgameconfig-editor) or your existing file.
+  </Step>
+  <Step title="Generate a layout.xml">
+    ```bat
+    makepkg2 genmap /f layout.xml /d <Your_game_folder>
+    ```
+
+    Add Intelligent Delivery chunk tags where they help — MSIXVC2 preserves the streaming-install semantics of MSIXVC.
+  </Step>
+  <Step title="Build the MSIXVC2 package">
+    ```bat
+    makepkg2 pack /f layout.xml /d <Your_game_folder> /pd <Output_Folder>
+    ```
+
+    Test key is applied automatically for sideload builds. For an upload-ready build, add `/lk` and provide the Partner Center product identity.
+  </Step>
+  <Step title="Sideload and validate">
+    Install the resulting `.msixvc2` on your dev PC and verify install, launch, streaming install, and updates against the previous build.
+  </Step>
+  <Step title="Compare update delta size">
+    ```bat
+    makepkg2 compare /old <previous.msixvc2> /new <new.msixvc2>
+    ```
+
+    Use this in CI to alert when a delta grows beyond an expected budget — a common signal that unrelated binaries were rebuilt with different toolchain settings.
+  </Step>
+  <Step title="Pack and upload in one command">
+    ```bat
+    makepkg2 pack /f layout.xml /d <Your_game_folder> /pd <Output_Folder> /lk /upload
+    ```
+
+    The built-in `upload` command supports Entra ID user, service principal, device code, managed identity, and CI-secret authentication flows. Configure once, invoke from your build pipeline.
+  </Step>
+  <Step title="Publish to your sandbox">
+    Publish MSIXVC2 packages to your sandboxes for team-wide test rings during the preview. **Do not attempt public certification** — Submission Validator will block it during preview.
+  </Step>
+</Steps>
+
+## Preview best practices
+
+- **Standardise on `makepkg2` for CI**, even when producing MSIXVC / XVC output — one tool, one syntax across formats.
+- **Track delta budget** with `makepkg2 compare` in your nightly build; investigate regressions immediately.
+- **Do not re-key between updates** unless absolutely necessary — re-keying invalidates delta delivery advantages.
+- **File preview feedback** with your Microsoft representative or DAM. Preview coverage matters for the format's cert-ready release.
+
+## Migration checklist
+
+- April 2026 GDK (or later) installed on all packaging machines and CI agents
+- `makepkg2 pack` produces a valid MSIXVC2 for your existing layout
+- Submission Validator log reviewed and any new messages triaged
+- Sideload \+ streaming install verified on Windows dev PCs and handhelds
+- Sandbox publish \+ Store install flow validated with a small internal ring
+- `makepkg2 compare` integrated into CI as a delta-size guardrail
+- Rollback plan documented — if MSIXVC2 blocks a milestone, rebuild the same layout with `makepkg` and ship MSIXVC
+
+## Related
+
+- [Packaging (PC MSIXVC)](/gdk/packaging-pc)
+- [Packaging overview](/gdk/packaging)
+- [makepkg / makepkg2 reference](/gdk/packaging-deployment-tools)
+- [Submission Validator](/gdk/submission-validator)
+- [Package Uploader](/gdk/package-uploader)

@@ -1,0 +1,183 @@
+---
+title: "Submission Validator (SubmissionValidator.dll)"
+sidebarTitle: "Submission Validator"
+description: "The GDK component that runs quality checks on your built package before you submit — what it checks, how to read its log, and how to keep it up to date."
+icon: "clipboard-check"
+---
+
+**Submission Validator** (`SubmissionValidator.dll`) is a GDK component that runs basic quality checks on a built package. It surfaces the failures that would otherwise be caught during Partner Center content ingestion or certification — letting you fix them locally before submitting.
+
+Submission Validator runs automatically at the end of every `makepkg pack` or `makepkg2 pack`. A subset of checks can also run **before** the pack step via `makepkg validate` — recommended for CI to catch issues faster.
+
+<Note>
+  During the **MSIXVC2 preview (April 2026 GDK)**, Submission Validator blocks MSIXVC2 packages from being submitted to certification for public release. You can still sideload and publish MSIXVC2 packages to your sandboxes.
+</Note>
+
+## Where the validator log lives
+
+After `makepkg` finishes, the log is written to the same output directory as the package, named `Validator_<title>.xml`. Its structure:
+
+```xml
+<XboxOneSubmissionValidator>
+  <engineversion>10.0.18362.7198</engineversion>
+  ...
+  <validatorrun>
+    <starttime>...</starttime>
+    <endtime>...</endtime>
+    <result>Fail</result>
+  </validatorrun>
+</XboxOneSubmissionValidator>
+```
+
+- `<failure>` — will cause your submission to be rejected. Fix before uploading.
+- `<warning>` — may require a certification exception. Contact your DAM if unsure.
+- `<info>` — informational only.
+- `<result>` — overall `Pass` or `Fail`. Any single failure fails the run.
+
+When `/validationlanguage ja-jp` is passed to `makepkg`, a localized log is written alongside the English one.
+
+## Quality checks
+
+Submission Validator runs the following checks against every package:
+
+<AccordionGroup>
+  <Accordion title="Available version">
+    The validator DLL is up to date. Out-of-date validators emit a failure with a download link to `https://aka.ms/currentsubvalzip`.
+  </Accordion>
+
+  <Accordion title="Approved GDK version">
+    PC (MSIXVC) packages must be built with an approved GDK version. Unsupported versions fail with `ILI_PcGdkUnsupported`; deprecated versions emit informational messages about lost hotfix support. See the [Approved Libraries page](https://aka.ms/GdkApprovedLibs).
+
+    <a id="embedded-gdk-version" />
+
+    ### How the GDK version is embedded
+
+    Executables built with a GDK that includes `XGameRuntime.h` embed the GDK version into a custom PE section named **`.xbld`**. Submission Validator reads this section to identify the GDK used.
+
+    If the section is missing or unreadable (typically because an anti-tamper or data-encryption tool encrypted it), the validator falls back to the version of the packaging tools and emits `ILI_NoGdkVersionFound`. Configure your anti-tamper tool to **exclude `.xbld`** from processing.
+
+    **Themida:**
+
+    ```text
+    OPTION_ADVANCED_DONT_PROCESS_SECTIONS=.xbld
+    ```
+
+    **GuardIT:** add an `<exclude>` entry with a `<section matching="exact">.xbld</section>` range to the `EncryptionWrapper` guard.
+  </Accordion>
+
+  <Accordion title="Approved Game OS">
+    The GameOS bundled in the package and any Microsoft components must come from the same GDK release and be on the approved list. Mismatches fail with `ILI_GameOsAndMsComponentMismatch` or `ILI_MsComponentMismatch`. Deprecated Game OS versions warn about lost hotfix support.
+  </Accordion>
+
+  <Accordion title="Launch marker in final chunk (DLC)">
+    DLC packages **must** mark the final chunk with `Marker="Launch"`. Missing marker fails with `ILI_DlcFinalChunkMustBeLaunchChunk`.
+  </Accordion>
+
+  <Accordion title="Resources.pri checks">
+    - Additional `Resources.pri` files anywhere but the title root cause a Foreign Files Check failure.
+    - Missing `Resources.pri` in the root emits `ILI_NonLocalizedApp` (warning) — fine for non-localized apps.
+  </Accordion>
+
+  <Accordion title="One application per package">
+    Packages must contain exactly one non-DevOnly application. Multiple apps fail with `ILI_MultipleApplications`. Use `IsDevOnly="true"` on tools you do not ship.
+  </Accordion>
+
+  <Accordion title="Maximum package size">
+    - Disc submissions: size must not exceed **49,900,000,000 bytes** (informational only).
+    - Partner Center uploads: maximum **500 GB**, warning above **450 GB** (`ILI_XvcPackageSizeApproached` / `ILI_XvcPackageSizeExceeded`).
+  </Accordion>
+
+  <Accordion title="Foreign file check">
+    Certain file types are not allowed in retail packages:
+
+    | File type | Extensions |
+    | --- | --- |
+    | Source | `.c`, `.cpp`, `.cs`, `.lib`, `.h`, `.obj` |
+    | Debug / symbol | `.pdb`, `.sym` |
+    | Legacy binary | `.xbe` |
+
+    Contact your PDM if you have an exceptional case that requires a blocked extension.
+  </Accordion>
+
+  <Accordion title="Binary scan">
+    Every `.exe` and `.dll` must be native AMD64 code with no debug-only dependencies (e.g., `MSVCR110D.dll`, `PIXEvt.dll`). Managed binaries fail. Binaries compiled with `/DYNAMICBASE:NO` or `/HIGHENTROPYVA:NO` fail. `.textbss` sections (from `/ZI`) fail.
+  </Accordion>
+
+  <Accordion title="Microsoft component versions">
+    Any redistributable Microsoft binary you ship must be at an approved version matching your GDK release. Version info is extracted from each DLL and captured in the log. Mismatches fail; deprecated versions emit info messages.
+  </Accordion>
+
+  <Accordion title="Missing dependent files">
+    Binaries that dynamically link against files not present in the layout fail with `ILI_MissingDependentFile` — include the missing file or declare a framework dependency.
+  </Accordion>
+
+  <Accordion title="ARM64 binaries">
+    ARM64 binaries can ship alongside x64. Submission Validator checks that `MicrosoftGame.config` correctly marks each executable's `Architecture` attribute:
+
+    - `ILI_ArchitectureArm64Mismatch` — attribute says ARM64 but binary is not
+    - `ILI_ArchitectureArm64NotMarked` — binary is ARM64 but the attribute is missing
+  </Accordion>
+</AccordionGroup>
+
+## Common failure messages
+
+The validator emits messages from a fixed catalog. The most common failures at first submission:
+
+| Message | Fix |
+| --- | --- |
+| `ILI_DefaultMSAAppId` / `ILI_DefaultTitleId` | Set real Store identity values in `MicrosoftGame.config`. |
+| `ILI_NoMSAAppIdOrTitleId` | Both must be present when `configVersion >= 1`. |
+| `ILI_ConfigMissingShellVisuals` / `ILI_ConfigMissingLogoFile` | Add the required `ShellVisuals` block and logo files. |
+| `ILI_HasMissingDependency` | Declare the VC\+\+ redist as a `KnownDependency` framework. |
+| `ILI_DlcFinalChunkMustBeLaunchChunk` | Mark the DLC's final chunk with `Marker="Launch"`. |
+| `ILI_DlcCannotHaveTitleId` | Remove `TitleId` from the DLC's `MicrosoftGame.config`. |
+| `ILI_MoreThanOneRetailExecutable` | Mark non-shipping executables with `IsDevOnly="true"`. |
+| `ILI_InvalidBinaryNotAmd64` / `ILI_InvalidBinaryManaged` | Rebuild the binary as native AMD64. |
+| `ILI_NoGdkVersionFound` | Ensure `.xbld` is not stripped by anti-tamper tools. |
+| `ILI_XvcPackageSizeExceeded` | Reduce package size below the Partner Center or disc maximum. |
+| `ILI_MissingIgnorableNamespaces` | Add `IgnorableNamespaces="mx"` to `<Package>`. |
+
+For the full catalog of information, failure, and warning messages, see the source-file reference on the Xbox Developer Forums — the catalog is maintained alongside each Submission Validator release.
+
+## Keeping the validator up to date
+
+Submission Validator ships as a separate DLL in the GDK `\Bin` directory and updates on its own cadence, independent of the GDK release train. The Microsoft-side ingestion always uses the **latest** validator; make sure your local one matches before submitting.
+
+### Manual update
+
+1. Download the current `SubmissionValidator.dll` zip from [https://aka.ms/currentsubvalzip](https://aka.ms/currentsubvalzip).
+2. Extract and copy `SubmissionValidator.dll` over the file in your GDK `\Bin` directory (or the custom `/validationpath` you use).
+3. Rebuild your package.
+
+### Automatic update (October 2025 GDK\+)
+
+Starting with the **October 2025 GDK**, `makepkg` supports `/updatesubval`:
+
+```bat
+makepkg pack /f layout.xml ... /updatesubval
+```
+
+The flag checks for a newer `SubmissionValidator.dll`, downloads it, and installs it into the same directory `makepkg.exe` is running from (default: GDK `\Bin`, or `/validationpath` if set).
+
+### Release notes
+
+See the [Submission Validator Updates feed](https://aka.ms/subvalupdates) on the Xbox Developer Forums for per-release change notes, known issues, and check additions that differ from this documentation.
+
+## Running the pre-pack subset
+
+A subset of checks can run against your **layout and content** without producing a full package — useful in CI to fail fast:
+
+```bat
+makepkg validate /f layout.xml /d <game_folder>
+```
+
+Use this as a first-line gate in pull-request CI, then rely on the full validator that runs after `makepkg pack` in nightly builds.
+
+## Related
+
+- [Packaging overview](/gdk/packaging)
+- [Packaging (PC MSIXVC)](/gdk/packaging-pc)
+- [Packaging with MSIXVC2](/gdk/packaging-msixvc2)
+- [Deployment tools reference](/gdk/packaging-deployment-tools)
+- [Deployment schema reference](/gdk/packaging-atoc-schema)
+- Xbox Requirements (XRs) — [Xbox Developer Downloads](https://aka.ms/xgddl)

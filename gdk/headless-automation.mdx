@@ -1,0 +1,49 @@
+---
+title: "Headless automation of XUser"
+sidebarTitle: "Headless automation"
+description: "Automate adding users without showing sign-in UI."
+icon: "robot"
+---
+
+For test automation, games often want to add users without the interactive Account Picker. `XUserAddAsync` normally has two limitations that make automation hard:
+
+- With `AddDefaultUserSilently`, no UI shows — but you can only get the user who launched the game. Repeated calls return handles to the same user.
+- Without `AddDefaultUserSilently`, UI appears and waits for input, breaking automation.
+
+To work around this, the GDK supports a **headless** mode where `XUserAddAsync` can add users without showing UI.
+
+## Steps
+
+<Steps>
+  <Step title="Sign users in on the console">
+    Use the `xbuser` command-line tool with the `signin` option. Repeat once per user.
+  </Step>
+  <Step title="Enable HeadlessXuser">
+    Suppress sign-in UI with `xbconfig`:
+
+    ```text
+    xbconfig HeadlessXUser=true
+    ```
+  </Step>
+  <Step title="Launch the game">
+    Launch as normal.
+  </Step>
+  <Step title="Add users from the game">
+    Each call to `XUserAddAsync` **without** `AddDefaultUserSilently` returns the first user signed into the console that has no outstanding `XUserHandle` from the game.
+  </Step>
+  <Step title="Exhaustion">
+    When all signed-in users have been consumed, `XUserAddAsync` returns `E_ABORT` — the same error you'd see if a real user canceled the sign-in UI.
+  </Step>
+  <Step title="Count available test accounts">
+    Games can shell out to `wduser list` (via `CreateProcess`) to see how many test accounts are currently signed into the console.
+  </Step>
+</Steps>
+
+<Warning>
+  Headless automation is for development and test only — not shipping titles.
+</Warning>
+
+## Related
+
+- `XUserAddAsync`
+- [Sign-in best practices](/gdk/xuser-signin-best-practice)

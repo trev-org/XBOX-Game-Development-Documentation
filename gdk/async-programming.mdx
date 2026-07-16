@@ -182,6 +182,34 @@ HRESULT MyOperationAsync(uint32_t input, XAsyncBlock* async)
 }
 ```
 
+## Related topics
+
+<CardGroup cols={2}>
+  <Card title="XAsync library" icon="code" href="/gdk/async-library-xasync">
+    Async primitives: `XAsyncBlock`, `XAsyncRun`, `XAsyncGetStatus`, `XAsyncCancel`.
+  </Card>
+
+  <Card title="XAsyncProvider library" icon="gears" href="/gdk/async-library-xasyncprovider">
+    Build your own GDK-style async APIs.
+  </Card>
+
+  <Card title="XTaskQueue library" icon="list-ol" href="/gdk/async-library-xtaskqueue">
+    Create, dispatch, and clean up task queues.
+  </Card>
+
+  <Card title="Task queue design" icon="drafting-compass" href="/gdk/async-task-queue-design">
+    Ten how-to recipes covering thread pool, manual, composite, waiters, delayed callbacks, and message-loop integration.
+  </Card>
+
+  <Card title="Async design goals" icon="lightbulb" href="/gdk/async-whitepaper">
+    Why the GDK async model exists and what changed from the XDK.
+  </Card>
+
+  <Card title="Async task queues" icon="list-ol" href="/gdk/async-task-queues">
+    Dispatch modes and process task queue reference.
+  </Card>
+</CardGroup>
+
 ## Related API documentation
 
 - [XAsync API reference](/reference/xasync) — `XAsyncRun`, `XAsyncGetStatus`, `XAsyncGetResultSize`, `XAsyncCancel`, `XAsyncCompletionRoutine`, `XAsyncBlock`

@@ -1,0 +1,124 @@
+---
+title: "Packaging deployment tools reference"
+sidebarTitle: "Deployment tools"
+description: "makepkg, makepkg2, packageutil, packageutil2, splitpkg, and makepri — what each tool does and when to use it."
+icon: "screwdriver-wrench"
+---
+
+The GDK packaging toolchain ships as a small set of command-line tools in the GDK `\Bin` directory. This page is a quick reference to each tool's role and its most useful commands.
+
+## Tool cheat sheet
+
+| Tool | Purpose |
+| --- | --- |
+| [`makepkg`](#makepkg) | Build XVC (console) and MSIXVC (PC) packages |
+| [`makepkg2`](#makepkg2) | Build XVC, MSIXVC, and **MSIXVC2** packages; built-in `upload` |
+| [`packageutil`](#packageutil) | Inspect and re-sign packages |
+| [`packageutil2`](#packageutil2) | Inspect, extract, and re-sign packages (adds MSIXVC2 support) |
+| [`splitpkg`](#splitpkg) | Split a package into disc-sized chunks for physical media |
+| [`makepri`](#makepri) | Generate the package resource index for localized assets |
+
+## makepkg
+
+The original packaging tool. Builds **XVC** (console) and **MSIXVC** (PC) packages, generates layouts, produces delta packages, and runs Submission Validator automatically after packing.
+
+### Common commands
+
+| Command | Purpose |
+| --- | --- |
+| `makepkg genmap /f layout.xml /d <folder>` | Generate a starter `layout.xml` from a game folder |
+| `makepkg pack /f layout.xml /d <folder> /pd <output>` | Build an XVC (console) |
+| `makepkg pack ... /pc /nogameos` | Build an MSIXVC (PC) |
+| `makepkg pack ... /lt` | Use the test key (sideload only) |
+| `makepkg pack ... /lk` | Use the stable key (submission) |
+| `makepkg pack ... /updcompat 2` | Modern update algorithm; allows mixed data in a chunk |
+| `makepkg makedelta /old <a> /new <b> /pd <out>` | Build a differential update |
+| `makepkg validate /f layout.xml` | Run the Submission Validator pre-pack subset |
+| `makepkg appdata` | Regenerate `AppData.bin` from `AppXManifest.xml` |
+
+### /updatesubval (October 2025 GDK\+)
+
+Starting with the **October 2025 GDK**, `makepkg` supports a `/updatesubval` option that checks for a newer `SubmissionValidator.dll` and installs it into the same directory the tool was run from (default: GDK `\Bin`). Use `/validationpath` to install to a custom location.
+
+## makepkg2
+
+The next-generation packaging tool, introduced with the **April 2026 GDK**. Supports **MSIXVC, MSIXVC2, and XVC** output. Adopt `makepkg2` for CI standardisation across all formats.
+
+### Key additions over makepkg
+
+<AccordionGroup>
+  <Accordion title="MSIXVC2 output">
+    Build the new PC preview format with drastically smaller deltas and faster packaging. See [Packaging with MSIXVC2](/gdk/packaging-msixvc2).
+  </Accordion>
+
+  <Accordion title="Built-in upload">
+    ```bat
+    makepkg2 upload /file <package> /product <id> /flight <flight>
+    ```
+
+    The `upload` command supports **10 authentication methods**, including Entra ID user auth, service principal, managed identity, device code, and CI-secret flows. Configure once and invoke from your build pipeline — no separate uploader tool required.
+  </Accordion>
+
+  <Accordion title="Pack and upload in one command">
+    ```bat
+    makepkg2 pack /f layout.xml /d <folder> /pd <out> /upload
+    ```
+
+    Combines the pack and upload steps in a single invocation.
+  </Accordion>
+
+  <Accordion title="compare">
+    ```bat
+    makepkg2 compare /old <a.msixvc2> /new <b.msixvc2>
+    ```
+
+    Report the exact delta size between two MSIXVC2 packages. Use in CI as a delta-size guardrail.
+  </Accordion>
+</AccordionGroup>
+
+## packageutil
+
+Inspect, decrypt, and re-sign built packages. Common uses:
+
+| Command | Purpose |
+| --- | --- |
+| `packageutil dump <package>` | Print the package manifest and chunk layout |
+| `packageutil verify <package>` | Check the package signature and integrity |
+| `packageutil resign <package> /lk` | Re-sign a package with the stable submission key |
+
+## packageutil2
+
+All `packageutil` functionality plus MSIXVC2 support and two new commands:
+
+| Command | Purpose |
+| --- | --- |
+| `packageutil2 extract <package> /o <folder>` | Extract the package contents to a folder — useful for debugging what actually shipped |
+| `packageutil2 fileinfo <package> /file <path>` | Report per-file metadata inside a package (size, chunk, encryption state) |
+
+## splitpkg
+
+Split a built XVC into disc-sized chunks for multi-disc mastering:
+
+```bat
+splitpkg /f DiscLayout.xml /package <package.xvc> /pd <output>
+```
+
+Author a `DiscLayout.xml` alongside your `layout.xml` describing how chunks map to each physical disc. `splitpkg` produces one image per disc, sharing a single install identity.
+
+## makepri
+
+Generate `Resources.pri` from your localized assets. Runs implicitly during `makepkg pack` but can be invoked directly for debugging:
+
+```bat
+makepri new /pr <projectroot> /cf priconfig.xml /of Resources.pri
+```
+
+Submission Validator fails with `ILI_NonLocalizedApp` if your title root does not contain a `Resources.pri`. Non-localized apps can safely ignore this warning.
+
+## Related
+
+- [Packaging overview](/gdk/packaging)
+- [Packaging (PC MSIXVC)](/gdk/packaging-pc)
+- [Packaging with MSIXVC2](/gdk/packaging-msixvc2)
+- [Deployment schema reference](/gdk/packaging-atoc-schema)
+- [Submission Validator](/gdk/submission-validator)

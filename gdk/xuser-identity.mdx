@@ -25,9 +25,30 @@ Three states: **SignedIn**, signing out (in progress), **SignedOut**.
   `SignedIn` indicates the user was authenticated at some point — it does **not** guarantee active network connectivity.
 </Warning>
 
-## Adding users
+## Adding or removing users
 
 Games only see users they've explicitly added via `XUserAddAsync`. Signed-in users on the console are invisible to the game unless added.
+
+**Example scenario:** Users A and B are signed in to the console.
+
+1. Someone launches the game.
+2. The game registers for state changes with `XUserRegisterForChangeEvent`.
+3. The game calls `XUserAddAsync` — user A signs in to the game.
+4. From the guide, user B signs out. **No event fires** — the game never knew about B.
+5. From the guide, user A signs out. The game receives a _signing out_ event, then a _signed out_ event.
+
+Users can be removed from the game in these ways:
+
+- The game closes all handles for the user with `XUserCloseHandle`.
+- The user signs out from the guide.
+- The user signs in to a different device.
+
+## Types of users
+
+XBOX supports two user types:
+
+- **XBOX players** — full-capability accounts created via the Account Picker. They persist on the console until explicitly removed through Settings.
+- **XBOX guests** — single-session accounts sponsored by a signed-in XBOX player. Persist until the guest signs out, the sponsor signs out, or the console powers off. Pass `AllowGuest` to `XUserAddAsync` to accept them.
 
 ## Patterns for establishing an initial user
 
@@ -53,3 +74,10 @@ On success, the user is fully signed in to XBOX services.
 2. Subscribe via `XUserRegisterForChangeEvent`
 3. When you receive a handle from `XUserAddAsync`, compare against existing handles using `XUserCompare` or `XUserGetLocalId`
 4. Close duplicate handles with `XUserCloseHandle`
+
+## Related
+
+- [Sign-in best practices](/gdk/xuser-signin-best-practice)
+- [GDK User Models](/gdk/user-models)
+- [Guest users overview](/gdk/guest-users)
+- [XUser cross-platform support](/gdk/xuser-crossplatform)

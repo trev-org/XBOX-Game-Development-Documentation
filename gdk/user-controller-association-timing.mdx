@@ -1,0 +1,42 @@
+---
+title: "When do user-to-controller associations take place?"
+sidebarTitle: "Association timing"
+description: "When user-to-controller associations form and break."
+icon: "clock"
+---
+
+When a controller is associated with a user, pressing the nexus button shows that user's personalized experience in the Guide and Dashboard. Players should always feel in control of when this happens.
+
+Any change to a user‑controller association fires an `XUserDeviceAssociationChangedCallback`.
+
+## When associations form
+
+- Anytime an Account Picker is shown.
+- Calling `XUserAddAsync`.
+- Calling `XUserFindControllerForUserWithUiAsync`.
+- When there is a single user signed into the console, the first controller to send input is associated with them.
+- When a user launches (or relaunches) a game with an unassociated controller, that controller is associated with them automatically.
+- Via the **XBOX Accessories** app: a user assigns a controller to themselves; turning on that controller signs the user in and associates the controller.
+- Plugging a battery back into a controller reassociates it with its previous owner.
+
+## When associations are lost
+
+- The controller is turned off (battery loss).
+- The user signs out.
+- The controller is associated with a new user (the original user is notified their controller is now lost).
+
+## Example scenario
+
+| Step | Description | Game actions | User A state | User B state |
+| --- | --- | --- | --- | --- |
+| 1 | User A is signed in and launches the game using controller 1. | Game registers `XUserDeviceAssociationChangedCallback` and calls `XUserAddAsync`. | Known to the game. Controller 1 is associated with A. | N/A |
+| 2 | Player goes back to home; the game continues to run. | — | No change | N/A |
+| 3 | User A signs in User B using controller 1. | `XUserDeviceAssociationChangedCallback` fires. | Still known to the game but no longer has an associated controller. | Signed into the console but invisible to the game. Associated with controller 1. |
+| 4 | User A returns to the game, still using controller 1. | As a best practice, call `XUserFindControllerForUserWithUiAsync` to re-associate A to a controller. | Associated with whatever controller they selected. | If A re-selected controller 1, B no longer has an associated controller. |
+
+## Related
+
+- `XUserAddAsync`
+- `XUserDeviceAssociationChangedCallback`
+- `XUserFindControllerForUserWithUiAsync`
+- [Controller loss](/gdk/controller-loss)

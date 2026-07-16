@@ -1,0 +1,206 @@
+---
+title: "XUser Cross-Platform Support"
+sidebarTitle: "Cross-platform"
+description: "Unified XUser authentication across XBOX, Windows, and non-Microsoft platforms such as Steam Deck."
+icon: "globe"
+---
+
+XUser is the Gaming Runtime API for managing XBOX user accounts and authentication across platforms. It provides a unified interface for sign-in, identity, and user flows on XBOX consoles, Windows PC and handheld, and non-Microsoft platforms such as **Steam Deck**.
+
+As part of the GDK's cross-platform initiative, XUser presents a consistent API surface across every platform while accommodating each platform's capabilities and constraints.
+
+## Integration requirements
+
+Include `XUser.h` and link `XGameRuntime.lib`. The key difference between platforms is how runtime dependencies are supplied.
+
+<Tabs>
+  <Tab title="XBOX & Microsoft Store / Game Pass on Windows">
+    The gaming runtime is built into the OS and managed by the store. Your game automatically uses the system's built-in services and UI.
+  </Tab>
+  <Tab title="Other stores on Windows">
+    Games use the OS's built-in services and UI. The installer should run **GamingRepair.exe** to ensure the Gaming Runtime Service is installed.
+
+    **Integrating the Gaming Repair Tool:**
+
+    <Steps>
+      <Step title="Include the tool in your package">
+        Ship it with your game. It's included with the GDK at `[GDK]\bin\GamingRepair.exe`.
+      </Step>
+      <Step title="Add a custom install action">
+        Run the tool before your game installs, for example:
+
+        ```text
+        start /wait "Installing Gaming Services" GamingRepair.exe scenarioExternal
+        ```
+
+        This verifies, downloads, installs, or repairs any missing Gaming Runtime components.
+      </Step>
+      <Step title="Handle errors">
+        Check the exit code. On failure, notify the user and provide manual installation instructions.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Steam Deck / non-Microsoft platforms">
+    Bundle `XGameRuntime.dll` and its dependencies with your game and place them alongside your executable so they can load at runtime.
+
+    <Warning>
+      The Gaming Repair Tool cannot be used on non-Microsoft platforms.
+    </Warning>
+  </Tab>
+</Tabs>
+
+## Platform differences and the unified API
+
+On XBOX and Windows, the OS handles XBOX Live sign-in natively, providing system UI and secure credential storage. On other platforms this native support does not exist.
+
+**Starting with GDK 2510**, XUser works seamlessly on both types of platforms through the same API, with new event-driven patterns for platforms without native support:
+
+- **Native-support platforms (XBOX, Windows)** — XUser uses OS-provided services for authentication, UI, and credential storage. Games call XUser APIs; the system handles the details.
+- **Non-native platforms (Steam Deck, etc.)** — XUser exposes the same core APIs, but games must implement event handlers to provide the necessary UI (for example, displaying QR codes for sign-in) and data storage.
+
+Regardless of platform, games obtain an `XUserHandle` that can be used with any XBOX-authentication-based service (XBOX services, PlayFab, etc.).
+
+## New cross-platform capabilities
+
+### Remote Connect authentication
+
+Lets users sign in on a device such as Steam Deck by scanning a QR code or entering a one-time code on a secondary device.
+
+### Single-Session Enforcement (SPoP)
+
+Ensures the same title isn't running under the same account on multiple devices. If a conflict is detected, players are prompted to **play here** or **switch account**.
+
+<Note>
+  On XBOX consoles and Windows, the OS handles most authentication tasks automatically — games may never see these events. On non-XBOX platforms, games take full control through XUser's callbacks.
+</Note>
+
+## Remote Connect for cross-device sign-in
+
+Remote Connect lets a player sign in on one device (Steam Deck) by authenticating on another (phone or PC), commonly via a short code or QR code displayed by the game.
+
+### How it works
+
+On XBOX, this code flow is handled automatically by the system UI. On Steam Deck and other third-party environments, no system-managed XBOX sign-in UI exists — games drive the flow via Remote Connect.
+
+<Steps>
+  <Step title="Register event handlers">
+    Before initiating sign-in, call `XUserPlatformRemoteConnectSetEventHandlers(...)` with **show** and **close** callbacks.
+
+    - **Show** — XUser needs the game to display a code or QR code with instructions (e.g., "Scan this QR code or visit xbox.com/play and enter code ABCD").
+    - **Close** — the remote sign-in completed or was canceled; the game should hide the dialog.
+  </Step>
+  <Step title="Initiate sign-in">
+    Call `XUserAddAsync`. If no local user is signed in, XUser may use Remote Connect (especially on headless or third-party platforms).
+  </Step>
+  <Step title="Code display">
+    XUser invokes the show callback with authentication code / URL. The game renders the code for the user.
+  </Step>
+  <Step title="User authenticates">
+    The player uses a phone or web browser to log in with the code, linking their XBOX account to the current session.
+  </Step>
+  <Step title="Completion">
+    On success, XUser invokes the close callback — remove the code from the screen. XUser has obtained the user's XBOX Live token and creates the `XUserHandle`.
+  </Step>
+  <Step title="Success">
+    `XUserAddAsync` returns successfully; the user is signed in without entering credentials on the device.
+  </Step>
+</Steps>
+
+### Implementation
+
+```cpp
+XUserPlatformRemoteConnectEventHandlers remoteConnect = {};
+remoteConnect.context = nullptr;
+remoteConnect.show = &OnRemoteConnectShow;   // Display QR/code dialog
+remoteConnect.close = &OnRemoteConnectClose; // Dismiss dialog
+
+HRESULT hr = XUserPlatformRemoteConnectSetEventHandlers(nullptr, &remoteConnect);
+```
+
+After registering, call `XUserAddAsync` as usual. In `OnRemoteConnectShow`, retrieve the URL / code via XUser APIs and render it in a pop-up. In `OnRemoteConnectClose`, hide the prompt.
+
+<Warning>
+  Call `XUserPlatformRemoteConnectSetEventHandlers` **before** `XUserAddAsync` (and generally before `XUserInitialize`) to ensure events are handled.
+</Warning>
+
+### User experience considerations
+
+- **Clear instructions** — explain exactly what the user needs to do.
+- **Error handling** — if the remote sign-in fails or is canceled, XUser fails the sign-in; handle it in the normal `XUserAddAsync` completion callback.
+- **Timely dismissal** — hide the code the moment the close event fires.
+- **Visual design** — make the QR code and instructions large and clearly legible on the target device.
+
+## Single-Session Enforcement (SPoP)
+
+Single-Session Enforcement, or **SPoP** (Single Point of Presence), ensures a single XBOX Live profile does not run the same title concurrently on multiple devices. Launching a game on your PC while it's already running on your XBOX under the same account should suspend or sign out one session to prevent save-game conflicts.
+
+On XBOX consoles, this scenario triggers a system dialog. On non-Microsoft platforms there's no built-in mechanism — the SPoP prompt API lets games detect this and offer a **Play here or Switch account** choice.
+
+### How it works
+
+<Steps>
+  <Step title="Register handler">
+    Call `XUserPlatformSpopPromptSetEventHandlers(...)` before initiating sign-in.
+  </Step>
+  <Step title="Conflict detected">
+    When `XUserAddAsync` detects the same user is active elsewhere in the same title, XUser invokes the SPoP handler.
+  </Step>
+  <Step title="Display prompt">
+    The handler receives the user's modern gamertag and an operation handle. Display a UI prompt such as: "\[Gamertag\] is already playing on another device. Play here (sign out elsewhere) or switch account?"
+  </Step>
+  <Step title="User chooses">
+    The operation stays pending until the game calls `XUserPlatformSpopPromptComplete`.
+  </Step>
+  <Step title="Complete">
+    Pass one of:
+
+    - `XUserPlatformSpopOperationResult::SignInHere` — sign in here; terminate the remote session.
+    - `XUserPlatformSpopOperationResult::SwitchAccount` — cancel sign-in here; let the user pick a different account.
+    - `XUserPlatformSpopOperationResult::Canceled` — abort the sign-in attempt.
+  </Step>
+  <Step title="Resolution">
+    If **Play here**, the remote session ends (the other device receives a sign-out) and the user becomes active locally. If **Switch account**, `XUserAddAsync` fails and the game can prompt for a different account.
+  </Step>
+</Steps>
+
+### Implementation
+
+```cpp
+HRESULT hr = XUserPlatformSpopPromptSetEventHandlers(nullptr, &OnSpopPrompt, nullptr);
+```
+
+In `OnSpopPrompt`, the game receives the user identifier and modern gamertag, pauses game flow, and stores the operation handle without completing it immediately.
+
+When the user chooses:
+
+```cpp
+// If user chose "Play here"
+XUserPlatformSpopPromptComplete(operation, XUserPlatformSpopOperationResult::SignInHere);
+
+// If user chose "Switch account"
+XUserPlatformSpopPromptComplete(operation, XUserPlatformSpopOperationResult::SwitchAccount);
+
+// If dialog was canceled
+XUserPlatformSpopPromptComplete(operation, XUserPlatformSpopOperationResult::Canceled);
+```
+
+<Warning>
+  - Call `XUserPlatformSpopPromptSetEventHandlers` **before** `XUserAddAsync`.
+  - Call `XUserPlatformSpopPromptComplete` **exactly once** per SPoP event, or sign-in will hang indefinitely.
+  - If no handler is set and a conflict occurs, `XUserAddAsync` fails with an error and the user has no way to resolve the conflict gracefully.
+</Warning>
+
+### User experience considerations
+
+- **Clear messaging** — show the gamertag; make it clear continuing signs the user out on the other device.
+- **Visible options** — both **Play here** and **Switch account** should be prominent and understandable.
+- **Prevent save conflicts** — emphasize that this avoids concurrent gameplay and save conflicts.
+- **Platform-specific behavior** — on XBOX and Windows, the OS handles this automatically and the SPoP handler is never invoked. On other platforms, your game is responsible.
+
+Without this API, sign-in conflicts would result in cryptic errors or automatic sign-outs — the SPoP prompt keeps the behavior explicit and user-driven.
+
+## Related
+
+- [User identity and XUser](/gdk/xuser-identity)
+- [Sign-in best practices](/gdk/xuser-signin-best-practice)
+- [GDK User Models](/gdk/user-models)

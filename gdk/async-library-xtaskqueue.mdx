@@ -1,0 +1,100 @@
+---
+title: "XTaskQueue library overview"
+sidebarTitle: "XTaskQueue library"
+description: "The XTaskQueue library controls the when and where of async work — create, dispatch, monitor, and clean up task queues that dispatch callbacks on the threads you choose."
+icon: "list-ol"
+---
+
+`XTaskQueue` is responsible for the **when** and **where** of running async tasks. It provides the APIs to [create](../reference/system/xtaskqueue), [dispatch](../reference/system/xtaskqueue), and [control](../reference/system/xtaskqueue) task queues.
+
+Each queue exposes two independently configurable ports — **work** and **completion** — each set to one of four [dispatch modes](/gdk/async-task-queues#dispatch-modes) and dispatchable on any thread. Custom [waiters](../reference/system/xtaskqueue) can also be registered to fire callbacks on kernel-object signal.
+
+## Process task queue
+
+Every process has a default task queue that dispatches concurrently on the system thread pool. It is used automatically whenever an `XAsyncBlock` doesn't specify one. You can replace or clear the process task queue with `XTaskQueueSetCurrentProcessTaskQueue`.
+
+## XTaskQueueHandle
+
+Every task queue is tracked by an `XTaskQueueHandle`. The handle:
+
+- Identifies the queue in every `XTaskQueue` API.
+- Is a ref-counted, per-process resource — not marshalable.
+- Must be closed with `XTaskQueueCloseHandle` when no longer needed.
+
+See [Clean up task queue](#clean-up-task-queue) for the correct shutdown sequence.
+
+## Examples
+
+<AccordionGroup>
+  <Accordion title="Create a task queue" icon="plus">
+    Pass dispatch modes for the two ports and receive an `XTaskQueueHandle`:
+
+    ```cpp
+    XTaskQueueHandle taskQueue1;
+    HRESULT hr = XTaskQueueCreate(
+        XTaskQueueDispatchMode::ThreadPool,
+        XTaskQueueDispatchMode::Manual,
+        &taskQueue1);
+    
+    XTaskQueueHandle taskQueue2;
+    hr = XTaskQueueCreate(
+        XTaskQueueDispatchMode::Immediate,
+        XTaskQueueDispatchMode::SerializedThreadPool,
+        &taskQueue2);
+    ```
+  </Accordion>
+
+  <Accordion title="Dispatch a manual port" icon="play">
+    Each `Manual` port must be driven with `XTaskQueueDispatch`. Typical usage is a dedicated thread that dispatches until the queue is terminated:
+
+    ```cpp
+    std::thread dispatcher([taskQueue]()
+    {
+        while (true)
+        {
+            bool processed = XTaskQueueDispatch(
+                taskQueue, XTaskQueuePort::Completion, INFINITE);
+            if (!processed) break; // Queue terminated.
+        }
+    });
+    ```
+  </Accordion>
+
+  <Accordion title="Clean up a task queue" icon="trash" id="clean-up-task-queue">
+    Queues must be terminated, drained, then closed — in that order — or callbacks may leak:
+
+    ```cpp
+    XTaskQueueTerminate(taskQueue, false, nullptr, nullptr);
+    
+    bool result;
+    do
+    {
+        result = XTaskQueueDispatch(taskQueue, XTaskQueuePort::Completion, INFINITE);
+    } while (result);
+    
+    XTaskQueueCloseHandle(taskQueue);
+    ```
+
+    `XTaskQueueTerminate` posts a callback on each port so you know when the queue is empty. If any port is `Manual`, keep dispatching until `XTaskQueueDispatch` returns `false`.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Task queue design" icon="drafting-compass" href="/gdk/async-task-queue-design">
+    Ten how-tos for real-world queue patterns.
+  </Card>
+
+  <Card title="XAsync library" icon="code" href="/gdk/async-library-xasync">
+    Async primitives that consume task queues.
+  </Card>
+
+  <Card title="XAsyncProvider library" icon="gears" href="/gdk/async-library-xasyncprovider">
+    Author custom async APIs on task queues.
+  </Card>
+
+  <Card title="XTaskQueue API reference" icon="book" href="/reference/xtaskqueue">
+    Full function reference.
+  </Card>
+</CardGroup>

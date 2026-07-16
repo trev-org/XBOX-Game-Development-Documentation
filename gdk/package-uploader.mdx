@@ -1,0 +1,79 @@
+---
+title: "Package Uploader"
+sidebarTitle: "Package Uploader"
+description: "Automate Partner Center package uploads from CI using the open-source .NET Package Uploader tool or the built-in makepkg2 upload command."
+icon: "cloud-arrow-up"
+---
+
+**Package Uploader** is the automation surface for publishing packages to Partner Center. Use it in CI/CD pipelines to submit MSIXVC, MSIXVC2, XVC, DLC, and mod packages without a human in the loop.
+
+Two delivery paths exist:
+
+<CardGroup cols={2}>
+  <Card title="makepkg2 upload (April 2026 GDK+)" icon="rocket">
+    Built into `makepkg2.exe`. Supports **10 authentication methods**, including Entra ID user auth, service principal, managed identity, device code, and CI-secret flows. Can be combined with `pack` in one command.
+
+    ```bat
+    makepkg2 upload /file <package> /product <id> /flight <flight>
+    ```
+
+    Recommended for new pipelines.
+  </Card>
+
+  <Card title="Package Uploader (open-source .NET tool)" icon="github">
+    Standalone .NET 5.0\+ cross-platform CLI that talks to the Partner Center API. Runs on Windows, Linux, and macOS build agents. Recommended when you cannot invoke `makepkg2` from your CI environment or need to upload from a machine without the GDK installed.
+  </Card>
+</CardGroup>
+
+## Typical CI flow
+
+<Steps>
+  <Step title="Build the package">
+    ```bat
+    makepkg2 pack /f layout.xml /d <folder> /pd <output> /lk
+    ```
+
+    Use `/lk` for a submission-ready build. Submission Validator runs automatically — fail the CI job on validator failures.
+  </Step>
+  <Step title="Authenticate">
+    Choose the auth method that matches your CI:
+
+    - **Service principal \+ client secret** — most common for Azure DevOps and GitHub Actions.
+    - **Managed identity** — preferred for CI running inside Azure.
+    - **Device code** — fine for local uploads and one-off submissions.
+    - **Entra ID user auth** — interactive; not for CI.
+
+    Store secrets in your CI's secret store, never in the repo.
+  </Step>
+  <Step title="Upload to a flight">
+    ```bat
+    makepkg2 upload /file <package.msixvc2> /product <productId> /flight <flightId>
+    ```
+
+    Or with the standalone tool:
+
+    ```bat
+    PackageUploader.exe upload --package <package> --product <productId> --flight <flightId>
+    ```
+
+    Uploads to a flight rather than the live channel let you gate the submission behind a small user ring before promoting.
+  </Step>
+  <Step title="Poll for ingestion result">
+    Both tools return exit codes and a JSON status document; parse it in CI and mark the build accordingly. Ingestion failures usually mirror Submission Validator failures — fix locally and re-upload.
+  </Step>
+</Steps>
+
+## Automation best practices
+
+- **Run Submission Validator locally in every PR** with `makepkg validate` so failures never reach the upload step.
+- **Version your builds** so uploaded packages always have a monotonically increasing `Identity` version.
+- **Pin your GDK** in CI — mixed-tool builds cause `ILI_GameOsAndMsComponentMismatch` and other version-mismatch failures.
+- **Keep a rollback path** — promotion from a flight to production is manual by design; use flights liberally.
+- **Rotate CI secrets** on the same cadence as your other production secrets.
+
+## Related
+
+- [Packaging overview](/gdk/packaging)
+- [Deployment tools reference](/gdk/packaging-deployment-tools)
+- [Submission Validator](/gdk/submission-validator)
+- [Packaging with MSIXVC2](/gdk/packaging-msixvc2)

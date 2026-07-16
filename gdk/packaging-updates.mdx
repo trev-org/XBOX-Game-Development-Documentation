@@ -1,0 +1,90 @@
+---
+title: "Package updates, testing, and content changes"
+sidebarTitle: "Updates & testing"
+description: "Author differential updates, test them safely, and manage encryption changes across the lifetime of a shipping GDK title."
+icon: "arrows-rotate"
+---
+
+A shipping GDK title updates continuously — patches, seasons, DLC, and content packages. The packaging toolchain produces **differential updates** so players download only what changed, but authoring updates correctly is subtle. This page collects the update rules for MSIXVC, MSIXVC2, and XVC.
+
+## Differential updates (MSIXVC / XVC)
+
+<Steps>
+  <Step title="Keep the previous package">
+    Save the previous release's built package — you need it as input to the delta build.
+  </Step>
+  <Step title="Build the new package with /updcompat 2">
+    ```bat
+    makepkg pack /f layout.xml /d <game_folder> /pd <output> /updcompat 2
+    ```
+
+    `/updcompat 2` opts into the modern update algorithm and lets you mix executable and non-executable data in the same chunk without triggering `ILI_ChunksContainsMixedDataTypes`.
+  </Step>
+  <Step title="Build the delta">
+    ```bat
+    makepkg makedelta /old <previous.msixvc> /new <new.msixvc> /pd <output>
+    ```
+
+    Verify the resulting delta size against your expectations before uploading.
+  </Step>
+  <Step title="Test the update install">
+    Install the **previous** version on a dev kit or PC, then apply the delta. Validate first-run-after-update behaviour: license refresh, save migration, chunk reconciliation, and any custom install actions.
+  </Step>
+</Steps>
+
+## Differential updates (MSIXVC2)
+
+MSIXVC2 produces dramatically smaller deltas (64–94% smaller than MSIXVC) for the same source change. Use `makepkg2 compare` to check the expected delta size in CI:
+
+```bat
+makepkg2 compare /old <previous.msixvc2> /new <new.msixvc2>
+```
+
+Set a delta-size budget in your build pipeline and alert on regressions — unexpected delta growth almost always signals a toolchain drift (e.g., different compiler flags, missing symbol strip, changed link order).
+
+<Warning>
+  MSIXVC2 is a preview format. Do **not** submit MSIXVC2 packages to certification for public release during the preview — see [Packaging with MSIXVC2](/gdk/packaging-msixvc2).
+</Warning>
+
+## Encryption changes
+
+- **Re-keying invalidates differential delivery.** If you change the package encryption key between versions, the update ships as a full-size package.
+- Only re-key when you absolutely must — for example, in response to a security disclosure.
+- Test the re-key path by installing the pre-key version, then applying the re-keyed package — confirm the install completes and licenses refresh correctly.
+
+## Chunk composition and executable data
+
+Submission Validator emits informational messages when a chunk contains both executable and non-executable files:
+
+- `ILI_ChunksContainsMixedDataTypes`
+- `ILI_SingleChunkContainsMixedDataTypes`
+
+With **`/updcompat 2`**, you can safely ignore these messages. Without it, place files with executable content into their own chunks to optimise future content updates. If you are updating a title with existing users, ignore these messages for chunks you are not adding or modifying in this update — changing their layout invalidates the delta.
+
+## DLC updates
+
+DLC packages update independently of the base title:
+
+- Rebuild the DLC package with the same `<mx:AllowedProduct>` and produce a delta against the previous DLC build
+- The DLC's **final chunk must still include `Marker="Launch"`** or the update fails Submission Validator with `ILI_DlcFinalChunkMustBeLaunchChunk`
+- Do not add or remove `TitleId` between versions — DLC packages must never specify a `TitleId`
+
+## Mods updates
+
+Mods use standard packaging and follow the same update rules as the host title. Sign the updated mod through Partner Center (Store distribution) or with a developer signature (first-party flows).
+
+## Testing updates end-to-end
+
+- **Sideload the previous version** on a clean dev kit / PC
+- **Apply the update** via Dev Home, Visual Studio, `Wdapp`, or Xbox Manager
+- **Verify save data** migrates and Connected Storage still resolves correctly
+- **Verify licenses** re-issue on first launch after the update
+- **Verify streaming-install progress** reconciles — chunks that were installed before the update should not re-download
+- **Verify Quick Resume**: on console, force a Quick Resume across the update boundary and confirm the title recovers or restarts as designed
+
+## Related
+
+- [Packaging overview](/gdk/packaging)
+- [Packaging (PC MSIXVC)](/gdk/packaging-pc)
+- [Packaging with MSIXVC2](/gdk/packaging-msixvc2)
+- [Submission Validator](/gdk/submission-validator)

@@ -1,0 +1,41 @@
+---
+title: "Opting into Default User Required"
+sidebarTitle: "Opt into Simplified model"
+description: "Enable the Simplified User Model in MicrosoftGame.config."
+icon: "user-check"
+---
+
+To opt into the Simplified User Model, set `<AdvancedUserModel>` to `false` in `MicrosoftGame.config`:
+
+```xml
+<Game configVersion="1">
+   <Identity Name="Sample" Publisher="CN=NoPublisher"/>
+   <!-- much content removed -->
+   <MSAAppId>PleaseChangeMe</MSAAppId>
+   <TitleId>FFFFFFFF</TitleId>
+
+   <!-- opt into requiring a default user at launch -->
+   <AdvancedUserModel>false</AdvancedUserModel>
+</Game>
+```
+
+## Requirements (June 2022 GDK and later)
+
+Games opting into the Simplified User Model must ensure their `MicrosoftGame.config` includes:
+
+- `configVersion="1"`
+- A `TitleId`
+- An `MSAAppId`
+
+<Tip>
+  Use the [MicrosoftGame.config Editor](/gdk/microsoftgameconfig-editor) **Associate with Store** feature to automatically retrieve `TitleId` and `MSAAppId` from Partner Center.
+</Tip>
+
+<Note>
+  In a future GDK release, the Simplified User Model will become the default. At that point, games will need to explicitly opt into the Advanced User Model to keep the current behavior of no default user at launch.
+</Note>
+
+## Related
+
+- [GDK User Models](/gdk/user-models)
+- [Establishing the default user](/gdk/establishing-default-user)

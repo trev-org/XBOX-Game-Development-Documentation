@@ -1,0 +1,313 @@
+---
+title: "Designing task queues"
+sidebarTitle: "Task queue design"
+description: "How-to recipes for the most common XTaskQueue patterns — thread pool, manual, composite, waiters, delayed callbacks, message-loop integration, and clean shutdown."
+icon: "drafting-compass"
+---
+
+This page collects the recipes referenced throughout the async and `XTaskQueue` docs. Every example uses a helper `SubmitCallbacks` — defined in [Submitting callbacks](#submitting-callbacks) — to push one work callback that in turn posts a completion callback.
+
+## Submitting callbacks
+
+A work callback that posts its own completion callback is the canonical GDK task-queue usage:
+
+```cpp
+void CALLBACK SampleCompletionCallback(void*, bool cancel)
+{
+    printf("Completion invoked on thread %d. Cancel? %d.\r\n",
+        GetCurrentThreadId(), cancel);
+}
+
+void CALLBACK SampleWorkCallback(void* context, bool cancel)
+{
+    printf("Worker invoked on thread %d. Cancel? %d.\r\n",
+        GetCurrentThreadId(), cancel);
+
+    XTaskQueueHandle queueFromContext = static_cast<XTaskQueueHandle>(context);
+    XTaskQueueSubmitCallback(queueFromContext,
+        XTaskQueuePort::Completion, nullptr, SampleCompletionCallback);
+}
+
+void SubmitCallbacks(XTaskQueueHandle queue)
+{
+    XTaskQueueSubmitCallback(queue,
+        XTaskQueuePort::Work, queue, SampleWorkCallback);
+}
+```
+
+## Creating a thread pool task queue
+
+Both ports run on the system thread pool — the simplest queue configuration:
+
+```cpp
+XTaskQueueHandle queue;
+HRESULT hr = XTaskQueueCreate(
+    XTaskQueueDispatchMode::ThreadPool,
+    XTaskQueueDispatchMode::ThreadPool,
+    &queue);
+
+SubmitCallbacks(queue);
+Sleep(1000);
+XTaskQueueTerminate(queue, true, nullptr, nullptr);
+```
+
+## Creating a manual task queue
+
+Use this when you want explicit control over the threads doing work and completions. Manual queues must also pump the Windows message queue.
+
+```cpp
+XTaskQueueHandle queue;
+XTaskQueueCreate(
+    XTaskQueueDispatchMode::Manual,
+    XTaskQueueDispatchMode::Manual,
+    &queue);
+
+std::thread workThread([queue]
+{
+    while (XTaskQueueDispatch(queue, XTaskQueuePort::Work, INFINITE));
+});
+
+std::thread completionThread([queue]
+{
+    while (XTaskQueueDispatch(queue, XTaskQueuePort::Completion, INFINITE));
+});
+
+SubmitCallbacks(queue);
+Sleep(1000);
+
+XTaskQueueTerminate(queue, true, nullptr, nullptr);
+workThread.join();
+completionThread.join();
+```
+
+`XTaskQueueDispatch` returns `false` when the queue is terminated, ending the dispatcher threads.
+
+## Using events to control manual queue dispatching
+
+Share threads with the rest of your game by using a monitor callback to signal condition variables when work is submitted:
+
+```cpp
+struct QueueControl
+{
+    std::condition_variable workActivity, completionActivity;
+    std::mutex workMutex, completionMutex;
+    bool terminate = false;
+} queueControl;
+
+void CALLBACK TaskQueueNewItemSubmitted(void* ctx, XTaskQueueHandle, XTaskQueuePort port)
+{
+    auto* c = static_cast<QueueControl*>(ctx);
+    if (port == XTaskQueuePort::Work)       c->workActivity.notify_all();
+    else if (port == XTaskQueuePort::Completion) c->completionActivity.notify_all();
+}
+
+XTaskQueueHandle queue;
+XTaskQueueCreate(XTaskQueueDispatchMode::Manual, XTaskQueueDispatchMode::Manual, &queue);
+
+XTaskQueueRegistrationToken token;
+XTaskQueueRegisterMonitor(queue, &queueControl, TaskQueueNewItemSubmitted, &token);
+
+std::thread workThread([&]()
+{
+    std::unique_lock<std::mutex> lock(queueControl.workMutex);
+    while (!queueControl.terminate)
+    {
+        queueControl.workActivity.wait(lock);
+        XTaskQueueDispatch(queue, XTaskQueuePort::Work, 0);
+    }
+});
+// ...same pattern for completionThread.
+```
+
+On shutdown, terminate the queue and notify both condition variables so the dispatcher threads exit.
+
+## Creating a composite task queue
+
+A **composite** queue routes work and completion through the ports of another queue — useful when one async task's completion is only an intermediate step:
+
+```cpp
+XTaskQueueHandle queue;
+XTaskQueueCreate(
+    XTaskQueueDispatchMode::ThreadPool,
+    XTaskQueueDispatchMode::Manual,
+    &queue);
+
+XTaskQueuePortHandle workPort;
+XTaskQueueGetPort(queue, XTaskQueuePort::Work, &workPort);
+
+XTaskQueueHandle compositeQueue;
+XTaskQueueCreateComposite(workPort, workPort, &compositeQueue);
+
+SubmitCallbacks(compositeQueue);
+Sleep(1000);
+
+XTaskQueueCloseHandle(compositeQueue);
+XTaskQueueCloseHandle(queue);
+```
+
+### Immediate dispatch alternative
+
+If you truly want synchronous dispatch with no queuing, use `XTaskQueueDispatchMode::Immediate` on both ports — callbacks run inline on the submitting thread.
+
+<Warning>
+  Immediate mode dispatches synchronously and can cause reentrancy. Only use it when you fully understand the calling context.
+</Warning>
+
+## Duplicating a task queue handle
+
+For long-running work, duplicate the handle so other callers can’t close the queue out from under you:
+
+```cpp
+class LongRunningWork
+{
+public:
+    HRESULT Initialize(XTaskQueueHandle queue)
+    {
+        return XTaskQueueDuplicateHandle(queue, &m_queue);
+    }
+    ~LongRunningWork()
+    {
+        if (m_queue) XTaskQueueCloseHandle(m_queue);
+    }
+private:
+    XTaskQueueHandle m_queue = nullptr;
+};
+
+LongRunningWork work;
+work.Initialize(queue);
+XTaskQueueCloseHandle(queue); // Queue stays alive via the duplicated handle.
+```
+
+## Using the process task queue
+
+GDK APIs that take a queue accept `nullptr` and substitute the process task queue. You can override it or clear it:
+
+```cpp
+XTaskQueueHandle queue = GetCurrentProcessTaskQueue();
+XTaskQueueSubmitCallback(queue, XTaskQueuePort::Work, nullptr, workCallback);
+
+// Replace the process queue with your own.
+XTaskQueueCreate(XTaskQueueDispatchMode::Manual, XTaskQueueDispatchMode::Manual, &queue);
+XTaskQueueSetCurrentProcessTaskQueue(queue);
+
+// Or clear it so any GDK API that requires a queue returns E_NO_TASK_QUEUE.
+XTaskQueueSetCurrentProcessTaskQueue(nullptr);
+```
+
+## Using delayed callbacks
+
+`XTaskQueueSubmitDelayedCallback` schedules a callback to run after a delay in ms — handy for retries or cheap periodic timers:
+
+```cpp
+auto callback = [](void* context, bool cancel)
+{
+    auto* ctx = static_cast<CallContext*>(context);
+    ctx->count++;
+    printf("Periodic callback %d\r\n", ctx->count);
+
+    if (ctx->count != 10 && !cancel)
+    {
+        XTaskQueueSubmitDelayedCallback(
+            ctx->queue, XTaskQueuePort::Completion,
+            500, ctx, ctx->callback);
+    }
+};
+
+XTaskQueueSubmitDelayedCallback(
+    queue, XTaskQueuePort::Completion, 500, &callContext, callback);
+```
+
+## Using a task queue waiter
+
+Register a Win32 kernel handle with a task queue and get a callback whenever it signals. Auto-reset events are the typical choice:
+
+```cpp
+HANDLE waitEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
+XTaskQueueHandle queue;
+XTaskQueueCreate(
+    XTaskQueueDispatchMode::ThreadPool,
+    XTaskQueueDispatchMode::ThreadPool,
+    &queue);
+
+auto callback = [](void*, bool) { printf("Callback invoked.\r\n"); };
+
+XTaskQueueRegistrationToken token;
+XTaskQueueRegisterWaiter(
+    queue, XTaskQueuePort::Completion,
+    waitEvent, nullptr, callback, &token);
+
+for (uint32_t i = 0; i < 5; i++)
+{
+    SetEvent(waitEvent);
+    Sleep(100);
+}
+
+XTaskQueueUnregisterWaiter(queue, token);
+XTaskQueueCloseHandle(queue);
+CloseHandle(waitEvent);
+```
+
+<Note>
+  If the handle is manual-reset, a new callback is submitted as long as the handle stays signaled.
+</Note>
+
+## Using a task queue with a Windows message loop
+
+Run work on the thread pool and route completions to the UI thread via `PostMessage`:
+
+```cpp
+XTaskQueueHandle g_queue;
+XTaskQueueRegistrationToken g_monitorToken;
+
+#define WM_QUEUE_COMPLETION (WM_USER + 1)
+
+case WM_CREATE:
+    XTaskQueueCreate(
+        XTaskQueueDispatchMode::ThreadPool,
+        XTaskQueueDispatchMode::Manual,
+        &g_queue);
+
+    XTaskQueueRegisterMonitor(g_queue, hwnd,
+        [](void* ctx, XTaskQueueHandle, XTaskQueuePort port)
+        {
+            if (port == XTaskQueuePort::Completion)
+                PostMessage(static_cast<HWND>(ctx), WM_QUEUE_COMPLETION, 0, 0);
+        }, &g_monitorToken);
+    break;
+
+case WM_QUEUE_COMPLETION:
+    XTaskQueueDispatch(g_queue, XTaskQueuePort::Completion, 0);
+    break;
+
+case WM_CLOSE:
+    XTaskQueueTerminate(g_queue, false, hwnd, [](void* ctx)
+    {
+        DestroyWindow(static_cast<HWND>(ctx));
+        XTaskQueueUnregisterMonitor(g_queue, g_monitorToken);
+        XTaskQueueCloseHandle(g_queue);
+    });
+    return 0; // Don't let DefWndProc destroy the window — the termination callback does.
+```
+
+This is also the recommended shutdown pattern when integrating with another threading model — pass a termination callback to `XTaskQueueTerminate` and finish teardown from it.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="XTaskQueue library" icon="list-ol" href="/gdk/async-library-xtaskqueue">
+    Library overview \+ basic create/dispatch/cleanup examples.
+  </Card>
+
+  <Card title="Async model" icon="shuffle" href="/gdk/async-programming">
+    The overall GDK async pattern.
+  </Card>
+
+  <Card title="Async task queues" icon="list-ol" href="/gdk/async-task-queues">
+    Dispatch modes and process queue reference.
+  </Card>
+
+  <Card title="XTaskQueue API reference" icon="book" href="/reference/xtaskqueue">
+    Full function reference.
+  </Card>
+</CardGroup>

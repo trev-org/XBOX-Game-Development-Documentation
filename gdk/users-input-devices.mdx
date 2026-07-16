@@ -1,0 +1,98 @@
+---
+title: "Users and input devices"
+sidebarTitle: "Users & input devices"
+description: "How games determine which input devices are associated with a specific user."
+icon: "gamepad"
+---
+
+Knowing which input device belongs to which user is essential for answering:
+
+- Who took an action in the game?
+- Who gets the achievement?
+- Who's making the purchase?
+
+## Differences from XBOX One ERA
+
+When porting from the XBOX One ERA user model, keep these differences in mind:
+
+- Titles that need users **must** establish a **primary user** — a title-only construct, not provided by the system.
+- The title only knows about users added via `XUserAddAsync`. System-side changes for other users are not reported to the title.
+- When a previously-associated device is associated with a user the title does not know about, the title is informed only that the device was **unassociated** (no new user).
+- If two unknown users swap a device, the title is not informed at all.
+- The Account Picker behaves differently depending on how it was invoked (System Guide vs `XUserAddAsync`).
+
+<Note>
+  The **UserManagement** GDK sample covers user management and input device pairing across many game situations, including XR requirements.
+</Note>
+
+## Identifying a user
+
+Use the **local ID** to interact with input devices. It persists for the user's lifetime in the current session, and across spawned processes and `XLaunchNewGame` calls. It is **not** valid across gaming sessions.
+
+Retrieve with `XUserGetLocalId`.
+
+## Identifying an input device
+
+Gamepads, arcade sticks, wheels — all have a unique **device ID** represented by an `APP_LOCAL_DEVICE_ID` structure. Device IDs persist across game launches and system restarts, but differ between two games on the same system.
+
+| Input API | How to get the device ID |
+| --- | --- |
+| `XInput` on console | `XInputGetDeviceId` |
+| GameInput | `deviceId` on the `GameInputDeviceInfo` returned from `IGameInputDevice::GetDeviceInfo` |
+
+## User model
+
+When a title needs users (game saves, achievements), it must:
+
+- Establish and maintain a **primary user** across sign-ins.
+- Allow the primary user to be changed (for example, a _Switch User_ prompt that opens the Account Picker via `XUserAddAsync`).
+
+The Account Picker lists previously-signed-in users, provides **Add new** for new accounts, and allows temporary guests.
+
+### Account Picker behavior
+
+| Case | `XUserAddAsync` Account Picker | Guide Account Picker |
+| --- | --- | --- |
+| Selecting a user not yet in the title | User signs into both the system and the title. | User signs into the system only. The title is **not** informed. |
+| Selecting a user already in the title | Already signed in — no further changes. | Already signed in — no further changes. |
+
+<Note>
+  The set of users signed into a title is always a **subset** of users signed into the system. The system may have users the title doesn't know about, but never the other way around.
+</Note>
+
+Handle user events via an `XUserChangeEventCallback` registered with `XUserRegisterForChangeEvent`. Callbacks fire only for users added by the title. On system-side sign-out, either remove the user from the title or offer to re-sign in.
+
+## Input device associations
+
+GDK allows a user to have **any number** of input devices associated. Legacy 1:1 assumptions from XBOX One ERA don't apply.
+
+Associations are usually formed via the Account Picker. The input device that completes the picker prompt becomes associated with the selected user. Other cases include sign-out and silent/UI `XUserAddAsync` calls.
+
+### Account Picker device association behavior
+
+| Case | `XUserAddAsync` Account Picker | Guide Account Picker |
+| --- | --- | --- |
+| User not yet in title | Device that completed the prompt is associated with the newly signed-in title user. | Device is associated with the system user. The title, unaware of the user, is informed the device is **unassociated**. |
+| User already in title | Device is associated with the system \+ title user. | Device is associated with the system \+ title user. |
+
+When silent/UI `AddDefaultUser*` options sign a user in without the Account Picker, the system's existing device pairings for that user are communicated to the title.
+
+To listen for association changes, register an `XUserDeviceAssociationChangedCallback` with `XUserRegisterForDeviceAssociationChanged`. To look up which user (if any) owns a specific device, call `XUserFindForDevice`.
+
+<Note>
+  Association callbacks and lookups only return users the title has previously added via `XUserAddAsync`.
+</Note>
+
+## Default audio endpoint per user
+
+Headsets and microphones are frequently tied to a specific user. To answer:
+
+- Does the user have a headset? Which one?
+- Does the user have a microphone associated?
+
+Call `XUserGetDefaultAudioEndpointUtf16`. Register for changes with `XUserRegisterForDefaultAudioEndpointUtf16Changed`.
+
+## Related
+
+- [Controller loss](/gdk/controller-loss)
+- [User-to-controller association timing](/gdk/user-controller-association-timing)

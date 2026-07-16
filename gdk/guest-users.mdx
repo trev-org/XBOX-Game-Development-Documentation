@@ -5,9 +5,13 @@ description: "Sponsored Guest accounts and how they interact with XBOX services.
 icon: "user-plus"
 ---
 
-**Guest users** let players interact with many XBOX services without creating a full XBOX account. They're sponsored by a signed-in XBOX player on the same device.
+**Guest users** (also called **Sponsored Guests** or **Guest Accounts**) let players interact with many XBOX services without creating a full XBOX account. They're sponsored by a signed-in XBOX player on the same device.
 
 A Sponsored Guest session ends when the guest signs out, the sponsor signs out, or the device shuts down.
+
+<Note>
+  A separate concept called a **Pure Guest** exists for the state where no user is signed in at all. Pure Guests cannot make authenticated XBOX service calls and cannot play games that require a signed-in XBOX user.
+</Note>
 
 ## Supporting guests
 
@@ -46,3 +50,31 @@ Guests inherit the sponsor's subscription, parental controls, and community poli
 | Custom web service / S2S | Supported |
 | Social Manager | Not supported |
 | PlayFab Party Chat | Supported via sponsor permissions |
+
+<Warning>
+  It is the developer's responsibility to avoid calling unsupported services with a guest handle. Calls to unsupported services typically return `HTTP_E_STATUS_BAD_REQUEST`.
+</Warning>
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="Can multiple guests be signed in simultaneously?">
+    Yes. Multiple guests can share the same sponsor and be signed in at the same time.
+  </Accordion>
+
+  <Accordion title="Do guests have access to device entitlements?">
+    Yes. Device entitlements and installed content propagate to guests just like they do to XBOX users.
+  </Accordion>
+
+  <Accordion title="How do guests behave on platforms that don't support them (PC, mobile)?">
+    Guest accounts appear as normal accounts with the sponsor's permissions — no additional code required.
+  </Accordion>
+
+  <Accordion title="Are guest accounts tested in certification?">
+    Guest support is not specifically covered by certification. Supporting guests is optional and up to the developer.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+- [User identity and XUser](/gdk/xuser-identity)

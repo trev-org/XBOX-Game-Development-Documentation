@@ -80,6 +80,26 @@ Every process gets a default task queue available via `XTaskQueueGetCurrentProce
 - Closing the last handle terminates the queue; in-flight callbacks still run
 - Use `XTaskQueueTerminate` to drain a queue deterministically before shutdown
 
+## Related topics
+
+<CardGroup cols={2}>
+  <Card title="XTaskQueue library" icon="list-ol" href="/gdk/async-library-xtaskqueue">
+    Library overview with create, dispatch, and cleanup examples.
+  </Card>
+
+  <Card title="Task queue design" icon="drafting-compass" href="/gdk/async-task-queue-design">
+    Recipes for thread pool, manual, composite, waiters, delayed callbacks, and message-loop integration.
+  </Card>
+
+  <Card title="Async model" icon="shuffle" href="/gdk/async-programming">
+    GDK async pattern overview.
+  </Card>
+
+  <Card title="XAsyncProvider library" icon="gears" href="/gdk/async-library-xasyncprovider">
+    Author custom async APIs on task queues.
+  </Card>
+</CardGroup>
+
 ## Related API documentation
 
 - [XTaskQueue API reference](/reference/xtaskqueue) — `XTaskQueueCreate`, `XTaskQueueDispatch`, `XTaskQueueTerminate`, `XTaskQueueRegisterMonitor`, `XTaskQueueRegisterWaiter`, `XTaskQueueSetCurrentProcessTaskQueue`

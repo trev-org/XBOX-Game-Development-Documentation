@@ -1,0 +1,88 @@
+---
+title: "Game saves debugging"
+sidebarTitle: "Debugging"
+description: "Common Game Saves error scenarios and troubleshooting — SCID misconfigurations, handle lifetime, quota/memory errors, and Win32 NTSTATUS codes."
+icon: "bug"
+---
+
+This article covers common Game Saves scenarios that require debugging and how to fix them.
+
+## Common Game Saves error scenarios
+
+### Misconfigured service configuration identifier
+
+If error `0x80830002 (E_GS_NO_ACCESS)` occurs when you call `XGameSaveFilesGetFolderWithUiAsync`, the SCID in your source code is likely incorrect. Ensure the SCID matches what appears in Microsoft Partner Center. The following system error message might appear.
+
+<Frame>
+  ![Dialog: There's a temporary network problem.](/images/temporary-network-error.png)
+</Frame>
+
+#### Game binding implications
+
+If your title uses [game binding](/gdk/services/fundamentals/game-binding/game-binding-overview) and later adds a PC version of the GDK, it must use the MSAAppID of the _primary_ product. Using the secondary product's MSAAppID causes `0x80830002` errors.
+
+### Misconfigured Partner Center settings
+
+Misconfigured Partner Center settings can be a common cause of Game Saves errors. For user Game Saves to sync to and from the cloud, select the **Connected Storage** option in **Gameplay settings** \> **Title Storage**.
+
+<Frame>
+  ![Partner Center Connected Storage configuration setup.](/images/partner-center-config-setup.png)
+</Frame>
+
+### Handle cleanup
+
+Game Saves syncing is managed with multiple handles. Improper lifetime management causes undefined behavior.
+
+**XGameSaveFiles:**
+
+- Call `XGameSaveFilesGetFolderWithUiAsync` when the title launches and when it resumes. This call implicitly creates a Game Saves provider handle. The OS disposes of it when the title suspends or terminates.
+
+**XGameSave:**
+
+- Delete `XGameSaveUpdateHandle` after `XGameSaveSubmitUpdate`, whether it succeeded or failed.
+- Delete `XGameSaveContainerHandle` when the title suspends or terminates.
+- Delete `XGameSaveProviderHandle` when the title suspends or terminates.
+
+### Confirmation of Game Saves
+
+To confirm your Game Saves are uploading, the title needs to begin the process of releasing the lock and then uploading data. You can see this traffic in Fiddler — see [Inspecting Game Saves network traffic](/gdk/game-saves-tools#inspecting-game-saves-network-traffic).
+
+For more on the sync flow, see [Understanding the Game Saves sync flow](/gdk/game-saves-syncing).
+
+## Common errors
+
+| Error code | Name | Description | Troubleshooting |
+| --- | --- | --- | --- |
+| `0x80830002` | E\_GS\_NO\_ACCESS | The operation failed because the title doesn't have access to the container storage spaces. | Check the .config file for the correct TitleID and source code for the correct SCID. Also occurs when accessing a different title without appropriate cross-title access policies configured in Partner Center. |
+| `0x000000DF` | ERROR\_FILE\_TOO\_LARGE | The file size exceeds the limit allowed. | Occurs when writing data to an `XGameSaveFiles` path past the 256-MB title quota (same as `E_QUOTA_EXCEEDED`). See [Storage systems limits and quotas](/gdk/game-saves-storage-systems#limits-and-quotas). |
+| `0x80830004` | E\_GS\_USER\_CANCELED | The user canceled the download of their save games. | If the sync attempt is denied, call `XGameSaveFilesGetFolderWithUI` again so the file path writes locally (returns `S_OK`). Also occurs when calling `XGameSaveFilesGetFolderWithUIResult` with a stale provider, or when GRTS uninitializes a provider on suspend. On resume, call `XGameSaveFilesGetFolderWithUiAsync` again. |
+| `0x8007000E` | E\_OUTOFMEMORY | No memory remaining. | Handles are ref-counted — check for leaks. Close update handles after every submit. Use `XMemTransferMemory` as a workaround. Watch for heap fragmentation. |
+| `0x80070057` | E\_INVALIDARG | An invalid argument was supplied. | Can occur if the SCID used in `XGameSaveFilesGetFolderWithUI` on PC isn't a valid GUID. |
+| — | — | `XGameSaveFilesGetFolderWithUI` is hanging or failing sporadically. | Ensure no open GameSave system dialogs are on the machine (or another console for the same user). An unhandled dialog for sign-in or sync causes undefined behavior. |
+| `0x80830006` | E\_QUOTA\_EXCEEDED | The game exceeded the per-user 256-MB quota. | Don't store dependent data across containers. Use fewer blobs per container to improve performance. See [Storage systems limits and quotas](/gdk/game-saves-storage-systems#limits-and-quotas). |
+| `0x80830005` | E\_GS\_UPDATE\_TOO\_BIG | The save update is too large. | Total size of an `XGameSave` update must be smaller than `GS_MAX_BLOB_SIZE` (16 MB), regardless of the number of blobs. |
+| `0x8924010c` | E\_GAMERUNTIME\_INVALID\_HANDLE | Handle value is no longer valid. | Occurs when reusing unclosed handles from a previous user. Close handles that are no longer in use. |
+| `0x80830001` | E\_GS\_INVALID\_CONTAINER\_NAME | Invalid container name. | Path portion: A–Z, a–z, 0–9, `_`, and `/`. Can be empty. File-name portion: A–Z, a–z, 0–9, `_`, `.`, `-`. Can't be empty, end in a period, or contain two consecutive periods. |
+| `0x80830003` | E\_GS\_OUT\_OF\_LOCAL\_STORAGE | The device doesn't have enough storage capacity. | Users must free storage space. Can occur even if the per-user quota isn't exceeded. See [Managing Game Saves through the device](/gdk/game-saves-walkthroughs#managing-game-saves-through-the-device). |
+| `0x80830007` | E\_GS\_PROVIDED\_BUFFER\_TOO\_SMALL | The buffer provided was too small. | Call `XAsyncGetResultSize` with `Async` calls to ensure correct buffer sizing. |
+| `0x80830008` | E\_GS\_BLOB\_NOT\_FOUND | The specified blob can't be found. | Use `xbstorage` or `gamesaveutil` to download and confirm the blob exists (after the title releases the lock). See [Game Saves tools](/gdk/game-saves-tools#manipulating-game-saves). |
+| `0x80830009` | E\_GS\_NO\_SERVICE\_CONFIGURATION | Title isn't properly configured for connected storage. | Incorrect SCID or Partner Center configuration. See [Partner Center configurations](/gdk/game-saves-walkthroughs#partner-center-configurations). |
+| `0x8083000A` | E\_GS\_CONTAINER\_NOT\_IN\_SYNC | The container isn't synchronized yet. | Ensure the `XGameSave` container is synchronized before submitting updates. |
+| `0x8083000B` | E\_GS\_CONTAINER\_SYNC\_FAILED | Synchronization of the container failed. | Confirm the internet connection is stable. |
+| `0x8083000C` | E\_GS\_USER\_NOT\_REGISTERED\_IN\_SERVICE | The user's MSA isn't yet an Xbox services account. | Confirm the user is registered correctly in Partner Center. |
+| `0x8083000D` | E\_GS\_HANDLE\_EXPIRED | The handle used expired and must be reacquired. | `XGameSaveUpdateHandle` can't be reused after a submit or when the title is suspended. |
+| `0x8083000E` | E\_GS\_ASYNC\_FUNCTION\_REQUIRED | The function is being called on a time-sensitive thread, risking deadlocks. | Use the async implementation instead. |
+| `0x8083000F` | E\_GS\_PROVIDER\_MISMATCH | The game is mixing `XGameSave` and `XGameSaveFiles` calls. | Only one API can be initialized at a time within a title. Use one API per title. See [Interop between XGameSave and XGameSaveFiles](/gdk/game-saves-walkthroughs#interop-between-xgamesave-and-xgamesavefiles). |
+| `0x80831001` | E\_GS\_TERMINATEDTITLE\_STALE\_DATA<br />or `TerminateApplicationAfterSuspend` | Not exposed via user-facing APIs. Expected behavior. PLM stops the title when it detects stale data and the device reconnects. | Not a bug. When the game misses the Game Saves lock at init time (offline play, conflict-dialog choice), the OS terminates the game on suspend to ensure a clean next-launch state. |
+
+### Win32 NTSTATUS codes
+
+With `XGameSaveFiles`, the following status codes might appear.
+
+| Value | Name | Description |
+| --- | --- | --- |
+| `0xC0000106` | STATUS\_NAME\_TOO\_LONG | The directory name is too long. |
+| `0xC0000033` | STATUS\_OBJECT\_NAME\_INVALID | The directory name contains characters not valid in the cloud service. |
+| `0xC0000106` | STATUS\_NAME\_TOO\_LONG | The file name — including the folder path — is too long. |
+| `0xC0000904` | STATUS\_FILE\_TOO\_LARGE | File exceeded 64 MB or the game exceeded its per-user max quota. |
+| `0xC000009A` | STATUS\_INSUFFICIENT\_RESOURCES | The game exceeded its allotted storage space on the device. |

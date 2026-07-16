@@ -1,0 +1,71 @@
+---
+title: "Game saves tools"
+sidebarTitle: "Tools"
+description: "Use Fiddler to inspect Game Saves network traffic, and command-line utilities to import/export local save data on console and PC."
+icon: "wrench"
+---
+
+This article describes using Fiddler to inspect network traffic and the essential tools for debugging and manipulating Game Saves.
+
+## Inspecting Game Saves network traffic
+
+Use Fiddler to inspect and debug network traffic coming to and from your title. For setup:
+
+- [Fiddler on Xbox devkits](/gdk/console/networking/tools/fiddler-setup-networking)
+- [Fiddler on Windows PC](/gdk/console/networking/tools/fiddler-pc)
+
+Fiddler confirms whether the title acquires or releases the title lock, which determines when data syncs to and from the cloud.
+
+Lock acquisition (`PUT`):
+
+```http
+PUT /connectedstorage/users/xuid(<XUID>)/scids/<TITLE SCID>/lock HTTP/1.1
+```
+
+Lock release (`DELETE`):
+
+```http
+DELETE /connectedstorage/users/xuid(<XUID>)/scids/<TITLE SCID>/lock HTTP/1.1
+```
+
+The title acquires and releases the lock at different points, depending on the API in use.
+
+| Game Saves API | Lock acquisition | Lock release | Notes |
+| --- | --- | --- | --- |
+| **XGameSaveFiles** | `XGameSaveFilesGetFolderWithUiAsync` | Automatically releases the lock when the device finishes uploading pending changes (~15–30 seconds after title exits). | Reacquire the lock when the title resumes by calling `XGameSaveFilesGetFolderWithUiAsync` again. The folder path stays the same across sessions; the lock might not. |
+| **XGameSave** | `XGameSaveInitializeProvider` or `XGameSaveInitializeProviderAsync` | `XGameSaveCloseProvider` | The title calls `XGameSaveCloseProvider` to release resources. Not calling it causes a memory leak. |
+
+For more information about the sync process, see [Understanding the Game Saves sync flow](/gdk/game-saves-syncing).
+
+## Manipulating Game Saves
+
+Two tools are available for directly interacting with Game Saves.
+
+| Tool | Platform | Description |
+| --- | --- | --- |
+| `xbstorage` | Console | Manage Game Saves data on console. |
+| `xgamesaveutil` | PC | Manage Game Saves data on PC. |
+
+These tools enable you to import and export individual user or machine-provider storage spaces through .xml files.
+
+<Warning>
+  The import and export behavior differs between console and PC. See details below.
+</Warning>
+
+### Console (xbstorage)
+
+On console, `xbstorage` operates through the console's Game Saves service. When the tool performs an operation, the system behaves as if the title performs the operation directly.
+
+- **Importing** — The console syncs with the cloud first (acquiring a lock and downloading remote changes), writes the imported data locally, then uploads the imported data to the cloud. Upload completes in the background before the lock is released.
+- **Exporting** — The console syncs with the cloud first, then copies the local data to the output file.
+
+### PC (xgamesaveutil)
+
+On PC, `xgamesaveutil` writes data directly to local disk without going through the Game Saves service.
+
+- **Importing** — Writes containers and blobs to local disk. Doesn't sync with the cloud before or after, and doesn't trigger an upload. Data is uploaded the next time the title launches and acquires the Game Saves provider.
+- **Exporting** — Reads containers directly from local disk. Doesn't sync with the cloud before reading.
+
+<Note>
+  If the device running one of these tools can't acquire a lock or detects a conflict between the cloud and local containers, the system treats the situation as if the user isn't going to resolve the conflict. The device keeps one version of the container and behaves as if offline until the next title launch.
+</Note>

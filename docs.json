@@ -356,28 +356,63 @@
                   "gdk/user-model",
                   "gdk/xuser-identity",
                   "gdk/xuser-signin-best-practice",
-                  "gdk/guest-users"
+                  "gdk/guest-users",
+                  "gdk/user-models",
+                  "gdk/simplified-user-model-opt-in",
+                  "gdk/establishing-default-user",
+                  "gdk/changing-default-user",
+                  "gdk/users-input-devices",
+                  "gdk/controller-loss",
+                  "gdk/user-controller-association-timing",
+                  "gdk/headless-automation",
+                  "gdk/xuser-crossplatform"
                 ]
               },
               {
-                "group": "Async & Memory",
+                "group": "Async",
                 "icon": "shuffle",
                 "pages": [
                   "gdk/async-programming",
                   "gdk/async-task-queues",
-                  "gdk/memory",
+                  "gdk/async-library-xasync",
+                  "gdk/async-library-xasyncprovider",
+                  "gdk/async-library-xtaskqueue",
+                  "gdk/async-task-queue-design",
+                  "gdk/async-whitepaper",
                   "gdk/error-handling"
                 ]
               },
               {
-                "group": "Packaging & Saves",
+                "group": "Packaging",
                 "icon": "box",
                 "pages": [
                   "gdk/packaging",
                   "gdk/packaging-pc",
-                  "gdk/intelligent-delivery",
+                  "gdk/packaging-msixvc2",
+                  "gdk/packaging-console",
+                  "gdk/packaging-updates",
+                  "gdk/packaging-deployment-tools",
+                  "gdk/packaging-atoc-schema",
+                  "gdk/submission-validator",
+                  "gdk/xgpm",
+                  "gdk/package-uploader",
+                  "gdk/intelligent-delivery"
+                ]
+              },
+              {
+                "group": "Game Save",
+                "icon": "floppy-disk",
+                "pages": [
+                  "gdk/game-saves-overview",
+                  "gdk/game-saves-developer-guide",
+                  "gdk/game-saves-syncing",
+                  "gdk/game-saves-storage-systems",
+                  "gdk/game-saves-dialogues",
+                  "gdk/xgamesavefiles",
                   "gdk/game-saves",
-                  "gdk/game-saves-overview"
+                  "gdk/game-saves-debugging",
+                  "gdk/game-saves-tools",
+                  "gdk/game-saves-walkthroughs"
                 ]
               },
               {
@@ -410,7 +445,8 @@
                   "gdk/storage",
                   "gdk/networking",
                   "gdk/directstorage",
-                  "gdk/input"
+                  "gdk/input",
+                  "gdk/memory"
                 ]
               },
               {

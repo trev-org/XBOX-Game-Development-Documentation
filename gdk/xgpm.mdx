@@ -1,0 +1,57 @@
+---
+title: "XBOX Game Package Manager (XGPM)"
+sidebarTitle: "XGPM"
+description: "The developer-PC tool for inspecting, mounting, and managing locally installed GDK packages and their chunks."
+icon: "boxes-stacked"
+---
+
+**XBOX Game Package Manager (XGPM)** is the developer-side companion to the runtime `XPackage` API. It runs on your development PC (and on connected dev kits via Xbox Manager) and lets you inspect, mount, unmount, and manipulate installed GDK packages without going through the full Store install/uninstall flow.
+
+## When to use XGPM
+
+<CardGroup cols={2}>
+  <Card title="Verify package layout" icon="folder-tree">
+    Confirm that the files inside an installed package match your `layout.xml` — useful when debugging streaming-install issues or DLC packaging.
+  </Card>
+
+  <Card title="Simulate streaming install" icon="download">
+    Trigger chunk-gating behaviour on demand and observe what your title does before every chunk is available.
+  </Card>
+
+  <Card title="Re-register packages" icon="rotate">
+    Remove and re-register a package without a full uninstall/reinstall cycle — the fastest way to reset local state during dev.
+  </Card>
+
+  <Card title="Inspect licenses" icon="key">
+    List licenses attached to a package on the dev kit or PC.
+  </Card>
+</CardGroup>
+
+## Common tasks
+
+| Task | What XGPM does |
+| --- | --- |
+| List installed packages | Enumerate all packages on the current device with their identity and chunk state |
+| Mount / unmount | Attach or detach a package from the runtime without uninstalling it |
+| Inspect chunks | Report per-chunk install state and Intelligent Delivery tags |
+| Force chunk state | Mark chunks as installed or not installed for streaming-install testing |
+| Remove | Uninstall a package cleanly, releasing storage |
+| Re-register | Refresh the package registration without changing installed content |
+
+## Related runtime API
+
+During development, XGPM lets you set up the state; at runtime your title inspects it with the [`XPackage`](/reference/xpackage) API:
+
+- `XPackageEnumeratePackages` — walk installed packages
+- `XPackageEnumerateFeatures` — walk Intelligent Delivery features
+- `XPackageInstallChunks` — request an on-demand chunk install
+- `XPackageGetInstallProgress` — poll install status for a chunk group
+- `XPackageMount` / `XPackageMountWithUiAsync` — mount a DLC or mod at runtime
+
+Use XGPM to set up specific states — chunk not installed, DLC unmounted, streaming install partially complete — then run your title against those states.
+
+## Related
+
+- [Packaging overview](/gdk/packaging)
+- [Intelligent Delivery](/gdk/intelligent-delivery)
+- [Deployment tools reference](/gdk/packaging-deployment-tools)

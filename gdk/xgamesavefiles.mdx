@@ -1,0 +1,132 @@
+---
+title: "XGameSaveFiles API overview"
+sidebarTitle: "XGameSaveFiles"
+description: "Initialization flow of XGameSaveFilesGetFolderWithUIAsync, Win32 automatic cloud sync semantics, quotas, and FAQs."
+icon: "folder-open"
+---
+
+`XGameSaveFiles` provides APIs that enable your title to read and write user data, persist it across sessions, and sync it seamlessly with the cloud so players can use their data on any device.
+
+<Note>
+  Use `XGameSaveFiles` for game saves in Microsoft Game Development Kit (GDK) titles. Use [XGameSave](/gdk/game-saves) only when `XGameSaveFiles` isn't available for your scenario.
+</Note>
+
+## Terminology
+
+| Term | Definition |
+| --- | --- |
+| **Lock** | A mechanism that grants exclusive access to a title's Game Saves for a specific user on the device they're actively using. |
+| **Provider** | The intermediary process that communicates with the Game Save system and manages the title data and the user's lock. |
+| **Container** | Analogous to a folder. |
+| **Blob** | Analogous to an individual file. |
+
+## XGameSaveFiles path logic
+
+`XGameSaveFiles` provides a file path that integrates with cloud synchronization — data saved to the path automatically syncs to the cloud. Use Win32 `FileIO` APIs on the provided path. `XGameSaveFiles` maps containers to folders and blobs to files.
+
+While `XGameSaveFiles` hides most of the cloud-save system's complexity, it still enforces directory and file-name limits because the feature relies on Microsoft Azure Blob Storage. Example:
+
+```text
+[ROOT]/Save1/WingtipToys/state001.dat
+```
+
+- `XGameSaveFilesGetFolderWithUiAsync` returns the `[ROOT]`.
+- Everything following `[ROOT]`, up to and including the final slash, maps to a **container**.
+  - Container names: uppercase (A–Z), lowercase (a–z), numbers (0–9), `_`, `.`, `-`, and `/`.
+  - Container names limited to 256 characters.
+  - Container names can't end in a period, contain two consecutive periods, or start with a period or hyphen.
+- Everything following the final slash in the file name maps to a **blob**.
+- File names are limited to 65 characters but can otherwise be Unicode characters that NTFS supports.
+- The full resulting path, including the file name (but not `[ROOT]`), must be less than `MAX_PATH` (260 characters).
+
+For more on Win32 file management, see [File Management (Local File Systems)](https://learn.microsoft.com/windows/win32/fileio/file-management).
+
+## Implementation of XGameSaveFiles
+
+<Steps>
+  <Step title="Initialize the provider">
+    On title launch or resume, call `XGameSaveFilesGetFolderWithUIAsync` to initialize the provider and get the file path.
+  </Step>
+  <Step title="Read and write">
+    Freely read and write to the file path during gameplay.
+  </Step>
+</Steps>
+
+`XGameSaveFilesGetFolderWithUIAsync` automatically manages the lifetime of the Game Saves provider and sets up the Game Saves local storage space.
+
+<Warning>
+  Call `XGameSaveFilesGetFolderWithUIAsync` when the title starts **and** when it resumes. This initializes the Game Saves provider and keeps it active while the session runs. Skipping this step causes unpredictable behavior.
+</Warning>
+
+### Code sample
+
+See **GameSaveFilesCombo** in the GDK samples.
+
+## Game Saves flow
+
+<Frame>
+  ![Flowchart of the simplified Game Saves sync process.](/images/simple-sync-overview.png)
+</Frame>
+
+### Title start
+
+Title start occurs when the user launches or resumes the title.
+
+### User sign-in
+
+The title begins the user sign-in process. This operation is also where you call `XGameSaveFilesGetFolderWithUIAsync`. See [User models](/gdk/game-saves-developer-guide#user-models).
+
+### Connection check
+
+The title determines whether it can connect to the Xbox network. If it can't, enable [offline mode](/gdk/game-saves-syncing#connection-check).
+
+### Data ownership check
+
+Only one device at a time can access the user's data for a specific title.
+
+### Sync data with the cloud
+
+The device syncs local storage data with the cloud. If there's a conflict, [Which one do you want to use?](/gdk/game-saves-dialogues#which-one-do-you-want-to-use) is displayed.
+
+### Gameplay loop
+
+The title can freely read and write to the folder path provided by `XGameSaveFilesGetFolderWithUIAsync`.
+
+### Game session end
+
+When the session ends, the system automatically attempts to upload to the cloud, about 10–30 seconds after the title ends.
+
+For detailed information, see [Understanding the Game Saves sync flow](/gdk/game-saves-syncing).
+
+## Limits and quotas
+
+### Limits
+
+The maximum file size you can save with `XGameSaveFiles` is **64 MB**. This differs from `XGameSave`, which limits each file to 16 MB.
+
+### Quotas
+
+The maximum data a user can save per title is **256 MB**. Use `XGameSaveFilesGetRemainingQuota` to get the remaining quota. Contact your Developer Partner Manager (DPM) for a storage extension.
+
+## FAQs
+
+<AccordionGroup>
+  <Accordion title="Can I use XGameSaveFiles with XGameSave?">
+    Yes, but only for migrations. See [Interop between XGameSave and XGameSaveFiles](/gdk/game-saves-walkthroughs#interop-between-xgamesave-and-xgamesavefiles).
+  </Accordion>
+
+  <Accordion title="What file path does XGameSaveFiles save to?">
+    - **Console:** A temporary path is provided while the title is active. Console files can't be accessed via File Explorer.
+    - **PC:** `%AppData%\Local\Packages\<PACKAGE_NAME>\SystemAppData\xgs\<HexXuid>_<SCID>\`
+
+    `XGameSaveFiles` uses `xgs`; `XGameSave` uses `wgs`.
+  </Accordion>
+
+  <Accordion title="Can I specify the path where data should be saved?">
+    Yes, but only for PC. Recommended only if porting from another title. Uses [no-code cloud saves](/gdk/game-saves-walkthroughs#porting-previous-titles-to-pc-game-saves-with-no-code-cloud-saves).
+
+    <Note>
+      No-code cloud saves require the title to be launched as a packaged build using `wdapp install`. Launching the `.exe` directly doesn't activate cloud save redirection. Alternating between packaged and direct `.exe` launches can cause save data to appear missing.
+    </Note>
+  </Accordion>
+</AccordionGroup>

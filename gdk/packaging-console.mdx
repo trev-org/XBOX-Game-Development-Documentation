@@ -1,0 +1,114 @@
+---
+title: "Packaging for XBOX console"
+sidebarTitle: "Packaging (console)"
+description: "Build XVC packages for XBOX One and XBOX Series X|S, produce discs, test streaming install, and support multi-disc, cross-gen, and framework packages."
+icon: "xbox"
+---
+
+XBOX console games ship as **XVC packages** produced by `makepkg` (or `makepkg2 pack`) with a GameOS partition. This page collects the console-specific packaging topics: discs, streaming install, multi-disc titles, framework packages, and GaaS/DLC.
+
+## Getting started (console)
+
+<Steps>
+  <Step title="Author MicrosoftGame.config">
+    Console packages require valid `Identity`, `StoreId`, `MSAAppId`, `TitleId`, `ExecutableList`, `ShellVisuals`, and target-device metadata (e.g., `TargetDeviceFamily="XboxOne"` or `"Scarlett"`).
+  </Step>
+  <Step title="Author layout.xml">
+    Use Intelligent Delivery specifiers to tag device- and language-specific chunks. The **first chunk** must boot the game to a playable state — required for streaming install certification.
+  </Step>
+  <Step title="Build the XVC">
+    ```bat
+    makepkg pack /f layout.xml /d <game_folder> /pd <output>
+    ```
+
+    Omit `/pc` — that flag targets PC packages. XVCs always include a GameOS partition.
+  </Step>
+  <Step title="Deploy and test">
+    Push the built XVC to a dev kit with Xbox Manager, Visual Studio deploy, or `xbapp`. Verify streaming install, chunk gating, and the Quick Resume path.
+  </Step>
+</Steps>
+
+## Streaming install testing
+
+- Enable **streaming install simulation** on the dev kit so chunks become available in `layout.xml` order rather than all at once.
+- Use `XPackageEnumeratePackages` and `XPackageGetInstallProgress` to drive an in-game install-status UI.
+- Verify the **first chunk** reaches the title's playable state — XR-required.
+- Test **chunk reordering** by requesting different chunks from your title at runtime and confirming the streaming order updates.
+
+See [Intelligent Delivery](/gdk/intelligent-delivery) for chunk authoring rules.
+
+## Discs
+
+For physical media, the toolchain can produce several disc image types:
+
+<AccordionGroup>
+  <Accordion title="Standard discs">
+    A single-title disc image mastered from your XVC. Contains the retail package plus the streaming-install first-chunk pre-cached. Produced with `makepkg` and split with `splitpkg` when the package straddles the physical media size.
+  </Accordion>
+
+  <Accordion title="Test discs">
+    Burnable disc images used for compat and certification testing on retail hardware. Signed with a development key.
+  </Accordion>
+
+  <Accordion title="Test compilation discs">
+    Multi-title disc images used during cert sweeps and partner showcases. Combine several test packages onto one disc for lab logistics.
+  </Accordion>
+
+  <Accordion title="Cross-gen test discs">
+    A **single disc image** that installs the correct XBOX One or XBOX Series X|S build based on the console the disc is inserted into. See [Cross-gen](/gdk/cross-gen) for authoring the underlying packages.
+  </Accordion>
+
+  <Accordion title="Multi-disc layouts">
+    Split very large titles across two physical discs while keeping a single install identity. Author a `DiscLayout.xml` and split the XVC with `splitpkg`. The system installs each disc's contents into a single package on the console; there is no per-disc licensing.
+  </Accordion>
+
+  <Accordion title="Disc subsets">
+    A small disc layout paired with a streaming install — the disc contains only the first-chunk playable slice and the remaining content installs from the CDN. Used to accelerate first-boot on very large games.
+  </Accordion>
+</AccordionGroup>
+
+## Framework packages
+
+Console titles can declare **framework packages** for shared runtimes distributed by Microsoft. Declare them with `KnownDependency` elements in `MicrosoftGame.config`. The system installs the framework alongside your title; do not ship a private copy.
+
+## Games-as-a-Service (GaaS)
+
+GaaS titles ship content updates as **content packages** that license against the base game's `StoreId`:
+
+- Content packages install and license independently of the base package
+- Chunks in a content package can be tagged with Intelligent Delivery just like the base package
+- Supports seasonal content, large free updates, and per-region rollouts without re-uploading the full base package
+
+## Downloadable content (DLC)
+
+DLC ships as its own XVC signed against the parent title:
+
+- The DLC `MicrosoftGame.config` must declare an `<mx:AllowedProduct>` matching the **parent title's product ID** (not the DLC's own product ID)
+- DLC packages must **not** specify a `TitleId` element
+- The DLC layout's **final chunk must include `Marker="Launch"`** — without it, Submission Validator fails with `ILI_DlcFinalChunkMustBeLaunchChunk`
+- DLC must include an `<mx:ContentPackageVisualElements>` element and must not include an `<application>` element
+- At runtime, enumerate installed DLC with `XPackageEnumeratePackages` and gate content on presence
+
+## Mods
+
+Mod packages let player- or partner-authored content extend a shipping title:
+
+- Each mod is its own XVC / MSIX package referencing the host title's identity
+- Mount mods at runtime with `XPackage` and iterate the mount points from your code
+- Sign mods through Partner Center to distribute via the Store, or use a developer signature for first-party DLC-style flows
+
+## Debugging package problems
+
+- Run [**Submission Validator**](/gdk/submission-validator) locally — most cert blockers surface there first
+- Inspect the package manifest with `packageutil dump`
+- Compare the failing package's `MicrosoftGame.config` against a known-good build
+- Use **Xbox Manager → Console → Logs** to capture the install/boot trace on the dev kit
+- For streaming install failures, log every `XPackageInstallChunks` result and inspect `XPackageGetInstallProgress` at each state transition
+
+## Related
+
+- [Packaging overview](/gdk/packaging)
+- [Intelligent Delivery](/gdk/intelligent-delivery)
+- [Cross-gen](/gdk/cross-gen)
+- [Deployment tools reference](/gdk/packaging-deployment-tools)
+- [Deployment schema reference](/gdk/packaging-atoc-schema)

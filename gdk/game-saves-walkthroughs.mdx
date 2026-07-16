@@ -1,0 +1,266 @@
+---
+title: "Game saves walkthroughs and samples"
+sidebarTitle: "Walkthroughs & samples"
+description: "Step-by-step guides for Partner Center setup, safe-write patterns, device-based management, testing sync, and API/title migration."
+icon: "code"
+---
+
+This article provides step-by-step instructions for common development and migration scenarios when using Game Saves.
+
+## Partner Center configurations
+
+### Enabling Xbox services and Game Saves for your title
+
+To use the Game Saves APIs, complete the following steps in Partner Center:
+
+<Steps>
+  <Step title="Enable Xbox services">
+    1. Sign in to [Partner Center](https://partner.microsoft.com/dashboard/home).
+    2. Go to your title and enable Xbox services in the settings. For details, see [Setting up an app or game at Partner Center, for Managed Partners](/gdk/services/fundamentals/portal-config/live-setup-partner-center-partners#2-contact-your-microsoft-representative-to-enable-your-app-or-game).
+  </Step>
+  <Step title="Get your SCID">
+    All read/write operations must be associated with a SCID. It's also used for Game Saves initialization.
+
+    In Partner Center, find the SCID under **Xbox services** \> **Xbox settings** for your title. Your MSAAppID is also on this page.
+
+    <Frame>
+      ![Partner Center Xbox services view.](/images/partner-center-xbox-services-view.png)
+    </Frame>
+  </Step>
+  <Step title="Add the MSAAppID to your config">
+    After you get your SCID and MSAAppID, add the App ID to the title's config (.mgc) file. For more information, see [Creating the Microsoft Game Config .mgc](/gdk/game-config/microsoftgameconfig-overview).
+  </Step>
+</Steps>
+
+## Development scenarios
+
+### Where do I integrate Game Saves in my code?
+
+Game Saves logic depends on user sign-in. Add the Game Saves code next to the user sign-in flow.
+
+### How do I ensure my game saves don't become corrupted?
+
+Follow the safe-write pattern for all save operations:
+
+<Steps>
+  <Step title="Write to a temporary file">
+    Serialize your save data into a new file (for example, `save.tmp`) rather than overwriting the live save. This protects the existing save in case your process is interrupted mid-write.
+  </Step>
+  <Step title="Close the write handle">
+    Close it after the write is fully committed to disk.
+  </Step>
+  <Step title="Replace atomically">
+    Replace the old save file atomically using the Win32 [ReplaceFile](https://learn.microsoft.com/windows/win32/api/winbase/nf-winbase-replacefilea).
+  </Step>
+</Steps>
+
+### How do I support offline devices?
+
+You're responsible for determining how the title behaves if there's connection loss both before and after initializing Game Saves. See [Sync flow — connection check](/gdk/game-saves-syncing#connection-check).
+
+### What user interactions do I need to be aware of?
+
+The OS shows system prompts when an action requires user input. See [Game Saves dialogs](/gdk/game-saves-dialogues).
+
+### Is there a way to save locally and to the device only?
+
+If you pass a `null` user handle to the Game Save initialization process, the system creates a **machine-only provider**. Data is stored locally and persists on the device, with a maximum limit of 256 MB. The data doesn't sync to the cloud.
+
+For more information, see [Game Saves storage systems](/gdk/game-saves-storage-systems).
+
+### Managing game saves through the device
+
+#### Accessing local game saves on PC using File Explorer
+
+Depending on the API, you can access local game saves at these locations:
+
+| Game Saves API | File path |
+| --- | --- |
+| XGameSaveFiles | `%AppData%\Local\Packages\<PACKAGE_NAME>\SystemAppData\xgs\<HexXuid>_<Scid>\` |
+| XGameSave | `%AppData%\Local\Packages\<PACKAGE_NAME>\SystemAppData\wgs\<HexXuid>_<Scid>\` |
+
+<Warning>
+  When you manipulate data on PC, sync logic still applies. Modifying data when the title doesn't have a lock causes conflicts.
+</Warning>
+
+#### Accessing local game saves on console
+
+Manage console save data via the Xbox UI:
+
+<Steps>
+</Steps>
+
+<Frame>
+  ![Console storage Game Saves management view.](/images/console-storage-management.png)
+</Frame>
+
+Considerations:
+
+- Deleting data on the console via the system UI doesn't remove the cloud copy. When you launch the title again, it syncs the data from the cloud.
+- Machine-provider data appears as a user with no name. This data stays on the device, doesn't sync, and is bound to the device.
+
+For detailed control, use [Game Saves tools](/gdk/game-saves-tools#manipulating-game-saves).
+
+## Testing scenarios
+
+When you create test cases, separate data validation from the game-save logic.
+
+### Test if game saves sync correctly to and from the cloud
+
+For `XGameSaveFiles`:
+
+<Steps>
+  <Step title="Confirm configuration">
+    - Confirm the SCID is correct.
+    - Confirm you're using the correct user handle.
+  </Step>
+  <Step title="Confirm initialization">
+    Confirm the title calls `XGameSaveFilesGetFolderWithUIAsync` during the current game session. If the title resumes from a suspend state, call the function.
+
+    - Use Fiddler to confirm the lock was acquired.
+    - Save this path and use it later to confirm data is uploading.
+  </Step>
+  <Step title="Wait for automatic upload">
+    Wait 10–30 seconds for the OS to automatically upload the data to the cloud and release the lock. Confirm via Fiddler.
+  </Step>
+  <Step title="Delete local data">
+    Manually delete the data in the folder provided by `XGameSaveFilesGetFolderWithUIAsync`. On console, access this through player settings.
+  </Step>
+</Steps>
+
+Related resources:
+
+- [Game Saves tools](/gdk/game-saves-tools)
+- [Sync flow](/gdk/game-saves-syncing)
+
+### Test if game saves roam correctly
+
+For a test plan to confirm data roams, see [XR-052-06 Test Plan](/store/policies/xr/xr052#052-06-cloud-storage-roaming).
+
+## Migration scenarios
+
+### Sharing game saves across titles
+
+Two steps:
+
+1. Modify the access policies of the title you want to access in Partner Center.
+2. Initialize the Game Saves providers for both titles in source code.
+
+#### Modify access policies
+
+<Steps>
+</Steps>
+
+Example: making GameSaveFilesCombo fully accessible to GameSaveSample.
+
+<Frame>
+  ![Partner Center view for modifying a title's access policy.](/images/partner-center-access-policy.png)
+</Frame>
+
+#### Initialize Game Save providers
+
+- **XGameSave** — Call `XGameSaveInitializeProvider` or `XGameSaveInitializeProviderAsync` for each title.
+- **XGameSaveFiles** — Providers are implicitly initialized. Call `XGameSaveFilesGetFolderWithUiAsync` for each title.
+
+### Interop between XGameSave and XGameSaveFiles
+
+A title might need to use `XGameSave` together with `XGameSaveFiles`:
+
+- The publisher has an existing console title already using `XGameSave`.
+- The publisher doesn't want to update that title to use `XGameSaveFiles`.
+- The publisher thinks adding `XGameSaveFiles` to a PC title is easier than using `XGameSave`, but still wants cross-saves between PC, console, and Xbox game streaming.
+
+When the title calls `XGameSaveFilesGetFolderWithUiAsync`, it maps containers and blobs to directories and files:
+
+- Any forward slash (`/`) in the container name creates directory structure.
+- Characters `\0` through `\001f` are mapped to underscore (`_`).
+- These characters are mapped to a period (`.`):
+  - `"` `<` `>` `|` `*` `?` `\`
+- A slash (`/`) in the blob name maps to a period (`.`) in the file name.
+- Files are limited to 16 MB (`XGameSave` maximum upload size).
+
+When moving from `XGameSaveFiles` back to `XGameSave`, it restores the original container and blob names if file names remain unchanged.
+
+### Porting previous titles to PC Game Saves with no-code cloud saves
+
+Some titles ported to PC Game Pass might require a no-code cloud save solution:
+
+- The title runs as an x86 application, using the GDK only in packaged form.
+- The title is created without custom code (Blueprint in Unreal Engine, Bolt in Unity).
+
+Titles that use no-code cloud saves read and write to their designated save directory through standard Win32 file I/O APIs. The system automatically syncs the data.
+
+No-code cloud saves are uploaded when the title is no longer running on PC:
+
+- The title is terminated.
+- The tracked user signs out.
+- The PC power state changes.
+- 30 minutes have passed since the title last wrote to the designated save area.
+
+The no-code solution is built on top of `XGameSaveFiles` and shares its limits: 64 MB per file (or 16 MB for interop with `XGameSave`/Connected Storage), 256 MB per user default. Contact your DPM for exceptions.
+
+<Note>
+  Specific naming conventions and character limits apply. See [XGameSaveFiles path logic](/gdk/xgamesavefiles#xgamesavefiles-path-logic).
+</Note>
+
+No-code cloud saves are supported only on PC and require the [Simplified User Model](/gdk/users-opting-into-simplified-model). If a user can't sign in, the title doesn't launch. If the user signs out during gameplay, it gets terminated.
+
+<Warning>
+  No-code cloud saves require the title to be launched as a packaged build using `wdapp install`. Launching the `.exe` directly doesn't activate cloud save redirection.
+
+  When a packaged build runs, saves written through `NoCodePCRoot` are redirected into `XGameSaveFiles`-managed storage. A later direct `.exe` launch reads the physical `NoCodePCRoot` folder instead — which might be empty, making saves appear missing. Always test with packaged builds.
+</Warning>
+
+#### Enabling no-code cloud saves
+
+<Steps>
+  <Step title="Modify MicrosoftGame.config">
+  </Step>
+  <Step title="Enable the simplified user model">
+  </Step>
+  <Step title="Specify the root folder for save files">
+  </Step>
+  <Step title="Provide the title's SCID">
+  </Step>
+</Steps>
+
+Example:
+
+```xml
+<Game configVersion="1">
+   <Identity Name="SampleNameOne" Publisher="CN=NoPublisher"/>
+   <SaveGameStorage>
+      <NoCodePCRoot RelativeTo="SavedGames">test\path</NoCodePCRoot>
+      <SCID>DF9D8061-4790-4B84-86B4-CD060B00B4DD</SCID>
+      <MaxUserQuota>256</MaxUserQuota>
+   </SaveGameStorage>
+   <!-- Content removed for brevity -->
+   <!-- Must also opt into requiring a default user at launch -->
+   <AdvancedUserModel>false</AdvancedUserModel>
+</Game>
+```
+
+`NoCodePCRoot` must be relative to one of:
+
+| RelativeTo | Folder location on PC |
+| --- | --- |
+| `AppData` | `%APPDATA%` |
+| `Public` | `%PUBLIC%` |
+| `LocalAppData` | `%LOCALAPPDATA%` |
+| `LocalAppDataLow` | `%USERPROFILE%\AppData\LocalLow` |
+| `ProgramData` | `%PROGRAMDATA%` |
+| `SavedGames` | `%USERPROFILE%\Saved Games` |
+| `UserProfile` | `%USERPROFILE%` |
+
+<Warning>
+  Use `SavedGames` as the `RelativeTo` value. The Saved Games folder corresponds to the Windows known folder ID `FOLDERID_SavedGames`. OneDrive doesn't sync this folder by default.
+
+  Avoid other locations such as `AppData` (`%APPDATA%`) — OneDrive can sync these and cause conflicts with cloud save synchronization.
+</Warning>
+
+_You can't place files directly in the root directory._ Nest them within at least one subfolder. For example, `<NoCodePCRoot RelativeTo="SavedGames">savegame1.sav</NoCodePCRoot>` isn't valid because `savegame1.sav` is treated as a directory-path segment, not a file.
+
+## Code samples
+
+- GameSaveCombo
+- GameSaveFilesCombo

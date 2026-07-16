@@ -1,0 +1,63 @@
+---
+title: "Async design goals and improvements over XDK"
+sidebarTitle: "Async design goals"
+description: "Why the GDK async model exists, what it changes relative to the XDK, and the design principles behind XTaskQueue and XAsyncBlock."
+icon: "lightbulb"
+---
+
+The GDK async model was designed to remove the sharp edges of async programming on XBOX One (XDK) while keeping the ergonomics real-time games actually need. This page captures the design goals so you can reason about **why** the APIs look the way they do.
+
+## Design goals
+
+<CardGroup cols={2}>
+  <Card title="Explicit threading" icon="microchip">
+    Games must decide which threads run background work and which threads run completions. The runtime never hides threading behind the API.
+  </Card>
+
+  <Card title="No hidden allocations" icon="memory">
+    All per-call state lives in the caller-provided `XAsyncBlock`. Providers add their own context but the runtime doesn't allocate on the hot path.
+  </Card>
+
+  <Card title="Cancelable by default" icon="ban">
+    Every async call can be canceled. Providers that don't implement `Cancel` simply run to completion, so cancellation is safe to request unconditionally.
+  </Card>
+
+  <Card title="Composable" icon="puzzle-piece">
+    Task queue handles are shareable, duplicable, and composable — the same infrastructure covers XAsync calls, deferred gameplay work, and Win32 integration.
+  </Card>
+</CardGroup>
+
+## Improvements over the XDK async model
+
+| Area | XDK | GDK |
+| --- | --- | --- |
+| Threading model | Concurrency Runtime / PPL tasks bound to a global scheduler | Caller-owned `XTaskQueue` with per-port dispatch modes |
+| Completion thread | Determined by PPL scheduler | Chosen by the game via task queue configuration |
+| Cancellation | Per-API, inconsistent | Uniform `XAsyncCancel` on any `XAsyncBlock` |
+| Custom async APIs | Non-trivial, tied to PPL | First-class via `XAsyncProvider` |
+| Time-sensitive threads | Not available | `XThreadSetTimeSensitive` for latency-critical threads |
+| Notifications | Mixed patterns | Uniform `Register`/`Unregister` pairs that accept a task queue |
+
+## Time-sensitive threads
+
+The GDK exposes `XThreadSetTimeSensitive` for threads that must never be delayed by the OS scheduler — for example, audio mixing threads or frame-critical simulation. This is a GDK-only capability that has no direct XDK equivalent.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Async model" icon="shuffle" href="/gdk/async-programming">
+    Read this first for the concrete pattern.
+  </Card>
+
+  <Card title="Task queue design" icon="drafting-compass" href="/gdk/async-task-queue-design">
+    How-to recipes across all queue patterns.
+  </Card>
+
+  <Card title="XAsyncProvider library" icon="gears" href="/gdk/async-library-xasyncprovider">
+    Build custom GDK-style async APIs.
+  </Card>
+
+  <Card title="XThread API reference" icon="book" href="/reference/xthread">
+    Time-sensitive thread APIs.
+  </Card>
+</CardGroup>

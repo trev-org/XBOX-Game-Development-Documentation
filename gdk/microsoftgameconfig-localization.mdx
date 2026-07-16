@@ -7,6 +7,10 @@ icon: "globe"
 
 Localize the strings displayed in the Windows / XBOX shell (display name, description, etc.) using `.resw` resource files.
 
+<Note>
+  When referencing string assets in the manifest, use `ms-resource:ApplicationDisplayName` — not `ms-resource:Resources/ApplicationDisplayName`. The `Resources/` prefix is a known documentation bug in older Microsoft Learn articles; the actual reference omits it.
+</Note>
+
 ## 1. Create resource files
 
 Create `resources.resw` in a `Strings\` subfolder for each supported language. Use [BCP-47](https://tools.ietf.org/html/bcp47) language codes.
@@ -19,9 +23,23 @@ Create `resources.resw` in a `Strings\` subfolder for each supported language. U
     es-mx/resources.resw
 ```
 
+Each `.resw` file is XML — add one `<data>` entry per string:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ApplicationDescription">
+    <value>Contoso Demo app with localized resources (English)</value>
+  </data>
+  <data name="ApplicationDisplayName">
+    <value>Contoso Demo Sample (English)</value>
+  </data>
+</root>
+```
+
 ## 2. Reference resources in MicrosoftGame.config
 
-Use `ms-resource:ResourceStringName`:
+Replace literal strings in `ExecutableList` and `ShellVisuals` with `ms-resource:ResourceStringName`:
 
 ```xml
 <ExecutableList>
@@ -29,9 +47,20 @@ Use `ms-resource:ResourceStringName`:
               OverrideDisplayName="ms-resource:ApplicationDisplayName"
               Id="Game"/>
 </ExecutableList>
+
+<ShellVisuals DefaultDisplayName="PackageName"
+              PublisherDisplayName="Publisher Display name"
+              StoreLogo="Storelogo.png"
+              Square150x150Logo="Logo.png"
+              Square44x44Logo="SmallLogo.png"
+              Description="ms-resource:ApplicationDescription"
+              BackgroundColor="#000040"
+              SplashScreenImage="SplashScreen.png"/>
 ```
 
 ## 3. Declare supported languages
+
+Add a `Resources` child element to `Game` listing every locale you support:
 
 ```xml
 <Resources>
@@ -42,8 +71,30 @@ Use `ms-resource:ResourceStringName`:
 
 ## 4. Generate the .pri file
 
+From a GDK Gaming Command Prompt in your game's root content directory:
+
 ```bat
 makepkg localize /d . /resw Strings
 ```
 
-Place the resulting `resources.pri` in your game's root content directory, then create your package.
+Place the resulting `resources.pri` in your game's root content directory, then create your package as normal.
+
+### makepkg localize options
+
+- `/resw <path>` — relative path to the folder containing `.resw` files.
+- `/pd <dir>` — write `resources.pri` to a directory other than the root. The target directory must already exist.
+- `/t <dir>` — export the resources to a plain-text XML file for manual verification.
+
+Example with all three:
+
+```bat
+makepkg localize /d . /resw Resources /pd ..\FinalLooseFolder /t ..\TempOutput
+```
+
+## 5. Verify
+
+Install the package with the system language set to each supported locale and confirm your localized strings appear in the Start menu, taskbar, and other shell surfaces.
+
+<Note>
+  Icons and text shown in the Microsoft Store app come from Partner Center — not from the strings inside your package.
+</Note>

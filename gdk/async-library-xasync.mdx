@@ -1,0 +1,114 @@
+---
+title: "XAsync library overview"
+sidebarTitle: "XAsync library"
+description: "The XAsync library provides the async primitives — XAsyncBlock, XAsyncRun, XAsyncGetStatus, XAsyncCancel — used by all GDK async APIs."
+icon: "code"
+---
+
+The `XAsync` library defines the async primitives that every GDK async task uses. The central primitive is `XAsyncBlock` — required for **all** async calls — plus helpers to start, query, and cancel work.
+
+## XAsyncBlock
+
+`XAsyncBlock` bundles the task queue, an optional context pointer, and an optional completion callback. It also carries a small internal region used by the runtime to track the active call, so it **cannot be shared** between two active tasks.
+
+```cpp
+struct XAsyncBlock
+{
+    XTaskQueueHandle          queue;     // Queue used to dispatch callbacks
+    void*                     context;   // Optional context passed to the callback
+    XAsyncCompletionRoutine*  callback;  // Optional completion callback
+    unsigned char             internal[sizeof(void*) * 4]; // Runtime use — do not touch
+};
+```
+
+<Warning>
+  Never share an `XAsyncBlock` across two live async calls. Once the previous call completes, the block can be reused.
+</Warning>
+
+## Key functions
+
+| Function | Purpose |
+| --- | --- |
+| `XAsyncRun` | Start a simple work callback on a task queue |
+| `XAsyncGetStatus` | Wait for or query the current status/HRESULT of a task |
+| `XAsyncCancel` | Best-effort cancel of an in-flight task |
+
+## Examples
+
+<AccordionGroup>
+  <Accordion title="Set up an XAsyncBlock" icon="cube">
+    Allocate an `XAsyncBlock` per call, populate `queue`, `context`, and `callback`, and delete it inside the completion callback:
+
+    ```cpp
+    XAsyncBlock* async = new XAsyncBlock{};
+    async->queue    = taskQueue;
+    async->context  = contextData;
+    async->callback = [](XAsyncBlock* async)
+    {
+        // Optional completion callback.
+        delete async;
+    };
+    ```
+  </Accordion>
+
+  <Accordion title="Run a simple task with XAsyncRun" icon="play">
+    `XAsyncRun` starts a caller-defined work callback on the queue and invokes the completion callback when it finishes. No custom provider needed:
+
+    ```cpp
+    XAsyncBlock* async = new XAsyncBlock{};
+    async->queue    = taskQueue;
+    async->callback = [](XAsyncBlock* async) { delete async; };
+    
+    XAsyncRun(async,
+        [](XAsyncBlock* async) -> HRESULT
+        {
+            // Work callback runs on the queue's work port.
+            return S_OK;
+        });
+    ```
+
+    The HRESULT returned from the work callback becomes the value returned later by `XAsyncGetStatus`.
+  </Accordion>
+
+  <Accordion title="Run a GDK API async task" icon="gamepad">
+    Built-in GDK APIs (for example, `XUserAddAsync`) implement the work callback internally. You only supply the `XAsyncBlock` and read the result in the callback:
+
+    ```cpp
+    XAsyncBlock* async = new XAsyncBlock{};
+    async->queue    = taskQueue;
+    async->callback = [](XAsyncBlock* async)
+    {
+        XUserHandle newUser = nullptr;
+        HRESULT hr = XUserAddResult(async, &newUser);
+        // Handle completion...
+        delete async;
+    };
+    
+    HRESULT hr = XUserAddAsync(XUserAddOptions::None, async);
+    if (FAILED(hr))
+    {
+        delete async;
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Async model" icon="shuffle" href="/gdk/async-programming">
+    The overall GDK async pattern.
+  </Card>
+
+  <Card title="XAsyncProvider library" icon="gears" href="/gdk/async-library-xasyncprovider">
+    Build your own async APIs.
+  </Card>
+
+  <Card title="XTaskQueue library" icon="list-ol" href="/gdk/async-library-xtaskqueue">
+    Control where callbacks run.
+  </Card>
+
+  <Card title="XAsync API reference" icon="book" href="/reference/xasync">
+    Full function reference.
+  </Card>
+</CardGroup>

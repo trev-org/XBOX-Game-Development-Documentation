@@ -1,0 +1,113 @@
+---
+title: "Deployment (layout.xml) schema reference"
+sidebarTitle: "Deployment schema"
+description: "The XML elements used to author a GDK package layout — Package, Chunk, and FileGroup — with the attributes each accepts."
+icon: "code"
+---
+
+A GDK package **layout** is an XML file (traditionally `layout.xml`) that tells `makepkg` / `makepkg2` which files belong in the package and how they group into chunks for streaming install and Intelligent Delivery. This page is the schema reference.
+
+## Top-level structure
+
+```xml
+<Package>
+  <Chunk>
+    <FileGroup />
+    ...
+  </Chunk>
+  ...
+</Package>
+```
+
+Every layout has exactly one `<Package>` root element containing one or more `<Chunk>` elements, each containing one or more `<FileGroup>` elements.
+
+## `<Package>` element
+
+Root element. Holds the package identity and top-level metadata.
+
+| Attribute | Purpose |
+| --- | --- |
+| `Id` | Package identifier used by tools — typically matches the game short name |
+| `IgnorableNamespaces` | Set to `mx` if you use any `mx:` namespace elements. Submission Validator fails with `ILI_MissingIgnorableNamespaces` if omitted. |
+
+The `MicrosoftGame.config` file (referenced by makepkg) supplies the store identity (`Identity`, `StoreId`, `MSAAppId`, `TitleId`). The layout is about **which files** ship, not **what the package is**.
+
+## `<Chunk>` element
+
+A named group of files installed together. Chunks are the unit of streaming install and Intelligent Delivery.
+
+| Attribute | Purpose |
+| --- | --- |
+| `Id` | Numeric chunk identifier. Chunk `0` is the launch chunk unless overridden with `Marker="Launch"`. |
+| `Marker` | Set to `Launch` on the chunk that must be installed before the game can boot. Required on the **final chunk of a DLC package** (`ILI_DlcFinalChunkMustBeLaunchChunk`). |
+| `Devices` | Intelligent Delivery device specifier — restrict this chunk to specific hardware (e.g., `Scarlett`, `XboxOne`, `XboxOneX`, PC device families). |
+| `Languages` | Intelligent Delivery language specifier — restrict this chunk to specific language codes. |
+| `Feature` | Intelligent Delivery feature name — mark this chunk as backing an on-demand feature. |
+| `Tag` | Free-form custom tag — group chunks for later reference. **Not encrypted on the CDN.** |
+
+### Best practices
+
+- Keep the **launch chunk** small enough to reach a playable state — required for streaming install certification.
+- One chunk per language, not per file.
+- Merge tiny chunks under a few MB into a parent chunk — too-small chunks add manifest overhead without material streaming benefit.
+- Do **not** mix executable and non-executable data in the same chunk unless building with `/updcompat 2` — mixed data triggers `ILI_ChunksContainsMixedDataTypes` / `ILI_SingleChunkContainsMixedDataTypes`.
+
+## `<FileGroup>` element
+
+A wildcard-driven set of files included in a chunk.
+
+| Attribute | Purpose |
+| --- | --- |
+| `SourcePath` | Path (absolute or relative to the game folder) under which the wildcard applies. |
+| `Include` | Wildcard pattern to include — for example `*.dll` or `Content\**\*.pak`. |
+| `Exclude` | Optional wildcard pattern to exclude from the include set. |
+| `DestinationPath` | Optional — remap the files inside the package. Defaults to the source-relative path. |
+
+Multiple `<FileGroup>` elements can appear in one `<Chunk>` — they combine additively.
+
+## Related `mx:` elements in MicrosoftGame.config
+
+The layout defines file/chunk mapping. Several **package-level policies** live in `MicrosoftGame.config` and interact with the layout at build time:
+
+<AccordionGroup>
+  <Accordion title="mx:ConnectedStorage">
+    Declares the requested Connected Storage quota per user. Requesting more than the platform default triggers `ILI_ConnectedStorageQuotaRequest` (warning) and requires a certification exception.
+  </Accordion>
+
+  <Accordion title="mx:PersistentLocalStorage">
+    Legacy XDK-only. New GDK titles must not use this element — `ILI_PlsInvalidUsage`.
+  </Accordion>
+
+  <Accordion title="mx:AllowedProduct">
+    Required on DLC packages. Must match the **parent title's** product ID (not the DLC's own).
+  </Accordion>
+
+  <Accordion title="mx:ContentPackageVisualElements">
+    Required on DLC packages. Supplies the store visuals for the DLC entry.
+  </Accordion>
+
+  <Accordion title="mx:XboxSystemResources / TitleMemory">
+    Declares custom memory reservations. Missing `TitleMemory` triggers `ILI_DefaultTitleMemoryFinal` — the title gets the 5 GB default. Use `Size` **or** `SizeInMegabytes`, not both.
+  </Accordion>
+
+  <Accordion title="Removed / not allowed">
+    - `mx:XboxFission` — not supported (`ILI_XboxFission`)
+    - `mx:RelyingParty` — not supported (`ILI_RelyingParty`)
+    - `mx:SecureDeviceSocketUsage Type='SendDebug' / 'ReceiveDebug'` — not supported (`ILI_SendDebug` / `ILI_ReceiveDebug`)
+  </Accordion>
+</AccordionGroup>
+
+## Deployment schema tools
+
+Schema authoring is supported by the packaging tools in [Deployment tools reference](/gdk/packaging-deployment-tools):
+
+- `makepkg genmap` generates a starter layout from a folder scan.
+- `makepkg validate` (and Submission Validator after every pack) reports schema errors.
+- `splitpkg` uses a companion `DiscLayout.xml` to split a built package across physical discs.
+
+## Related
+
+- [Packaging overview](/gdk/packaging)
+- [Intelligent Delivery](/gdk/intelligent-delivery)
+- [Deployment tools reference](/gdk/packaging-deployment-tools)
+- [Submission Validator](/gdk/submission-validator)

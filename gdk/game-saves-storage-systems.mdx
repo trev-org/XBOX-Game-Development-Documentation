@@ -1,0 +1,35 @@
+---
+title: "Game saves storage systems"
+sidebarTitle: "Storage systems"
+description: "Title storage (cloud), local save storage, machine-provider storage, per-title quotas, and console-specific local storage."
+icon: "database"
+---
+
+This article describes Game Saves storage systems and their limits and quotas.
+
+| Name | Description |
+| --- | --- |
+| Connected Storage, XGameSaves | Previous names of the Game Saves ecosystem. |
+| Title storage / cloud | Stores Game Save data in the cloud. Automatically synced from the cloud when the user initiates Game Saves. |
+| Game Saves local storage | When a title saves data with Game Saves, it saves the data to local storage first. The system syncs the data to the cloud when the device connects to the internet. |
+| Machine provider storage | A specialized form of Game Saves local storage that stays on the device and doesn't sync to title storage. The system writes data to machine provider storage when a user saves game data by using a `null` user handle. Limited to 256 MB. |
+
+For more information about interacting with Game Saves storage systems:
+
+- [Manipulating Game Saves](/gdk/game-saves-tools#manipulating-game-saves) — For debugging and deeper investigation.
+- [Managing Game Saves through the device](/gdk/game-saves-walkthroughs#managing-game-saves-through-the-device) — Storage through the device UI/UX.
+
+## Console-specific local storage system
+
+Persistent local storage (PLS) is a special local storage system available on the console. PLS doesn't map directly to Game Saves; however, consider it when designing content-distribution solutions. For more information, see [Local storage on Xbox console](/gdk/console/storage/local-storage).
+
+## Limits and quotas
+
+The maximum data a user can save for each title is **256 MB**. This limit also applies to machine provider storage. Contact your Developer Partner Manager (DPM) to get a storage extension.
+
+To find out how much storage remains in a title, call the appropriate "get quota" API:
+
+- **XGameSaveFiles:** `XGameSaveFilesGetRemainingQuota`
+- **XGameSave:** `XGameSaveGetRemainingQuota`
+
+For information about how Game Saves syncs data between cloud and local storage, see [Understanding the Game Saves sync flow](/gdk/game-saves-syncing).

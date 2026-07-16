@@ -1,0 +1,38 @@
+---
+title: "Dealing with Controller Loss"
+sidebarTitle: "Controller loss"
+description: "How games should handle losing the controller for a user."
+icon: "battery-empty"
+---
+
+Having a controller associated with a user is critical for most games. When a user loses all their controllers (dead battery, disconnect), the standard single-player approach is to pause the game and show a dialog asking the player to turn on a controller.
+
+## Using XUserFindControllerForUserWithUiAsync
+
+`XUserFindControllerForUserWithUiAsync` improves the experience. It takes an `XUserHandle` and shows a system dialog:
+
+> `<Gamer>`, you need a controller for this game. Press and hold **A** to confirm the controller you would like to use.
+
+After the user confirms, call `XUserFindControllerForUserWithUiResult` to get the `APP_LOCAL_DEVICE_ID` of the chosen controller. That controller is now associated with the user — pressing the nexus button on it will surface that user's information in the XBOX Guide.
+
+## Handling cancellation
+
+The player can cancel out of the dialog without selecting a controller. Handle this case appropriately — for example:
+
+- Retry `XUserFindControllerForUserWithUiAsync` to force a selection.
+- Return to the title screen since there is no valid user-to-controller mapping.
+- Any other behavior that makes sense for your title.
+
+<Note>
+  With this flow, a controller can be reassigned from a previous user. This is by design.
+</Note>
+
+## Association change callbacks
+
+Whenever a user-to-controller association changes, an `XUserDeviceAssociationChangedCallback` fires — including the successful pairing produced by `XUserFindControllerForUserWithUiAsync`.
+
+## Related
+
+- `XUserFindControllerForUserWithUiAsync`
+- [User-to-controller association timing](/gdk/user-controller-association-timing)
+- [Users and input devices](/gdk/users-input-devices)

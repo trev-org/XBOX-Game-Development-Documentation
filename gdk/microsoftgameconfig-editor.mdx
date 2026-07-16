@@ -22,9 +22,19 @@ The **MicrosoftGame.config Editor** is a UI tool for authoring `.mgc` / `Microso
 - From any GDK Gaming Command Prompt: `GameConfigEditor.exe [path-to-config-or-folder]`
 - In Visual Studio: double-click any `.mgc` file in Solution Explorer
 
+## Create or edit a config
+
+On launch, the **Create or Edit MicrosoftGame.config** window prompts you to either browse to an existing file (**Edit**) or create a new one in the selected folder (**Create**).
+
+## Specify the executable and Target Device Family
+
+The first required input is the title executable — browse to and select your `.exe` in the **Executable** section. You must also specify the **Target Device Family** the executable targets. The editor will still let you save without an executable set, but warns that the title can't be deployed or launched until one is specified.
+
 ## Associate with Microsoft Store
 
-Your Partner Center account needs one of these roles:
+Your title must have XBOX services enabled in [Partner Center](https://partner.microsoft.com/dashboard) to use the Store Association Wizard.
+
+Your Partner Center account needs one of these built-in roles:
 
 - Manager (Windows)
 - Developer
@@ -32,8 +42,31 @@ Your Partner Center account needs one of these roles:
 - Finance Contributor
 - Marketer
 
-Click **Associate with the Microsoft Store** to launch the Store Association Wizard — it pulls down title identity values and writes them to your local config.
+If your account has custom permissions instead, you need the **Sandboxes** Account-level permission plus one of these Product-level permissions: **Disc**, **Publishing**, or **Xbox Live**.
+
+Click **Associate with the Microsoft Store** to launch the Store Association Wizard — it pulls down title identity values (TitleId, MSAAppId, StoreId) and writes them to your local config.
+
+<Note>
+  After completing the wizard, click **Save** in the editor to persist the changes to disk.
+</Note>
 
 ## Generate tile images
 
-Provide a single 480x480 PNG — the editor auto-generates all other required image sizes.
+Provide a single 480x480 PNG in the **Tile Image** section — the editor auto-generates all other required image sizes for the Microsoft Store.
+
+## Add platform-specific features
+
+The **Xbox** and **PC** tabs include a **Features** menu for adding, removing, and configuring platform-specific features.
+
+- **Add new** — opens a checklist of available features for the platform. Features already present appear at the bottom in yellow; features that support multiple entries can be added again.
+- **Remove** — deletes a feature from the list after a confirmation prompt.
+- **Configure** — most features require additional property values before they're considered valid.
+
+<Warning>
+  If a feature is missing required properties when you save, the editor removes it and reports which value was missing. Re-add the feature and complete its configuration to keep it in the file.
+</Warning>
+
+## Documentation and feedback
+
+- Click the **Documentation** link inside the editor to open reference docs for the current element.
+- Use the **Suggestion** menu item to send feedback on existing features or request new ones.

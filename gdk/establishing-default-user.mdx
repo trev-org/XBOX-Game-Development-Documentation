@@ -1,0 +1,24 @@
+---
+title: "Establishing the Default User for the Game"
+sidebarTitle: "Establishing default user"
+description: "How to establish the default user at launch."
+icon: "user-plus"
+---
+
+## Simplified User Model
+
+When a title uses the Simplified User Model, calling `XUserAddAsync` with `AddDefaultUserSilently` is **guaranteed** to return a valid user. Once you have the user, fetch their gamertag and indicate who is in control of the game.
+
+## Advanced User Model
+
+With the Advanced User Model there is **no guarantee** of a default user at launch. Games can still try:
+
+- Call `XUserAddAsync` with `AddDefaultUserSilently` — silent attempt to find the launching user.
+- Or call `XUserAddAsync` with `AddDefaultUserAllowingUI` — shows UI if the default can't be determined.
+
+If either call returns `E_GAMEUSER_NO_DEFAULT_USER`, present an interactive title screen (e.g., "Press A to sign in"). When the player engages, call `XUserAddAsync` without the default options to show the Account Picker and get a user.
+
+## Related
+
+- [Opting into Default User Required](/gdk/simplified-user-model-opt-in)
+- [Sign-in best practices](/gdk/xuser-signin-best-practice)

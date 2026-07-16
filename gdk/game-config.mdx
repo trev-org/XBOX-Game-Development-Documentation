@@ -195,10 +195,63 @@ In addition to editing the file in Visual Studio, you can use the standalone **M
   The MicrosoftGame.config Editor is the recommended way to set up title identity for the first time. It validates your values against Partner Center data in real time.
 </Tip>
 
+## IntelliSense support
+
+Editing a `MicrosoftGame.config` in Visual Studio supports IntelliSense — valid element names are listed as you type, and warnings surface when an element or value is invalid.
+
+## Platform requirements
+
+You need a separate `MicrosoftGame.config` for each GDK platform target (`Gaming.XBOX.XboxOne.x64`, `Gaming.XBOX.Scarlett.x64`, `Gaming.Desktop.x64`) so element values map one-to-one to the platform the executable is built against. The primary control is the `TargetDeviceFamily` attribute on the `Executable` element.
+
+Launch behavior depends on config presence, `TargetDeviceFamily`, and launch device:
+
+| Config present | TargetDeviceFamily | Launch device | Action |
+| --- | --- | --- | --- |
+| Yes | Xbox Series X\|S | Xbox Series X\|S | Launch natively on the Xbox Series X dev kit |
+| Yes | Xbox Series X\|S | Xbox One | Returns error `0x887e0002` — incorrect platform for launch device |
+| Yes | XboxOne | Xbox Series X\|S | Launch with GDK back-compat VM on the Xbox Series X dev kit |
+| Yes | XboxOne | Xbox One | Launch natively on the Xbox One dev kit |
+| Yes | Not defined | Xbox Series X\|S | Launch natively on the Xbox Series X dev kit |
+| Yes | Not defined | Xbox One | Launch natively on the Xbox One dev kit |
+| No | N/A | Xbox Series X\|S | Launch natively on the Xbox Series X dev kit |
+| No | N/A | Xbox One | Launch natively on the Xbox One dev kit |
+| Yes | PC | PC | Launch as Win32 x64 with identity on PC |
+| Yes | Not defined | PC | Launch as Win32 x64 with identity on PC |
+| No | N/A | PC | Launch as Win32 x64 without identity on PC |
+
+<Note>
+  On an Xbox Series X|S dev kit launching without a `MicrosoftGame.config`, the platform reuses existing GDK VM state. For example, if a back-compat title (Xbox One on Xbox Series X|S) launched earlier, a subsequent native title runs in that same back-compat VM. Use a `MicrosoftGame.config` with `TargetDeviceFamily` set to make your intent explicit. ERA titles run in a separate VM and don't affect this behavior.
+</Note>
+
 ## Launching without a MicrosoftGame.config
 
 During early development, you can launch your game without a `MicrosoftGame.config`. On PC, double-clicking the executable works but Gaming Runtime features and title identity are unavailable. On XBOX, GDK tooling can deploy and launch loose-file builds without a config, but full GDK features, title identity, and packaging for Store submission all require a properly configured `MicrosoftGame.config`.
 
+On XBOX, you can launch a title without a config via:
+
+- `xbapp.exe` launch (NDA tool)
+- Xbox Manager deploy/launch
+- Developer Home (Dev Home) on the console
+
 <Warning>
   A `MicrosoftGame.config` is required to package and submit your title to Microsoft Store. Adopt and configure yours as soon as you begin using Gaming Runtime APIs, XBOX services, or title identity features.
 </Warning>
+
+## Launching and debugging a Win32 game
+
+A Win32 PC game that uses no Gaming Runtime or gaming cloud services can be launched and debugged like any other Windows executable — double-click the executable or run it from the command prompt.
+
+Gaming services (like XBOX services granting achievements) need contextual data — a **title identity** — that identifies your game. Contextual data is stored persistently in the Windows App Repository through **registration**. **App-launch** creates the game process with that context attached; without app-launch, the process runs but service context is unavailable.
+
+You can app-launch your game via:
+
+- Start menu (app list / app tile)
+- Taskbar search (results list / detail panel)
+- `wdapp.exe` launch
+- Windows Device Portal: **Installed Apps → Start**
+
+In the GDK, pressing **F5** in Visual Studio builds and runs through the registration \+ app-launch path — matching the XBOX workflow.
+
+<Note>
+  Visual Studio's **Debug Installed App Package** only recognizes packages whose manifest is named `AppXManifest.xml`. To use that debugger with a `MicrosoftGame.config`-based build, create a minimal `AppXManifest.xml` alongside your executable containing valid values for your title.
+</Note>
