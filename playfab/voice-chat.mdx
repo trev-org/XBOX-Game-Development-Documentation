@@ -1,0 +1,99 @@
+---
+title: "Voice chat, permissions, and moderation"
+sidebarTitle: "Voice chat"
+icon: "microphone"
+description: "Synchronous Player Communications on PlayFab: voice chat permissions and muting, text moderation, noise suppression, real-time audio manipulation, and TTS / STT accessibility."
+related: ["/playfab/party", "/playfab/party-voice", "/playfab/community"]
+---
+
+PlayFab **Synchronous Player Communications** covers everything that lets players talk in real time — voice, text moderation, and the accessibility layers that make communication work for everyone. It's built on [Party](/playfab/party), so this page focuses on the community-facing controls and UX rather than the transport.
+
+## Chat permissions and muting
+
+Every participant in a Party network has an implicit **chat permission** matrix against every other participant. A cell in that matrix says whether player A can hear player B, split into three axes:
+
+- **Voice** — audio in / out.
+- **Text** — chat in / out.
+- **Text-to-speech / speech-to-text** — accessibility translations.
+
+Default permissions come from XBOX privacy settings (parental controls, block lists) and are then modified by:
+
+- The title ("spectators can hear but not talk").
+- The player (mute, block).
+- Server-side rules (bans, chat restrictions from moderation).
+
+Set permissions at the endpoint level; Party propagates changes across the network without a round trip through your servers.
+
+## Muting flows
+
+Muting is a first-class API. Your UI should offer:
+
+- **Mute a player** — hide their audio, keep the rest.
+- **Mute yourself** — don't send local audio.
+- **Push-to-talk** — send audio only while a button is held.
+- **Block** — permanent, persists across sessions, blocks matchmaking pairing.
+
+All of these must persist across sessions (except push-to-talk, which is per-session).
+
+## Text moderation
+
+Any text a player sends — chat, item names in UGC, group names — should be moderated. PlayFab provides text-moderation APIs backed by Azure Content Safety:
+
+- **Profanity filter** — mask or reject known bad terms per locale.
+- **Harassment / hate classification** — return a score per category so your rule can be softer for warnings and harder for auto-mutes.
+- **PII scrubbing** — detect emails, phone numbers, addresses in chat and rewrite / block.
+
+Invoke moderation before echoing text to other players. Log both the input and the classification so a moderator can review borderline cases.
+
+## Voice audio processing
+
+PlayFab Party ships several server-quality audio processing features you'd otherwise build yourself:
+
+- **Noise suppression** — background noise cancellation on the mic stream.
+- **Real-time audio manipulation** — pitch shift, robot voice, and custom effect graphs for cosmetic voice packs.
+- **Automatic gain control** — keep everyone at similar loudness.
+
+All of these are opt-in per endpoint so you can trade CPU for quality on lower-tier devices.
+
+## Accessibility — TTS and STT
+
+Synchronous voice must have a text alternative for players who can't or don't want to speak. Party provides:
+
+- **Text-to-speech** — a player types, other players hear synthetic speech with configurable voice.
+- **Speech-to-text** — a player speaks, other players see captions in their language of choice (per-endpoint translation).
+
+These are game-ready, not tacked-on: latency is low enough for real-time play, and you can style the caption UI freely.
+
+### UX guidelines
+
+Mirror the Learn guidance on your title's UI:
+
+- Make TTS input as easy to reach as the mic button — same menu, adjacent binding.
+- Show TTS voices as authored characters, not "voice 1 / voice 2".
+- Render STT captions with player color, name, and a readable font size that scales.
+- Let players hide their own captions but not others' — captions are for the listener, not the speaker.
+- Log accessibility-input opt-ins as PlayStream events so you can measure adoption and prioritize improvements.
+
+## Session lifecycle
+
+A typical voice session goes:
+
+1. Client joins a Party **network** through Lobby or Matchmaking handoff.
+2. Client creates a local **chat control** and configures permissions.
+3. Title applies per-player mute state from PlayerData / block list.
+4. Runtime: audio flows via Party; captions and TTS ride the same session.
+5. On session end, unregister the chat control and destroy the endpoint.
+
+## Best practices
+
+- **Respect XBOX parental privacy defaults.** Never override an under-13 account's chat restrictions.
+- **Always show a mute indicator** on every player's HUD. It should always be one click to mute another player.
+- **Log moderation decisions** with input, output, model version, and player ID so appeals are actionable.
+- **Test with high packet loss** — voice suppression can mask real audio problems in the lab.
+- **Cap concurrent speakers.** In a 30-person lobby, only speakers-of-the-moment should have open mics; use raise-hand UX otherwise.
+
+## See also
+
+- [Party](/playfab/party) — the transport underneath voice
+- [Party & voice](/playfab/party-voice) — GDK integration patterns
+- [Fraud prevention](/playfab/fraud-prevention) — abuse response for chat \+ voice

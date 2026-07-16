@@ -1,0 +1,95 @@
+---
+title: "Friends and Groups (Player Associations)"
+sidebarTitle: "Friends & groups"
+icon: "user-group"
+description: "PlayFab Player Associations: friends lists for direct player relationships, and Groups (clans, guilds) for durable communities with roles and shared state."
+related: ["/playfab/community", "/playfab/identity", "/playfab/community-leaderboards"]
+---
+
+PlayFab **Player Associations** are the social graph primitives: **Friends** for direct 1:1 relationships between players, and **Groups** for durable N:M communities (clans, guilds, squads).
+
+Both are modeled on the entity system so they compose cleanly with PlayerData, statistics, leaderboards, and voice chat.
+
+## Friends
+
+A friend relationship links two `title_player_account` or `master_player_account` entities. Friends lists support:
+
+- **Explicit friend requests** — client sends a request, target accepts or rejects.
+- **Auto-accept from platform friends** — pull the XBOX friends graph on sign-in and materialize matches.
+- **Cross-platform** — the same PlayFab identity can be friended by players on XBOX, Steam, mobile, etc.
+- **Tags** — per-relationship labels ("squadmate", "blocked\_from\_chat") for game-specific filtering.
+- **Blocking** — a separate list that suppresses friend requests, matchmaking pairing, and chat.
+
+```cpp
+// Quickstart
+AddFriendRequest req;
+req.FriendPlayFabId = targetPlayFabId;
+PlayFabClientAPI::AddFriend(req, /* ok */, /* err */, nullptr);
+
+GetFriendsListRequest getReq;
+PlayFabClientAPI::GetFriendsList(getReq,
+    [](const GetFriendsListResult& r, void*) {
+        for (const auto& f : r.Friends) { /* ... */ }
+    }, /* err */, nullptr);
+```
+
+## Groups
+
+Groups are heavier: named, persistent communities with roles and shared data. Common shapes:
+
+- **Clans / guilds** — 100\+ members, officer / member roles, shared bank, chat channel.
+- **Squads** — small ephemeral groups for a season.
+- **Friend circles** — opt-in cross-title cohorts for social feed features.
+
+Each group has:
+
+- A `group` entity (same entity system as titles and players).
+- A **role graph** — default `Owners`, `Members`, plus any custom roles you define.
+- **Applications** and **invitations** for controlled membership.
+- Entity Objects and Files for shared state.
+- Its own PlayStream event stream.
+
+```cpp
+// Create a group
+CreateGroupRequest req;
+req.GroupName = "The Bear Cavalry";
+PlayFabGroupsAPI::CreateGroup(req, /* ok */, /* err */, nullptr);
+
+// Invite by entity key
+InviteToGroupRequest invReq;
+invReq.Group = groupEntity;
+invReq.Invitee = targetEntity;
+PlayFabGroupsAPI::InviteToGroup(invReq, /* ok */, /* err */, nullptr);
+```
+
+## Roles and permissions
+
+Roles let you gate which members can do what. A typical clan layout:
+
+| Role | Permissions |
+| --- | --- |
+| Owner | All (rename, disband, promote, kick, edit shared data) |
+| Officer | Invite, kick members, edit shared data, moderate chat |
+| Member | Read shared data, chat |
+| Trial | Read chat, view shared data — no edit |
+
+Permissions are enforced by PlayFab — no server-side check needed on your end.
+
+## Sync with platform social graphs
+
+Most titles ingest platform friends on sign-in and shadow them into PlayFab friends:
+
+1. `XUserGetXboxUserId` → XSAPI → fetch XBOX friend XUIDs.
+2. Batch-resolve each XUID to a PlayFab account (`GetPlayFabIDsFromXboxLiveIDs`).
+3. Add each resolved account as a friend with a `platform:xbox` tag.
+4. Repeat for Steam, PSN, etc. as needed.
+
+Repeating this on every launch is fine — duplicate `AddFriend` is a no-op.
+
+## Best practices
+
+- **Cache aggressively.** Friends lists change slowly — refresh on major state changes, not every frame.
+- **Use tags for cross-title friend suggestions.** Don't stuff structured data into a display name.
+- **Design group size limits up-front.** 100 is a sensible default clan cap; 10 for squads.
+- **Rate-limit invites.** Otherwise spam is inevitable.
+- **Instrument the graph.** Friend-add / group-join events are strong retention predictors — dashboard them in [Analytics](/playfab/analytics).

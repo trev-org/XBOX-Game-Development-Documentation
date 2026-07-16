@@ -1,0 +1,74 @@
+---
+title: "PlayFab Game Manager"
+sidebarTitle: "Game Manager"
+icon: "gauge"
+description: "Game Manager is the PlayFab developer portal for configuring titles, running live ops, inspecting player data, and managing your dev team."
+related: ["/playfab/developer-identity", "/playfab/live-service-management", "/playfab/experiments"]
+---
+
+**Game Manager** ([gamemanager.playfab.com](https://developer.playfab.com/)) is the web UI where your team configures every PlayFab feature for a title. Everything you can do from an admin API can be done in Game Manager, and vice versa.
+
+## Sign in
+
+Game Manager supports PlayFab-account sign-in (with mandatory 2FA) and Microsoft Entra ID (AAD) for studio SSO. See [Developer identity](/playfab/developer-identity) for the details on both flows.
+
+## Everyday areas
+
+Once inside a title, the left rail groups features by service pillar:
+
+<CardGroup cols={2}>
+  <Card title="Players" icon="users">
+    Look up players by PlayFab ID, XUID, email, or custom ID. Inspect entity data, inventory, statistics, ban / unban, and impersonate for repro.
+  </Card>
+
+  <Card title="Economy" icon="coins">
+    Author your Economy v2 catalog: items, bundles, virtual currencies, stores, and UGC moderation queues.
+  </Card>
+
+  <Card title="Multiplayer" icon="handshake">
+    Configure Multiplayer Servers builds, Matchmaking queues, and Lobby settings.
+  </Card>
+
+  <Card title="Automation" icon="gears">
+    CloudScript revisions, Azure Functions bindings, Actions & Rules, Scheduled Tasks, and Webhooks.
+  </Card>
+
+  <Card title="Segments & experiments" icon="flask">
+    Define segments, run A/B experiments, and preview segment membership counts.
+  </Card>
+
+  <Card title="Data" icon="database">
+    PlayStream event stream, Telemetry Keys, Data Connections, Insights Explorer (KQL), Reports, and Trends.
+  </Card>
+</CardGroup>
+
+## Title settings
+
+Under **Title settings** you configure things that don't change day-to-day:
+
+- **API features** — enable or disable client APIs your title doesn't use.
+- **API Access Policy** — fine-grained access control across all API groups.
+- **Secret keys** — create, rotate, and scope server-side keys (details in [Developer identity](/playfab/developer-identity)).
+- **Client profile options** — which fields the client is allowed to read.
+- **Push notifications** — iOS / FCM / WNS credentials.
+- **Add-ons** — enable first-party integrations (Xbox Live, Steam, Facebook, etc.).
+
+## Audit logs
+
+Every change through Game Manager is captured in the audit log. Filter by user, IP, and time range; export to CSV; and stream to a SIEM through Data Connections. See [Developer identity](/playfab/developer-identity) for the security workflow.
+
+## API feature settings
+
+The **API feature settings** page toggles individual admin/client behaviors that would otherwise require a support ticket — for example, enabling multiple linked providers of the same type, or allowing client-authored PlayerData in specific keys. Review these when you first onboard a title.
+
+## Two-factor authentication (2FA)
+
+2FA is required for all Game Manager sign-ins. Studios can enforce authenticator-app-only (no email fallback) once every member has enrolled. See [Developer identity](/playfab/developer-identity).
+
+## Programmatic access
+
+Anything in Game Manager can also be scripted through the admin API using a secret key or an AAD-authenticated PowerShell session. Common use cases:
+
+- CI/CD publishing catalog updates as part of a build.
+- Bulk migration of PlayerData between titles.
+- Nightly export jobs that pull Insights results and post to Teams / Slack.

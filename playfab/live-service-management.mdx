@@ -1,11 +1,31 @@
 ---
 title: "PlayFab live service management"
-sidebarTitle: "Live service management"
+sidebarTitle: "Overview"
 icon: "sliders"
 description: "Run a live game with PlayFab: player segments, Rules, scheduled tasks, A/B experiments, content groups, and remote configuration."
 ---
 
 A live game ships, but the work doesn't end — you tune economy, run events, A/B-test features, react to retention issues, and patch design without app updates. PlayFab's live-service tooling sits on top of the data and identity primitives.
+
+## In this section
+
+<CardGroup cols={2}>
+  <Card title="Game Manager" icon="gauge" href="/playfab/game-manager">
+    The developer portal for configuring your title — API feature settings, API access policy, audit logs, and secret key management.
+  </Card>
+
+  <Card title="Experiments" icon="flask" href="/playfab/experiments">
+    A/B and multivariate testing with scorecard metrics, exclusion groups, and integration with segments and title data.
+  </Card>
+
+  <Card title="CloudScript & Azure Functions" icon="code" href="/playfab/cloudscript">
+    Server-authoritative logic — grant items, validate scores, chain APIs — via CloudScript (JS) or Azure Functions (any language).
+  </Card>
+
+  <Card title="Insights & analytics" icon="chart-pie" href="/playfab/analytics">
+    The data plane feeding your segments, experiments, and dashboards.
+  </Card>
+</CardGroup>
 
 ## Player segments
 
@@ -55,21 +75,13 @@ Tasks can target a segment to operate on filtered populations.
 
 ## A/B experiments
 
-**Experiments** randomly assign players to variants and track outcomes. Use them to test:
-
-- Economy changes (different prices, drop rates).
-- UI flows.
-- Game balance tweaks.
-
-Flow:
+**Experiments** randomly assign players to variants and track outcomes. See [Experiments](/playfab/experiments) for the full workflow — scorecard metrics, exclusion groups, and how to integrate experiments with segments, title data, and CloudScript. In brief:
 
 1. Define an experiment with N variants.
 2. Choose the player segment to enroll.
 3. Players are assigned a variant at sign-in (deterministically, based on player ID).
 4. Query the variant client-side via `GetTreatmentAssignment` and branch behavior.
-5. Compare segment-level metrics in Insights to evaluate.
-
-Exclusion groups prevent overlap between experiments (a player can't be in two conflicting tests at once).
+5. Compare scorecard metrics in the Experiments dashboard to evaluate.
 
 ## Remote configuration
 
@@ -106,6 +118,22 @@ Clients query the group, get URLs, and download assets directly from CDN.
 
 Insights uses Kusto Query Language (KQL); the data explorer in Game Manager has prebuilt templates.
 
+## Throttling and quotas
+
+Every PlayFab API is subject to per-title and per-player throttles. Under sustained load PlayFab may return `TooManyRequests` (HTTP 429). Design defensively:
+
+- Batch reads (`GetPlayerStatistics` returns many stats in one call).
+- Cache Title Data on the client between refresh points.
+- Move hot server-side logic into CloudScript / Azure Functions so it runs behind PlayFab's throttle boundary rather than as N client calls.
+
+Rate limits and quotas per API family are published in the Game Manager **Limits** page for your title tier.
+
+## Extensions: add-ons and automation
+
+- **Add-ons** — first-party integrations exposed as toggles in Game Manager (Xbox Live title association, Facebook, Steam, Twitch, Segment, Amplitude, PubNub, and more). Enable, paste credentials, done.
+- **CloudScript** — server-side JavaScript / TypeScript run inside PlayFab. Best for lightweight validation, item grants, and multi-API orchestration. See [CloudScript & Azure Functions](/playfab/cloudscript).
+- **Azure Functions** — for anything CloudScript can't do (long-running work, arbitrary language, larger memory footprints). Runs in your Azure subscription and is called by PlayFab through a signed webhook.
+
 ## Operational best practices
 
 1. **Define segments before you need them** — retro-segmenting is hard.
@@ -116,6 +144,8 @@ Insights uses Kusto Query Language (KQL); the data explorer in Game Manager has 
 
 ## See also
 
-- [PlayFab Insights & Analytics](/playfab/analytics)
+- [Game Manager](/playfab/game-manager) — the developer portal
+- [Experiments](/playfab/experiments) — A/B testing with scorecards
+- [CloudScript & Azure Functions](/playfab/cloudscript) — server-authoritative extensions
+- [Insights & analytics](/playfab/analytics) — event data feeding segments and experiments
 - [CloudScript reference](/reference/playfab-cloudscript)
-- [Statistics & Leaderboards](/reference/playfab-statistics)

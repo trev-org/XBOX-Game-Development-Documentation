@@ -5,7 +5,27 @@ description: "Use PlayFab Lobby for pre-game grouping and PlayFab Matchmaking fo
 icon: "handshake"
 ---
 
-PlayFab provides a complete multiplayer matchmaking and lobby stack that pairs naturally with the GDK and works across XBOX, Windows, and mobile platforms. The pieces are decoupled: **Lobby** handles pre-game grouping and invites, **Matchmaking** handles ticket-based queues with custom rules, and **Party** (covered separately) handles voice and low-latency game data.
+PlayFab Multiplayer is a set of four decoupled services that together cover the full multiplayer lifecycle:
+
+<CardGroup cols={2}>
+  <Card title="Multiplayer Servers" icon="server" href="/playfab/multiplayer-servers">
+    Hosted, auto-scaled game server VMs (Thunderhead). GSDK, build definitions, Windows / Linux, LocalMultiplayerAgent, standby scaling.
+  </Card>
+
+  <Card title="Matchmaking" icon="handshake-angle">
+    Ticket-based queues with attribute-driven rules. Detailed on this page.
+  </Card>
+
+  <Card title="Lobby" icon="users-viewfinder">
+    Pre-game grouping, invites, and searchable rooms. Detailed on this page.
+  </Card>
+
+  <Card title="Party Networking" icon="phone" href="/playfab/party">
+    Cross-platform voice and low-latency reliable / unreliable messaging. See also [Party & voice](/playfab/party-voice).
+  </Card>
+</CardGroup>
+
+These pieces are decoupled: **Lobby** handles pre-game grouping and invites, **Matchmaking** handles ticket-based queues with custom rules, **Party** handles voice and low-latency game data, and **Multiplayer Servers** host authoritative game servers on Azure.
 
 ## Lobby
 
@@ -52,12 +72,27 @@ PlayFab::UMultiplayerAPI::CreateMatchmakingTicket(req,
 
 Define queues and rules in the PlayFab Game Manager (matchmaking section). Rules can require attribute equality, prefer attribute proximity, or expand a search radius over time.
 
+## Real-time messages
+
+Lobby and Matchmaking emit real-time messages to each member (via the async C\+\+ SDK or PlayStream) whenever the lobby state changes \\u2014 a member joins, a property changes, the match forms. Wire these into your UI instead of polling.
+
+## Using Lobby and Matchmaking together
+
+The most common pattern:
+
+1. A party leader creates a **lobby** with `MaxPlayers = squad size`, invites friends.
+2. When the squad is ready, the leader submits a **matchmaking ticket** on behalf of the lobby.
+3. On match, the ticket returns a match ID and (if using Multiplayer Servers) a target server allocation.
+4. Lobby is disposed; everyone connects to the game.
+
+Server backfill tickets let a live game server request additional players mid-session.
+
 ## Handoff to a transport
 
 Neither Lobby nor Matchmaking moves gameplay data. Once a match is formed, you hand off to your transport of choice:
 
-- **PlayFab Party** for voice and reliable / unreliable peer messaging.
-- **PlayFab Multiplayer Servers** for dedicated hosted servers.
+- [**PlayFab Party**](/playfab/party) for voice and reliable / unreliable peer messaging.
+- [**PlayFab Multiplayer Servers**](/playfab/multiplayer-servers) for dedicated hosted servers.
 - **Your own game server** keyed by the match ID.
 
 ## Integration with XBOX social
@@ -70,6 +105,8 @@ Combine PlayFab matchmaking with XBOX-side discovery:
 
 ## See also
 
-- [Party & Voice](/playfab/party-voice)
+- [Multiplayer Servers](/playfab/multiplayer-servers)
+- [Party](/playfab/party) \\u2014 the underlying voice \+ data transport
+- [Party & Voice](/playfab/party-voice) \\u2014 integration patterns for GDK titles
 - [Multiplayer](/services/multiplayer)
 - [Multiplayer Activity](/services/multiplayer-activity)

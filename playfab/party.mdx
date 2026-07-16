@@ -9,14 +9,17 @@ PlayFab Party is the low-latency transport for cross-platform voice and reliable
 
 ## What Party provides
 
-- **Voice chat** — codec-quality voice with mute, push-to-talk, and per-user gain.
-- **Data plane** — reliable and unreliable messages over UDP with NAT traversal.
-- **Endpoints and chat permissions** — model speakers / listeners separately for spectators and broadcasters.
+- **Voice chat** \\u2014 codec-quality voice with mute, push-to-talk, per-user gain, real-time audio manipulation, and transcription / translation.
+- **Data plane** \\u2014 reliable and unreliable messages over UDP with NAT traversal.
+- **Endpoints and chat permissions** \\u2014 model speakers / listeners separately for spectators and broadcasters.
+- **Direct peer-to-peer connectivity** \\u2014 opt-in P2P links between endpoints in the same network for reduced latency and cost.\\n- **Invitations and security model** \\u2014 who can join, who can be muted, how permissions propagate.
 
-## How it relates to other Party pages
+## Objects and their relationships\\n\\nParty models a session as a small graph:\\n\\n- **Network** \\u2014 the top-level session all players join.\\n- **Endpoint** \\u2014 a logical connection per player (or per role, e.g. spectator).\\n- **Device** \\u2014 the physical machine backing one or more endpoints.\\n- **Chat control** \\u2014 mic \+ speaker control per endpoint, with permission rules.\\n- **Text chat** \\u2014 shared text channel with moderation hooks.\\n\\nUnderstanding these objects makes debugging permissions and reconnect flows much easier.\\n\\n## Regions and QoS\\n\\nParty runs in Azure regions. Clients ping regional QoS beacons at startup and pick the lowest-latency region for the network. Multi-region networks are supported for cross-region play but incur higher latency.\\n\\n## How it relates to other Party pages
 
-- [Party & voice](/playfab/party-voice) covers integration patterns and best practices.
+- [Party & voice](/playfab/party-voice) covers GDK integration patterns and best practices.
+- [Voice chat & permissions](/playfab/voice-chat) covers the community-facing voice moderation model (chat permissions, muting, text moderation, noise suppression, TTS/STT).
 - [Lobby & matchmaking](/playfab/multiplayer-lobby) hand off the active player list to Party.
+- [Multiplayer Servers](/playfab/multiplayer-servers) can use Party as a data plane between game-server processes and clients.
 
 ## Related
 

@@ -7,43 +7,43 @@ keywords: ["PlayFab", "live game services", "backend-as-a-service", "PlayFab Eco
 related: ["/playfab/economy", "/playfab/multiplayer-lobby", "/playfab/leaderboards-stats", "/playfab/party-voice", "/playfab/analytics", "/playfab/identity"]
 ---
 
-[PlayFab](https://developer.microsoft.com/en-us/games/products/playfab/) is a complete backend-as-a-service (BaaS) platform designed to help you build, launch, and grow live games. Whether you need robust player identity management, a flexible in-game economy, real-time multiplayer infrastructure, or deep analytics, PlayFab provides the managed services that let your team focus on gameplay rather than server operations. PlayFab integrates directly with XBOX services and the Microsoft GDK, making it the natural choice for titles shipping on XBOX and Windows.
+[PlayFab](https://developer.microsoft.com/en-us/games/products/playfab/) is a complete backend-as-a-service (BaaS) platform designed to help you build, launch, and grow live games. Whether you need robust player identity management, a flexible in-game economy, real-time multiplayer infrastructure, community features, or deep analytics, PlayFab provides the managed services that let your team focus on gameplay rather than server operations. PlayFab integrates directly with XBOX services and the Microsoft GDK, making it the natural choice for titles shipping on XBOX and Windows.
 
-## What you can build with PlayFab
+## The seven PlayFab service pillars
 
-[PlayFab](https://developer.microsoft.com/en-us/games/products/playfab/) organizes its capabilities into eight major feature areas:
+PlayFab organizes its capabilities into seven service pillars. Each pillar has its own section in the navigation on the left.
 
 <CardGroup cols={2}>
-  <Card title="Fundamentals" icon="book-open" href="https://learn.microsoft.com/en-us/gaming/playfab/get-started/">
-    Learn PlayFab's core concepts with tutorials and a demo game. Start here if you're new to the platform.
+  <Card title="Identity" icon="user-check" href="/playfab/identity">
+    Manage player and developer identities across titles. Sign players in with XBOX, Steam, Apple, Google, Facebook, or custom IDs; secure your dev team with AAD, 2FA, and audit logs.
   </Card>
 
-  <Card title="Identity" icon="user-check" href="https://learn.microsoft.com/en-us/gaming/playfab/identity/">
-    Manage player and developer identities across titles. Sign players in with XBOX, custom IDs, and more.
+  <Card title="Live Service Management" icon="sliders" href="/playfab/live-service-management">
+    Run Game Manager, the entity programming model, title data, segments, experiments, throttling, add-ons, and CloudScript / Azure Functions extensions.
   </Card>
 
-  <Card title="Live Service Management" icon="sliders" href="https://learn.microsoft.com/en-us/gaming/playfab/live-service-management/">
-    Streamline every phase of the development lifecycle — from production builds to running a live game.
+  <Card title="Economy, Monetization & UGC" icon="coins" href="/playfab/economy">
+    PlayFab Economy v2 for catalogs, player inventory, virtual currencies, bundles, targeted offers, marketplace integrations, UGC ingestion and moderation, fraud prevention, and rewarded ads.
   </Card>
 
-  <Card title="Economy, Monetization & UGC" icon="coins" href="https://learn.microsoft.com/en-us/gaming/playfab/economy-monetization/">
-    Set up thriving in-game economies, virtual currencies, item catalogs, and user-generated content.
+  <Card title="Multiplayer" icon="users" href="/playfab/multiplayer-lobby">
+    PlayFab Multiplayer Servers (Thunderhead), Matchmaking, Lobby, and Party Networking — from pre-game grouping to hosted VMs and low-latency voice/data.
   </Card>
 
-  <Card title="Multiplayer" icon="users" href="https://learn.microsoft.com/en-us/gaming/playfab/multiplayer/">
-    Enable different multiplayer modes — Matchmaking, Lobbies, Party, and more — to connect players.
+  <Card title="Community" icon="comments" href="/playfab/community">
+    Player Associations (Friends and Groups), community-scoped Leaderboards, and Synchronous Player Communications (voice chat, permissions, muting, text moderation, TTS/STT).
   </Card>
 
-  <Card title="Community" icon="comments" href="https://learn.microsoft.com/en-us/gaming/playfab/community/">
-    Create ways for players to connect, form groups, and build lasting community around your game.
+  <Card title="Player Progression" icon="chart-line" href="/playfab/player-progression">
+    Player Data, Statistics v2, and Game Saves — including the October 2025 GDK Game Saves implementation and the Steam Deck implementation.
   </Card>
 
-  <Card title="Player Progression" icon="chart-line" href="https://learn.microsoft.com/en-us/gaming/playfab/player-progression/">
-    Drive engagement with player statistics, achievements, and globally competitive leaderboards.
+  <Card title="Game Data" icon="magnifying-glass-chart" href="/playfab/analytics">
+    Ingest events with PlayStream and Telemetry Keys, export via Data Connections, learn with Reports, Trends, Churn Prediction, and Microsoft Fabric real-time analytics, and act with Webhooks, Actions & Rules, and Scheduled Tasks.
   </Card>
 
-  <Card title="Game Data & Analytics" icon="magnifying-glass-chart" href="https://learn.microsoft.com/en-us/gaming/playfab/data-analytics/">
-    Get deep insights into player activity, funnel analysis, and experiment results — then take action.
+  <Card title="Fundamentals & SDKs" icon="book-open" href="https://learn.microsoft.com/en-us/gaming/playfab/get-started/">
+    New to PlayFab? Start with the core concepts, Foundation Mode onboarding, and SDK downloads on Microsoft Learn.
   </Card>
 </CardGroup>
 
@@ -82,6 +82,14 @@ related: ["/playfab/economy", "/playfab/multiplayer-lobby", "/playfab/leaderboar
 
   <Card title="Microsoft Store Integration" icon="store" href="/playfab/microsoft-store">
     Connect Microsoft Store in-app purchases to PlayFab Economy v2 inventory and virtual currencies.
+  </Card>
+
+  <Card title="Game Saves on GDK" icon="floppy-disk" href="/playfab/game-saves">
+    October 2025 GDK Game Saves implementation and Steam Deck implementation — cross-device save state with conflict resolution and rollback.
+  </Card>
+
+  <Card title="Party voice + data" icon="phone" href="/playfab/party-voice">
+    Cross-platform voice chat and reliable/unreliable messaging over the PlayFab Party transport.
   </Card>
 </CardGroup>
 

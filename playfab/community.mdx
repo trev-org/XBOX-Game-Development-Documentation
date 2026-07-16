@@ -1,0 +1,39 @@
+---
+title: "PlayFab Community"
+sidebarTitle: "Overview"
+icon: "comments"
+description: "PlayFab Community: cross-platform tools and services for player associations, community leaderboards, and synchronous player communications."
+related: ["/playfab/friends-groups", "/playfab/community-leaderboards", "/playfab/voice-chat", "/playfab/party"]
+---
+
+PlayFab Community is a set of cross-platform tools and services that enable game creators to build engaging social experiences and foster long-term player connections. It's organized into three areas:
+
+<CardGroup cols={3}>
+  <Card title="Player Associations" icon="user-group" href="/playfab/friends-groups">
+    Friends lists and Groups (clans, guilds) with a shared identity model that works across titles in a publisher.
+  </Card>
+
+  <Card title="Leaderboards" icon="trophy" href="/playfab/community-leaderboards">
+    Cross-platform, entity-aware leaderboards — seasonal, group, manual-tier, and stat-linked.
+  </Card>
+
+  <Card title="Synchronous Player Communications" icon="microphone" href="/playfab/voice-chat">
+    Voice chat via PlayFab Party, with permissions, muting, text moderation, noise suppression, and TTS / STT accessibility.
+  </Card>
+</CardGroup>
+
+## How Community relates to other pillars
+
+- **Identity** — Community objects (Friends, Groups) are keyed by PlayFab entities. See [Identity](/playfab/identity).
+- **Multiplayer** — Voice runs on top of [Party](/playfab/party); Lobby / Matchmaking often consume friends and group state.
+- **Player progression** — [Community Leaderboards](/playfab/community-leaderboards) and [Statistics](/playfab/player-progression) intersect — stats power scores, leaderboards rank them.
+- **Live service management** — Segments can key on friend count, group membership, or leaderboard rank.
+
+## Accessibility
+
+Community features have specific accessibility guidance because they involve real-time human communication. See:
+
+- Text-to-speech and text-input UX guidelines
+- Speech-to-text and text-display UX guidelines
+
+Both are covered on [Voice chat](/playfab/voice-chat) with concrete UX patterns to include in your title.

@@ -5,25 +5,57 @@ description: "Use PlayFab Economy v2 to model items, currencies, bundles, and pl
 icon: "coins"
 ---
 
+<Note>
+  Economy v2 is the current, actively developed platform. Economy v1 (Legacy) is feature-frozen \\u2014 don't start new titles on it. If you're on v1, plan a migration.
+</Note>
+
 PlayFab Economy v2 is the recommended back end for any in-game economy your title runs outside of the Microsoft Store — soft currencies, crafting materials, character unlocks, time-limited drops, and the player inventory itself. It complements (rather than replaces) the Microsoft Store: Store transactions handle real-money payment and platform entitlements; Economy v2 models everything that happens **after** the player owns the game.
+
+## In this section
+
+<CardGroup cols={2}>
+  <Card title="Microsoft Store integration" icon="store" href="/playfab/microsoft-store">
+    Verify Microsoft Store purchases and grant items into PlayFab inventory.
+  </Card>
+
+  <Card title="User-Generated Content (UGC)" icon="pen-nib" href="/playfab/ugc">
+    Player-authored items \\u2014 ingestion, moderation, and publishing.
+  </Card>
+
+  <Card title="Marketplace integrations" icon="up-right-from-square" href="/playfab/marketplace-integrations">
+    Link items to real-world storefronts and redemption codes.
+  </Card>
+
+  <Card title="Fraud prevention" icon="shield-check" href="/playfab/fraud-prevention">
+    Receipt validation, redemption limits, and abuse detection.
+  </Card>
+</CardGroup>
 
 ## Core concepts
 
 <CardGroup cols={2}>
   <Card title="Catalog" icon="book">
-    The author-time definition of every item, bundle, and virtual currency in your title. Versioned and published per title.
+    The author-time definition of every item, bundle, content type, and virtual currency in your title. Versioned and published per title.
   </Card>
 
   <Card title="Inventory" icon="boxes-stacked">
-    The runtime collection of items and currency balances owned by a specific player.
+    The runtime collection of items and currency balances owned by a specific player. Supports **Collections** (parallel per-scope inventories), **Stacks** (per-item stack metadata), and **ETags** for optimistic concurrency.
   </Card>
 
   <Card title="Items" icon="gem">
-    Catalog entries with metadata, images, prices, and stack rules. Includes durable goods, consumables, bundles, and UGC.
+    Catalog entries with metadata, tags, content types, images, prices, and stack rules. Includes durable goods, consumables, bundles, subscriptions, and UGC.
   </Card>
 
   <Card title="Stores" icon="shop">
-    Curated, time-limited subsets of the catalog. Use stores to power in-game shops with rotating offers.
+    Curated, time-limited subsets of the catalog. Use stores to power in-game shops with rotating offers and player-segmented pricing.
+  </Card>
+
+  <Card title="Bundles" icon="box">
+    Priced groups of items and currencies. Common for starter packs, seasonal sales, and DLC bundling.
+  </Card>
+
+  <Card title="Targeted offers" icon="bullseye">
+    Segment-scoped store visibility and pricing \\u2014 different offers for whales, lapsers, or new installs.
   </Card>
 </CardGroup>
 
@@ -85,8 +117,29 @@ PlayFab supports **rewarded ads** as a monetization channel orthogonal to in-app
 
 Rewarded ads are usually a poor fit for premium console titles but can be the right model for free-to-play companion or mobile builds. Configure placements per-title in Game Manager, and gate every reward grant through the server-side validation step — never trust a client claim that the ad played.
 
+## Inventory patterns to know
+
+- **Collections** \\u2014 a player may have several parallel inventories (main, storage, mailbox). Each collection has its own items and currencies.
+- **Stacks** \\u2014 an item with `StackId` groups occurrences with shared metadata (durability, enchantment). Same item, different stacks = different rows.
+- **ETags** \\u2014 every inventory operation returns an ETag. Pass it back on the next write to prevent lost updates during concurrent grants.
+- **Transaction history** \\u2014 every write appends to a queryable history for auditing and player-support workflows.
+- **TurboLoading** \\u2014 an opt-in mode that batches inventory reads to reduce round trips for large inventories.
+
+## Player-segmented monetization
+
+Use segments to change what a player sees:
+
+- **Targeted offers** \\u2014 a starter pack visible only to players with less than one purchase.
+- **Segment actions** \\u2014 auto-grant a comeback bundle when a lapsed player returns.
+- **Store overrides** \\u2014 price a store item differently per country or LTV cohort.
+
+Set these up in Game Manager under **Economy \\u2192 Player-segmented monetization**.
+
 ## See also
 
-- [Store Integration](/playfab/microsoft-store)
+- [Microsoft Store integration](/playfab/microsoft-store)
+- [User-Generated Content (UGC)](/playfab/ugc)
+- [Marketplace integrations](/playfab/marketplace-integrations)
+- [Fraud prevention & receipt validation](/playfab/fraud-prevention)
 - [Identity](/playfab/identity)
-- [XStore Deep Dive](/publishing/xstore-deep-dive) — the Microsoft Store side of the equation
+- [XStore Deep Dive](/publishing/xstore-deep-dive) \\u2014 the Microsoft Store side of the equation

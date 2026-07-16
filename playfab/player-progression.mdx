@@ -5,7 +5,23 @@ icon: "chart-line"
 description: "Design progression with PlayFab v2 Statistics, entity leaderboards, and reward grants. When to use PlayFab vs. XBOX achievements."
 ---
 
-Player progression is the system that turns play sessions into long-term engagement. PlayFab provides versioned **Statistics**, **Leaderboards**, and a flexible **rewards** model that integrate with XBOX achievements where appropriate.
+Player progression is the system that turns play sessions into long-term engagement. PlayFab provides three primitives in this pillar:
+
+<CardGroup cols={3}>
+  <Card title="Player Data" icon="user">
+    Profiles, details, and per-player key/value data that follows the player across sessions and devices.
+  </Card>
+
+  <Card title="Statistics v2" icon="chart-line" href="/playfab/leaderboards-stats">
+    Versioned, multi-column numeric progression with configurable aggregation and reset policies.
+  </Card>
+
+  <Card title="Game Saves" icon="floppy-disk" href="/playfab/game-saves">
+    Cross-device save state with conflict resolution, rollback, and offline mode \\u2014 including the October 2025 GDK and Steam Deck implementations.
+  </Card>
+</CardGroup>
+
+Community-scoped leaderboards \\u2014 seasonal, group, and manual-tier \\u2014 live on the [Community Leaderboards](/playfab/community-leaderboards) page.
 
 ## Statistics v2 model
 
@@ -111,6 +127,8 @@ Keep the season's tier table and reward catalog server-authoritative. The title 
 
 ## See also
 
+- [Leaderboards & stats](/playfab/leaderboards-stats) \\u2014 the deep dive on Statistics v2
+- [Game Saves](/playfab/game-saves) \\u2014 cross-device save state, GDK, and Steam Deck
+- [Community Leaderboards](/playfab/community-leaderboards) \\u2014 seasonal, group, manual-tier variants
 - [PlayFab Statistics & Leaderboards (API)](/reference/playfab-statistics)
-- [PlayFab leaderboards & stats (overview)](/playfab/leaderboards-stats)
 - [XBOX services overview](/services/overview)

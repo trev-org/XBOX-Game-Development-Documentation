@@ -576,19 +576,77 @@
             "group": "PlayFab",
             "pages": [
               "playfab/overview",
-              "playfab/microsoft-store",
-              "playfab/economy",
-              "playfab/multiplayer-lobby",
-              "playfab/leaderboards-stats",
-              "playfab/party-voice",
-              "playfab/analytics",
-              "playfab/identity",
-              "playfab/live-service-management",
-              "playfab/player-progression",
-              "playfab/party",
-              "playfab/sign-in-concepts",
-              "playfab/player-sign-in",
-              "playfab/insights-analytics"
+              {
+                "group": "Identity",
+                "icon": "user-check",
+                "pages": [
+                  "playfab/identity",
+                  "playfab/sign-in-concepts",
+                  "playfab/player-sign-in",
+                  "playfab/developer-identity"
+                ]
+              },
+              {
+                "group": "Multiplayer",
+                "icon": "users",
+                "pages": [
+                  "playfab/multiplayer-lobby",
+                  "playfab/multiplayer-servers",
+                  "playfab/party",
+                  "playfab/party-voice"
+                ]
+              },
+              {
+                "group": "Community",
+                "icon": "comments",
+                "pages": [
+                  "playfab/community",
+                  "playfab/friends-groups",
+                  "playfab/community-leaderboards",
+                  "playfab/voice-chat"
+                ]
+              },
+              {
+                "group": "Player progression",
+                "icon": "chart-line",
+                "pages": [
+                  "playfab/player-progression",
+                  "playfab/leaderboards-stats",
+                  "playfab/game-saves"
+                ]
+              },
+              {
+                "group": "Game data",
+                "icon": "magnifying-glass-chart",
+                "pages": [
+                  "playfab/analytics",
+                  "playfab/telemetry-keys",
+                  "playfab/data-connections",
+                  "playfab/actions-rules",
+                  "playfab/insights-analytics"
+                ]
+              },
+              {
+                "group": "Economy, Monetization, & UGC",
+                "icon": "coins",
+                "pages": [
+                  "playfab/economy",
+                  "playfab/microsoft-store",
+                  "playfab/ugc",
+                  "playfab/marketplace-integrations",
+                  "playfab/fraud-prevention"
+                ]
+              },
+              {
+                "group": "Live service management",
+                "icon": "sliders",
+                "pages": [
+                  "playfab/live-service-management",
+                  "playfab/game-manager",
+                  "playfab/experiments",
+                  "playfab/cloudscript"
+                ]
+              }
             ]
           }
         ]

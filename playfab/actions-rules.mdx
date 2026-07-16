@@ -1,0 +1,91 @@
+---
+title: "Actions & Rules, Webhooks, and Scheduled Tasks"
+sidebarTitle: "Actions & Rules"
+icon: "bolt"
+description: "Close the loop on your event pipeline with PlayFab Actions & Rules, Webhooks, and Scheduled Tasks — react to events, notify external systems, and run recurring jobs."
+related: ["/playfab/analytics", "/playfab/cloudscript", "/playfab/live-service-management"]
+---
+
+Ingesting events is only half the value. **Actions & Rules**, **Webhooks**, and **Scheduled Tasks** are how PlayFab acts on that data automatically — grant items, notify players, warn a Discord channel, hit an external service, or run a nightly reconciliation job.
+
+## Actions & Rules
+
+A **Rule** matches a PlayStream event pattern and runs an **Action** in response. Rules are the single most useful piece of PlayFab live-ops tooling:
+
+- Player crosses level 50 → grant the milestone bundle.
+- Purchase of a specific SKU → tag the player as VIP.
+- Ten consecutive login failures → add to a fraud-review segment.
+- Server crash event → post to a Teams webhook.
+
+### Actions available
+
+- **Grant items / currency** via Economy v2.
+- **Update PlayerData / Statistics.**
+- **Add / remove segment tags.**
+- **Execute CloudScript or Azure Functions** (unlimited flexibility — see [CloudScript & Azure Functions](/playfab/cloudscript)).
+- **Send push notification / email.**
+- **Post to a webhook.**
+
+### Bulk actions on segments
+
+A rule can target a whole segment instead of a single event. Use case: "grant a comeback bundle to every player in the `lapsed_30d` segment, once." This is a **Bulk Action** — kicked off manually or from a scheduled task.
+
+### Rule design tips
+
+- **Idempotency matters.** If a rule fires twice for the same event, does it double-grant? Guard grants with a per-event marker in PlayerData.
+- **Match specifically.** A rule keyed on `player_statistic_changed` without a statistic-name filter fires on every stat write.
+- **Log the outcome.** Every action emits an audit event; dashboard the failure rate.
+
+## Webhooks
+
+A **Webhook** is a simpler variant of a rule action — PlayFab POSTs a JSON payload to a URL you own whenever a subscribed event fires. Use for:
+
+- Piping specific events into your own service (`purchase_completed` → your revenue-recognition pipeline).
+- Alerting to Slack / Teams / Discord.
+- Bridging PlayFab events into a workflow platform (Logic Apps, Power Automate, n8n).
+
+Every webhook delivery is signed. Verify the signature on receipt — do not accept unauthenticated PlayFab-shaped POSTs.
+
+Retries: PlayFab retries failed webhook deliveries with exponential backoff. Your endpoint must be **idempotent**.
+
+## Event schemas
+
+Before you write rules, understand the event shape you're matching on. **Event Schemas** in Game Manager document:
+
+- The properties every entity event carries (entity ID, timestamp, source).
+- The properties on each event name.
+- The events.all table — the union view of all events in Insights, useful for cross-cutting queries.
+
+Keep your event catalog synchronized with the schema page — they should never drift.
+
+## Scheduled Tasks
+
+Rules react to events. **Scheduled Tasks** run on a clock, independent of any event. Use for:
+
+- Nightly economy reconciliation (compare granted vs. spent per currency).
+- Weekly leaderboard version increments.
+- Daily segment recomputation for expensive derived segments.
+- Bulk retention campaigns ("every Monday, message the 7-day lapsed segment").
+
+### Task types
+
+- **Run CloudScript** — arbitrary logic.
+- **Run Azure Function** — same, in your subscription.
+- **Bulk action** — apply an action to a segment.
+
+Schedules use cron syntax. Set a sensible timezone (typically UTC or your live-ops team's local time).
+
+## Best practices
+
+- **Prefer Rules to polling.** Polling PlayFab for changes wastes both quota and your team's clarity.
+- **Compose CloudScript from Rules.** Keep Rules declarative; put branching logic in CloudScript.
+- **Alert on Rule health.** Every Rule can fail (permission errors, external service down). Alert on failure rate.
+- **Version your Rules.** Name them with a version suffix; keep the retired versions inactive for a while so you can roll back.
+- **Simulate before you activate.** Preview which players a segment-targeted action would affect before running it.
+
+## See also
+
+- [Insights & analytics](/playfab/analytics) — the event data that powers rules
+- [Insights deep dive](/playfab/insights-analytics) — KQL for verifying rule outputs
+- [CloudScript & Azure Functions](/playfab/cloudscript) — what to run from the Action
+- [Live service management](/playfab/live-service-management) — segments, experiments, throttling

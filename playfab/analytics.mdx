@@ -5,7 +5,27 @@ description: "Send custom events to PlayFab, build live operations dashboards wi
 icon: "chart-pie"
 ---
 
-PlayFab's analytics stack gives you a centralized place to instrument gameplay, retention, and monetization without standing up your own pipeline. Custom events flow from the client (and from your servers) into PlayFab's data warehouse; **Insights** is the SQL- and dashboard-based query surface over that warehouse.
+PlayFab Game Data is the analytics half of the platform. It organizes into four stages that mirror the Learn IA:
+
+<CardGroup cols={2}>
+  <Card title="Ingest" icon="arrow-down-to-line" href="/playfab/telemetry-keys">
+    **PlayStream** and **Telemetry Keys** \\u2014 how events get into PlayFab. Includes entity events, custom tags, and session events.
+  </Card>
+
+  <Card title="Export" icon="arrow-up-from-bracket" href="/playfab/data-connections">
+    **Data Connections**, **event sampling**, and **event partitioning** \\u2014 how data leaves PlayFab for your warehouse, lakehouse, or SIEM.
+  </Card>
+
+  <Card title="Learn" icon="chart-mixed" href="/playfab/insights-analytics">
+    **Insights (KQL)**, **Reports**, **Trends**, **Player Churn Prediction**, and **Microsoft Fabric** real-time analytics.
+  </Card>
+
+  <Card title="Act" icon="bolt" href="/playfab/actions-rules">
+    **Webhooks**, **Actions & Rules**, and **Scheduled Tasks** \\u2014 close the loop by triggering grants, notifications, and CloudScript from events.
+  </Card>
+</CardGroup>
+
+The rest of this page is the ingest and instrumentation guide. Follow the cards above for the other three stages.
 
 ## Send a custom event
 
@@ -40,6 +60,15 @@ A few rules of thumb:
 - **Include identifiers.** Player entity ID, session ID, build version, and platform belong on every event for slicing.
 - **Use numeric types for numbers.** Strings like `"142"` are painful to aggregate.
 
+## PlayStream vs. Telemetry Keys
+
+PlayFab has two ingest paths:
+
+- **PlayStream** — authenticated events tied to a specific PlayFab entity. Requires a signed-in player or a title-secret-authenticated server. Best for player-attributable events (`level_complete`, `purchase`, `match_end`).
+- **Telemetry Keys** — lightweight, high-volume, unauthenticated ingest for events that don't need to be tied to a specific player at write time (client crash reports, boot-time metrics, marketing pings). Cheaper per event.
+
+A typical live title uses both. See [Telemetry Keys](/playfab/telemetry-keys) for the ingest-key model, session events, and per-key throttling.
+
 ## Querying with Insights
 
 Insights exposes a Kusto-compatible query interface over your event stream. Build dashboards for:
@@ -66,8 +95,24 @@ Segments drive A/B experiments, push notifications, and economy-side promotions.
 
 XBOX event-based stats and achievements live in the XBOX services pipeline, not in PlayFab. If you need both — say, XBOX achievement counts joined to PlayFab revenue — export PlayFab events to your own data warehouse and join there. Avoid trying to query XBOX stats from inside Insights.
 
+## Learning from your data
+
+Beyond raw KQL in Insights, PlayFab ships three higher-level surfaces:
+
+- **Reports** — prebuilt daily / monthly reports (KPI, retention, top items, top spenders, CDN usage, A/B test KPI).
+- **Trends** — time-series dashboards with segments as a dimension (preview).
+- **Player Churn Prediction** — ML-backed per-player churn scores you can segment and dashboard on.
+- **Microsoft Fabric real-time analytics** — live event stream into Fabric for enterprise BI and joining with non-PlayFab data.
+
+## Privacy and compliance
+
+PlayFab supports GDPR / CCPA workflows: right-to-delete via `DeleteMasterPlayerAccount`, GDPR export API, and Data Connections that can be configured with per-event redaction rules. Instrument privacy events themselves as PlayStream so you have a per-title audit trail.
+
 ## See also
 
-- [Overview (PlayFab)](/playfab/overview)
+- [Telemetry Keys](/playfab/telemetry-keys) — unauthenticated high-volume ingest
+- [Data Connections](/playfab/data-connections) — export to Azure, Fabric, S3, SIEMs
+- [Actions & Rules](/playfab/actions-rules) — event-driven automation
+- [Insights deep dive](/playfab/insights-analytics) — KQL, performance levels, cross-source joins
 - [XBOX services overview](/services/overview)
 - [Economy](/playfab/economy)

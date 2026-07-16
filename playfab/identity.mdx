@@ -5,7 +5,9 @@ icon: "fingerprint"
 description: "PlayFab identity concepts: master accounts, title player accounts, the entity model, linked providers, and migration patterns."
 ---
 
-PlayFab identity has three layers — master player accounts, title player accounts, and the entity model. Understanding how they fit together is critical when integrating with XBOX services, cross-platform play, and account-linking flows.
+PlayFab identity spans two audiences: **player identity** (authentication, login, and cross-platform linking) and **developer identity** (how your team signs in to Game Manager). This page covers the player-side model. See [Developer identity](/playfab/developer-identity) for AAD sign-in, two-factor authentication, secret keys, and audit logs.
+
+Player identity has three layers — master player accounts, title player accounts, and the entity model. Understanding how they fit together is critical when integrating with XBOX services, cross-platform play, and account-linking flows.
 
 ## Account model
 
@@ -31,6 +33,26 @@ For cross-platform play, additional providers can be linked:
 - The master account now has both XBOX and Steam links — either platform can sign in to the same PlayFab identity.
 
 Unlinking is symmetric (`UnlinkXboxAccount`, `UnlinkSteamAccount`).
+
+## Platform-specific authentication
+
+PlayFab ships first-class login flows for every major identity provider. Each is a distinct `LoginWith*` client API plus a Game Manager configuration step where you paste the provider's OAuth client credentials.
+
+| Provider | Client API | Common integration |
+| --- | --- | --- |
+| XBOX (XSTSToken from XSAPI) | `LoginWithXbox` | GDK titles on XBOX and Windows |
+| Steam | `LoginWithSteam` | Windows/PC titles distributed through Steam |
+| Apple (Sign in with Apple) | `LoginWithApple` | iOS / macOS and cross-platform titles |
+| Google Play Games | `LoginWithGooglePlayGamesServices` | Android titles |
+| Facebook | `LoginWithFacebook` | Mobile and web titles |
+| Kongregate | `LoginWithKongregate` | Web-embedded titles |
+| Custom ID / device ID | `LoginWithCustomID`, `LoginWith{iOS,Android}DeviceID` | Pre-account / anonymous play |
+
+For XBOX titles, the recommended pattern is **XBOX \+ one secondary provider** so players can bring their progression to PC or mobile companion apps. Set up Xbox Live title association in Game Manager before you can use `LoginWithXbox` — that step lives under Game Manager's **Add-ons → Xbox Live** page.
+
+## Player encryption
+
+Player-side data at rest (Player Objects, Files, key/value PlayerData) is encrypted with per-title keys managed by PlayFab. Sensitive payloads that shouldn't be readable by the client SDK — server-authoritative flags, moderation state, currency balances — should be stored on entity **Objects** with `Permission = Private`, which restricts reads to server calls (title-authenticated) only.
 
 ## Anonymous / device-bound logins
 
@@ -77,6 +99,8 @@ Both are async and irreversible. Document your deletion flow in your privacy pol
 
 ## See also
 
-- [PlayFab player sign-in](/playfab/player-sign-in)
+- [Sign-in concepts](/playfab/sign-in-concepts) — master vs. title player accounts, entity tokens
+- [Player sign-in](/playfab/player-sign-in) — the XBOX `LoginWithXbox` flow with code
+- [Developer identity](/playfab/developer-identity) — how your team signs in to Game Manager
 - [PlayFab Profiles (API)](/reference/playfab-profiles)
 - [PlayFab Authentication (API)](/reference/playfab-authentication)

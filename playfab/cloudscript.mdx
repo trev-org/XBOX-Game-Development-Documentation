@@ -1,0 +1,87 @@
+---
+title: "CloudScript & Azure Functions"
+sidebarTitle: "CloudScript & Azure Functions"
+icon: "code"
+description: "Run server-authoritative logic in PlayFab: CloudScript (JavaScript/TypeScript hosted by PlayFab) and Azure Functions (any language, in your Azure subscription)."
+related: ["/playfab/live-service-management", "/playfab/game-manager"]
+---
+
+CloudScript and Azure Functions are how you run **trusted, server-side code** without standing up your own game server. Use them anywhere the client can't be trusted — granting items, verifying receipts, enforcing rate limits, or orchestrating multiple PlayFab APIs behind a single call.
+
+## Which one to use
+
+<CardGroup cols={2}>
+  <Card title="CloudScript" icon="js">
+    Small JavaScript / TypeScript handlers hosted by PlayFab. Best for:
+
+    - Item grants after a client-reported event
+    - PlayerData reads/writes the client shouldn't do directly
+    - Composing 2–5 PlayFab admin calls into one client call
+    - Fast to iterate — no infra to manage
+  </Card>
+
+  <Card title="Azure Functions" icon="microsoft">
+    Handlers hosted in your Azure subscription, called by PlayFab through a signed webhook. Best for:
+
+    - Any language (C#, Python, PowerShell, Node, Java)
+    - Long-running or memory-heavy work
+    - Calling third-party services with secrets you don't want in PlayFab
+    - Sharing code with the rest of your backend
+  </Card>
+</CardGroup>
+
+Both surfaces are invoked the same way from the client (`ExecuteCloudScript` / `ExecuteFunction`) and both run with title-authority — they can call admin APIs the client can't.
+
+## CloudScript basics
+
+CloudScript files live under **Automation → Revisions** in Game Manager. Each revision is versioned; you can promote a candidate revision to "live" atomically.
+
+```javascript
+// CloudScript handler
+handlers.grantWelcomeBundle = function (args, context) {
+    const playerId = currentPlayerId;
+
+    // Server-authoritative grant — the client can't do this itself.
+    const grant = server.GrantItemsToUser({
+        PlayFabId: playerId,
+        ItemIds: ["welcome_pack_v3"]
+    });
+
+    log.info("granted welcome pack", { playerId, count: grant.ItemGrantResults.length });
+    return { granted: grant.ItemGrantResults.length };
+};
+```
+
+Call it from the client:
+
+```cpp
+ExecuteCloudScriptRequest req;
+req.FunctionName = "grantWelcomeBundle";
+PlayFabClientAPI::ExecuteCloudScript(req, /*success*/, /*fail*/, nullptr);
+```
+
+## Azure Functions basics
+
+1. Deploy an HTTP-triggered Azure Function in your subscription.
+2. In Game Manager → **Automation → Cloud Script (Azure Functions)** register the function name and URL.
+3. Client calls `ExecuteFunction`. PlayFab signs the request, forwards it to your Function, and returns the response.
+
+Inside the Function you get the caller's entity token and can call PlayFab back with server-authority via the `PlayFabServerAPI` or the entity SDK.
+
+## When to invoke server-side code
+
+- **Any grant.** If the client can call `GrantItemsToUser` directly, it will — through a cheat tool.
+- **Score validation.** Client-reported scores are unverifiable; hash inputs and verify in CloudScript before writing.
+- **Receipt validation.** Verify Microsoft Store, Apple, or Google receipts server-side before granting entitlements.
+- **Any multi-call transaction.** Wrap 2\+ related PlayFab calls in one handler to reduce round trips and lock in ordering.
+
+## Triggering from Actions & Rules
+
+CloudScript and Azure Functions can also be invoked by [Actions & Rules](/playfab/live-service-management) in response to PlayStream events — not just direct client calls. Example: on `player_statistic_changed` where `Level >= 50`, run `handlers.grantMilestoneReward`.
+
+## Best practices
+
+- Keep CloudScript handlers short — they share the tenant with every other title.
+- Log to `log.info/warn/error` so you can debug in the Game Manager Debug pane and query in Insights.
+- Test revisions on your dev title before promoting to live.
+- For Azure Functions, keep cold-start latency in mind for player-facing flows — use warmed plans if latency-sensitive.
