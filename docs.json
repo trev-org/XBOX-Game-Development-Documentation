@@ -561,9 +561,9 @@
               "services/overview",
               "services/achievements",
               "services/multiplayer",
+              "services/multiplayer-activity",
               "services/game-chat",
               "services/social",
-              "services/multiplayer-activity",
               "services/develop-and-test",
               "services/cloud-storage",
               "services/player-data",
@@ -584,6 +584,27 @@
                   "playfab/sign-in-concepts",
                   "playfab/player-sign-in",
                   "playfab/developer-identity"
+                ]
+              },
+              {
+                "group": "Live service management",
+                "icon": "sliders",
+                "pages": [
+                  "playfab/live-service-management",
+                  "playfab/game-manager",
+                  "playfab/experiments",
+                  "playfab/cloudscript"
+                ]
+              },
+              {
+                "group": "Economy, Monetization, & UGC",
+                "icon": "coins",
+                "pages": [
+                  "playfab/economy",
+                  "playfab/microsoft-store",
+                  "playfab/ugc",
+                  "playfab/marketplace-integrations",
+                  "playfab/fraud-prevention"
                 ]
               },
               {
@@ -624,27 +645,6 @@
                   "playfab/data-connections",
                   "playfab/actions-rules",
                   "playfab/insights-analytics"
-                ]
-              },
-              {
-                "group": "Economy, Monetization, & UGC",
-                "icon": "coins",
-                "pages": [
-                  "playfab/economy",
-                  "playfab/microsoft-store",
-                  "playfab/ugc",
-                  "playfab/marketplace-integrations",
-                  "playfab/fraud-prevention"
-                ]
-              },
-              {
-                "group": "Live service management",
-                "icon": "sliders",
-                "pages": [
-                  "playfab/live-service-management",
-                  "playfab/game-manager",
-                  "playfab/experiments",
-                  "playfab/cloudscript"
                 ]
               }
             ]
