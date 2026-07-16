@@ -1,0 +1,10 @@
+### YamlMime:ZonePivotGroups
+groups:
+  - id: gpg-program-selection
+    title: Program
+    prompt: Choose your program
+    pivots:
+      - id: xbox
+        title: XBOX
+      - id: msow
+        title: Microsoft Store on Windows
