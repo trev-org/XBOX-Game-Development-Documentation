@@ -33,6 +33,10 @@ XSAPI handles the complexity of OAuth token management, endpoint discovery, and 
 ## Feature areas
 
 <CardGroup cols={2}>
+  <Card title="Identity & auth" icon="fingerprint" href="/services/identity">
+    User sign-in, MSA, XSTS tokens, sandbox scoping, and sign-in troubleshooting.
+  </Card>
+
   <Card title="Multiplayer" icon="users" href="/services/multiplayer">
     MPSD session management, SmartMatch matchmaking, Multiplayer Manager, Game Chat 2, and PlayFab Party.
   </Card>
@@ -45,7 +49,63 @@ XSAPI handles the complexity of OAuth token management, endpoint discovery, and 
     Publish joinable sessions for the XBOX guide, party invites, and cross-platform join flows.
   </Card>
 
-  <Card title="Develop & Test" icon="flask" href="/services/develop-and-test">
+  <Card title="Achievements" icon="trophy" href="/services/achievements">
+    Configure and unlock achievements with XSAPI and the Achievements Manager.
+  </Card>
+
+  <Card title="Stats & leaderboards" icon="chart-line" href="/services/stats-and-leaderboards">
+    Event-based vs title-managed stats, Featured Stats, and leaderboards.
+  </Card>
+
+  <Card title="Player data" icon="database" href="/services/player-data">
+    Profile, stats, storage, events, and where each type of player data lives.
+  </Card>
+
+  <Card title="Cloud storage" icon="cloud" href="/services/cloud-storage">
+    Connected Storage for save games; Title Storage for configs and shared blobs.
+  </Card>
+
+  <Card title="Title Storage" icon="database" href="/services/title-storage">
+    Per-user, per-session, and global blobs with ETag conflict handling and quotas.
+  </Card>
+
+  <Card title="Social" icon="user-group" href="/services/social">
+    People System, Social Manager, reputation, and localized strings.
+  </Card>
+
+  <Card title="People system" icon="users-line" href="/services/people-system">
+    Friends, followers, favorites, and recent players \\u2014 the unified social graph.
+  </Card>
+
+  <Card title="Rich presence" icon="signal" href="/services/rich-presence">
+    Publish presence strings so friends see what players are doing in-title.
+  </Card>
+
+  <Card title="Reputation" icon="thumbs-up" href="/services/reputation">
+    Submit reputation feedback \\u2014 fair play, cheating, unsporting conduct, quitters.
+  </Card>
+
+  <Card title="Localized strings" icon="language" href="/services/localized-strings">
+    Author localized strings; understand the language fallback chain.
+  </Card>
+
+  <Card title="Real-Time Activity" icon="bolt" href="/services/real-time-activity">
+    Push notifications for presence, session, stat, and invite changes.
+  </Card>
+
+  <Card title="S2S authentication" icon="key" href="/services/s2s-authentication">
+    Title service tokens, relying parties, access policies, and single sign-on.
+  </Card>
+
+  <Card title="Gamertags & privacy" icon="shield-halved" href="/services/gamertags-and-privacy">
+    Modern gamertags, privacy permissions, privileges, and string verification.
+  </Card>
+
+  <Card title="Partner Center config" icon="gear" href="/services/partner-center-config">
+    SCIDs, sandboxes, session templates, achievements, and Game DVR configuration.
+  </Card>
+
+  <Card title="Develop & test" icon="flask" href="/services/develop-and-test">
     Sandboxes, test accounts, fine-grained rate limiting, offline play, and troubleshooting.
   </Card>
 </CardGroup>
@@ -98,7 +158,7 @@ For full API reference, see the [XSAPI C reference](https://learn.microsoft.com/
 
 ## Partner Center configuration
 
-You configure all XBOX services features — including achievements, stats events, Rich Presence strings, and multiplayer session templates — in the **XBOX services** section of your title's Partner Center submission. Changes made here are published to your development sandbox immediately and to RETAIL only when you promote a submission.
+You configure all XBOX services features — including achievements, stats events, Rich Presence strings, and multiplayer session templates — in the **XBOX services** section of your title's Partner Center submission. Changes made here are published to your development sandbox immediately and to RETAIL only when you promote a submission. See [Partner Center config](/services/partner-center-config) for the full authoring map.
 
 Key configuration areas:
 

@@ -5,40 +5,69 @@ description: "XBOX social graph, friends, recent players, and the Social Manager
 icon: "user-group"
 ---
 
-Build friends, followers, and recent-players features on top of the XBOX social graph.
+Social features on XBOX are built on top of the **People System** (the platform's social graph), a set of XSAPI surfaces, and Social Manager — a caching layer designed for game UI. Combine them with **reputation** submissions and **localized strings** to ship social experiences that meet XBOX certification.
 
 ## APIs
 
-- [XSAPI Social](/reference/xsapi-social) — query relationships and submit reputation feedback.
-- [Social Manager](/reference/social-manager) — cached, do-work-driven social user groups for UI.
-- [XSAPI Privacy](/reference/xsapi-privacy) — check mute / avoid lists and permission gates.
-- [Multiplayer Activity](/reference/xsapi-multiplayer-activity) — recent players.
+- [XSAPI Social](/reference/xsapi-social) — query relationships, submit reputation feedback, and manage per-user preferences.
+- [Social Manager](/reference/social-manager) — cached, do-work-driven **social user groups** for friends-list / invite UI.
+- [XSAPI Privacy](/reference/xsapi-privacy) — check mute / avoid lists and per-communication permission gates.
+- [Multiplayer Activity](/reference/xsapi-multiplayer-activity) — populate the **recent players** list from your match sessions.
 
 ## Patterns
 
-- Use **Social Manager** for friends list UI — it batches changes and surfaces them as events.
-- Always check [Privacy permissions](/services/gamertags-and-privacy) before sending communications.
+- Use **Social Manager** for any live friends-list UI — it batches changes, integrates with Real-Time Activity (RTA), and surfaces one event per meaningful transition rather than raw graph noise.
+- Always check [Privacy permissions](/services/gamertags-and-privacy) before offering voice chat, text messages, invites, or any inter-user communication. Missing checks is a common cert fail.
+- Fetch modern gamertags via `XblProfileGetUserProfileAsync`; never persist or reconstruct.
+
+## Social Manager
+
+Social Manager builds and maintains **social user groups** — filtered, live views of the People System — so your UI does not have to re-query the whole graph on every open.
+
+- Register a **user group** with a filter: all friends, favorites, in-title now, custom XUID list.
+- Call `DoWork` each frame (or on a background `XTaskQueue`) to drain change events into your handlers.
+- Handle **privilege codes** returned when a user is missing the required communication or profile-viewing privilege — surface a graceful "unavailable" state, not an error.
+- Watch **memory & performance** — user groups are cached; disable groups you no longer render and avoid registering a group per screen.
+
+See the published Social Manager memory/perf guide and privilege-code reference for tuning.
 
 ## Reputation
 
-XBOX players have a **reputation score** maintained by the platform from player feedback. Your title participates by submitting reputation events when players exhibit good or bad behavior.
+XBOX players have a **reputation** maintained by the platform from player feedback. Your title participates by submitting reputation events when players exhibit good or bad behavior in your matches.
 
-- **Submit feedback** through `XblSocialSubmitReputationFeedbackAsync` or the REST equivalent
-- Use the documented feedback types (`Cheater`, `UnsportingConduct`, `Quitter`, `FairPlay`, `HelpfulPlayer`)
-- Submit feedback from your dedicated server when possible — client-only submission is more easily abused
-- Do not show raw reputation scores to users; the platform UI surfaces them through standard shell affordances
-- Throttle submissions — one event per match per target user is plenty
+- **Submit feedback** through `XblSocialSubmitReputationFeedbackAsync` (or the REST equivalent for S2S callers).
+- Use the documented feedback types — `Cheater`, `UnsportingConduct`, `Quitter`, `FairPlay`, `HelpfulPlayer`, and others per the current XSAPI reference.
+- Submit feedback **from your dedicated server when possible** — client-only submission is more easily abused, and the platform trusts server-signed calls more than client calls.
+- Do **not** show raw reputation scores to users; the platform UI surfaces reputation through the shell.
+- Throttle submissions — one event per match per target user is plenty. Duplicate events per match do not stack.
+- Pair reputation submissions with **recent players** records from Multiplayer Activity so the shell links the feedback back to the correct session.
 
 ## Localized strings
 
-Many community-facing surfaces (presence templates, achievement descriptions, gamertag rules) accept localized strings:
+Many community-facing surfaces (presence templates, achievement titles/descriptions, event names, gamertag / clan name rules) accept **localized strings**. Author them in Partner Center rather than shipping raw runtime strings.
 
-- Author per-locale variants in Partner Center; the platform serves the right one based on the requesting user's locale
-- Provide a **language fallback chain** so missing locales degrade to a sensible neighbour (e.g. `fr-CA` → `fr-FR` → `en-US`)
-- The XSAPI library handles fallback automatically when the caller passes a locale; you only need to author the per-locale strings
+### Authoring
+
+- Add per-locale variants for every user-visible string in Partner Center; the platform serves the right one based on the requesting user's locale.
+- Cover at minimum the XBOX-supported locales your title ships in; the platform documents the full supported list.
+- Keep placeholder tokens (`{mapName}`, `{score}`) identical across locales so runtime substitution works everywhere.
+
+### Language fallback
+
+The platform applies a **language fallback chain** when a requested locale is missing:
+
+1. Exact match (`fr-CA`).
+2. Language-only fallback (`fr`).
+3. Related locale (`fr-FR`).
+4. Title's declared default locale (usually `en-US`).
+
+XSAPI handles fallback automatically when the caller passes a locale — you only need to author the per-locale strings and pick a sensible default. Test the fallback path in cert: sign in with a locale you have not fully translated and confirm the fallback string reads sensibly.
 
 ## Related
 
 - [People system](/services/people-system)
+- [Reputation](/services/reputation) — full feedback types and best practices.
+- [Localized strings](/services/localized-strings) — authoring and fallback details.
 - [Gamertags and privacy](/services/gamertags-and-privacy)
 - [Rich presence](/services/rich-presence)
+- [Multiplayer activity](/services/multiplayer-activity) — reputation and recent-players integration.

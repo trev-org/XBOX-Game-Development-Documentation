@@ -1,0 +1,134 @@
+---
+title: "Stats and leaderboards"
+sidebarTitle: "Stats & leaderboards"
+description: "Event-based vs title-managed stats, Featured Stats on the shell profile, and how to author leaderboards in Partner Center."
+icon: "chart-line"
+---
+
+XBOX services stats and leaderboards let you track per-player numeric and string values and rank users against each other. Two models exist and they are **not interchangeable per stat** — pick the right one when you author.
+
+## Event-based vs. title-managed — quick pick
+
+| Aspect | Event-based (EB) | Title-managed (TM) |
+| --- | --- | --- |
+| **Update path** | Title sends events; service derives stats | Title writes stat values directly |
+| **Stat rules** | Sum, max, last, count-distinct, custom | N/A |
+| **Leaderboards** | Event-based leaderboards, updated automatically | TM leaderboards |
+| **Achievements** | Event-based achievements unlock from event patterns | TM stats can back TM achievements |
+| **When to choose** | New titles; needs leaderboards / EB achievements | Legacy titles; per-session counters; very low volume |
+| **Requires** | ID@XBOX / managed partner | Available to Creators Program |
+
+<Warning>
+  Switching a stat between EB and TM in a sandbox with published data **wipes** the stat's data for that sandbox. Decide early.
+</Warning>
+
+## Event-based stats
+
+The EB pipeline is event-sourced:
+
+1. You author **events** in Partner Center (event name, fields, types).
+2. You author **stat rules** that reduce events into stats.
+3. You author **leaderboards** that order users by a stat.
+4. The title sends events via `XGameEventWrite`; the service updates stats and any dependent leaderboards within seconds.
+
+### Authoring events
+
+- Event names and field names are **case-sensitive and immutable** once published.
+- Field types include numeric (int64, double), string, bool, and typed enums.
+- Ship a generated header (Partner Center provides one) so event writes are type-safe.
+
+### Authoring stat rules
+
+Stat rules reduce a stream of events into a single stat value:
+
+- `Sum` — running total (kills, XP).
+- `Max` / `Min` — best ever (longest streak, fastest time).
+- `Last` — most recent value (current rank).
+- `Count distinct` — unique-value cardinality (unique enemies defeated).
+- **Field-value stats** — pull a stat value directly from a field on the event (e.g. `score` field on a `MatchCompleted` event).
+
+### Authoring event-based leaderboards
+
+Leaderboards rank users by a stat. Choose:
+
+- **Global** — all users worldwide.
+- **Social** — filtered to the caller's friend graph.
+- **Ordering** — ascending (best time) or descending (highest score).
+- **Page size** and paging conventions.
+
+You can publish multiple leaderboards over the same stat (all-time, seasonal, weekly).
+
+### Sending events (example)
+
+```cpp
+struct MatchCompletedEvent {
+    uint64_t xuid;
+    const char* mapName;
+    int32_t score;
+    int32_t kills;
+};
+
+XGameEventWrite(
+    scid,
+    "MatchCompleted",
+    &evt,
+    sizeof(evt),
+    /* fieldInfo table generated from Partner Center */ MatchCompletedFields,
+    _countof(MatchCompletedFields));
+```
+
+### Stat change notifications
+
+Subscribe to your own stat updates over Real-Time Activity (RTA) so the HUD updates instantly when the service confirms a write. See [Real-Time Activity](/services/real-time-activity).
+
+### User stats scenarios and stat naming
+
+- Many titles publish per-mode variants (`KillsRanked`, `KillsCasual`) rather than one combined stat, so leaderboards can filter by mode.
+- Reserve short prefixes for context (`R_Kills` for ranked) to keep naming manageable.
+- The published "user stats scenarios" and "stat name / value" guides walk through common shapes.
+
+## Title-managed stats
+
+Title-managed stats are simpler: your title writes values directly.
+
+- Update with `XblTitleManagedStatsUpdateStatsAsync` — numeric or string.
+- Read with `XblTitleManagedStatsGetStatsAsync`.
+- Back TM leaderboards; TM leaderboards are configured the same way as EB leaderboards but read from TM stats.
+
+Use TM when EB is unavailable (Creators Program), for per-session counters that never surface globally, or when you are porting a legacy XDK title that already writes stats directly.
+
+## Featured Stats
+
+**Featured Stats** are surfaced on the player's XBOX profile in the shell. Every player who has ever played your title has their featured stats visible from their shell profile.
+
+- Choose a small number of stats — the shell shows a fixed slot count.
+- Pick stats meaningful **at a glance**: "Win %", "Hours played", "Games won".
+- Available in both EB and TM models.
+- Configure in Partner Center under the Featured Stats surface.
+- Author localized display names — the shell shows them in the viewer's language.
+
+## Leaderboards — querying
+
+Query any leaderboard with `XblLeaderboardGetLeaderboardAsync`:
+
+- Specify SCID, leaderboard name, ordering, page size, and view (global / social).
+- Paginate with the continuation token in the response.
+- **Social leaderboards** are pre-filtered to the caller's friend graph — you do not need to intersect with the friends list yourself.
+
+Handle empty leaderboards gracefully — new titles or new stats will have zero entries at first.
+
+## Best practices
+
+- **Author early, freeze fast** — event and stat names are immutable once data exists in a sandbox.
+- **Batch event writes** where possible; `XGameEventWrite` is asynchronous but too many events per frame stalls the queue.
+- **Prefer server-authoritative events** for anything ranked or leaderboarded (dedicated server writes, not client writes) — client-only events are trivially forgeable.
+- **Latency is seconds, not milliseconds** — surface a "syncing…" affordance rather than blocking on a leaderboard refresh.
+- **Test in a DEV sandbox first**; leaderboard state promotes with your submission.
+
+## Related
+
+- [Player data](/services/player-data)
+- [Achievements](/services/achievements)
+- [Real-Time Activity](/services/real-time-activity) — stat change notifications.
+- [Partner Center config](/services/partner-center-config) — event / stat / leaderboard authoring.
+- [XSAPI Stats reference](/reference/xsapi-stats) · [XSAPI Leaderboard reference](/reference/xsapi-leaderboard) · [XGameEvent reference](/reference/xgameevent)

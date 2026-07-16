@@ -1,0 +1,83 @@
+---
+title: "XBOX Reputation"
+sidebarTitle: "Reputation"
+description: "Submit reputation feedback from your title to shape the platform reputation score — feedback types, best practices, and abuse resistance."
+icon: "thumbs-up"
+---
+
+Every XBOX player has a **reputation** maintained by the platform from aggregated feedback across titles and shell interactions. Your title participates by submitting reputation feedback events when players exhibit good or bad behavior in your matches.
+
+High-reputation players are matchmade with each other; low-reputation players are progressively deprioritized. Feedback from your title feeds directly into that model.
+
+## Feedback types
+
+Submit feedback using the documented feedback types. The platform reference lists the current set; common ones include:
+
+| Feedback type | When to submit |
+| --- | --- |
+| `FairPlayCheater` | Confirmed cheat detection from server-side anti-cheat. |
+| `UnsportingConduct` | Verbal abuse, griefing, or intentional team damage. |
+| `Quitter` | Left an active ranked match mid-game. |
+| `FairPlay` (positive) | Completed a full match cleanly. |
+| `HelpfulPlayer` | Received a peer up-vote from a teammate. |
+| `PlaysWellWithOthers` | Sustained positive interactions across sessions. |
+
+Always consult the current [XSAPI Social reference](/reference/xsapi-social) for the authoritative list — the platform adds and retires types over time.
+
+## Submit feedback
+
+Use `XblSocialSubmitReputationFeedbackAsync` (or the REST equivalent from a service):
+
+```cpp
+XAsyncBlock* async = new XAsyncBlock{};
+async->queue = queue;
+
+HRESULT hr = XblSocialSubmitReputationFeedbackAsync(
+    xblContext,
+    targetXuid,
+    XblReputationFeedbackType::FairPlayQuitter,
+    /* sessionRef */    &sessionRef,
+    /* reasonMessage */ "Left ranked match at 04:12 remaining",
+    /* evidenceResourceId */ nullptr,
+    async);
+```
+
+Include the **session reference** whenever available — the platform correlates feedback with the session the players actually shared, which raises the trust score of the report.
+
+## Server-side vs. client-side submission
+
+Prefer **server-side** submission from your dedicated server or match orchestrator:
+
+- Client submissions are easier to abuse (a malicious client can spam feedback at rivals).
+- Server submissions can be gated by authoritative match state (were the two players actually in the same match, did the accused player actually quit?).
+- Use S2S authentication to submit from your back end — see [S2S authentication](/services/s2s-authentication).
+
+Client-side submission is still valid for peer-driven feedback ("give thumbs up" after a match), but pair it with rate-limiting so a single player cannot flood the endpoint.
+
+## Best practices
+
+- **One event per match per target** — duplicates do not stack; extras waste rate budget.
+- **Correlate with recent players / MPA** — submit feedback records alongside the Multiplayer Activity recent-players record. This gives the shell a coherent history.
+- **Do not surface raw reputation scores** — the shell owns reputation UI. Titles must not scrape and display it.
+- **Do not gate matchmaking on reputation** — the matchmaking hopper (SmartMatch) already considers it. Adding your own filter double-penalizes.
+- **Test negative feedback in a dev sandbox** — verify your server-side submission path with sandbox accounts before ever pointing at RETAIL.
+- **Report cheaters and quitters, not opinions** — keep feedback tied to observed behavior; subjective feedback ("annoying player") is not a valid signal.
+
+## Rate limits
+
+Reputation submission is rate-limited per title, per user, and per target user. Exceeding limits returns `HTTP 429`; back off and drop excess feedback rather than retrying.
+
+## Combining with anti-cheat
+
+When server-side anti-cheat confirms a cheat:
+
+1. Submit `FairPlayCheater` reputation feedback with the session reference and a machine-readable reason.
+2. Apply your title's own consequences (temp ban, rank strip) independently — reputation feedback is a platform-wide signal, not a punishment.
+3. Log the report locally for audit.
+
+## Related
+
+- [Social](/services/social) — broader social API surface.
+- [Multiplayer activity](/services/multiplayer-activity) — recent-players integration.
+- [S2S authentication](/services/s2s-authentication) — server-side feedback submission.
+- [XSAPI Social reference](/reference/xsapi-social)

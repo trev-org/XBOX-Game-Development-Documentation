@@ -559,17 +559,25 @@
             "group": "XBOX Services",
             "pages": [
               "services/overview",
+              "services/s2s-authentication",
               "services/achievements",
+              "services/partner-center-config",
+              "services/identity",
+              "services/localized-strings",
+              "services/people-system",
+              "services/gamertags-and-privacy",
+              "services/social",
+              "services/game-chat",
+              "services/stats-and-leaderboards",
               "services/multiplayer",
               "services/multiplayer-activity",
-              "services/game-chat",
-              "services/social",
-              "services/develop-and-test",
+              "services/real-time-activity",
               "services/cloud-storage",
               "services/player-data",
-              "services/people-system",
+              "services/title-storage",
               "services/rich-presence",
-              "services/gamertags-and-privacy"
+              "services/reputation",
+              "services/develop-and-test"
             ]
           },
           {

@@ -5,21 +5,63 @@ description: "How the XBOX people system models friends, followers, favorites, a
 icon: "users-line"
 ---
 
-The XBOX **people system** is the unified social graph that powers friends, followers, recent players, and clubs across XBOX, Windows, and mobile.
+The XBOX **People System** (formerly known as the Friends List) is the unified social graph that powers friends, followers, favorites, recent players, and clubs across XBOX consoles, Windows, and the mobile companion.
+
+Your title reads the People System to render social UI (a friends list, invite pickers, join affordances) and writes to it via the platform APIs when the player adds a friend or leaves feedback.
 
 ## Concepts
 
-- **Person** — any XUID the local user has a relationship with.
-- **Friend / follower** — mutual or one-way relationships.
-- **Favorites** — user-prioritized people.
-- **Recent players** — driven by [Multiplayer Activity](/reference/xsapi-multiplayer-activity).
+- **Person** — any XUID the local user has a relationship with (friend, follower, favorite, recent player, club member).
+- **Friend / follower** — mutual (`isFriend`) or one-way (`isFollowedByCaller` / `isFollowingCaller`) relationships. XBOX uses a follow-based model; a mutual follow is a friend.
+- **Favorites** — user-prioritized people; the shell surfaces favorites at the top of the friends list.
+- **Recent players** — session-derived; a player becomes "recent" when they share a Multiplayer Session Directory (MPSD) session or a Multiplayer Activity with the local user. See [Multiplayer Activity](/services/multiplayer-activity).
+- **Blocked / avoided** — people the user has explicitly blocked; the platform enforces communication restrictions automatically, but titles should still respect the state for UI.
 
 ## Query the graph
 
-- [XSAPI Social](/reference/xsapi-social) — raw relationship reads / writes.
-- [Social Manager](/reference/social-manager) — cached, filterable social user groups for in-game UI.
+Two API surfaces expose the People System:
+
+- [XSAPI Social](/reference/xsapi-social) — raw relationship reads and writes. Best for one-off queries (does this XUID follow me?) and for server-side callers.
+- [Social Manager](/reference/social-manager) — a cached, filterable **social user group** API designed for in-game UI. Register a group with the filter you want (all friends, favorites, in-title now), call `DoWork` each frame, and receive change events when the underlying graph updates.
+
+<Tip>
+  Use **Social Manager** for any live friends-list UI. It batches change notifications, avoids re-fetching the entire graph on every open, and integrates with Real-Time Activity (RTA) so presence, favorite state, and follow state stay fresh automatically.
+</Tip>
+
+## Displaying people
+
+When rendering people in your title:
+
+- Fetch the canonical display name (modern gamertag) via `XblProfileGetUserProfileAsync`; never reconstruct from cached parts.
+- Show the **gamerpic** at the right resolution — the shell offers small, medium, and large variants; picking the right one avoids up-scaling artifacts.
+- Sort favorites and in-title players above generic friends, matching shell conventions.
+- Group by **presence** (online, in-title, offline) so the player finds someone joinable quickly.
+- Respect privacy — check `XblPrivacyCheckPermissionAsync` before offering "view profile", "send message", or "invite" affordances.
+
+See the sample flows for [getting a social relationship](https://learn.microsoft.com/en-us/gaming/gdk/docs/services/community/people-system) and handling a relationship change.
+
+## Handling relationship changes
+
+Subscribe to Social Manager change events (or raw RTA subscriptions) to keep UI in sync when:
+
+- A friend signs in or out
+- A follow / unfollow occurs
+- A user is added to or removed from favorites
+- Presence changes (device or title)
+- A block or avoid is added on either side of the relationship
+
+Coalesce these events on your side — a burst of sign-ins should not fire a redraw per event.
+
+## People System vs. PlayFab Friends
+
+For **cross-platform** social features (players who are not on XBOX), pair the XBOX People System with [PlayFab Friends & Groups](/playfab/friends-groups). The two graphs are complementary:
+
+- XBOX People System — the source of truth for XBOX platform friendship, invites, and communication rules.
+- PlayFab Friends & Groups — a cross-platform friend graph for players on PC (Steam, Epic), mobile, and other consoles, plus durable Groups (clans, guilds) with roles.
 
 ## Related
 
-- [Social](/services/social)
-- [Gamertags and privacy](/services/gamertags-and-privacy)
+- [Social](/services/social) — Social Manager APIs and reputation.
+- [Rich presence](/services/rich-presence) — presence tokens people see in the friends list.
+- [Gamertags and privacy](/services/gamertags-and-privacy) — display rules and permission checks.
+- [Multiplayer activity](/services/multiplayer-activity) — how recent players are populated.

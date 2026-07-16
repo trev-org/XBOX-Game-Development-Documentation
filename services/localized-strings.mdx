@@ -1,0 +1,96 @@
+---
+title: "Localized strings and XBOX Services language fallback"
+sidebarTitle: "Localized strings"
+description: "Author localized strings for XBOX services surfaces — presence, achievements, events — and how the platform's language fallback chain resolves missing locales."
+icon: "language"
+---
+
+Many XBOX services surfaces — Rich Presence templates, achievement titles and descriptions, event names, Featured Stat display names, and clan/gamertag rules — accept **localized strings**. Author them in Partner Center per locale so the platform serves the right language to each player automatically.
+
+## What surfaces accept localized strings
+
+- **Rich Presence** — template strings and token placeholder values.
+- **Achievements** — title, description, unlock message.
+- **Events** — event display names for the shell.
+- **Featured Stats** — display names shown on the shell profile.
+- **Session template display strings** — for shell UX around multiplayer.
+
+Any text your title publishes into the shell should be authored via localized strings, not hard-coded at runtime.
+
+## Authoring in Partner Center
+
+1. Open your service config's **Localization** area.
+2. For each string, add per-locale variants.
+3. Use identical **placeholder tokens** across locales (`{mapName}`, `{score}`) so runtime substitution works everywhere.
+4. Keep strings **short** — the shell truncates aggressively on smaller UI surfaces.
+5. Publish to DEV → CERT → RETAIL like any other config change.
+
+### Supported locales
+
+Author at least the locales your title ships in. The XBOX platform supports a broad set (`en-US`, `en-GB`, `fr-FR`, `fr-CA`, `de-DE`, `es-ES`, `es-MX`, `it-IT`, `ja-JP`, `ko-KR`, `zh-CN`, `zh-TW`, `pt-BR`, `pt-PT`, `ru-RU`, `pl-PL`, `nl-NL`, `sv-SE`, `da-DK`, `no-NO`, `fi-FI`, `cs-CZ`, `hu-HU`, `tr-TR`, and more). Consult Partner Center for the current authoritative list.
+
+### Placeholder tokens
+
+- Token names are stable across locales; only the surrounding text changes.
+- Runtime supplies token values via the XSAPI call (e.g. `XblPresenceSetPresenceAsync`).
+- Keep token values short and pre-formatted — the shell does not run additional formatting.
+
+## Language fallback chain
+
+When the platform serves a string, it applies the fallback chain in order until it finds a match:
+
+1. **Exact locale match** — `fr-CA` on the request finds `fr-CA` in the config.
+2. **Language-only** — `fr-CA` falls back to `fr`.
+3. **Related locale** — `fr-CA` falls back to `fr-FR` (the platform's language-parent mapping).
+4. **Title default locale** — usually `en-US`, configured in Partner Center.
+
+XSAPI handles fallback automatically when the caller passes a locale — your title only needs to:
+
+- Author every string in the title's **default locale**.
+- Add per-locale variants for the locales you ship in.
+- Confirm the default locale is set correctly in Partner Center.
+
+### Locale on the caller side
+
+On the client:
+
+- The user's console/PC language drives the outgoing locale header on XSAPI calls.
+- Titles can override per-call in advanced scenarios (multi-language UI selectors).
+- For S2S callers, supply the target locale explicitly — there is no signed-in user to infer from.
+
+## Testing localization
+
+Cert reviewers will check localization; validate ahead of cert:
+
+- Switch the console / PC language to each supported locale.
+- Confirm presence strings, achievement titles, and Featured Stat labels render in the right language.
+- Sign in with a locale you have **not** authored for and confirm the fallback string is sensible.
+- Watch for **truncation** in shell surfaces — languages like German and Russian expand significantly; your longest translation must still fit.
+- Verify **RTL** (right-to-left) surfaces (Arabic, Hebrew) if in scope, though XBOX's supported list is primarily LTR.
+
+## Best practices
+
+- **Author early** — loc handoff has a lead time. Freeze source strings before your loc pipeline picks them up.
+- **Do not concatenate at runtime** — build full sentences per locale rather than gluing fragments ("You have" \+ count \+ "kills"). Word order differs across languages.
+- **Match shell conventions** for gender, count, and formality per locale — the platform's own strings are the reference.
+- **Diff config-as-source** before every publish so a single-locale edit does not accidentally revert other locales.
+
+## Localizing your title's own resources
+
+This page covers strings that live in **XBOX services** (presence, achievements, events, Featured Stats). For localizing your title's own in-game resources, shell package metadata, and NLS APIs, see [Localization and globalization for GDK titles](/principles/localization-globalization).
+
+The two systems are complementary:
+
+- **XBOX services localized strings** — authored in Partner Center; served to the shell and to XSAPI callers by locale.
+- **Title-side localization** — `.resw` resources, `makepkg localize`, NLS APIs, and per-locale asset packs shipped with your title.
+
+Ship both in lockstep so a player's console language selection produces a coherent experience across your title's UI and the shell surfaces that XBOX services powers.
+
+## Related
+
+- [Localization and globalization (GDK)](/principles/localization-globalization) — title-side resources, `.resw`, NLS, and shell package strings.
+- [Rich presence](/services/rich-presence)
+- [Achievements](/services/achievements)
+- [Player data](/services/player-data) — Featured Stats.
+- [Partner Center config](/services/partner-center-config).
+- [Social](/services/social) — wider community surface.

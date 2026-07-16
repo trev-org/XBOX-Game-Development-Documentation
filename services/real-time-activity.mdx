@@ -1,0 +1,80 @@
+---
+title: "Real-Time Activity (RTA) service"
+sidebarTitle: "Real-Time Activity"
+description: "Use the Real-Time Activity (RTA) service to receive push notifications for presence, session, stat, and invite changes without polling."
+icon: "bolt"
+---
+
+The **Real-Time Activity (RTA)** service is XBOX's push channel — a persistent WebSocket over which your title receives notifications for presence, multiplayer session state, event-based stat changes, and invites, all without polling.
+
+When you use XSAPI's Social Manager, Presence, or Multiplayer subscriptions, RTA is what powers them under the hood.
+
+## How RTA works
+
+```text
+Your title ──► XSAPI ──► WebSocket ──► RTA endpoint ──► XBOX services
+     ▲          │
+     └── event ─┘  (topic message)
+```
+
+- Your title opens a **single RTA channel per signed-in user**.
+- You subscribe to **topics** — presence, session, stat, MPA — on that channel.
+- The service pushes a message whenever the underlying data changes.
+- XSAPI dispatches the message to your registered handler on the callback queue you specified.
+
+XSAPI manages the socket: reconnect with exponential backoff, resubscribe after reconnect, heartbeats, and back-pressure. You do not implement the WebSocket protocol yourself.
+
+## What you can subscribe to
+
+- **Presence** — device presence (`XblPresenceSubscribeToDevicePresenceChange`), title presence (`XblPresenceSubscribeToTitlePresenceChange`).
+- **Multiplayer sessions** — session state changes (`XblMultiplayerSetSubscriptionsEnabled` \+ `XblMultiplayerAddSessionChangedHandler`).
+- **Event-based stats** — `XblStatisticSubscribeToStatisticChange` fires when the derived stat updates.
+- **Social graph changes** — Social Manager surfaces relationship / favorite / block changes as event group updates.
+- **Invites** — invite notifications are delivered via RTA and surfaced through `XGameInvite` protocol activation.
+
+## Register for stat notifications
+
+A common RTA use case is reacting to your **own** stat updates for instant HUD refresh:
+
+```cpp
+XblRealTimeActivitySubscriptionHandle statSub = nullptr;
+HRESULT hr = XblStatisticSubscribeToStatisticChange(
+    xblContext,
+    xuid,
+    scid,
+    "Kills",
+    &statSub);
+
+XblStatisticAddStatisticChangedHandler(
+    xblContext,
+    [](XblStatisticChangeEventArgs args, void* ctx) {
+        // Fires on the callback task queue when the stat changes
+    },
+    /* context */ nullptr);
+```
+
+Unsubscribe (`XblStatisticUnsubscribeFromStatisticChange`) when the UI is torn down or the user signs out.
+
+## Best practices
+
+- **One channel per user** — XSAPI already enforces this; do not open parallel channels.
+- **Coalesce handlers** — a rapid burst of events (e.g. many friends signing in at once) should not fan out to N UI redraws. Batch on your side and refresh the view once per frame or per interval.
+- **Do not do heavy work on the callback thread** — dispatch to a background `XTaskQueue` if you need to update engine state.
+- **Handle disconnect / reconnect** — XSAPI reconnects for you, but your title should treat a disconnect as "data may be stale" and refresh key views on reconnect.
+- **Unsubscribe cleanly** — leaked subscriptions keep firing until the channel closes; explicitly release them on scope end.
+- **Test flaky networks** — use Dev Home's network simulator or unplug the NIC to confirm your UI handles a temporary RTA outage.
+
+## Programming the RTA service
+
+Most titles never call the RTA service directly — they use the XSAPI subscription helpers above. For advanced scenarios (custom topics from your own service, S2S RTA usage) the raw RTA API is available:
+
+- Open a channel with `XblRealTimeActivityActivateAsync`.
+- Subscribe / unsubscribe with `XblRealTimeActivityAddConnectionStateChangeHandler` and topic-specific `Subscribe*` calls.
+- Handle connection-state changes explicitly (`Connecting`, `Connected`, `Disconnected`).
+
+## Related
+
+- [Rich presence](/services/rich-presence) — presence subscriptions ride on RTA.
+- [Multiplayer](/services/multiplayer) — session subscriptions ride on RTA.
+- [Player data](/services/player-data) — event-based stat notifications ride on RTA.
+- [XSAPI Real-Time Activity reference](/reference/xsapi-real-time-activity)

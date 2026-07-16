@@ -1,0 +1,92 @@
+---
+title: "XBOX services identity and authentication"
+sidebarTitle: "Identity & auth"
+description: "XBOX services identity model: user sign-in, MSA, XSTS tokens, sandbox scoping, and troubleshooting sign-in errors."
+icon: "fingerprint"
+---
+
+Every XBOX services call is authenticated. This page explains the identity model, the tokens involved, and the standard sign-in flow your title implements.
+
+## Identity model
+
+XBOX layers identity so titles never handle the user's Microsoft Account (MSA) directly:
+
+- **MSA** — the user's Microsoft Account (email \+ password / passkey). The shell owns MSA sign-in; titles never see MSA credentials.
+- **XUID** — the stable, opaque user identifier your title uses in APIs. The XUID never changes across gamertag renames.
+- **XToken** — a device- and title-scoped token issued by the platform. Managed by the platform; titles do not inspect it.
+- **XSTS token** — the **XBOX Secure Token Service** token. Carries the per-user, per-title claims (`xuid`, `usr`, `tid`, `sbx`, privacy/permission flags) that XBOX services and your own back-end services validate on inbound calls.
+- **Sandbox (`sbx`)** — every token is scoped to a sandbox (e.g. `RETAIL`, `XDKS.1`). Calls made with a token from one sandbox cannot see data in another.
+
+## Standard sign-in flow
+
+```text
+1. Title starts
+2. XUserAddAsync(...)                 → user is signed into the shell
+3. XUserGetTokenAndSignatureAsync(url) → XSTS token for target URL
+4. Attach token to outbound HTTPS      (XSAPI does this automatically)
+5. Service validates XSTS claims       → request honoured
+```
+
+Use `XUserAddAsync` on title launch (silent or UI variant per your UX). Every subsequent service call — XSAPI or a custom S2S endpoint — needs a fresh XSTS token for the target URL.
+
+<Tip>
+  Reacquire XSTS tokens **on every resume from suspend**, when the user's account state changes, and when the sandbox changes. Tokens are short-lived; caching for the entire session leads to sporadic 401s.
+</Tip>
+
+## Multi-user (MUA) and Quick Resume
+
+On XBOX console, titles are multi-user aware:
+
+- Multiple `XUser` handles can be active in one title session (splitscreen, per-controller sign-in).
+- Each user has independent XSTS tokens, privileges, and privacy relationships.
+- **Quick Resume** may resume the title with a _different_ signed-in user than at suspend. Always re-query `XUserGetId` on resume and reconcile UI state.
+- Sign-out (`XUserChangeEventCallback`) can happen at any moment — treat it like a hard state change.
+
+## Privileges and privacy at sign-in
+
+At sign-in time, evaluate the user's:
+
+- **Privileges** — `XPRIVILEGE_MULTIPLAYER_SESSIONS`, `XPRIVILEGE_COMMUNICATIONS`, `XPRIVILEGE_USER_CREATED_CONTENT`, etc. Gate features (do not show a multiplayer button to a user without the privilege).
+- **Privacy permissions** — per-pair checks (`XblPrivacyCheckPermissionAsync`) run before communication.
+
+Both are also enforced service-side, but client-side gating gives a cleaner UX. See [Gamertags & privacy](/services/gamertags-and-privacy).
+
+## Sandboxes and identity
+
+A test account signed into `XDKS.1` cannot see data in `RETAIL`, and vice versa. To validate cert-relevant flows:
+
+- Switch the kit/PC to the target sandbox with `xbconfig` (console) or `XblPCSandbox.exe` (PC).
+- Sign in with a test account provisioned for that sandbox.
+- Confirm the XSTS token's `sbx` claim matches expectations if you inspect service-side traffic.
+
+See [Develop & test](/services/develop-and-test) for sandbox mechanics.
+
+## Troubleshooting sign-in
+
+Most sign-in issues fall into a small set of causes:
+
+| Symptom | Common causes |
+| --- | --- |
+| `0x87DD0006` / no user returned | User not provisioned for current sandbox |
+| `0x87DD000D` — no network / IPsec fails | Wrong sandbox, expired dev-mode cert, firewall |
+| 401 on service calls after resume | Cached XSTS token stale; reacquire per-URL |
+| `E_GAMERUNTIME_DLL_NOT_FOUND` | XCurl / GameRuntime not deployed alongside title |
+| `XPRIVILEGE_MULTIPLAYER_SESSIONS` denied | Child account without parental consent |
+
+Deeper diagnosis:
+
+- Verify the sandbox with `xbconfig Sandbox` or `XblPCSandbox` before anything else.
+- Inspect XSTS claims with a decoder if you have server-side traffic; confirm `xuid`, `sbx`, `tid`.
+- Use [Trace Analyzer](/tools/trace-analyzer) to review the XSAPI HTTP call pattern around the failure.
+- Check the [XBL error codes](/reference/xbl-error-codes) reference for HRESULT to text mapping.
+
+## PlayFab identity on top of XBOX
+
+If your title also uses PlayFab, sign the player into PlayFab using the XSTS token via `LoginWithXbox`. PlayFab returns an **entity token** that you use for PlayFab calls. See [PlayFab identity](/playfab/identity).
+
+## Related
+
+- [Develop & test](/services/develop-and-test) — sandboxes and test accounts.
+- [Gamertags & privacy](/services/gamertags-and-privacy) — privileges and permissions.
+- [S2S authentication](/services/s2s-authentication) — server-side XSTS handling.
+- [XSAPI Profile reference](/reference/xsapi-profile)

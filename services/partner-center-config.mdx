@@ -1,0 +1,118 @@
+---
+title: "Configure XBOX services in Partner Center"
+sidebarTitle: "Partner Center config"
+description: "Configure XBOX services for your title in Partner Center — SCIDs, sandboxes, session templates, Game DVR, data sharing, and managed-partner setup."
+icon: "gear"
+---
+
+Before any XBOX services call works, your title needs a **service configuration** in Partner Center. This page is a map of the config surfaces and how they map to runtime behaviour.
+
+## Configuration model
+
+- **Service Configuration ID (SCID)** — a GUID that scopes every services call your title makes. The SCID is bound to your title in Partner Center and is compiled into your build.
+- **Sandboxes** — isolated copies of the service config: DEV, CERT, RETAIL (plus custom sandboxes). Config edits publish to one sandbox at a time; you promote from DEV → CERT → RETAIL.
+- **Config as Source** — Partner Center exports/imports config as JSON so you can source-control it.
+
+<Warning>
+  Never edit RETAIL directly. Always publish through DEV → CERT first, verify behaviour, and only then promote to RETAIL.
+</Warning>
+
+## Portal configuration overview
+
+Partner Center's XBOX services section groups configuration by feature area. The main tabs:
+
+### Summary tab
+
+At-a-glance view of your title's XBOX services config: SCID, sandboxes, program membership (ID@XBOX / Creators), enabled features, and last-published timestamps. Start every session here to confirm you are editing the right title.
+
+### XBOX services setup
+
+Core identity for the title:
+
+- Bind the title to its SCID.
+- Assign sandboxes and permission scopes.
+- Enable or disable service features (Multiplayer, Achievements, Stats, Title Storage).
+
+### Managed partners setup
+
+If you are a **managed partner** (ID@XBOX, first-party), your access model is different — you get access to event-based Achievements and Stats, Rich Presence, and full MPSD, and you configure additional partner-scoped features here.
+
+See "XBOX services configuration for managed partners" in Partner Center for the managed-partner-specific setup checklist.
+
+### Achievements
+
+- Author achievement definitions (name, description, gamerscore, art).
+- Configure unlock rules for **event-based** achievements (which event patterns unlock which achievements).
+- Author **challenges** — time-boxed community achievements (event-based only).
+
+### Stats and leaderboards
+
+- Choose **event-based** or **title-managed** per stat (immutable after publish to a sandbox with data).
+- Define **stat rules** for event-based stats (sum, max, last, count-distinct).
+- Author **leaderboards** on top of stats.
+- Mark up to a small number of stats as **Featured Stats** — surfaced on the shell profile.
+
+See [Player data](/services/player-data) and [Stats & leaderboards](/services/stats-and-leaderboards).
+
+### Events
+
+Author the **event schemas** that back event-based stats and achievements. Events are strongly typed — event name, field names, field types — and the platform validates every `XGameEventWrite` against the schema.
+
+### Rich Presence
+
+- Author presence-string templates with token placeholders (`{mapName}`).
+- Provide localized variants per supported locale.
+- Group by activity (lobby, in-match) for clean shell UX.
+
+### Multiplayer / Service config IDs
+
+- Author **MPSD session templates** (player counts, timeouts, visibility, capabilities).
+- Author **matchmaking hoppers** (session template, ticket attributes, tolerance rules).
+- Enable **large sessions** where needed.
+
+### Title Storage
+
+- Declare storage types you use (trusted user, untrusted user, session, global).
+- Configure blob path conventions and access permissions.
+- Set per-type quotas.
+
+### Game DVR
+
+Control **Game DVR** capture:
+
+- Block capture for cutscenes, NPC dialogue, or brand-sensitive scenes.
+- Configure capture allowlist / denylist windows via runtime API \+ Partner Center defaults.
+
+### Data sharing (UDC)
+
+Opt into **User Data Collection** if your title uses opt-in telemetry on top of the platform default. Configure the opt-in strings the shell will surface to the user.
+
+### Custom service config (S2S)
+
+Author **relying parties**, **access policies**, **single sign-on**, and **web services** for S2S callers. See [S2S authentication](/services/s2s-authentication).
+
+## Publish and promote
+
+Each edit lands in a **draft**. To make it live in a sandbox:
+
+1. Save the draft.
+2. Publish to your target sandbox (usually **DEV** first).
+3. Sign a test account into that sandbox on a kit / PC and validate.
+4. Promote to **CERT** for cert testing.
+5. Promote to **RETAIL** with your submission.
+
+## Config-as-source workflow
+
+For larger teams, export the config JSON per sandbox and check it into source control. Diff before every promote to catch unintended changes. Re-import to restore or replicate config to a new title.
+
+## Service config IDs for managed partners
+
+Managed partners can request additional SCIDs (staging environments, feature flags) and separate publisher permissions. Follow the managed-partner-specific SCID guide in Partner Center for how to request and bind them.
+
+## Related
+
+- [XBOX services overview](/services/overview)
+- [Develop & test](/services/develop-and-test) — sandbox switching and troubleshooting.
+- [S2S authentication](/services/s2s-authentication) — relying-party and access-policy setup.
+- [Multiplayer](/services/multiplayer) — session template authoring.
+- [Player data](/services/player-data) — stats / achievements / events authoring.

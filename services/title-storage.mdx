@@ -1,0 +1,123 @@
+---
+title: "XBOX Title Storage"
+sidebarTitle: "Title Storage"
+description: "Store per-user, per-session, and global blobs in the cloud with XSAPI Title Storage — storage types, CRUD, quotas, and ETag conflict handling."
+icon: "database"
+---
+
+**Title Storage** is XBOX services' cloud blob store. Use it for content your title reads and writes at runtime that is _not_ a save game — configs, manifests, per-session state, per-user cosmetic loadouts, and server-authored balance data.
+
+For player-owned save data, use [Connected Storage / XGameSave](/services/cloud-storage) instead.
+
+## Storage types
+
+Title Storage exposes several blob types with different write authorities and lifetimes:
+
+| Type | Written by | Read by | Typical use |
+| --- | --- | --- | --- |
+| **Trusted user storage** | S2S (server) | Client \+ S2S | Currency balances, anti-cheat progression |
+| **Untrusted user storage** | Client | Client \+ S2S | Player-editable cosmetics, custom loadouts |
+| **Session storage** | Session members | Session members | Match state, lobby-shared data |
+| **Global title storage** | Publisher (S2S / Partner Center) | Client (read-only) | Configs, manifests, hot-patched balance data |
+
+Blobs are binary or JSON. Every write returns an **ETag**; supply it on the next write to detect conflicts.
+
+## Partner Center configuration
+
+Before your title can call Title Storage, configure the container in Partner Center:
+
+1. Declare each storage type you use.
+2. Set path conventions (e.g. `configs/{version}/balance.json`).
+3. Set per-type quotas.
+4. For trusted user storage and global title storage, register the relying party or publisher certificate that will author writes.
+
+See [Partner Center config](/services/partner-center-config).
+
+## Uploading a blob
+
+```cpp
+XAsyncBlock* async = new XAsyncBlock{};
+async->queue = queue;
+
+const char* path       = "cosmetics/loadout.json";
+const char* jsonBody   = R"({"skin":"gold","emote":"wave"})";
+size_t bodySize        = strlen(jsonBody);
+
+HRESULT hr = XblTitleStorageUploadBlobAsync(
+    xblContext,
+    XblTitleStorageType::Universal, // storage type
+    path,
+    XblTitleStorageBlobType::Json,
+    XblTitleStorageETagMatchCondition::IfNotMatch,
+    /* eTag */ lastKnownETag,
+    /* preferredUploadBlockSize */ 256 * 1024,
+    reinterpret_cast<const uint8_t*>(jsonBody),
+    bodySize,
+    async);
+```
+
+Use `XblTitleStorageETagMatchCondition::IfMatch` (with the last-known ETag) to protect against overwriting concurrent writes. Use `IfNotMatch` for first-ever writes to a path.
+
+## Downloading a blob
+
+```cpp
+HRESULT hr = XblTitleStorageDownloadBlobAsync(
+    xblContext,
+    XblTitleStorageType::Universal,
+    path,
+    XblTitleStorageBlobType::Json,
+    /* selectQuery */ nullptr,
+    /* eTagMatchCondition */ XblTitleStorageETagMatchCondition::NotUsed,
+    /* eTag */ nullptr,
+    /* preferredDownloadBlockSize */ 256 * 1024,
+    async);
+```
+
+The response provides the blob body plus the current ETag — cache it for your next write.
+
+## Deleting a blob
+
+`XblTitleStorageDeleteBlobAsync` — supply the path and (optionally) the last-known ETag to guard against deleting a concurrently-updated blob.
+
+## Getting blob metadata
+
+`XblTitleStorageGetBlobMetadataAsync` returns:
+
+- Path, size, ETag, last-modified timestamp.
+- Client-supplied properties if you set them at upload.
+- The **selectQuery** parameter narrows the result set for large containers.
+
+Use metadata queries to enumerate a folder without downloading the bodies.
+
+## Quota
+
+`XblTitleStorageGetQuotaAsync` returns the used / total bytes for a storage type. Check on title start and after every write that grows the container:
+
+- If usage approaches the quota, prune stale blobs (oldest per-user files, unused session archives) before the next write.
+- Exceeding the quota causes writes to fail with `HTTP 507`; handle it as a normal error path, not a crash.
+
+## Conflict handling with ETags
+
+Every blob has an **ETag** that changes on every write. Concurrent writers see conflicts as `HTTP 412 Precondition Failed`:
+
+1. Download the latest blob (get the new ETag).
+2. Merge your changes into the fresh body.
+3. Retry the write with the new ETag.
+
+Always implement the download-merge-retry loop for user-writable data — two devices signing into the same account can otherwise stomp each other's writes.
+
+## Best practices
+
+- **Prefer JSON blobs with many fields** over many tiny binary blobs — each blob round-trips independently and adds quota overhead.
+- **Compress large binary blobs** before upload where the format allows; the transport is HTTPS but the quota is byte-for-byte.
+- **Never store save-game data** in Title Storage — use `XGameSave` (Connected Storage), which handles atomic writes, offline queueing, and rollback.
+- **Server-author high-value data** — currency, progression, unlock state should be **trusted user storage** written by your back end. Client writes are trivially tamperable.
+- **Version your paths** — include a schema version in the path (`configs/v3/balance.json`) so a schema change does not require re-writing every user's blob at once.
+- **Test offline** — Title Storage is live-only; your title must degrade gracefully when reads fail.
+
+## Related
+
+- [Cloud storage](/services/cloud-storage) — comparison with Connected Storage.
+- [Partner Center config](/services/partner-center-config) — container declaration and quotas.
+- [S2S authentication](/services/s2s-authentication) — required for trusted user storage.
+- [XSAPI Title Storage reference](/reference/xsapi-title-storage)

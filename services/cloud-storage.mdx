@@ -5,22 +5,64 @@ description: "XBOX Title Storage blobs and XGameSave Connected Storage for cloud
 icon: "cloud"
 ---
 
-Use XBOX Title Storage to persist per-user or global blobs in the cloud, and Connected Storage / XGameSave for game saves.
+XBOX Services provides two complementary cloud storage systems. Pick the right one for the data you are storing.
 
-## Storage types
+## Connected Storage vs. Title Storage
 
-- **Trusted user storage** — server-authoritative writes (via a service-to-service call).
-- **Untrusted user storage** — client-writable per-user blobs.
-- **Session storage** — scoped to a multiplayer session.
-- **Global title storage** — read-only blobs published by your title.
-- **Connected Storage (XGameSave)** — fault-tolerant cross-device game saves.
+| Aspect | Connected Storage (XGameSave) | Title Storage |
+| --- | --- | --- |
+| **Best for** | Player-owned save games | Server / title-authored data, session blobs |
+| **Ownership** | Per-user, roams with account | Global, per-user, or per-session |
+| **Conflict handling** | Automatic revision / rollback | Last-writer-wins (ETag-guarded) |
+| **Offline behaviour** | Fully offline-capable, syncs on reconnect | Live-only reads/writes |
+| **Quota** | Per-title per-user quota | Per-title quotas per storage type |
+| **API** | `XGameSave` | `XblTitleStorage*` (XSAPI) |
+| **Cert requirement** | Required for save data on console | Optional, per feature |
+
+**Rule of thumb** — if the data is a save the player owns and expects to survive across devices, use **Connected Storage**. If the data is a config file, a leaderboard snapshot, a manifest, or a shared blob, use **Title Storage**.
+
+## Title Storage — storage types
+
+Title Storage exposes several distinct **blob types**, each with different write authority:
+
+- **Trusted user storage** — per-user blobs written **only** by a service-to-service call (your dedicated back end with a title claim). Client reads are allowed. Use for anti-cheat progression, currency balances, and any data the client should not be trusted to author.
+- **Untrusted user storage** — per-user blobs read and written by the signed-in client. Use for player-editable data that is not gameplay-sensitive (custom loadouts, cosmetics).
+- **Session storage** — blobs scoped to an MPSD session; readable by session members. Use for match state and lobby-shared data.
+- **Global title storage** — read-only-by-clients blobs published by the title (via S2S or Partner Center). Use for configs, hot-patched manifests, seasonal data.
+
+Blobs support both **binary** (opaque bytes) and **JSON** representations. Every write returns an ETag; supply it on the next write to detect conflicts.
+
+## Connected Storage — key features
+
+`XGameSave` (Connected Storage) is designed for **save data that must survive a crash, a suspend/resume, and moving to another device**:
+
+- **Atomic containers** — a single save write commits multiple blobs atomically; a crash mid-write cannot corrupt a save.
+- **Automatic upload** — writes commit locally, then upload in the background when connectivity is available.
+- **Rollback** — the platform keeps the last-known-good revision; a partially-written save is discarded automatically.
+- **Cross-device** — same account on a different XBOX or PC reads the same save data.
+- **Quota per title per user** — enforce your own per-save size budget; huge saves hurt sync time.
+
+<Tip>
+  Certification requires that save data survives suspend, quick-resume, sign-out, and offline play. `XGameSave` does this for you — do not roll your own save system on top of raw Title Storage.
+</Tip>
 
 ## Implement
 
-- [XSAPI Title Storage](/reference/xsapi-title-storage) for cloud blobs.
-- [XGameSave](/reference/xgamesave) for game saves.
-- [Game saves overview](/gdk/game-saves-overview)
+- [XGameSave reference](/reference/xgamesave) — Connected Storage API.
+- [XSAPI Title Storage reference](/reference/xsapi-title-storage) — Title Storage blob CRUD, quota queries, JSON helpers.
+- [Game saves overview](/gdk/game-saves-overview) — end-to-end save architecture, including PC-only Steam Deck flows.
+- Partner Center → **Title Storage** — configure blob paths and permissions per storage type.
+
+## Best practices
+
+- **Batch small blobs** — for Title Storage, prefer one JSON blob with many fields over many tiny blobs. Each blob round-trips independently.
+- **Enforce blob-size ceilings client-side** — never attempt to upload a save the platform will reject.
+- **Track ETags** — always pass the last-known ETag on Title Storage writes so you can detect conflicts and merge.
+- **Sync on foreground / on connectivity change**, not every frame. `XGameSave` handles this for you; if you call Title Storage directly, register for network-status changes.
+- **Test offline paths** — pull the NIC / use Dev Home's network simulator to confirm your save flow recovers on reconnect.
 
 ## Related
 
 - [XBOX services overview](/services/overview)
+- [Player data](/services/player-data)
+- [Develop & test](/services/develop-and-test) — retrieving cert-test saves from sandboxes

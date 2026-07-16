@@ -1,0 +1,104 @@
+---
+title: "Service-to-service (S2S) authentication and XSTS tokens"
+sidebarTitle: "S2S authentication"
+description: "Authenticate your back end to XBOX services with title service tokens, XSTS claims, relying parties, and single sign-on."
+icon: "key"
+---
+
+Some XBOX services calls flow client → service, but many flow **server → service**. Your title's back end authenticates as itself (or as your title) and calls XBOX services on behalf of players. This is **service-to-service (S2S)** authentication.
+
+Use S2S when your title needs to:
+
+- Write authoritative stats or achievements from a dedicated server (client cannot be trusted).
+- Batch-query presence or profile data for many users.
+- Create or modify MPSD sessions from a matchmaker service.
+- Publish global Title Storage blobs from a content pipeline.
+- Ingest the **deleted accounts list** for GDPR compliance.
+
+<Warning>
+  Never embed publisher signing keys or business partner certificates in shipped client code. S2S credentials belong on a hosted back end.
+</Warning>
+
+## Authentication surfaces
+
+S2S auth comes in a few flavours depending on the caller:
+
+- **Title service authentication** — your back end authenticates as the **title**, using a business partner certificate registered in Partner Center. Used for stat/achievement writes and MPSD-S2S.
+- **Web service authentication** — your back end authenticates as an **independent web service** (identified by a relying party). Used when your service is not tied to a specific title.
+- **Website authentication** — companion websites delegate XBOX sign-in via a Partner Center-configured web endpoint.
+
+## XSTS tokens (details)
+
+Every authenticated XBOX services call carries an **XSTS token**. The token is a signed JWT-like envelope whose claims are validated by the receiving service.
+
+Typical claims:
+
+| Claim | Meaning |
+| --- | --- |
+| `xuid` | Signed-in XUID (empty for pure S2S). |
+| `usr` | User class (user vs. dummy). |
+| `agg` | Age group (Child, Teen, Adult). |
+| `tid` | Title ID. |
+| `sbx` | Sandbox ID (`RETAIL`, `XDKS.1`, ...). |
+| `dvr` | Device region. |
+| Privacy / permission flags | Communication, cross-network, UGC, etc. |
+
+On your back end:
+
+1. Validate the token signature against the XBOX services JWK.
+2. Confirm `tid` matches your title's title ID.
+3. Confirm `sbx` matches the environment (do not accept `RETAIL` traffic in a `DEV` service).
+4. Enforce privilege / privacy claims before honouring the request.
+
+The GDK ships a **sample XSTS token** and **token-claims reference** for validation testing.
+
+## Custom service configuration in Partner Center
+
+Before your back end can mint or receive S2S tokens, configure the pieces in Partner Center:
+
+### Relying parties
+
+A **relying party** is a named endpoint your back end will call. Register the URL and the certificate that identifies the caller. Relying parties gate what XSTS tokens can be issued for.
+
+### Access policies
+
+**Access policies** describe which relying parties can issue tokens with which claims. Set per-scope permissions here (e.g. "allow this relying party to write to my Title Storage container").
+
+### Single sign-on (SSO)
+
+If you have multiple XBOX-authenticated services (companion site, back-end telemetry), configure **single sign-on** so a signed-in user's session flows across them without re-prompting.
+
+### Web services
+
+Register the **web services** your back end exposes so XSTS tokens can target them. Web service configuration takes a service URL, a certificate, and permitted claim sets.
+
+## S2S calls to XBOX services
+
+Once configured, common S2S call patterns include:
+
+- **Title service calls** — direct HTTPS from your back end to XBOX services REST endpoints, authenticated with a title service token.
+- **MPSD service-to-service** — create sessions, migrate hosts, and update session state from a matchmaker or dedicated server. Preferred over client-authored sessions when the server owns match state.
+- **Get deleted accounts list** — poll the deleted-accounts feed on a schedule (daily is typical) and remove the returned XUIDs from your persistent stores to stay GDPR-compliant.
+
+## Website sign-in for title websites
+
+Companion websites (event portals, LFG boards) can sign users in with their XBOX identity via **website authentication**:
+
+- Configure the web endpoint in Partner Center.
+- Redirect users through the XBOX sign-in flow.
+- Receive an XSTS token scoped to your web service; validate as above.
+
+## Best practices
+
+- **Cache tokens** — S2S tokens live for hours; re-minting on every request is wasteful. Cache with a safety margin before expiry.
+- **Rotate certificates** — Partner Center supports overlapping certs so you can rotate without downtime.
+- **Log denied claims** — 403s from XBOX services usually mean a missing access policy or a stale relying-party binding.
+- **Test with a DEV sandbox first** — never prove S2S out against RETAIL.
+- **Segregate credentials by environment** — separate DEV / CERT / RETAIL certificate stores in your back end.
+
+## Related
+
+- [Identity & auth](/services/identity) — client-side XSTS acquisition.
+- [Partner Center config](/services/partner-center-config) — where relying parties, access policies, and SSO are authored.
+- [Multiplayer](/services/multiplayer) — MPSD S2S session patterns.
+- [Develop & test](/services/develop-and-test) — troubleshooting sign-in and token errors.
