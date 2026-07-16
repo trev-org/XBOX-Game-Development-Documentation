@@ -1,0 +1,79 @@
+---
+title: "XDSP overview"
+sidebarTitle: "XDSP"
+description: "Hardware DSP on Xbox Series X|S for FFT, convolution, and enveloping."
+icon: "microchip"
+tag: "NDA"
+---
+
+**XDSP** is a hardware digital signal processor available on Xbox Series X|S. It offloads compute-intensive audio DSP work — FFT/IFFT, convolution (including with envelope), IR reduction, and enveloping — from the CPU.
+
+<Note>
+  XDSP is available on Series X|S. Xbox One titles fall back to CPU DSP paths or the XAudio2 built-in effects.
+</Note>
+
+## Feature set
+
+<CardGroup cols={2}>
+  <Card title="FFT / IFFT" icon="chart-line" href="/gdk/audio/xdsp-fft-ifft">
+    Frequency-domain transforms for analysis, synthesis, and filter design.
+  </Card>
+
+  <Card title="Convolution" icon="filter" href="/gdk/audio/xdsp-convolution">
+    Time-domain convolution for impulse-response reverb and complex filtering.
+  </Card>
+
+  <Card title="Convolution with envelope" icon="wave-square" href="/gdk/audio/xdsp-convolution-envelope">
+    Convolution followed by dynamic envelope application in a single pipeline.
+  </Card>
+
+  <Card title="Enveloping" icon="chart-simple" href="/gdk/audio/xdsp-enveloping">
+    Dynamic amplitude envelope application driven by a control signal.
+  </Card>
+
+  <Card title="IR reduction" icon="minimize" href="/gdk/audio/xdsp-ir-reduction">
+    Reduce impulse-response length while preserving perceived quality — saves memory and DSP cost.
+  </Card>
+</CardGroup>
+
+## When to use XDSP
+
+XDSP is designed for workloads that would otherwise saturate the CPU:
+
+- **Convolution reverb** across many voice sends
+- **Head-related transfer function (HRTF)** processing for spatial audio
+- **Impulse-response** based effects (guitar amp cabs, environmental IRs)
+- Custom **frequency-domain** effects
+
+<Warning>
+  XDSP is a shared hardware resource. Coordinate its use with any middleware or engine subsystems that may also target the DSP.
+</Warning>
+
+## Programming model
+
+XDSP work is submitted as commands, similar to XAPU:
+
+<Steps>
+</Steps>
+
+## Best practices
+
+- Create clients up front and reuse for the life of the game.
+- **16-byte alignment** on all buffers.
+- Prefer fewer clients with more streams over many clients with few streams.
+- Wait for command completion before freeing referenced buffers — the hardware may still be writing.
+- On suspend, stop submitting new commands — in-flight commands complete normally.
+
+## Walkthroughs
+
+- [XDSP FFT/IFFT walkthrough](/gdk/audio/xdsp-fft-ifft)
+- [XDSP convolution walkthrough](/gdk/audio/xdsp-convolution)
+- [XDSP convolution with envelope walkthrough](/gdk/audio/xdsp-convolution-envelope)
+- [XDSP enveloping walkthrough](/gdk/audio/xdsp-enveloping)
+- [XDSP IR reduction walkthrough](/gdk/audio/xdsp-ir-reduction)
+
+## Related
+
+- [Xbox Series X|S audio hardware](/gdk/audio/scarlett-audio)
+- [XAPU overview](/gdk/audio/xapu)
+- [Audio overview](/gdk/audio/overview)

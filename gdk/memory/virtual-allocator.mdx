@@ -1,0 +1,69 @@
+---
+title: "Virtual Memory Allocator"
+sidebarTitle: "Virtual Memory Allocator"
+description: "Internal virtual memory allocator: free lists, expensive operations, page trimming, and GPU Optimal vs Standard on Series X|S Advanced."
+icon: "list-tree"
+tag: "NDA"
+---
+
+The **virtual memory allocator** is the piece of the GDK memory manager that hands physical pages to `VirtualAlloc`, `XMemVirtualAlloc`, and the Win32 heap. Understanding its structure explains why some allocation patterns are cheap and others are expensive.
+
+## Free lists
+
+The allocator maintains three free lists, one per page size:
+
+| Free list | Page size | Notes |
+| --- | --- | --- |
+| Large | **2 MB** | Highest-throughput commits. Used by Win32 heaps and large `XMemVirtualAlloc` calls. |
+| Medium | **64 KB** | Preferred size for graphics resources (Xbox GPU natively supports 64 KB). |
+| Small | **4 KB** | Legacy / compat. Fragments most easily. |
+
+<Note>
+  On **Series X Advanced mode**, each free list is effectively **doubled** to accommodate the extra title/tools memory.
+</Note>
+
+## Expensive operations
+
+Some operations require the allocator to walk multiple structures, invalidate GPU caches, or rebuild page tables. Avoid them on the hot path:
+
+- **WC ↔ RW conversion.** Changing a page from `WRITECOMBINE` to `WRITEBACK` (or vice-versa) forces cache-attribute flushes and page-table rewrites.
+- **Coalescing** adjacent free ranges into larger blocks. Coalescing runs opportunistically but is expensive when a large working set churns.
+- **Graphics 40-bit addressing.** GPU-visible pages must fit in the GPU's 40-bit address window; when the working set is large, the allocator may reshuffle pages to keep GPU allocations within reach.
+
+## Page trimming
+
+If the free lists cannot satisfy a request at the desired page size, the allocator will attempt to **trim** larger pages down or upgrade smaller pages. Trimming is generally fast, but repeatedly trimming a 2 MB page down to 4 KB pages and back again is a signature of a fragmented workload.
+
+## 4 KB fragmentation
+
+Because 4 KB is the finest granularity, applications that make many small, differently-sized `VirtualAlloc` requests can rapidly fragment the 4 KB pool. The remedy is to allocate **larger** blocks and sub-allocate inside them via `XMemAlloc` or a custom allocator.
+
+## Cache manager
+
+The kernel's cache manager reserves **256 MB windows** of address space for mapping cached file content. These windows are separate from title heap allocations and are visible in `XMemVirtualQuery` results with a distinct partition-ownership marker.
+
+## Series X|S Advanced — GPU Optimal vs Standard
+
+On Series X|S in Advanced mode, GPU memory bandwidth is not uniform:
+
+| Region | Bandwidth | Best for |
+| --- | --- | --- |
+| **GPU Optimal** | Highest | Render targets, textures, primary GPU workloads. |
+| **Standard** | Reduced | CPU-dominant data, streaming buffers, staging. |
+
+When you request GPU-visible memory, the allocator prefers the GPU Optimal region. Retail Series X|S consoles have a fixed split; on dev kits the extra Advanced memory sits in the Standard region.
+
+## Guidelines
+
+1. Prefer **2 MB pages** for large, long-lived reservations — they reduce TLB pressure and page-table cost.
+2. Prefer **64 KB pages** for GPU resources.
+3. Reserve up front, sub-allocate at runtime. Never `VirtualAlloc`/`VirtualFree` per frame.
+4. Choose a cache attribute (WB / WC / UC) at creation and keep it stable for the life of the reservation.
+5. Watch `XMemGetWorkingSetStatistics` for growth in the 4 KB pool — it is the earliest sign of fragmentation.
+
+## See also
+
+- [Overview](/gdk/memory/overview)
+- [Technical details](/gdk/memory/details)
+- [Working with the memory manager](/gdk/memory/working)
+- [Cross-core memory costs](/gdk/memory/cross-core-costs)

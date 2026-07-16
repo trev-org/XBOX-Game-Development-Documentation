@@ -1,0 +1,87 @@
+---
+title: "PC port behavior"
+sidebarTitle: "PC port behavior"
+description: "How MSIXVC capabilities, the default Windows firewall, and third-party firewalls affect port access for GDK titles on PC."
+icon: "desktop"
+---
+
+## Port rules
+
+- PC ports allow all **outbound** TCP and UDP traffic while blocking **unsolicited inbound** TCP and UDP when the default Windows firewall is used.
+- The preferred local UDP multiplayer port behaves the same but allows **unsolicited inbound UDP** packets. TCP can't be used on it.
+- Outbound flows always work — no attributes required. After the user sends the first packet to a remote endpoint, subsequent incoming packets from that endpoint are delivered.
+- For peer-to-peer in GDK titles, use UDP on the preferred multiplayer port and perform firewall/NAT punching. Unsolicited inbound TCP is blocked unless the user exempts the game. Unsolicited inbound UDP is blocked by default and requires either user exemption or firewall punching.
+- Exemptions can be added by the user in firewall settings or declared as specific attributes at packaging time.
+- **PC users can use third-party firewalls**, which impact overall port behavior. See below.
+
+<Tip>
+  [PlayFab Party](/gdk/networking/game-mesh/playfab-party) provides a peer-to-peer topology that automatically handles this. Alternatively, see [STUN (RFC 5389)](https://tools.ietf.org/html/rfc5389) and [ICE (RFC 8445)](https://tools.ietf.org/html/rfc8445) as starting points for your own implementation.
+</Tip>
+
+## Unsolicited inbound traffic management
+
+PC titles built with the GDK ship as **MSIXVC** packages. You can declare how unsolicited inbound traffic is handled by adding [`privateNetworkClientServer`](/uwp/schemas/appxpackage/uapmanifestschema/element-capability) or [`internetClientServer`](/uwp/schemas/appxpackage/uapmanifestschema/element-capability) capabilities in `MicrosoftGame.config`.
+
+<Warning>
+  Users' firewall settings can override these attributes and make them ineffective. See [Firewall and how it affects traffic](#firewall-and-how-it-affects-traffic).
+</Warning>
+
+| `MicrosoftGame.config` | Access | Expected experience |
+| --- | --- | --- |
+| **`privateNetworkClientServer`** specified | Allow unsolicited inbound LAN traffic | Exemptions added during executable install per game package. |
+| **`privateNetworkClientServer`** NOT specified | Blocks all unsolicited inbound LAN traffic | No notification. Unsolicited UDP/TCP silently dropped. |
+| **`internetClientServer`** specified | Allow unsolicited inbound peer-to-peer internet traffic | Exemptions added during executable install per game package. |
+| **`internetClientServer`** NOT specified | Blocks all unsolicited inbound peer-to-peer internet traffic | No notification. Unsolicited UDP/TCP silently dropped. |
+
+### Editing `MicrosoftGame.config`
+
+<Steps>
+  <Step title="Open the config">
+    Open `MicrosoftGame.config` in your title's source.
+  </Step>
+  <Step title="Add extended attributes">
+    Add the snippet below and save.
+  </Step>
+</Steps>
+
+```xml
+<ExtendedAttributeList>
+  <ExtendedAttribute Name="Capability" Value="privateNetworkClientServer"/>
+  <ExtendedAttribute Name="Capability" Value="internetClientServer"/>
+</ExtendedAttributeList>
+```
+
+<Note>
+  When you build the MSIXVC package, this will generate a warning in the `SubmissionValidator` log file. Properties added to `MicrosoftGame.config` are applied to the generated `AppXManifest.xml`.
+</Note>
+
+## Firewall and how it affects traffic
+
+### GDK executable games
+
+<Tabs>
+  <Tab title="Default Windows 10 firewall">
+    - `privateNetworkClientServer` and `internetClientServer` attributes function as described above.
+    - Outbound flows always work with or without these attributes.
+  </Tab>
+  <Tab title="Third-party firewalls (~30–40% of users)">
+    - `privateNetworkClientServer` and `internetClientServer` have **no effect** — unsolicited inbound packets are dropped silently, regardless of your packaging.
+    - All ports — including the preferred local UDP multiplayer port — are subject to the third-party firewall's policies.
+    - Outbound flows typically work, though the user may need to exempt your title in the third-party firewall settings.
+  </Tab>
+</Tabs>
+
+### Win32 executable games (for reference)
+
+<Note>
+  GDK titles are not Win32 titles. We recommend PC titles use the GDK.
+</Note>
+
+With the default Windows firewall, on first launch users see a notification to allow or deny network access to the game server. Outbound flows always work without UI.
+
+## See also
+
+- [Windows Sockets 2 (Winsock)](/windows/desktop/WinSock/windows-sockets-start-page-2)
+- [Xbox console port behavior](/gdk/networking/game-mesh/xbox-console-port-behavior)
+- [Preferred UDP multiplayer port](/gdk/networking/game-mesh/preferred-udp-port)
+- [PlayFab Party](/gdk/networking/game-mesh/playfab-party)

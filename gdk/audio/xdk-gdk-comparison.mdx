@@ -1,0 +1,89 @@
+---
+title: "Comparison of XDK and GDK audio API"
+sidebarTitle: "XDK → GDK comparison"
+description: "How the Xbox One XDK audio APIs changed in the Microsoft Game Development Kit."
+icon: "arrow-right-arrow-left"
+tag: "NDA"
+---
+
+This topic describes how the audio APIs in the Xbox One Software Development Kit (XDK) were changed for the Microsoft Game Development Kit (GDK).
+
+## Guidelines
+
+<AccordionGroup>
+  <Accordion title="Detect and adapt to endpoint channel counts">
+    Call [`IAudioClient::IsFormatSupported`](https://learn.microsoft.com/windows/desktop/api/audioclient/nf-audioclient-iaudioclient-isformatsupported) first. If the preferred format isn't supported, fall back to the mix format via [`IAudioClient::GetMixFormat`](https://learn.microsoft.com/windows/desktop/api/audioclient/nf-audioclient-iaudioclient-getmixformat).
+
+    Titles must handle 2.0, 5.1, and 7.1 endpoints natively and react in real time to invalidations. If you don't want to author three channel sources, set [`AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM`](https://learn.microsoft.com/windows/desktop/coreaudio/audclnt-streamflags-xxx-constants) on `Initialize` — you still must react to invalidations.
+  </Accordion>
+
+  <Accordion title="Enumerate endpoints via MMDevice API">
+    Use the [MMDevice API](https://learn.microsoft.com/windows/desktop/coreaudio/mmdevice-api). For the main HDMI endpoint only, call [`GetDefaultAudioEndpoint`](https://learn.microsoft.com/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdeviceenumerator-getdefaultaudioendpoint).
+  </Accordion>
+
+  <Accordion title="Render audio from one process at a time">
+    On Xbox, only one process renders audio at a time.
+  </Accordion>
+
+  <Accordion title="Xbox Manager remote control limitation">
+    Xbox Manager remote control supports audio through WASAPI but does **not** support audio streaming from ISAC when Dolby / DTS home theater settings are activated.
+  </Accordion>
+
+  <Accordion title="Handle WASAPI invalidations">
+    Many WASAPI methods can return [`AUDCLNT_E_DEVICE_INVALIDATED`](https://learn.microsoft.com/windows/win32/api/audioclient/nf-audioclient-iaudioclient-start) if the endpoint becomes invalid. To repro: change the HDMI channel count while running. Error codes returned during invalidation:
+
+    - `AUDCLNT_E_DEVICE_INVALIDATED`
+    - `AUDCLNT_E_RESOURCES_INVALIDATED`
+    - `AUDCLNT_E_UNSUPPORTED_FORMAT`
+    - `AUDCLNT_E_ENDPOINT_CREATE_FAILED`
+
+    See [Recovering from an invalid device error](https://learn.microsoft.com/windows/win32/coreaudio/recovering-from-an-invalid-device-error).
+  </Accordion>
+
+  <Accordion title="Handle ISAC invalidations">
+    For ISAC, invalidation occurs when the audio endpoint changes or the spatial rendering mode changes during playback — including plugging/unplugging a headset while the console is using a spatial format.
+
+    Affected methods:
+
+    - [`ISpatialAudioObjectRenderStreamBase`](https://learn.microsoft.com/windows/win32/api/spatialaudioclient/nn-spatialaudioclient-ispatialaudioobjectrenderstreambase)
+    - [`ISpatialAudioObjectRenderStream`](https://learn.microsoft.com/windows/win32/api/spatialaudioclient/nn-spatialaudioclient-ispatialaudioobjectrenderstream)
+    - [`ISpatialAudioObjectRenderStreamForMetadata`](https://learn.microsoft.com/windows/win32/api/spatialaudiometadata/nn-spatialaudiometadata-ispatialaudioobjectrenderstreamformetadata)
+    - [`ISpatialAudioObjectRenderStreamForHrtf`](https://learn.microsoft.com/windows/win32/api/spatialaudiohrtf/nn-spatialaudiohrtf-ispatialaudioobjectrenderstreamforhrtf)
+
+    Values that indicate invalidation:
+
+    - `SPTLAUDCLNT_E_DESTROYED`
+    - `AUDCLNT_E_DEVICE_INVALIDATED`
+    - `AUDCLNT_E_RESOURCES_INVALIDATED`
+    - `AUDCLNT_E_UNSUPPORTED_FORMAT`
+    - `SPTLAUDCLNT_E_INTERNAL`
+
+    See [Recovering from an invalid device error — spatial sound](https://learn.microsoft.com/windows/win32/coreaudio/recovering-from-an-invalid-device-error-spatial-sound).
+  </Accordion>
+
+  <Accordion title="IMMDevice::Activate can return invalidation errors">
+    Invalidation can happen at any time after the [`IMMDevice`](https://learn.microsoft.com/windows/win32/api/mmdeviceapi/nn-mmdeviceapi-immdevice) is obtained — including from `IMMDevice::Activate`. On any invalidation error, re-create your streams by obtaining a new `IMMDevice` through [`IMMDeviceEnumerator`](https://learn.microsoft.com/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdevice-activate).
+  </Accordion>
+</AccordionGroup>
+
+## API changes
+
+| Platform | XDK API | GDK replacement | Notes |
+| --- | --- | --- | --- |
+| PC & Xbox | `ActivateAudioInterfaceAsync`, `IActivateAudioInterfaceAsync` | [`IMMDevice::Activate()`](https://learn.microsoft.com/windows/desktop/api/mmdeviceapi/nf-mmdeviceapi-immdevice-activate) | Synchronous activation from an `IMMDevice`. Use MMDevice API to enumerate endpoints. |
+| PC & Xbox | `IAudioClient2::RegisterXBoxVolumeNotificationCallback` / `Unregister...` | `AudioStateMonitor` API | Was used to alert titles that game media streams were attenuated. |
+| PC & Xbox | `ExcludeFromGameDVRCapture` | — | Use `AUDCLNT_STREAMFLAGS_EXCLUDE_FROM_GAMEDVR_CAPTURE` on `AudioClient` init. Include `XAUDIO2XBOX.H`. |
+| PC & Xbox | `IMMGameDVRDeviceCreator` | — | Deprecated. |
+| Xbox | `IMMXBoxDevice` | — | Deprecated. |
+| PC & Xbox | `GetPnpId` | — | Deprecated. |
+| Xbox | `IMMXboxDeviceEnumerator` | [`IAudioClient::GetMixFormat`](https://learn.microsoft.com/windows/desktop/api/audioclient/nf-audioclient-iaudioclient-getmixformat) |  |
+| Xbox | `GetHdAudioChannelCounts`, `RegisterChannelCountNotificationCallback`, `Unregister...` | [`IAudioClient::GetMixFormat`](https://learn.microsoft.com/windows/desktop/api/audioclient/nf-audioclient-iaudioclient-getmixformat) | On endpoint format change, streams invalidate; next `GetMixFormat` returns the new channel count. |
+| Xbox | `DisableBitStreamOut`, `RestoreBitstreamOut` | — | Deprecated. |
+| PC & Xbox | `EnableSpatialAudio` | — | No longer required to use spatial sound. |
+| PC & Xbox | `SetWasapiThreadAffinityMask` | — | Deprecated. XAudio2 titles can set the `XAudio2Processor` parameter via `XAudio2CreateWithSharedContexts`. |
+
+## Related
+
+- [Audio overview](/gdk/audio/overview)
+- [WASAPI](/gdk/audio/wasapi)
+- [Spatial sound](/gdk/audio/spatial-audio)

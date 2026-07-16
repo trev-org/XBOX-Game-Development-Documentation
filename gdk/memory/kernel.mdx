@@ -1,0 +1,66 @@
+---
+title: "Kernel memory usage"
+sidebarTitle: "Kernel memory usage"
+description: "How kernel objects and drivers charge memory to your title's noise floor, plus how to instrument and profile them."
+icon: "linux"
+tag: "NDA"
+---
+
+Even with the title partition completely under your control, some memory is consumed on your behalf by the **kernel**. This memory shows up in `XMemGetWorkingSetStatistics` totals but is not visible from the general `XMemAlloc` or Win32 heap hooks. Understanding the kernel "noise floor" is a prerequisite to closing the gap between accounted-for and total memory.
+
+## The 16 MB noise floor
+
+Kernel memory attributable to your title averages around **16 MB** of physical memory. Because it is charged to the title partition, you must plan for it in your memory budget.
+
+- **14 MB — warning threshold.** Above this, PIX and the runtime start emitting diagnostics.
+- **16 MB — error threshold.** Continued growth past this level indicates a real leak in `CreateFile`, kernel handles, or a driver.
+
+## Instrumented kernel APIs
+
+The following APIs are instrumented so their allocations bill back to your title's kernel budget, and PIX / xperf can attribute them:
+
+- `CreateFile` / `CreateFile2`
+- `CreateEvent` / `CreateEventEx`
+- `CreateSemaphore` / `CreateSemaphoreEx`
+- `CreateMutex` / `OpenMutex`
+
+Most kernel handles are allocated from pool memory tagged with a **4-character pool tag**. Recognize these tags in profiler output to identify the source of a leak.
+
+### Pool tag reference
+
+| Tag | Owner | What it allocates |
+| --- | --- | --- |
+| `Even` | Kernel | Event objects. |
+| `File` | Kernel | File objects, per open handle. |
+| `Sema` | Kernel | Semaphore objects. |
+| `Mmww` | Memory manager | Working-set metadata. |
+| `MmSt` | Memory manager | Prototype PTEs used by section objects. |
+| `Mdl ` | I/O manager | Memory Descriptor Lists for direct I/O. |
+| `XFSk` | XFS driver | Directory / metadata caches for the game file system. |
+| `TcDM` | TCP driver | TCP data mappings. |
+| `AfdB` | Winsock driver | Socket buffers. |
+
+## `XMemTransferMemory`
+
+Some kernel/driver features permit you to donate physical pages from the title partition into a driver reservation temporarily via `XMemTransferMemory`. This can move a large buffer's cost off the general working set until it is returned.
+
+## Profiling with xperf / WPA
+
+1. Capture a profile with `xperf -on Base+PROFILE+DISK_IO` on the connected kit.
+2. Open the `.etl` in WPA.
+3. Add the **Pool Allocations** and **File Objects** graphs.
+4. Filter by title process. Group by pool tag to find where allocations are accumulating.
+5. Correlate with your gameplay markers to identify leaks and hot paths.
+
+## Recommendations
+
+- Cache long-lived kernel handles (files, events, semaphores) at load time rather than allocating per frame.
+- Prefer overlapped I/O with a small pool of reusable `HANDLE`s over open-close-per-file.
+- Match `CloseHandle` with every kernel-object create; leaks here are opaque to normal heap tracking.
+- Budget 16 MB for the kernel line item in your memory sheet from day one.
+
+## See also
+
+- [Overview](/gdk/memory/overview)
+- [Diagnostics and memory tracking](/gdk/memory/diagnostics)
+- [Virtual Memory Allocator](/gdk/memory/virtual-allocator)

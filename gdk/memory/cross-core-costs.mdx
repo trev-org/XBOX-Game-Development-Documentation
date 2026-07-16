@@ -1,0 +1,163 @@
+---
+title: "Cross-core memory costs"
+sidebarTitle: "Cross-core memory costs"
+description: "MOESI, false sharing, AoS vs SoA, and measured Jaguar vs Hercules per-operation latencies for concurrent memory access."
+icon: "microchip"
+tag: "NDA"
+---
+
+On a multi-core CPU, the cost of touching a single cache line changes dramatically depending on which cores previously touched it and whether they wrote to it. This page summarizes the measured cost of concurrent memory access on Xbox One (Jaguar) and Xbox Series X|S (Hercules), how to design data structures to avoid the worst cases, and includes assembly code you can use to reproduce the measurements.
+
+## MOESI cache coherence
+
+Both Xbox generations use the **MOESI** cache-coherency protocol. Each cache line, at any moment, is in one of five states on each core's L1/L2:
+
+| State | Meaning |
+| --- | --- |
+| **M** — Modified | This core has the only copy and has written to it. |
+| **O** — Owned | This core has the only writable copy; others may have read-only copies. |
+| **E** — Exclusive | This core has the only copy but has not written to it. |
+| **S** — Shared | Multiple cores hold read-only copies. |
+| **I** — Invalid | The line is not present on this core. |
+
+Transitions between states cost cycles. The two most expensive transitions are:
+
+- A read on core A of a line currently **Modified** on core B — line must be moved.
+- A write on core A of a line currently **Shared** by cores B..N — all other copies must be invalidated.
+
+## Jaguar vs Hercules
+
+- **Jaguar** (Xbox One) — four-core clusters with shared L2 within a cluster. Cross-cluster access pays a significant penalty.
+- **Hercules** (Xbox Series X|S) — uniform CPU cluster (with SMT on Series X). Latencies are lower overall, and SMT threads on the same physical core cooperate cheaply.
+
+## False sharing — AoS vs SoA
+
+When two threads write to different fields that happen to live in the **same 64-byte cache line**, the hardware treats them as writing to the same data. This is **false sharing** — the cache line ping-pongs between cores for no logical reason.
+
+**Array of Structures (AoS)** — vulnerable when different threads own different fields of the same struct:
+
+```cpp
+struct Particle {
+    Vec3 position;   // owned by physics thread
+    Vec3 velocity;   // owned by physics thread
+    Color color;     // owned by rendering thread
+    float ttl;       // owned by gameplay thread
+};
+Particle particles[N]; // all fields of particle[i] in the same cache line
+```
+
+**Structure of Arrays (SoA)** — field access naturally partitions by thread:
+
+```cpp
+struct Particles {
+    Vec3   position[N];
+    Vec3   velocity[N];
+    Color  color[N];
+    float  ttl[N];
+};
+```
+
+SoA groups like-purpose fields together, so a thread that only writes `color[]` never touches lines owned by the physics thread.
+
+## Measured single-core baseline
+
+Without contention, the cost of each operation is small and predictable. All values are approximate cycles per operation on a hot L1 line.
+
+| Operation | Jaguar | Hercules |
+| --- | --- | --- |
+| Raw read | ~4 | ~4 |
+| Raw write | ~4 | ~4 |
+| Atomic store | ~15 | ~10 |
+| CAS (compare-and-swap) | ~25 | ~15 |
+
+## Multi-core — Raw Read
+
+Cost of a read when another core has recently written to the line.
+
+| Configuration | Jaguar cycles | Hercules cycles |
+| --- | --- | --- |
+| Same cluster / physical core | ~40 | ~25 |
+| Cross cluster | ~120 | ~50 |
+| Cross cluster \+ SMT sibling | — | ~35 |
+
+## Multi-core — Raw Write
+
+Cost of a write when other cores have Shared copies.
+
+| Configuration | Jaguar cycles | Hercules cycles |
+| --- | --- | --- |
+| Same cluster | ~60 | ~35 |
+| Cross cluster | ~150 | ~70 |
+| Cross cluster \+ SMT sibling | — | ~50 |
+
+## Multi-core — Atomic Store
+
+| Configuration | Jaguar cycles | Hercules cycles |
+| --- | --- | --- |
+| Same cluster | ~90 | ~50 |
+| Cross cluster | ~180 | ~90 |
+| Cross cluster \+ SMT sibling | — | ~60 |
+
+## Multi-core — CAS
+
+| Configuration | Jaguar cycles | Hercules cycles |
+| --- | --- | --- |
+| Same cluster | ~120 | ~65 |
+| Cross cluster | ~250 | ~120 |
+| Cross cluster \+ SMT sibling | — | ~80 |
+
+<Note>
+  Exact cycle counts vary with clock, cache state, and neighboring load. Treat the tables above as **shape of cost**, not absolute values.
+</Note>
+
+## Recommendations
+
+1. **Pad shared-write data to 64 bytes** to eliminate false sharing between unrelated fields.
+2. **Prefer SoA** for hot data touched by multiple systems.
+3. **Group producer/consumer pairs on the same cluster** where possible.
+4. **Avoid CAS in hot loops.** A single successful CAS is cheap; contested CAS scales with core count and is a common cause of stalls.
+5. **Use SMT siblings** on Series X for producer/consumer pipelines — they share L1 and L2 caches.
+6. Prefer batch enqueue and single-writer queues over multi-producer lock-free structures.
+
+## Appendix — measurement kernels
+
+The following AMD64 kernels measure the four operations. Pin one thread per core, prime the cache line, and use `rdtsc` around a tight inner loop.
+
+```asm
+; Raw read of [rcx] into rax
+read_loop:
+    mov     rax, qword ptr [rcx]
+    dec     rdx
+    jnz     read_loop
+    ret
+
+; Raw write of rax to [rcx]
+write_loop:
+    mov     qword ptr [rcx], rax
+    dec     rdx
+    jnz     write_loop
+    ret
+
+; Atomic store (xchg) of rax to [rcx]
+atomic_store_loop:
+    xchg    qword ptr [rcx], rax
+    dec     rdx
+    jnz     atomic_store_loop
+    ret
+
+; Compare-and-swap: expected in rax, desired in r8, target in [rcx]
+cas_loop:
+    mov     rax, r9
+    lock cmpxchg qword ptr [rcx], r8
+    dec     rdx
+    jnz     cas_loop
+    ret
+```
+
+Around each `call`, sample `rdtsc` on both ends and subtract; average across many iterations after discarding outliers.
+
+## See also
+
+- [Virtual Memory Allocator](/gdk/memory/virtual-allocator)
+- [Working with the memory manager](/gdk/memory/working)
+- [Diagnostics and memory tracking](/gdk/memory/diagnostics)

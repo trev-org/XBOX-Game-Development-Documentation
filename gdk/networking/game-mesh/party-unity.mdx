@@ -1,0 +1,49 @@
+---
+title: "PlayFab Party SDK for Unity"
+sidebarTitle: "PFP SDK for Unity"
+description: "Use the PlayFab Party SDK for Unity to call Party APIs from your Unity multiplayer title."
+icon: "cube"
+---
+
+PlayFab Party is a cross-platform, real-time communication and networking service that simplifies low-latency chat and data communication for multiplayer games. The Party Unity plug-in lets you call Party APIs directly from your Unity title.
+
+See [Azure PlayFab Party SDKs](/gaming/playfab/features/multiplayer/networking/party-sdks) for supported platforms. Download the plug-in from [the PlayFab GitHub](https://github.com/playfab/PlayFabPartyUnity).
+
+## Prerequisites
+
+- **PlayFab account** ([playfab.com](https://www.playfab.com)) is registered and set up:
+  - Studio and app configured (TitleID exists)
+  - Party feature enabled
+  - Try the PlayFab Unity test app first to verify integration
+- **PlayFab Unity Editor Extensions** plug-in installed
+- **PlayFab (Core) SDK** installed via PlayFab Unity Editor Extensions
+- If you're targeting a GDK platform (Xbox One, Xbox Series X|S, or PC):
+  - Access to the [Microsoft Game Development Kit (GDK)](https://aka.ms/gdkdl)
+  - GDK installed with all optional components
+  - GDK Unity plug-in installed (from the GDK portal Add-ins section)
+  - For Xbox or Xbox Series X|S:
+    - Unity Xbox Series X|S Add-on installed
+    - Unity Xbox One Add-on installed
+    - Party on Xbox consoles requires Xbox services authentication:
+      - Xbox app title registered in Partner Center
+      - SandboxID and developer Xbox services account configured for the registered Xbox app title
+
+<Note>
+  On GDK for PC, the Party Unity SDK is ready as soon as Unity build tools for GDK PC are available.
+</Note>
+
+## What's inside
+
+| Folder | Contents |
+| --- | --- |
+| `/PlayFabPartySDK` | APIs to call from your game for networking, in-game chat, and other Party features |
+| `/PlayFabPartySDK/Examples` | A simple demo scene with a script showing how to call the Party APIs |
+| `/PlayFabPartySDK/Prefabs` | The `PlayFabMultiplayerManager` prefab |
+| `/PlayFabPartySDK/Setup/GameCore` | One-time setup scripts used to prepare the SDK to build for the GDK |
+
+For a step-by-step walkthrough, see [Quickstart: PlayFab Party Unity Plugin](/gaming/playfab/features/multiplayer/networking/party-unity-plugin-quickstart).
+
+## See also
+
+- [PlayFab Party](/gdk/networking/game-mesh/playfab-party)
+- [PlayFab Party OSS for Unreal](/gdk/networking/game-mesh/party-unreal)

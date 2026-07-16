@@ -1,0 +1,92 @@
+---
+title: "XAudio2 overview"
+sidebarTitle: "XAudio2"
+description: "Primary game audio API on Xbox — voices, DSP, and codecs."
+icon: "volume-high"
+tag: "NDA"
+---
+
+**XAudio2** is the primary Microsoft audio API for games. It provides a signal-processing and mixing foundation with a low-level, low-latency, cross-platform API that supports compressed audio formats and dynamic effect processing.
+
+XAudio2 is available on Xbox, Windows, and other Microsoft platforms with a consistent API. On Xbox, XAudio2 implements SHAPE-accelerated paths where the hardware supports it.
+
+## Voice model
+
+XAudio2 processes audio through a graph of voices:
+
+<CardGroup cols={3}>
+  <Card title="Source voice" icon="volume-low">
+    Represents a stream of audio data (a sound, a music track, dialog). Submits audio buffers for playback.
+  </Card>
+
+  <Card title="Submix voice" icon="sliders">
+    Mixes multiple source voices; applies DSP effects (reverb, EQ, etc.); feeds into another submix or the mastering voice.
+  </Card>
+
+  <Card title="Mastering voice" icon="speaker">
+    Final output stage. Receives audio from source and submix voices and sends it to the audio endpoint.
+  </Card>
+</CardGroup>
+
+## Supported formats
+
+| Format | Notes |
+| --- | --- |
+| **PCM** | 8/16/24/32-bit integer, 32-bit float. Any sample rate up to 384 kHz. |
+| **XMA2** | Hardware-decoded on Xbox. See [XMA2 overview](/gdk/audio/xma2). |
+| **xWMA** | Software-decoded. Useful for dialog and music where high compression is desired. See [xWMA overview](/gdk/audio/xwma). |
+| **ADPCM** | Software-decoded. See [ADPCM overview](/gdk/audio/adpcm). |
+
+## Common tasks
+
+<Steps>
+  <Step title="Create the engine">
+    Call [`XAudio2Create`](https://learn.microsoft.com/windows/desktop/api/xaudio2/nf-xaudio2-xaudio2create) to instantiate the `IXAudio2` engine.
+  </Step>
+  <Step title="Create a mastering voice">
+    Call `IXAudio2::CreateMasteringVoice` to hook into the system endpoint.
+  </Step>
+  <Step title="Create source and submix voices">
+    Use `CreateSourceVoice` for playing streams and `CreateSubmixVoice` for bus/effect chains.
+  </Step>
+  <Step title="Submit buffers">
+    Queue audio data with `IXAudio2SourceVoice::SubmitSourceBuffer`. Start playback with `Start`.
+  </Step>
+  <Step title="Route and mix">
+    Set output voices with `SetOutputVoices` and configure sends. Apply effects via `SetEffectChain`.
+  </Step>
+</Steps>
+
+For a full walkthrough, see [Use XAudio2 to play a sound](/gdk/audio/xaudio2-play-sound).
+
+## DSP effects
+
+XAudio2 hosts APO-style effect DLLs on the voice graph. The GDK ships:
+
+- **Reverb** — X3DAudio-compatible I3DL2 reverb
+- **Volume Meter** — peak / RMS metering
+- **Equalizer** — four-band parametric EQ
+- **XAPO base library** — authoring custom effects (`CXAPOBase`, `CXAPOParametersBase`)
+
+## 3D audio
+
+X3DAudio computes voice parameters (volume, pitch, filter, reverb send) from listener/emitter geometry. Feed the results into XAudio2 voice APIs each frame. For elevation cues and speaker-agnostic spatialization, use the spatial-audio APIs — see [Spatial sound overview](/gdk/audio/spatial-audio).
+
+## Callbacks and threading
+
+- **`IXAudio2EngineCallback`** — engine-wide callbacks (per audio processing pass, critical error).
+- **`IXAudio2VoiceCallback`** — per-voice callbacks (buffer start, buffer end, loop end, stream end).
+
+Engine callbacks fire on the audio thread; do minimal work and avoid locks that the audio thread might contend on with the game thread.
+
+## Interop with SHAPE/ACP
+
+If you use direct SHAPE/ACP programming alongside XAudio2, follow the sharing rules in the Remarks section of [`XAudio2Create`](https://learn.microsoft.com/windows/desktop/api/xaudio2/nf-xaudio2-xaudio2create). Both systems must cooperate on SHAPE and XMA resources.
+
+## Related
+
+- [Use XAudio2 to play a sound](/gdk/audio/xaudio2-play-sound)
+- [XMA2 overview](/gdk/audio/xma2)
+- [xWMA overview](/gdk/audio/xwma)
+- [ADPCM overview](/gdk/audio/adpcm)
+- [Audio overview](/gdk/audio/overview)

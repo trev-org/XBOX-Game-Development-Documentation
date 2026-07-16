@@ -1,0 +1,272 @@
+---
+title: "DirectStorage overview"
+sidebarTitle: "Overview"
+description: "DirectStorage on XBOX Series X|S: high-throughput NVMe I/O with priority queues, hardware decompression, cancellation, and the IDStorageFactoryX / IDStorageQueueX API surface."
+icon: "bolt"
+---
+
+This article provides an overview of the DirectStorage APIs for **XBOX Series X|S consoles only**. For DirectStorage on Desktop, see [aka.ms/directstorage](https://aka.ms/directstorage).
+
+Modern NVMe storage devices connected over PCIe achieve very high throughput and IOPS. The overhead of the traditional Win32 file APIs means that even when the drive can deliver that bandwidth, using it comes with an unacceptable CPU cost — especially for large numbers of small requests.
+
+DirectStorage closely interacts with the underlying NVMe hardware to remove most of the operating system overhead. The design goal is to allow a title to sustain **up to 50,000 requests per second while using at most 5–10% of a single CPU core.**
+
+## What DirectStorage solves
+
+The existing XBOX One hardware and software has several limitations that hamper streaming next-generation content:
+
+- **High CPU usage.** Win32 file APIs can require an entire CPU core in overhead at high request counts.
+- **Insufficient disk bandwidth.** See _Maximizing File Performance on XBOX Series X|S_ and _Maximizing File Performance on XBOX One_ (NDA topics) for detail.
+- **No priority.** Without prioritization, it is hard to build a responsive streaming system.
+- **No cancellation.** Without cancellation, it is hard to build a speculative read system.
+- **No hardware decompression.** Software decompression consumes significant CPU.
+
+DirectStorage addresses each of these directly. The overall effect is drastically increased performance from the XBOX file system.
+
+## Design pillars
+
+### CPU usage
+
+The main design goal is 50K IOPS at 5–10% of a single CPU core. This frees the CPU for other work while still saturating the NVMe subsystem. DirectStorage also adds hardware decompression: each read request can be routed directly from the drive into the hardware decompression block, eliminating CPU-side decompression cost.
+
+### Queued pipeline model
+
+Requests are added to a queue and flushed to the next pipeline stage in batches, immediately reducing the per-transition overhead compared with Win32 (which transitions per request). Queues use lock-free algorithms to minimize contention. The title controls when each queue is flushed.
+
+DirectStorage also **maps the title-provided destination buffer directly into each pipeline layer**, so the hardware writes into your buffer without extra copies.
+
+### Decompression
+
+Hardware decompression now handles a wider variety of formats, at a speed higher than the NVMe subsystem can supply data. DirectStorage supports **in-place decompression**, so you don't need separate compressed and decompressed buffers. Supported modes — which are not mutually exclusive — are applied in this order:
+
+1. **`ZLibDecompress`** — [IETF RFC 1950](https://www.ietf.org/rfc/rfc1950.txt).
+2. **`BCPack`** — a custom entropy coder designed for BCn data; separates color endpoints from palette indices and compresses with a rANS algorithm.
+3. **`Swizzle`** — shuffles for optimizing content pipelines.
+
+<Note>
+  When high-entropy data is compressed the output can grow. DirectStorage does **not** allow shrinking decompression — detect incompressible assets and skip compressing them. See _Optimizing Compressed Content using DirectStorage and XBTC_ (NDA topic) for details.
+</Note>
+
+### Queue depth
+
+The old rotational-disk recommendation was 12–16 outstanding requests. That advice is gone. With DirectStorage:
+
+- Submit **all** outstanding requests. There is no benefit to holding some back.
+- Holding requests back typically **hurts** performance because the hardware stalls waiting for new work.
+- The OS may still break large reads into smaller ones (for example to handle fragmentation), but the 50,000 IOPS goal is measured against title-level operations, not hardware-level ones.
+
+### Notification
+
+Win32 notifications are expensive (poll an `OVERLAPPED`, wait on an event, or block synchronously). DirectStorage keeps the two async concepts and adds a third; there is **no** synchronous blocking read (build your own if needed — not recommended).
+
+1. **Status block polling** — similar to polling an `OVERLAPPED`.
+2. **Windows `Event` object** — use `WaitForSingleObject` to sleep until reads complete.
+3. **`ID3D12Fence`** — the CPU can suspend or poll; the GPU can wait directly on the fence for completed requests.
+
+Notification is **queue-scoped**, not per-request. It is signaled when all preceding reads on the queue have completed. The queue is FIFO — you only need to query the last relevant notification.
+
+### Memory-to-memory decompression
+
+A queue type invokes the decompression hardware with **memory** as the source instead of a file. Useful when the compressed asset is already resident (for example cached). Rules:
+
+- A memory-sourced queue accepts memory-sourced requests only, and vice versa.
+- Memory-sourced queues **must be created with real-time priority**.
+- Memory-sourced real-time requests are always processed before disk-sourced requests that also require decompression.
+- With no decompression options set, the hardware acts as a DMA copy engine.
+- Completion order is guaranteed; **start** order is not. There must be no data dependencies between pending requests unless enqueued after the dependency completes.
+
+### Priority
+
+Each queue has one of four priorities — **real-time**, **high**, **normal**, **low**. Every request inherits its queue's priority. Requests are processed in a weighted round-robin: default weighting is roughly 10× between adjacent levels. For every 1 KB of low-priority work, ~10 KB of normal and ~100 KB of high-priority work are processed. Win32 reads are routed through the same system at normal priority. Memory-sourced queues must be real-time.
+
+### Cancellation
+
+Each request has a title-provided 64-bit **cancellation tag**. `CancelRequestsWithTag` cancels pending requests matching the specified mask.
+
+- Cancellation is **best effort** — requests already in flight cannot be cancelled.
+- Wait for completion notification before releasing resources.
+- New requests with the same tag enqueued after a cancel are not affected.
+- A cancelled request completes as a **success**, even if it didn't produce a complete result — do **not** consume the result of a potentially cancelled request.
+
+### Performance guarantee
+
+| Console | Minimum guaranteed throughput |
+| --- | --- |
+| XBOX One / One S | 40 MB/s |
+| XBOX One X | 60 MB/s |
+| **XBOX Series X\|S (DirectStorage)** | **2.0 GB/s over a 250 ms window for raw data** |
+
+Hardware decompression pushes effective bandwidth higher. Future XBOX consoles will support NVMe-based user-installable expansion drives with the same minimum guarantee as the internal drive.
+
+## API overview
+
+DirectStorage follows the same pattern as Direct3D. The title obtains a singleton factory and uses it to create queues and open files — each maps directly to the hardware. Requests are enqueued into a queue and submitted to the hardware.
+
+### `IDStorageFactoryX`
+
+The main interface for creating queues, opening files, and submitting pending requests.
+
+| Method | Purpose |
+| --- | --- |
+| `OpenFile` | Creates an `IDStorageFileX` object representing one file. |
+| `CreateQueue` | Creates an `IDStorageQueueX` for building read requests. |
+| `CreateStatusArray` | Creates an `IDStorageStatusArray` for completion status flags. |
+| `SetCPUAffinity` | Restricts DirectStorage's out-of-thread work to a title-defined set of cores. |
+| `SetDebugFlags` | Enables additional validations at enqueue time. |
+| `SetStagingBufferSize` | Sets the size of the staging buffer used for content loaded before decrypt/decompress. Can be 0 for memory-only queues. |
+
+<Note>
+  DirectStorage does most of its work on the calling thread. Out-of-thread work only occurs when it can't be done on the calling thread — for example when the resource pipeline is full during `Submit` and remaining requests must wait, or when processing completion into `ID3D12Fence` / `IDStorageStatusArray`.
+</Note>
+
+### `IDStorageFactoryX1`
+
+Extends `IDStorageFactoryX` with:
+
+- **`GetStats`** — gets DirectStorage statistics for integration with diagnostic and telemetry pipelines. Does minimal processing; can be called often. Excludes Win32 file I/O.
+
+### `IDStorageFactoryX2`
+
+Extends `IDStorageFactoryX1` with:
+
+- **`CreateQueue1`** — creates an `IDStorageQueueX2` using a new descriptor that allows additional queue-creation options, including **disabling auto-submit**.
+
+### `IDStorageFileX`
+
+All files are opened by DirectStorage through the factory (equivalent to `CreateFile`). Files are opened with `FILE_SHARED_READ`; a title can also open the same file through Win32 with appropriate permissions. Loose and packaged deployments are both supported during development.
+
+- Close by calling `Close`, or by releasing the last reference. **All outstanding I/O must complete first** — both paths block until outstanding I/O finishes.
+- Call `GetHandle` to obtain a Win32 handle (`GENERIC_READ`, `FILE_SHARE_READ`) for operations like querying file size. Close it with `CloseHandle` when done.
+
+### `IDStorageQueueX`
+
+Requests are submitted to NVMe through a queue. Requests aren't sent to the device until the title calls `Submit`, or one of the `Enqueue*` methods fills more than half of the queue's capacity (auto-submit). Submission is a **single** pipeline-stage transition, so the CPU cost of transitioning between title and kernel is amortized across many requests.
+
+Queue properties:
+
+| Property | Notes |
+| --- | --- |
+| **`SourceType`** | File-sourced or memory-sourced. |
+| **`Priority`** | Real-time, high, normal, low. Memory-sourced queues must be real-time. Weighted round-robin scheduling. Win32 requests use normal. |
+| **Capacity** | Maximum outstanding requests. Enqueue at capacity blocks until entries complete. Memory ≈ capacity × sizeof(`DSTORAGE_REQUEST`). |
+| **Name** | Debug aid; visible in developer tooling such as PIX. |
+
+Completion notifications are **FIFO** — when one signals, all previous requests on the queue have also completed, regardless of any hardware reordering.
+
+### `IDStorageQueueX1`
+
+Extends `IDStorageQueueX` with:
+
+- **`EnqueueSetEvent`** — signals a Windows event on completion, allowing threads to yield via `WaitForSingleObject`/`WaitForMultipleObjects` instead of spinning.
+
+### `IDStorageQueueX2`
+
+Extends `IDStorageQueueX1`. Adds:
+
+- **`Options`** — flags controlling queue behaviour, including disabling auto-submit.
+
+## `EnqueueRequest`
+
+Functionally similar to Win32 `ReadFile`, but with batched submission, hardware decompression, and cancellation. Key properties:
+
+### Source
+
+Depends on `Options.SourceType` and `Options.SourceIsPhysicalPages`:
+
+- **`File` and `FileOffset`** — `SourceType = DSTORAGE_REQUEST_SOURCE_FILE`. `FileOffset` needs 16-byte alignment **only** when decompression is used, otherwise no alignment requirement. (This is a major change from Win32, which required 4 KiB alignment for async reads.)
+- **`Source`** — `SourceType = DSTORAGE_REQUEST_SOURCE_MEMORY` and `SourceIsPhysicalPages = FALSE`. A memory buffer holding data to decompress.
+- **`SourcePageArray` \+ `SourcePageOffset`** — same but `SourceIsPhysicalPages = TRUE`. An array of 64 KB physical pages allocated via `XMemAllocatePhysicalPages`.
+
+### `SourceSize` / `IntermediateSize`
+
+- **`SourceSize`** — bytes to read from the source.
+- **`IntermediateSize`** — when both `zlib` and `BCPACK` decompression are enabled, the intermediate size after zlib and before BCPACK. Otherwise 0.
+
+### Destination
+
+Depends on `Options.DestinationIsPhysicalPages`:
+
+- **`Destination`** — `FALSE`. Final destination buffer. Decompression uses shared internal buffers and can be considered in-place.
+- **`DestinationPageArray` \+ `DestinationPageOffset`** — `TRUE`. Array of 64 KB physical pages.
+
+### `DestinationSize`
+
+- Equal to `SourceSize` when decompression isn't used.
+- Greater than `SourceSize` when decompression is used.
+
+### `CancellationTag` and `Name`
+
+- **`CancellationTag`** — arbitrary 64-bit tag; used as a mask by cancellation.
+- **`Name`** — optional debug string, visible in PIX and error records from `RetrieveErrorRecord`. Must remain accessible for the request's lifetime.
+
+### Options bits
+
+| Option | Purpose |
+| --- | --- |
+| `ZlibDecompress` | Data needs RFC 1950 decompression. |
+| `BcpackMode` | Which BCPACK mode to use; `None` means no BCPACK. |
+| `SwizzleMode` | How to swizzle the final data. |
+| `DestinationIsPhysicalPages` | Use `DestinationPageArray` / `DestinationPageOffset` instead of `Destination`. |
+| `SourceType` | File-sourced or memory-sourced. |
+| `SourceIsPhysicalPages` | Use `SourcePageArray` / `SourcePageOffset` instead of `Source`. |
+
+## `EnqueueStatus` / `EnqueueSignal` / `EnqueueSetEvent`
+
+Enqueue notifications treat groups of requests as a related batch. Notifications process only after all previous reads on the queue have completed.
+
+Three notification sinks:
+
+- **`ID3D12Fence`** — waitable by a title thread on an `Event`, pollable by CPU or GPU.
+- **`IDStorageStatusArrayX`** — CPU polling plus access to read failure information.
+- **`EnqueueSetEvent`** — signals a Windows event so title threads can yield via `WaitForSingleObject`. Unlike `ID3D12Fence::SetEventOnCompletion` on XBOX — which spins on the fence — this actually sleeps the thread.
+
+## Staging buffer
+
+DirectStorage internally uses a staging buffer for all content read from NVMe before decrypt/decompress. Defaults to **32 MiB** and is allocated on first factory retrieval. Supported sizes: **0, 16, 20, 24, 28, 32 MiB**. Smaller saves memory but may impact read throughput.
+
+<Warning>
+  `SetStagingBufferSize` can only be called when **no** `IDStorageQueueX` or `IDStorageFileX` object exists, otherwise it throws.
+</Warning>
+
+For memory-to-memory-only workloads, set the staging buffer to 0.
+
+## Best practices
+
+Most Win32 best-practices advice still applies, but the thresholds have shifted radically.
+
+### Read sizes
+
+- Old rotational advice: at least 128 KiB, ideally 512 KiB.
+- NVMe: performance jumps around **32 KiB**, tops out around **64 KiB**. Reading larger doesn't help.
+- Above 512 KiB with decompression, **prefer smaller parallel requests over a single huge request** — huge requests serialize decompression; parallel requests fan out across multiple hardware units.
+- Since the October 2022 GDK, the max single-request destination size grew from 32 MiB to **1 GiB combined (source \+ destination)** to ease porting from APIs that allow very large reads. But 32–64 KiB per request is still the sweet spot for throughput.
+
+### Order
+
+Sequential reads still help on NVMe. Reads are 64 KiB-aligned; a 4 KiB request wastes 60 KiB of bandwidth unless the NVMe can reuse it for another pending request. Two sequential reads of 32 KiB \+ 8 KiB collapse into a single 64 KiB drive read.
+
+### Queue management
+
+- Rotational disks wanted queue depth 12–16. NVMe supports **up to 65,536** entries per queue — DirectStorage exposes this.
+- **Do not buffer requests in the title.** Enqueue immediately. Title-side buffering creates pipeline bubbles.
+- **Recommendation:** queue capacity ≥ 4× the largest number of requests you produce per frame, so enqueue never blocks on completion.
+
+### Notification management
+
+Fewer notifications = better throughput. Don't notify per request. Instead group notifications by content — for example SFS textures, or all resources needed to spawn an actor (mesh \+ texture \+ animation). Choose between `ID3D12Fence` and status arrays based on whether the GPU consumes the data, whether you can suspend, and how often you need to poll.
+
+### Considerations
+
+With thousands of requests in flight, cost around the request can dominate. Look at supporting code carefully:
+
+- **Per-request allocation?** Reuse memory blocks.
+- **Locks on managers?** Prefer lock-free structures.
+- **Speculative loading?** Cancellation is supported — but speculated requests still hold memory. Enforce hard speculation limits.
+
+## Related
+
+- **DirectStorage Usage and Internal Details** (NDA)
+- **Optimizing Compressed Content using DirectStorage and XBTC** (NDA)
+- **DirectStorage Easy Hardware Decompression** (NDA)
+- **DirectStorage Shuffle Formats** (NDA)
+- **Analyzing DirectStorage performance in PIX** (NDA)

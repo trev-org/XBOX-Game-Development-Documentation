@@ -1,0 +1,100 @@
+---
+title: "Fiddler on Xbox devkits"
+sidebarTitle: "Fiddler on Xbox"
+description: "Configure Fiddler as an internet proxy for an Xbox devkit to log and inspect HTTP/HTTPS traffic."
+icon: "gamepad"
+---
+
+_Fiddler_ is a web-debugging proxy that logs HTTP and HTTPS traffic between an Xbox devkit and the internet. Use it to inspect calls to Xbox services and to your Relying Party web services. This page uses **Fiddler Classic** (freeware) — download from the [Fiddler website](https://www.telerik.com/download/fiddler).
+
+<Warning>
+  In normal operation, a devkit through a proxy is at risk of having its communications modified — which would allow users to cheat. Retail devkits aren't designed to allow proxy communication. Fiddler with a devkit requires special configuration steps.
+</Warning>
+
+<Warning>
+  Fiddler can affect the network status reported by the console. If an upstream connection is disabled from the PC running Fiddler, the console won't detect the disconnection until console auth expires. **Don't** use Fiddler to simulate a disconnect — break the connection between the console and the PC, or use [network stress](/gdk/networking/tools/netstress) tools.
+</Warning>
+
+## Install and enable Fiddler on the development PC
+
+<Steps>
+  <Step title="Install Fiddler Classic">
+    Follow the directions on the [Fiddler website](https://www.telerik.com/download/fiddler).
+  </Step>
+  <Step title="Allow remote computers to connect">
+    Open Fiddler → **Tools** → **Fiddler Options** → **Connections** tab → tick **Allow remote computers to connect**.
+
+    Select **OK**. Fiddler warns it must be restarted — select **OK** but don't restart yet.
+  </Step>
+  <Step title="Configure the FiddlerProxy firewall rule">
+    In Control Panel → **Windows Firewall** → **Advanced Settings** → **Inbound Rule**, verify the **FiddlerProxy** rule matches:
+
+    | Setting | Preferred value |
+    | --- | --- |
+    | Name | **FiddlerProxy** |
+    | Group | _Do not set a value_ |
+    | Profile | All |
+    | Enabled | Yes |
+    | Action | Allow |
+    | Override | No |
+    | Program | Path to `fiddler.exe` |
+    | LocalAddress | Any |
+    | RemoteAddress | Any |
+    | Protocol | TCP |
+    | LocalPort | Any |
+    | RemotePort | Any |
+    | AllowedUsers | Any |
+    | AllowedComputers | Any |
+  </Step>
+  <Step title="Capture and decrypt HTTPS traffic">
+    - Select **Stream** on the button bar for best performance.
+    - **Tools** → **Fiddler Options** → **HTTPS** → tick **Decrypt HTTPS traffic**. When asked whether to configure Windows to trust the CA certificate, select **No**.
+    - Select **Export Root Certificate to Desktop**.
+  </Step>
+  <Step title="Restart Fiddler">
+    Close and reopen Fiddler.
+  </Step>
+</Steps>
+
+## Configure the Xbox devkit to use Fiddler as its internet proxy
+
+Fiddler can be enabled or disabled for GDK titles.
+
+<Steps>
+  <Step title="Open the Network tool in Xbox Device Portal">
+    In a browser, go to `https://<your console's system IP>:11443/`. Ignore certificate warnings; continue to the page. On the left menu, select **Network**.
+  </Step>
+  <Step title="Provide the Fiddler root certificate">
+    Point the UI at the exported Fiddler root certificate on your desktop.
+  </Step>
+  <Step title="Provide PC address and Fiddler port">
+    Enter the IP or fully-qualified host name of the PC running Fiddler, and the port Fiddler listens on (default `8888`).
+  </Step>
+  <Step title="Enable">
+    Select **Enable**. Your devkit restarts.
+  </Step>
+</Steps>
+
+To stop using Fiddler as a proxy:
+
+1. Go to the **Network** tool in Xbox Device Portal.
+2. Select **Disable**. The devkit restarts.
+
+To make sure Fiddler can capture your game traffic, complete the extra steps in [Debugging WinHTTP](/gdk/networking/web-requests/winhttp#debugging-winhttp).
+
+### Exclude Microsoft Store endpoints
+
+Microsoft Store downloads detect SSL interception and fail when Fiddler decrypts HTTPS. These endpoints aren't needed for game analysis — exclude them:
+
+1. **Tools** → **Fiddler Options** → **Connections**.
+2. Add to **Bypass Fiddler for URLs that start with**:
+   ```text
+   assets1.xboxlive.com;fe3.delivery.mp.microsoft.com;sls.update.microsoft.com
+   ```
+3. Confirm the change, then restart Fiddler.
+
+## See also
+
+- [Fiddler website](https://www.telerik.com/download/fiddler)
+- [Debugging WinHTTP](/gdk/networking/web-requests/winhttp#debugging-winhttp)
+- [Xbox network stress](/gdk/networking/tools/netstress)

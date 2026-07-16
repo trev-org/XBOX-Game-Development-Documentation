@@ -1,0 +1,76 @@
+---
+title: "Diagnostics and memory tracking"
+sidebarTitle: "Diagnostics and memory tracking"
+description: "Categories of memory tracked in the title partition and the APIs that let you attribute every byte."
+icon: "chart-line"
+tag: "NDA"
+---
+
+Because the GDK memory manager isolates title consumption from platform consumption, everything charged to the **title partition** is under your control. The runtime provides multiple APIs so you can attribute every byte back to source code.
+
+## Categories of tracked memory
+
+The title partition is divided into nine categories:
+
+1. **`XMemAlloc` allocations** — memory returned by the general-purpose `XMemAlloc` family.
+2. **Direct virtual allocations** — `VirtualAlloc` and `XMemVirtualAlloc` calls made outside the Win32 heap or `XMemAlloc`.
+3. **Win32 heap allocations** — `HeapAlloc`, `HeapReAlloc`, `malloc`, `new`.
+4. **Physical page allocations** — `XMemAllocatePhysicalPages` reservations that are not currently mapped.
+5. **Thread stacks and TLS** — committed stack space plus per-thread thread-local storage.
+6. **DLLs and EXE code/data** — the code and read-only/read-write sections of modules loaded into the title process.
+7. **CPU page tables** — 4-level AMD64 page-table entries required to translate every committed virtual address.
+8. **GPU page tables / FPB** — GPU-side page tables and the Frame Pool Buffer.
+9. **DirectStorage buffers** — staging and decompression buffers reserved for NVMe streaming.
+
+## `XMemGetWorkingSetStatistics`
+
+Returns a snapshot of the physical and virtual memory footprint for the calling process. Fields include totals per category so you can graph or budget usage over time.
+
+```cpp
+XMemWorkingSetStatistics stats = {};
+XMemGetWorkingSetStatistics(&stats);
+// stats.HeapAllocated, stats.VirtualCommitted, stats.PhysicalPagesReserved, ...
+```
+
+## Tracking `XMemAlloc` — `XMEM_SET_ALLOCATION_HOOKS`
+
+Registers callbacks that fire on every `XMemAlloc` / `XMemFree`. Use to collect a stack trace \+ size for every allocation and route the record to a per-tag counter.
+
+```cpp
+XMEM_SET_ALLOCATION_HOOKS(MyAllocHook, MyFreeHook);
+```
+
+## Tracking Win32 heap — `XMemSetWin32HeapTrackingHooks`
+
+A parallel hook mechanism for the Win32 heap catches all `HeapAlloc` / `HeapReAlloc` / `HeapFree` calls, which in turn catches `malloc`, `new`, `free`, and `delete`. Combined with `XMEM_SET_ALLOCATION_HOOKS`, this gives 100% coverage of dynamic memory produced by title code.
+
+## Debugger support — `XMemHistoryData`
+
+When the debugger attaches, `XMemHistoryData` exposes a rolling window of allocation events. Combine with PIX for Xbox to correlate frames against allocator activity.
+
+## `XMemVirtualQuery`
+
+A superset of `VirtualQuery` that adds two important fields for GDK:
+
+- **Page size** — 4 KB, 64 KB, or 2 MB for the reservation.
+- **Partition ownership** — system or title partition.
+
+## `XMemAllocDefault`
+
+Internal marker returned by the default `XMemAlloc` heap. When you replace the allocator, forward calls sized to zero or fallback conditions back to `XMemAllocDefault` to avoid recursion.
+
+## Categorized reporting
+
+A good practice is to:
+
+1. Wrap every `XMemAlloc` in a tag (system, texture, gameplay, streaming, etc.).
+2. On a heartbeat, sum tag counters and record with `XMemGetWorkingSetStatistics` totals.
+3. Alert when the sum of tagged categories deviates from the untagged working-set total — that difference is your "unaccounted" budget.
+
+## See also
+
+- [Overview](/gdk/memory/overview)
+- [Working with the memory manager](/gdk/memory/working)
+- [Kernel memory usage](/gdk/memory/kernel)
+- [Virtual Memory Allocator](/gdk/memory/virtual-allocator)
+- [Configuring memory](/gdk/memory/tooling)

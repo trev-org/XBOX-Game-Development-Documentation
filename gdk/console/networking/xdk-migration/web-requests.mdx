@@ -1,0 +1,49 @@
+---
+title: "Migrating web requests"
+sidebarTitle: "Web requests"
+description: "Port XDK HTTP client code to xCurl or WinHTTP under the GDK."
+icon: "globe"
+tag: "NDA"
+---
+
+<Note tag="NDA">
+  This page contains confidential Xbox information and is available to partners under NDA.
+</Note>
+
+GDK titles are Win32 processes and therefore cannot use WinRT HTTP APIs (`Windows.Web.Http.HttpClient`, `IXMLHTTPRequest2` in a WinRT project). Choose one of the supported Win32 HTTP stacks:
+
+<CardGroup cols={2}>
+  <Card title="xCurl" icon="code" href="/gdk/console/networking/web-requests/xcurl">
+    libcurl-compatible API. Preferred for portable code shared with other platforms.
+  </Card>
+
+  <Card title="WinHTTP" icon="microsoft" href="/gdk/console/networking/web-requests/winhttp">
+    Native Windows HTTP stack. Good for callers already familiar with WinHTTP or that need fine-grained proxy control.
+  </Card>
+</CardGroup>
+
+## Migration checklist
+
+<Steps>
+  <Step title="Choose a stack">
+    Use xCurl if you already ship libcurl code on other platforms. Use WinHTTP if you want the native Windows async model.
+  </Step>
+  <Step title="Replace WinRT types">
+    Remove any references to `Windows::Web::Http`, `Windows::Foundation::Uri`, and `IXMLHTTPRequest2`. Convert URIs to `std::string` / `std::wstring`.
+  </Step>
+  <Step title="Move async work off the game thread">
+    Both xCurl and WinHTTP support asynchronous completion. Preserve the same threading discipline you used with WinRT (do not block the render thread on network I/O).
+  </Step>
+  <Step title="Re-attach authentication">
+    XSAPI still issues Xbox Live user tokens. Attach them as `Authorization: XBL3.0 x=<userhash>;<token>` headers on your new HTTP stack.
+  </Step>
+  <Step title="Validate with Fiddler">
+    Verify traffic end-to-end with [Fiddler on Xbox](/gdk/console/networking/tools/fiddler-setup). If some calls are missing from the capture, see [Debugging custom HTTP stacks](/gdk/console/networking/web-requests/debugging-custom-http-stacks).
+  </Step>
+</Steps>
+
+## Common pitfalls
+
+- **Certificate pinning**: some Store and Xbox Live endpoints reject Fiddler's root cert. Route them around Fiddler when debugging — see the [Fiddler on Xbox](/gdk/console/networking/tools/fiddler-setup) bypass list.
+- **Proxy settings**: WinHTTP does not inherit WinINET proxy settings automatically. Set them explicitly with `WinHttpSetOption` or `netsh winhttp set proxy` during development.
+- **Header casing**: XSAPI accepts standard header casing, but some third-party services do not. Preserve exact casing when porting.

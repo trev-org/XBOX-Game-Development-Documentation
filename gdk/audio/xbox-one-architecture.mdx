@@ -1,0 +1,63 @@
+---
+title: "Xbox One audio architecture"
+sidebarTitle: "Xbox One architecture"
+description: "Xbox One audio subsystem layering — SHAPE, ACP, XAudio2, WASAPI."
+icon: "sitemap"
+tag: "NDA"
+---
+
+The Xbox One audio subsystem is a layered stack that lets titles work at whatever abstraction level suits them, from high-level XAudio2 all the way down to direct SHAPE / ACP programming.
+
+## Layers
+
+<CardGroup cols={2}>
+  <Card title="XAudio2" icon="volume-high" href="/gdk/audio/xaudio2">
+    High-level source voices, submix voices, mastering voice, effects, and streaming buffers. Recommended entry point for most titles.
+  </Card>
+
+  <Card title="WASAPI" icon="wave-square" href="/gdk/audio/wasapi">
+    Raw audio endpoints for capture (headset mic) and low-latency render scenarios such as voice chat and communications.
+  </Card>
+
+  <Card title="SHAPE" icon="waveform-lines" href="/gdk/audio/shape">
+    Fixed-function hardware audio blocks — XMA decode, sample-rate convert, EQ/compressor, filter/volume, and DMA.
+  </Card>
+
+  <Card title="ACP" icon="microchip-ai" href="/gdk/audio/acp">
+    Audio Control Processor drives SHAPE via app-authored flowgraphs. Access via the `IACPHAL` interface.
+  </Card>
+</CardGroup>
+
+## Data flow
+
+<Steps>
+</Steps>
+
+## Codec support
+
+| Codec | Decode | Encode tool |
+| --- | --- | --- |
+| **XMA2** | Hardware (SHAPE XMA block) | [XMA2 encoder tool](/gdk/audio/tools/xma2encoder) |
+| **xWMA** | Software via XAudio2 or `XWMADecode` | [xWMA command-line encoder](/gdk/audio/tools/xwmaencoder) |
+| **ADPCM** | Software (XAudio2) | [ADPCM command-line encoder](/gdk/audio/tools/adpcmencoder) |
+| **Opus** (Series X\|S only) | Hardware (XAPU) | External Opus encoders |
+| **PCM** | — | — |
+
+## System audio flow
+
+The title's mastering voice is routed by the system to the currently active endpoints — TV/speakers, headset, controller headset, Kinect array (Xbox One), or the game DVR / broadcast pipeline. Titles do not choose the endpoint; the shell manages it based on user configuration.
+
+For capture-side flows, use WASAPI to read the headset mic. For voice chat, use Game Chat (see the Networking section) rather than raw mic streams.
+
+## Series X|S additions
+
+Series X|S adds the **XAPU** (Xbox Audio Processing Unit) providing hardware Opus decode and a high-quality sample rate converter. See [Xbox Series X|S audio hardware](/gdk/audio/scarlett-audio) and [XAPU](/gdk/audio/xapu).
+
+## See also
+
+- [Audio overview](/gdk/audio/overview)
+- [Spatial sound overview](/gdk/audio/spatial-audio)
+- [Comparison of XDK and GDK audio API](/gdk/audio/xdk-gdk-comparison)
+- [XMA2 overview](/gdk/audio/xma2)
+- [xWMA overview](/gdk/audio/xwma)
+- [ADPCM overview](/gdk/audio/adpcm)

@@ -1,0 +1,95 @@
+---
+title: "Use XAudio2 to play a sound"
+sidebarTitle: "XAudio2 play sound walkthrough"
+description: "End-to-end walkthrough of loading a .wav and playing it via XAudio2."
+icon: "play"
+tag: "NDA"
+---
+
+This walkthrough loads a `.wav` file from disk and plays it through an XAudio2 source voice.
+
+## Prerequisites
+
+- GDK installed and a title project targeting Xbox
+- A `.wav` file (PCM, XMA2, xWMA, or ADPCM)
+
+## Steps
+
+<Steps>
+  <Step title="Initialize XAudio2">
+    ```cpp
+    Microsoft::WRL::ComPtr<IXAudio2> pXAudio2;
+    HRESULT hr = XAudio2Create(pXAudio2.GetAddressOf(), 0);
+    ```
+  </Step>
+  <Step title="Create a mastering voice">
+    ```cpp
+    IXAudio2MasteringVoice* pMasterVoice = nullptr;
+    hr = pXAudio2->CreateMasteringVoice(&pMasterVoice);
+    ```
+
+    The mastering voice hooks into the system audio endpoint and represents the final mix.
+  </Step>
+  <Step title="Load the .wav file">
+    Parse the RIFF chunks (`fmt`, `data`, and for xWMA the `dpds` chunk). At a minimum, extract:
+
+    - The `WAVEFORMATEX` (or `WAVEFORMATEXTENSIBLE` / `XMA2WAVEFORMATEX`) header from the `fmt` chunk
+    - The raw audio bytes from the `data` chunk
+  </Step>
+  <Step title="Create a source voice">
+    ```cpp
+    IXAudio2SourceVoice* pSourceVoice = nullptr;
+    hr = pXAudio2->CreateSourceVoice(&pSourceVoice, (WAVEFORMATEX*)&wfx);
+    ```
+
+    The format passed here must exactly match the `.wav` file's format. For xWMA, use `WAVEFORMATEXTENSIBLE` with the xWMA-specific values (see [xWMA overview](/gdk/audio/xwma)).
+  </Step>
+  <Step title="Submit an audio buffer">
+    ```cpp
+    XAUDIO2_BUFFER buffer = {};
+    buffer.AudioBytes = dataChunkSize;
+    buffer.pAudioData = pDataBuffer;
+    buffer.Flags = XAUDIO2_END_OF_STREAM; // last buffer
+    
+    hr = pSourceVoice->SubmitSourceBuffer(&buffer);
+    ```
+
+    For xWMA also fill an `XAUDIO2_BUFFER_WMA` using the `dpds` chunk (see the [xWMA `dpds` chunk reference](/gdk/audio/xwma#structure-of-an-xwma-file)).
+  </Step>
+  <Step title="Start playback">
+    ```cpp
+    hr = pSourceVoice->Start(0);
+    ```
+
+    Audio begins as soon as the submitted buffer reaches the mixer.
+  </Step>
+</Steps>
+
+## Looping
+
+For a source voice to loop, set:
+
+- `XAUDIO2_BUFFER.LoopBegin` — sample offset where the loop begins
+- `XAUDIO2_BUFFER.LoopLength` — loop length in samples
+- `XAUDIO2_BUFFER.LoopCount` — iteration count or `XAUDIO2_LOOP_INFINITE`
+
+xWMA has additional restrictions — see [xWMA looping](/gdk/audio/xwma#xwma-looping).
+
+## Callbacks (optional)
+
+Register an `IXAudio2VoiceCallback` on the source voice to be notified when buffers begin, end, or the stream ends. Delete or recycle the audio-data buffer only after `OnBufferEnd`.
+
+## Cleanup
+
+```cpp
+pSourceVoice->DestroyVoice();
+pMasterVoice->DestroyVoice();
+pXAudio2.Reset();
+```
+
+## Related
+
+- [XAudio2 overview](/gdk/audio/xaudio2)
+- [XMA2 overview](/gdk/audio/xma2)
+- [xWMA overview](/gdk/audio/xwma)
+- [ADPCM overview](/gdk/audio/adpcm)

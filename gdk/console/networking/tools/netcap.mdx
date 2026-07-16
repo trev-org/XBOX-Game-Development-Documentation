@@ -1,0 +1,46 @@
+---
+title: "Capturing network traffic (NetCap)"
+sidebarTitle: "NetCap"
+description: "Capture Xbox console network traffic with xbtrace, Microsoft Message Analyzer, or Netmon."
+icon: "wave-square"
+---
+
+NetCap captures all network traffic sent to and from an Xbox console. Captures are saved as `.etl` files that can be opened in Microsoft Message Analyzer (MMA) or Microsoft Network Monitor (Netmon).
+
+## Start and stop a capture
+
+Use `xbtrace` from a devkit-connected PC.
+
+```cmd
+xbtrace start netcap
+xbtrace stop
+```
+
+The resulting `.etl` file is written to the current working directory.
+
+<Tip>
+  `xbtrace start netcap /?` lists all available capture options, including buffer size and file rotation.
+</Tip>
+
+## Open captures
+
+<Tabs>
+  <Tab title="Microsoft Message Analyzer">
+    MMA parses the `.etl` file with the Windows networking parsers. Filter by process, IP, or protocol to isolate title traffic.
+
+    <Warning>
+      Microsoft Message Analyzer has been retired and is no longer available for download from Microsoft. Existing installs continue to work.
+    </Warning>
+  </Tab>
+  <Tab title="Netmon">
+    Microsoft Network Monitor 3.4 also opens `.etl` captures and provides equivalent filtering.
+  </Tab>
+</Tabs>
+
+## Common uses
+
+- Diagnosing connection failures against Xbox Live or PlayFab services.
+- Verifying that TLS negotiation completes for HTTPS calls.
+- Confirming that traffic is flowing over the expected UDP or TCP ports.
+
+For decrypting HTTPS payloads, use [Fiddler on Xbox](/gdk/console/networking/tools/fiddler-setup) instead.

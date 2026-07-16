@@ -1,0 +1,57 @@
+---
+title: "Working with the GDK memory manager"
+sidebarTitle: "Working with the memory manager"
+description: "Allocation APIs available in the GDK Game OS: VirtualAlloc, HeapAlloc, XMemVirtualAlloc, physical page mapping, and query APIs."
+icon: "code"
+tag: "NDA"
+---
+
+Although the internals of the memory manager are very different in the GDK Game OS, the APIs available to allocate and manage memory are very similar (though not identical) to the APIs in the Xbox One ERA OS.
+
+## Memory allocation API family
+
+### `VirtualAlloc` / `VirtualFree`
+
+`VirtualAlloc` and `VirtualFree` are now **identical** to the standard Windows PC implementations, giving broad compatibility with existing code. In the Xbox One ERA OS, `VirtualAlloc` was modified to allocate Xbox-specific memory types via `MEM_TITLE`, `MEM_GRAPHICS`, and `MEM_TOOL` flags. **Those flags are no longer supported** — use [`XMemVirtualAlloc`](/gdk/memory/working#xmemvirtualalloc) instead.
+
+### `HeapAlloc` / `HeapFree`
+
+The Win32 heap APIs are also identical to the standard Windows PC implementations. Like `VirtualAlloc`, this maximizes compatibility with existing code. Importantly, these APIs back the CRT's `malloc` / `new` / `free` / `delete`.
+
+All standard Win32 heaps use **large (2 MB) pages** for back-end storage. The heap efficiently subdivides each 2 MB page to satisfy incoming allocations, resulting in almost no footprint increase compared to a 4 KB-page heap, while reducing expensive `VirtualAlloc` calls as the heap expands.
+
+<Note>
+  In the Xbox One ERA OS, `HeapAlloc` accepted the `HEAP_TOOL` flag for debug/extended memory via a Win32 heap. That flag has been **deprecated**; a replacement API is planned for a future GDK update.
+</Note>
+
+### `XMemVirtualAlloc`
+
+`XMemVirtualAlloc` is a new GDK API that replaces `VirtualAlloc` calls made with the Xbox One ERA `MEM_TITLE`, `MEM_GRAPHICS`, and `MEM_TOOL` flags. The signature closely matches `VirtualAlloc` with an added `XMemFlags` field that describes Xbox-specific memory requirements.
+
+### `XMemAllocatePhysicalPages` / `XMemMapPhysicalPages` / `XMemFreePhysicalPages`
+
+The physical page mapping APIs return indexes of physical pages, giving the game complete control over RAM ownership. Returned page numbers can be combined and mapped into the virtual address space as needed.
+
+- Each returned physical page number represents **64 KB** of RAM (same as Xbox One ERA).
+- Individual pages or groups of pages can be mapped into reservations created with `MEM_64K_PAGES`.
+- Mapping into **2 MB reservations** is possible by providing 2 MB‑aligned groups of **32 consecutive pages**.
+- Pages can be mapped multiple times with **different page protections** (`PAGE_READWRITE` vs `PAGE_READONLY`).
+- Pages **cannot** be mapped multiple times with differing **cache attributes** (`WRITEBACK`, `WRITECOMBINE`, `UNCACHED`) — attempting to do so returns an error. This wasn't possible in Xbox One ERA either, but there it silently failed.
+
+<Warning>
+  GDK Game OS virtual memory follows Windows semantics. If you allocate two adjacent addresses with `XMemVirtualAlloc`, then try to map those pages in a single `XMemMapPhysicalPages` call, the behavior is **undefined** — even though the addresses are adjacent, they are different allocations. The same applies when unmapping.
+</Warning>
+
+### `XMemVirtualQuery` / `XMemGetWorkingSetStatistics`
+
+These are additional diagnostics APIs for investigating Xbox-specific memory use.
+
+- `XMemVirtualQuery` — like `VirtualQuery`, but returns extra fields including **page size** and **partition ownership** (system or game).
+- `XMemGetWorkingSetStatistics` — returns the current in-use memory footprint.
+
+## See also
+
+- [Introduction to memory](/gdk/memory/overview)
+- [Porting from Xbox One ERA](/gdk/memory/porting)
+- [Diagnostics and memory tracking](/gdk/memory/diagnostics)
+- [Virtual Memory Allocator](/gdk/memory/virtual-allocator)

@@ -1,0 +1,33 @@
+---
+title: "Quality of service (QoS) packet tagging on Xbox consoles"
+sidebarTitle: "QoS packet tagging"
+description: "How Xbox WMM and DSCP QoS packet tagging works on the preferred UDP multiplayer port, and its network-compatibility implications."
+icon: "tags"
+---
+
+Xbox consoles allow users to enable QoS packet tagging for outbound network traffic over the **preferred UDP multiplayer port**. The goal is to reduce the impact that network congestion has on latency-sensitive traffic when connected to a network environment that supports prioritizing tagged traffic.
+
+Found under **Settings → General → Network settings → Advanced settings → QoS Tagging**, with two options (one or both can be enabled):
+
+<CardGroup cols={2}>
+  <Card title="Wireless multimedia (WMM) tagging" icon="wifi">
+    Wi-Fi consoles tag outbound packets on the preferred UDP multiplayer port with a WMM value of **6 (AC\_VO)** — the classification typically used for voice traffic.
+  </Card>
+
+  <Card title="Differentiated services code point (DSCP) tagging" icon="network-wired">
+    Wi-Fi **or wired** consoles tag outbound packets on the preferred UDP multiplayer port with **DSCP value 46** (both IPv4 and IPv6). DSCP 46 is associated with the "Expedited Forwarding" (EF) per-hop behavior used for voice traffic.
+  </Card>
+</CardGroup>
+
+## GDK title and test considerations
+
+QoS tagging is **transparent** to GDK title logic and applied only to the **preferred UDP multiplayer port**. Titles using different UDP ports do not benefit from this tagging. **Use the preferred UDP multiplayer port when possible.**
+
+<Warning>
+  Enabling packet tagging on managed networks (business or test networks) can cause connectivity issues for tagged traffic, depending on the network configuration. Some network devices react poorly to WMM or DSCP tags. If you hit connectivity issues, evaluate the managed network configuration and disable QoS packet tagging on the console if the network cannot be updated.
+</Warning>
+
+## See also
+
+- [Preferred local UDP multiplayer port](/gdk/networking/game-mesh/preferred-udp-port)
+- [Introduction to GDK networking](/gdk/networking/overview)

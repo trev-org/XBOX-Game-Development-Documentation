@@ -1,0 +1,182 @@
+---
+title: "Best practices for constructing audio flowgraphs"
+sidebarTitle: "Flowgraph best practices"
+description: "Design guidance for SHAPE audio flowgraphs."
+icon: "network-wired"
+tag: "NDA"
+---
+
+The **Scalable Hardware Audio Processing Engine (SHAPE)** provides hardware acceleration for the most common building blocks of audio playback and manipulation. Titles have full control over the configuration and ordering of SHAPE processing blocks, managed by the **Audio Control Processor (ACP)**. Chains of SHAPE components from input to output are **flowgraphs** — submitted as a series of commands for the ACP to process.
+
+This page covers best practices for successful flowgraph construction and configurations you should avoid to maximize performance.
+
+## SHAPE components and capabilities
+
+### Instancing capabilities
+
+| Component | Description | Max concurrent | Queue size | Channels/instance | Notes |
+| --- | --- | --- | --- | --- | --- |
+| XMA | XMA decompression | 512 | N/A (parallel) | 1–2 (interleaved) | Typically routed to SRC |
+| SRC | Sample rate conversion | 512 | 8 | 1–2 (interleaved) | Reads from RAM — XMA output or PCM |
+| FLT/VOL | Filter / volume | 2560 | 8 | 1 |  |
+| EQ/CMP | Equalization / compressor | 512 | 8 | 1 |  |
+| MB | Mix buffer | 8192 (128 physical) | N/A (parallel) | 1 | Required after all other components except XMA→SRC |
+| DMA | DMA in/out | \<4096 (memory-bandwidth bound) | 8 | 1 (up to 32 frames/transfer) | Adjacent buffers support multichannel transfer |
+
+### Mix-buffer routing rules
+
+| Component | Input MBs / instance | Output MBs / instance |
+| --- | --- | --- |
+| XMA | N/A (reads from memory) | N/A (writes to memory, typically consumed by SRC) |
+| SRC | 0 (reads from memory) | 1 mono, 2 stereo |
+| FLT/VOL | 1 | 1 |
+| EQ/CMP | 1 (or 2 with sidechain) | 1 |
+| MB | N/A (MBs can't read directly from other MBs) | N/A (MBs can't write directly to other MBs) |
+| DMA | 1 (up to 32 frames/transfer) | 1 (up to 32 frames/transfer) |
+
+<Note>
+  Many titles never construct flowgraphs directly — XAudio2 implements SHAPE components implicitly and middleware may abstract them away. Constructing your own is worth it if you're building a custom audio renderer or need a topology XAudio2 / middleware doesn't support. Even if you never build one, understanding SHAPE's capabilities and planning topologies pays off.
+</Note>
+
+## Non-performant scenarios to avoid
+
+<AccordionGroup>
+  <Accordion title="Malformed flowgraphs">
+    Common errors:
+
+    - References to SHAPE objects that aren't created or allocated
+    - Invalid commands or parameters
+    - Mix buffer input/output reference-counting inaccuracies
+    - Reallocating an existing mix buffer virtual ID
+    - Omitting connecting mix buffers between components
+    - Using more than one mix buffer as output for any component **except** SRC (which can route to two MBs for stereo)
+
+    Most commonly:
+
+    - **Circular references in mix buffers** — an MB never becomes available (effectively infinite inputs) and the graph hangs.
+    - **Orphaned mix buffers** — an MB with no outputs becomes available when its last input is processed. Terminate MBs intended for audio devices with a DMA output block so the buffer is presented to main memory for final mixing.
+  </Accordion>
+
+  <Accordion title="Bad command ordering">
+    The ACP fills command queues automatically, skipping over commands for a component until its entries are free. Bad ordering causes queues to wait on each other, reducing per-frame instance count.
+
+    **Best practice:** issue commands **top-to-bottom** through a voice's processing path (favor depth up to a submix stage or reused component), then favor **breadth** for voices sharing common orders — rather than left-to-right across all voices.
+
+    Example — issue FLT/VOL commands top-to-bottom before pivoting to a downstream EQ/CMP, so the EQ/CMP can run in parallel with later FLT/VOLs.
+  </Accordion>
+
+  <Accordion title="Locking too many mix buffers">
+    Mix buffers are locked while written to — outputs can't be read until every input has contributed. SHAPE virtualizes MBs (up to 8192), but you can construct flowgraphs that need many locked concurrently. Submixing/mastering MBs lock until the last voice mixes in **and** the last output is consumed downstream.
+
+    A typical case (single 7.1 master) locks 8 of the 128 physical MBs. Extensive multichannel submixing with dependency chains, or per-player 7.1 headset mixes for a four-player title, can consume 40\+ concurrent MBs.
+
+    <Warning>
+      Beyond 128 concurrent physical mix buffers is pathologic. Unnecessarily locked MBs — e.g. from poor command ordering that locks five 7.1 masters throughout almost the entire frame (40 of 128 physical) — reduce throughput. Process the mix buffers going into speakers first, free them, then process per-player headsets.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Unbalanced SHAPE components (FLT/VOL vs EQ/CMP)">
+    Repeated use of the same component in series can't run in parallel. Alternating components does. FLT/VOL supports **2560** contexts/frame vs EQ/CMP's **512** — running an EQ/CMP in series with a single FLT/VOL is gated by EQ/CMP consumption; running multiple FLT/VOLs coupled with an EQ/CMP performs better.
+
+    Where one set of FLT/VOLs is used purely for filtering, replacing it with EQ/CMP lets the two block types process in parallel.
+  </Accordion>
+
+  <Accordion title="Too many low-value DMA roundtrips">
+    DMA is bound by the SHAPE bus read/write bandwidth. Consuming all of it stalls DMA blocks. Any processing downstream of a DMA input has to wait for the DMA to complete — you can end up with most of the graph blocked on DMA.
+
+    Evaluate DMA roundtrips against the value they add: adding latency at multiples of 2.667 ms is fine for many scenarios (blocks downstream of a DMA are processing previous frames), but sending audio back into SHAPE just to run a final mix is often unnecessary when you're also going to DMA the final mix back out to the endpoint anyway.
+
+    **Example non-optimal:** a voice DMA'd out for CPU/GPU processing is DMA'd back in only to be 7.1-panned into the mastering mix and DMA'd back out. **Optimal:** 7.1-pan on the CPU where you already have the voice, and combine with the rest of the 7.1 mix on the CPU — no extra DMAs, no latency, no seven wasted FLT/VOLs.
+
+    <Tip>
+      Justify roundtrip DMAs only if you'll do significant additional SHAPE processing on the voice, or you want the hardware metering / clip detection afforded by mix buffers.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+## Planning and reviewing your flowgraphs
+
+Before implementing, draw a visual representation of your expected per-frame voice usage with voice categories and counts (e.g. number of SFX and concurrent music streams). Key metrics to derive:
+
+<Steps>
+  <Step title="Component headroom">
+    Max concurrent and total per-frame count of each SHAPE component:
+
+    - Verify counts fall sufficiently below the theoretical peaks.
+    - Note under- and over-use. Rebalance.
+    - Restructure MB use if too many must remain locked through most of the flowgraph.
+  </Step>
+  <Step title="3D-positioning strategy">
+    - Will every voice be 7.1-panned, or panned between 2 or _n_ closest speakers?
+    - Should 7.1 panning happen in SHAPE, or on the CPU for voices already DMA'd out?
+  </Step>
+  <Step title="DMA transitions">
+    Count DMA to/from memory transitions and whether they're asymmetric — some voices written in and out more times than others incur additional latency.
+  </Step>
+</Steps>
+
+Flowgraph diagrams are also a great way for audio designers and engine/middleware developers to agree that dynamically- or statically-generated graphs are routed as intended.
+
+## Persistent vs non-persistent flowgraphs
+
+**Persistent** — process and remain resident, repeating in the next frame after pointers advance and contexts update. Use for:
+
+- Highly complex flowgraphs that would be expensive to reassemble each frame
+- Highly static flowgraphs with the same voice count and configuration for extended periods
+
+**Non-persistent** — consumed once. Use for:
+
+- Frequently changing voice topologies
+- Audio-engine processing cadence not aligned with SHAPE (not a multiple of 2.667 ms)
+- Faster-than-real-time processing where you submit graphs as fast as they become available
+
+## Debugging SHAPE issues
+
+Register for messages via the `NumMessages` parameter of `IAcpHal::Connect`. Messages report invalid flowgraphs (`ACP_FLOWGRAPH_TERMINATED_REASON_INVALID_GRAPH`), blocked commands, and frame-outs from exceeding the 2.667 ms frame.
+
+Before shipping:
+
+<Steps>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Missed messages">
+    Examine `ACP_MESSAGE::droppedMessageCount`. Non-zero means the queue was full and messages were dropped. Service faster or grow the queue.
+  </Accordion>
+
+  <Accordion title="Frame-outs">
+    Over-budgeting or a suboptimal flowgraph can miss the 2.667 ms deadline. Persistent flowgraphs emit `ACP_FLOWGRAPH_TERMINATED_TIME_EXCEEDED` and are incomplete. Non-persistent flowgraphs are unconstrained and run until complete, even across frames.
+  </Accordion>
+
+  <Accordion title="Blocked commands">
+    SRC and DMA commands may report `ACP_MESSAGE_TYPE_SRC_BLOCKED` or `ACP_MESSAGE_TYPE_DMA_BLOCKED`:
+
+    | Command type | Blocking scenario |
+    | --- | --- |
+    | XMA SRC | Associated XMA context has a parser error or no source data. Does not block on lack of decoded data. |
+    | PCM SRC | Associated PCM context is `SHAPE_PCM_MODE_CIRCULAR` and has no source data. |
+    | Read (DMA from MB) | DMA buffer is full. |
+    | Write (DMA to MB) | DMA buffer is empty. |
+
+    Blocked commands are evicted, causing dropped audio. **Prevent DMA blocking** by sizing the audio buffer large enough for your streaming interval — e.g. streaming four hardware frames at a time, keep at least eight (double-buffered) in the buffer. Alternatively, empty the buffer (consume, update the DMA read pointer) before submitting the next flowgraph.
+
+    **SRC command modes:**
+
+    - `SHAPE_SRC_COMMAND_TYPE_START` — use for nearly all SRC commands.
+    - `SHAPE_SRC_COMMAND_TYPE_STOP_IMMEDIATE` — immediately stops; SRC outputs a zeroed buffer this frame.
+    - `SHAPE_SRC_COMMAND_TYPE_STOP_END` — marks the last packet of a voice.
+
+    <Warning>
+      The last packet must be submitted with `STOP_END` or `STOP_IMMEDIATE` — otherwise the SRC command never completes. A persistent flowgraph terminates at the end of the audio frame; a non-persistent flowgraph never completes.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Synchronization">
+    Don't modify a context structure while it's in use. `IAcpHal::SubmitCommand` can schedule commands at a specific frame, at the beginning of the next frame, or ASAP. **ASAP is still async** — wait for `ACP_MESSAGE_TYPE_COMMAND_COMPLETED` to confirm processing.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+- [SHAPE overview](/gdk/audio/shape)
+- [ACP overview](/gdk/audio/acp)

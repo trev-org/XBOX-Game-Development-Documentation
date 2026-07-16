@@ -1,0 +1,87 @@
+---
+title: "xWMA encoder tool"
+sidebarTitle: "xWMA encoder"
+description: "xWMAEncode command-line tool."
+icon: "file-audio"
+tag: "NDA"
+---
+
+The **xWMA command-line encoder** (`xWMAEncode`) encodes a sound file in the xWMA format.
+
+## Usage
+
+```bash
+xWMAEncode [-b N] <Input File> <Output File>
+```
+
+<Note>
+  If the input is a `.wav` file, the output is xWMA. Otherwise the input is treated as xWMA and the output is a `.wav` file.
+</Note>
+
+## Options
+
+### `-b N` (bit rate)
+
+Default bit rate is `48000`. Bit rates in **bold** in the following table are natively supported; others map to the closest supported bit rate as a batch-processing convenience.
+
+| Input sample rate | Input channels | Allowed bit rates |
+| --- | --- | --- |
+| 22050 | Mono | **20000**, 48000, 192000 |
+| 22050 | Stereo | **32000**, 48000, 192000 |
+| 32000 | Mono | **20000**, 48000, 192000 |
+| 32000 | Stereo | **32000**, **48000**, 192000 |
+| 44100 | Mono | **32000**, **48000**, 96000, 192000 |
+| 44100 | Stereo | **32000**, **48000**, **96000**, **192000** |
+| 44100 | 5.1 | 48000, **96000** (maps to 128000), **192000** |
+| 48000 | Stereo | **48000**, **64000**, **96000**, **160000**, **192000** |
+| 48000 | 5.1 | **48000** (maps to 128000), **192000** |
+
+Other combinations are supported by converting the source data to the nearest valid sample rate, with these constraints:
+
+- `20000` can be specified only for mono files.
+- `32000` cannot be specified for 6-channel files.
+- `64000` and `160000` can be specified only for stereo files.
+- Conversions resulting in a sample rate less than 50% or greater than 200% of the original will produce a warning.
+
+## Custom encoders
+
+Write your own encoder tool using `xwmaencoder.h` and `xwmaencoder.lib`, located under the GDK toolkit include and lib directories. The single supported entry point is `XWMAEncoder`.
+
+### `XWMAEncoder` signature
+
+```cpp
+HRESULT XWMAEncoder(
+    const BYTE*         pInputBuffer,
+    DWORD               inputBufferSize,
+    const WAVEFORMATEX* pInputFormat,
+    DWORD               outputBitrate,
+    BYTE**              ppEncodedBuffer,
+    DWORD*              pEncodedBufferSize,
+    WAVEFORMATEX**      ppEncodedBufferFormat,
+    DWORD*              pEncodedBufferFormatSize,
+    DWORD**             ppDecodedPacketCumulativeBytes,
+    DWORD*              pDecodedPacketCumulativeBytesSize
+);
+```
+
+`outputBitrate` must be one of `20000`, `32000`, `48000`, `64000`, `96000`, `160000`, or `192000`.
+
+`ppDecodedPacketCumulativeBytes` returns an array where each element is the number of bytes accumulated after decoding the corresponding WMA packet. Call `free[]` to release it. Packet count = `pDecodedPacketCumulativeBytesSize / sizeof(DWORD)`.
+
+### Error codes
+
+| Error | Description |
+| --- | --- |
+| `XWMA_E_UNSUPPORTED_FORMATTAG` | Format tag must be `WAVE_FORMAT_PCM` or `WAVE_FORMAT_IEEE_FLOAT`. |
+| `XWMA_E_UNSUPPORTED_FRAMERATE` | `nSamplesPerSec` must be 1 kHz – 200 kHz. |
+| `XWMA_E_UNSUPPORTED_CHANNELS` | `nChannels` must be 1, 2, or 6. |
+| `XWMA_E_UNSUPPORTED_BITSPERSAMPLE` | `wBitsPerSample` must be 8, 16, or 24 (integer) or 32 (float). |
+| `XWMA_E_UNSUPPORTED_BITRATE` | Bit rate must be 20/32/48/64/96/160/192 Kbps. |
+
+**Header:** `xwmaencoder.h` – **Library:** `xwmaencoder.lib`
+
+## See also
+
+- [xWMA overview](/gdk/audio/xwma)
+- [XMA2 encoder tool](/gdk/audio/tools/xma2encoder)
+- [ADPCM command-line encoder](/gdk/audio/tools/adpcmencoder)

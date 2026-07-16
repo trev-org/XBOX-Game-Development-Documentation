@@ -1,0 +1,184 @@
+---
+title: "Preferred local UDP multiplayer port"
+sidebarTitle: "Preferred UDP port"
+description: "Query and bind to the console's optimized UDP multiplayer port to improve reliability for real-time gameplay traffic."
+icon: "crosshairs"
+---
+
+Use the preferred local UDP multiplayer port APIs to improve multiplayer reliability. Xbox consoles historically expose _UDP 3074_ as a publicly registered, well-known port for multiplayer network traffic. GDK titles can access this optimized port dynamically.
+
+The **preferred local UDP multiplayer port** is the _local_ port used in a subsequent [socket bind](/windows/desktop/api/winsock/nf-winsock-bind) — not the public port remote devices connect to. It's meaningful only for UDP (not TCP or HTTP) because it's targeted at real-time multiplayer.
+
+<Warning>
+  Don't hard-code UDP 3074. Fallback logic and user overrides mean the port may differ. Query dynamically instead.
+</Warning>
+
+## Retrieving the preferred port
+
+Three API variants — all providing the same functionality — are available. Use any (or combine them):
+
+| Variant | API |
+| --- | --- |
+| Blocking | `XNetworkingQueryPreferredLocalUdpMultiplayerPort` |
+| Asynchronous | `XNetworkingQueryPreferredLocalUdpMultiplayerPortAsync` |
+| Notification-based | `XNetworkingRegisterPreferredLocalUdpMultiplayerPortChanged` |
+
+## Why use the preferred port
+
+All GDK titles should use the preferred port for main game traffic. It's optimized for both peer-to-peer and client/server topologies. The platform ensures this port is the most likely to work for a user's network environment.
+
+| Benefit | Impact |
+| --- | --- |
+| Customer support flows | Standardized diagnostics |
+| NAT compatibility | Better standard NAT traversal outcomes |
+| UPnP™ | Certified device functionality |
+| QoS | Packets identified as real-time-sensitive by routers and ISPs |
+| Peer-to-peer | Only port that lets inbound UDP through the firewall without firewall punching |
+
+<Note>
+  P2P titles still need their own public IP/port discovery and NAT punching for moderate/strict NAT clients. The preferred port improves success rates but doesn't replace those techniques.
+</Note>
+
+Client/server titles also benefit — troubleshooting, UPnP™, and packet identification matter for captive portals and source-based filtering in hotels, hospitals, dorms, etc.
+
+Bind normally with the [Winsock](/windows/desktop/WinSock/windows-sockets-start-page-2) APIs. Bind both IPv4 and IPv6 or use a dual-stack socket, and bind to `INADDR_ANY`/`in6addr_any`.
+
+## Handling socket failures
+
+There's no guarantee the returned port will connect to a specific server or peer. Use normal title retry and fallback logic. Whenever you close and reopen the socket, requery the preferred port — it can change.
+
+## Network initialization
+
+All three API variants block or delay completion until the network is initialized on title launch and resume. You can either wait for [network initialization](/gdk/networking/initialization) up front, or call these APIs and wait for them to return.
+
+## Suspend and resume
+
+Close the preferred-port socket on suspend and re-create it on resume after waiting for network initialization. Register for suspend and resume via `RegisterAppStateChangeNotification`.
+
+<Warning>
+  Assume the preferred port has changed on resume. Either listen for changes or requery when creating your new sockets.
+</Warning>
+
+See [Suspend and resume in Winsock](/gdk/networking/game-mesh/winsock#suspend-and-resume) for more.
+
+## Changes in the preferred port
+
+Listen for changes with `XNetworkingRegisterPreferredLocalUdpMultiplayerPortChanged`.
+
+Every attempt is made to keep the port stable while your title runs, but it may change due to external network conditions — especially when the [network connectivity level](/gdk/networking/initialization) changes or during suspend/resume cycles.
+
+When the port changes:
+
+- Additional inbound connections from **future** peers may be blocked on any previous port.
+- Existing peer traffic may continue to work — a change notification is not necessarily fatal to an in-progress session.
+- Migrate to a new socket on the new port at the earliest opportunity without interrupting gameplay.
+- To detect connection loss and retry, always use the most recent preferred port.
+
+### Testing preferred-port changes
+
+<Steps>
+  <Step title="Open Settings">
+    While your game is running, open the **Xbox Guide** and launch the **Settings** app.
+  </Step>
+  <Step title="Network settings">
+    On the **General** tab, select **Network settings**.
+  </Step>
+  <Step title="Alternate port selection">
+    Choose **Advanced settings › Alternate port selection**.
+  </Step>
+  <Step title="Set to Manual">
+    Set port selection to **Manual** and choose a port from the drop-down.
+  </Step>
+  <Step title="Verify notification">
+    The port change takes effect immediately and your title receives a notification.
+  </Step>
+  <Step title="Reset when done">
+    Set port selection back to **Automatic**.
+  </Step>
+</Steps>
+
+<Note>
+  Inside Settings your title is constrained but still running and receives the port change notification even when not visible. Leaving Settings open for more than 10 minutes without returning to your title will suspend it.
+</Note>
+
+## Security
+
+The socket bound to the preferred port has no extra security guarantees. Use your own secure communication protocol on top of it per the communication security best practices.
+
+## Peer-to-peer
+
+The preferred port is the best-known starting point for a P2P mesh and is configured to allow inbound connections through the user's NAT. However, your title is still responsible for:
+
+- NAT type detection
+- Public IP and port detection and exchange
+- NAT punching and traversal
+
+## Azure PlayFab Party
+
+[PlayFab Party](/gdk/networking/game-mesh/playfab-party) uses the preferred port by default (configurable via the Party API). Unless you change the Party port, don't bind directly to the preferred port yourself.
+
+## Example: bind a dual-stack socket
+
+Uses the blocking variant for brevity. Assumes the title has already waited for network initialization and called [`WSAStartup`](/windows/desktop/api/winsock/nf-winsock-wsastartup).
+
+```cpp
+HRESULT
+CreateAndBindMultiplayerSocket(
+    _Out_ SOCKET* multiplayerSocket
+    )
+{
+    HRESULT hr;
+    SOCKET resultSocket = INVALID_SOCKET;
+
+    uint16_t port;
+    hr = XNetworkingQueryPreferredLocalUdpMultiplayerPort(&port);
+    if (FAILED(hr))
+    {
+        goto Failure;
+    }
+
+    resultSocket = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
+    if (resultSocket == INVALID_SOCKET)
+    {
+        hr = HRESULT_FROM_WIN32(WSAGetLastError());
+        goto Failure;
+    }
+
+    // Enable both IPv4 and IPv6 on this socket.
+    int v6only = 0;
+    if (setsockopt(resultSocket, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&v6only, sizeof(v6only)) == SOCKET_ERROR)
+    {
+        hr = HRESULT_FROM_WIN32(WSAGetLastError());
+        goto Failure;
+    }
+
+    sockaddr_in6 sa;
+    ZeroMemory(&sa, sizeof(sa));
+    sa.sin6_family = AF_INET6;
+    sa.sin6_port = htons(port);
+    sa.sin6_addr = in6addr_any;
+    if (bind(resultSocket, (const sockaddr*)&sa, sizeof(sa)) == SOCKET_ERROR)
+    {
+        hr = HRESULT_FROM_WIN32(WSAGetLastError());
+        goto Failure;
+    }
+
+    *multiplayerSocket = resultSocket;
+
+Exit:
+    return hr;
+
+Failure:
+    if (resultSocket != INVALID_SOCKET)
+    {
+        (void)closesocket(resultSocket);
+    }
+    goto Exit;
+}
+```
+
+## See also
+
+- [Windows Sockets 2 (Winsock)](/windows/desktop/WinSock/windows-sockets-start-page-2)
+- [Windows Sockets overview](/gdk/networking/game-mesh/winsock)
+- [QoS packet tagging](/gdk/networking/qos-tagging)

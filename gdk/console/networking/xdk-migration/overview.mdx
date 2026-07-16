@@ -1,0 +1,29 @@
+---
+title: "XDK to GDK networking migration"
+sidebarTitle: "Overview"
+description: "Guidance for porting XDK networking code to the GDK."
+icon: "arrow-right-arrow-left"
+tag: "NDA"
+---
+
+<Note tag="NDA">
+  This page contains confidential Xbox information and is available to partners under NDA.
+</Note>
+
+This section helps XDK titles move to the GDK networking stack. The overall shape of networking is similar, but several XDK-specific APIs have been retired in favor of standard Windows APIs or new GDK equivalents.
+
+## In this section
+
+<CardGroup cols={2}>
+  <Card title="Migration overview" icon="list-check" href="/gdk/console/networking/xdk-migration/migration-overview">
+    API-by-API comparison between XDK and GDK networking.
+  </Card>
+
+  <Card title="Web requests" icon="globe" href="/gdk/console/networking/xdk-migration/web-requests">
+    Migrating XDK web-request code to xCurl or WinHTTP.
+  </Card>
+
+  <Card title="Game Mesh" icon="network-wired" href="/gdk/console/networking/xdk-migration/game-mesh">
+    Migrating XDK peer-to-peer / SecureDeviceAssociation code to PlayFab Party or MsQuic.
+  </Card>
+</CardGroup>

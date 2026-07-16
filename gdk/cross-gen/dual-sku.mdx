@@ -1,0 +1,77 @@
+---
+title: "Dual SKU cross-generation games"
+sidebarTitle: "Dual SKU"
+description: "Ship XBOX One and XBOX Series X|S versions as separate products with optional Xbox services configuration sharing for a unified user base."
+icon: "layer-group"
+tag: "NDA"
+---
+
+Dual SKU cross-generation games are sold (or otherwise made available) as separate products. These products individually target the XBOX One family of consoles and the XBOX Series consoles. Users acquire and play each natively on their respective device family.
+
+A dual SKU cross-generation game consists of **at least one XBOX One targeted package** and **at least one XBOX Series X|S targeted package**. The XBOX One package can be built either on the GDK (Microsoft Game Development Kit) or as an ERA game based on the older XDK. Use the GDK when possible — it is newer and has more features than the XDK.
+
+<Note>
+  For access to configuration and publishing documentation for cross-generation gaming, contact your Microsoft representative.
+</Note>
+
+## Enable cross-generation Xbox services functionality
+
+Because dual SKU cross-generation games are separate game products, they have separate Xbox services configurations by default. However, publishers who choose to sell each generation's title separately can keep their user base unified and retain user progress across the console generation boundary.
+
+An eligible XBOX One game product and an eligible XBOX Series X|S game product can **share a single Xbox services configuration**. This results in one Xbox services configuration used by two separate games that share:
+
+- Title ID
+- Official club
+- Achievements
+- Leaderboards
+- Multiplayer
+- Presence
+
+<Note>
+  Although cross-generation multiplayer is shared by default, dual SKU games that enable Xbox services configuration sharing aren't required to support cross-generation multiplayer. We recommend enabling it where possible.
+</Note>
+
+Xbox services configuration sharing is enabled **at the time of product creation**. It is not possible to _merge_ Xbox services configurations for multiple existing products. The following scenarios cover the supported configurations:
+
+| Existing product | To enable sharing |
+| --- | --- |
+| Released XBOX One game | Create and enable a _new_ XBOX Series X\|S product to share the existing Xbox services configuration. |
+| Released XBOX Series X\|S game | Create and enable a _new_ XBOX One product to share the existing Xbox services configuration. |
+| Two new products (both unreleased) | Create both a _new_ XBOX One product and a _new_ XBOX Series X\|S product; both share the same Xbox services configuration. |
+
+<Warning>
+  Xbox services configuration sharing is **not** supported for Windows PC titles at this time.
+</Warning>
+
+For details on enabling Xbox services configuration sharing for your eligible products, contact your Microsoft representative.
+
+## Backward compatibility of the XBOX One SKU
+
+To develop dual SKU cross-generation games, consider the backward compatibility behavior of the XBOX One SKU when played on XBOX Series consoles. See [Backcompat only titles](/gdk/cross-gen/backcompat-only).
+
+## Create discs for cross-generation bundles
+
+A dual SKU cross-generation game can be packaged as a **cross-generation bundle** that includes the separate XBOX One and XBOX Series X|S editions in a single purchase. Bundles are sold digitally and on retail discs.
+
+### Best practices
+
+Use the following best practices to properly package your cross-generation bundle to reduce marketplace confusion and user stress.
+
+- **Specify a subset** of each package to include on the disc to reduce network installations. Consider which parts of your game are most critical to getting users into your game as quickly as possible; other parts can be downloaded later or in the background (Intelligent Delivery).
+- **Create a multi-disc package** to maximize the amount of content available to install directly from disc and minimize network installations.
+- **Don't create separate XBOX One and XBOX Series X|S discs for the same Amaray case.** Use the multi-disc solution to include additional DLC discs while gating access to both games through one licensed disc. This constrains the user to a single license even when they physically purchase a game bundle.
+- **Don't include stub packages on a disc.** This is a violation of **XR-003: Title Quality for Submission**. If your XBOX One and XBOX Series X|S binaries are not both ready for submission at manufacturing time, you can create a physical bundle retail SKU that contains a generation-specific game disc plus a digital code. The user can redeem the code online to access the other generation-specific edition when it becomes available.
+
+<Note>
+  A game disc \+ digital code bundle grants the user a physical disc license to one edition and a digital license to the other edition.
+</Note>
+
+### Validation
+
+Prior to manufacturing discs for your cross-generation bundle, validate that your content is appropriately available. Use cross-generation test discs to validate dual SKU scenarios.
+
+## See also
+
+- [Cross-generation gaming overview](/gdk/cross-gen/overview)
+- [Smart Delivery](/gdk/cross-gen/smart-delivery)
+- [Backcompat only titles](/gdk/cross-gen/backcompat-only)

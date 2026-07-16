@@ -1,0 +1,156 @@
+---
+title: "DirectStorage shuffle formats"
+sidebarTitle: "Shuffle formats"
+description: "BCn-aware shuffle formats for the DirectStorage SwizzleMode option (March 2024 GDK+): BC1, BC3, BC4, and BC5 with reference disk-layout algorithms and a compute-shader fixup."
+icon: "shuffle"
+tag: "NDA"
+---
+
+Starting with the **March 2024 GDK**, several additional options are available for the `DSTORAGE_REQUEST_OPTIONS::SwizzleMode` parameter in the DirectStorage API. They exist to yield additional compressed-size savings when used with **BCPack** or **zlib** compression.
+
+Each shuffle format describes a rearrangement of the data as it sits on disk. DirectStorage rearranges the data as it writes it into memory to prepare it for a **final fix-up done by a compute shader** — which restores the correct byte ordering before the resource is used.
+
+The reference code in this article shows how to prepare the on-disk format. The compute-shader fix-up can be made available on request — contact your Microsoft representative.
+
+<Note>
+  These modes will work with any data that meets the alignment requirements, but they are intended for and most effective with **offline-swizzled content**.
+</Note>
+
+## `DSTORAGE_SWIZZLE_MODE_4K_4K_8K` — BC1
+
+- **Target format:** BC1.
+- **Alignment:** uncompressed size must be a multiple of **16 KB**.
+- **Source layout:** grouped by stream (endpoints and indexes separated) — this is what improves compressibility.
+- **Companion compression:** zlib **or** BCPack.
+- **On-memory layout:** interleaved 16 KB groups, each containing all of the original BC1 content but still grouped.
+- **Fix-up:** a compute shader reconstructs the original content in-place from the 16 KB groups.
+
+```cpp Shuffle_BC1.cpp
+// Rearrange a source buffer into the disk layout for DSTORAGE_SWIZZLE_MODE_4K_4K_8K.
+// Comments assume BC1 formatted data.
+auto shuffle_224 = [](uint8_t* dest, const uint8_t* src, size_t size) {
+    uint8_t* d1 = dest;            // e0
+    uint8_t* d2 = dest + size / 4; // e1
+    uint8_t* d3 = dest + size / 2; // indexes
+
+    do {
+        *d1++ = *src++; *d1++ = *src++;                        // e0  (2B)
+        *d2++ = *src++; *d2++ = *src++;                        // e1  (2B)
+        *d3++ = *src++; *d3++ = *src++;                        // ind (4B)
+        *d3++ = *src++; *d3++ = *src++;
+    } while (size -= 8);
+};
+```
+
+## `DSTORAGE_SWIZZLE_MODE_4K_12K_4K_4K_8K` — BC3
+
+- **Target format:** BC3.
+- **Alignment:** uncompressed size must be a multiple of **32 KB**.
+- **Source layout:** grouped by stream.
+- **Companion compression:** zlib **or** BCPack.
+- **On-memory layout:** interleaved 32 KB groups.
+- **A0/A1 are interleaved 2K/2K** inside each 4 KB range of that stream.
+
+```cpp Shuffle_BC3.cpp
+// Rearrange a source buffer into the disk layout for DSTORAGE_SWIZZLE_MODE_4K_12K_4K_4K_8K.
+// Comments assume BC3 formatted data.
+// A0/A1 are interleaved 2K/2K in each 4KB range of that stream.
+auto shuffle_26_224 = [](uint8_t* dest, const uint8_t* src, size_t size) {
+    uint8_t* d1 = dest, *d2 = dest + 2048;      // a0, a1 interleaved 2k/2k
+    uint8_t* d3 = dest + size / 8;              // aind
+    uint8_t* d4 = dest + size / 2;              // e0
+    uint8_t* d5 = dest + size / 2 + size / 8;   // e1
+    uint8_t* d6 = dest + size / 2 + size / 4;   // eind
+
+    do {
+        *d1++ = *src++;                                        // a0   (1B)
+        *d2++ = *src++;                                        // a1   (1B)
+        *d3++ = *src++; *d3++ = *src++; *d3++ = *src++;        // aind (6B)
+        *d3++ = *src++; *d3++ = *src++; *d3++ = *src++;
+        *d4++ = *src++; *d4++ = *src++;                        // e0   (2B)
+        *d5++ = *src++; *d5++ = *src++;                        // e1   (2B)
+        *d6++ = *src++; *d6++ = *src++;                        // eind (4B)
+        *d6++ = *src++; *d6++ = *src++;
+
+        // Every 2K tiles, advance the interleave.
+        if ((size - 16) % (2048 * 16) == 0)
+        {
+            d1 += 2048;
+            d2 += 2048;
+        }
+    } while (size -= 16);
+};
+```
+
+## `DSTORAGE_SWIZZLE_MODE_4K_4K_24K` — BC4
+
+- **Target format:** BC4.
+- **Alignment:** uncompressed size must be a multiple of **32 KB**.
+- **Source layout:** grouped by stream.
+- **Companion compression:** zlib **or** BCPack.
+- **On-memory layout:** interleaved 32 KB groups.
+
+```cpp Shuffle_BC4.cpp
+// Rearrange a source buffer into the disk layout for DSTORAGE_SWIZZLE_MODE_4K_4K_24K.
+// Comments assume BC4 formatted data.
+auto shuffle_116 = [](uint8_t* dest, const uint8_t* src, size_t size) {
+    uint8_t* d1 = dest, *d2 = dest + size / 8;  // r0, r1
+    uint8_t* d3 = dest + size / 4;              // ind
+
+    do {
+        *d1++ = *src++;                                        // r0  (1B)
+        *d2++ = *src++;                                        // r1  (1B)
+        *d3++ = *src++; *d3++ = *src++; *d3++ = *src++;        // ind (6B)
+        *d3++ = *src++; *d3++ = *src++; *d3++ = *src++;
+    } while (size -= 8);
+};
+```
+
+## `DSTORAGE_SWIZZLE_MODE_4K_12K_4K_12K` — BC5
+
+- **Target format:** BC5.
+- **Alignment:** uncompressed size must be a multiple of **32 KB**.
+- **Source layout:** grouped by stream.
+- **Companion compression:** zlib **or** BCPack.
+- **On-memory layout:** interleaved 32 KB groups.
+- **R0/R1 and G0/G1 are interleaved 2K/2K** in each 4 KB range of those streams.
+
+```cpp Shuffle_BC5.cpp
+// Rearrange a source buffer into the disk layout for DSTORAGE_SWIZZLE_MODE_4K_12K_4K_12K.
+// Comments assume BC5 formatted data.
+// R0/R1 and G0/G1 are interleaved 2K/2K in each 4KB range of those streams.
+auto shuffle_26_26 = [](uint8_t* dest, const uint8_t* src, size_t size) {
+    uint8_t* d1 = dest, *d2 = dest + 2048;                       // r0, r1 interleaved 2K/2K
+    uint8_t* d3 = dest + size / 8;                               // rind
+    uint8_t* d4 = dest + size / 2, *d5 = dest + size / 2 + 2048; // g0, g1 interleaved 2K/2K
+    uint8_t* d6 = dest + size / 2 + size / 8;                    // gind
+
+    do {
+        *d1++ = *src++;                                        // r0   (1B)
+        *d2++ = *src++;                                        // r1   (1B)
+        *d3++ = *src++; *d3++ = *src++; *d3++ = *src++;        // rind (6B)
+        *d3++ = *src++; *d3++ = *src++; *d3++ = *src++;
+        *d4++ = *src++;                                        // g0   (1B)
+        *d5++ = *src++;                                        // g1   (1B)
+        *d6++ = *src++; *d6++ = *src++; *d6++ = *src++;        // gind (6B)
+        *d6++ = *src++; *d6++ = *src++; *d6++ = *src++;
+
+        // Every 2K tiles, advance the interleave.
+        if ((size - 16) % (2048 * 16) == 0)
+        {
+            d1 += 2048;
+            d2 += 2048;
+            d4 += 2048;
+            d5 += 2048;
+        }
+    } while (size -= 16);
+};
+```
+
+## Related
+
+- [DirectStorage overview](/gdk/storage/directstorage/overview)
+- [DirectStorage usage and internal details](/gdk/storage/directstorage/usage-and-internals) (NDA)
+- [Optimizing compressed content with DirectStorage and XBTC](/gdk/storage/directstorage/compression-xbtc) (NDA)
+- **Analyzing DirectStorage performance in PIX** (NDA)
+- **GDK samples list**

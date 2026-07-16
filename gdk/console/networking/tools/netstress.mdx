@@ -1,0 +1,61 @@
+---
+title: "NetStress"
+sidebarTitle: "NetStress"
+description: "Simulate degraded network conditions on Xbox devkits with xbstress."
+icon: "gauge-high"
+tag: "NDA"
+---
+
+<Note tag="NDA">
+  This page contains confidential Xbox information and is available to partners under NDA.
+</Note>
+
+NetStress (`xbstress.exe`) applies traffic-shaping profiles to an Xbox devkit so titles can be validated under realistic and worst-case network conditions.
+
+## Basic usage
+
+```cmd
+xbstress start /profile:avg
+xbstress status
+xbstress stop
+```
+
+Stress is applied to all traffic on the console until stopped or the console is rebooted.
+
+## Built-in profiles
+
+| Profile | Bandwidth | Latency | Packet loss | Intended use |
+| --- | --- | --- | --- | --- |
+| `broken` | Very low | Very high | High | Verify graceful degradation and error handling |
+| `min` | Low | High | Moderate | Minimum supported connection quality |
+| `avg` | Medium | Medium | Low | Representative real-world connection |
+| `exc` | High | Low | Negligible | Excellent connection baseline |
+
+Use `xbstress start /profile:<name> /?` to list channel-level parameters (up/down bandwidth, jitter, per-direction loss).
+
+## Channels
+
+Each profile is expressed as two channels:
+
+- **Uplink** – traffic from the console to the network.
+- **Downlink** – traffic from the network to the console.
+
+Both channels have independent bandwidth, latency, and loss settings, and can be tuned individually via command-line overrides.
+
+## Port exemptions
+
+By default `xbstress` shapes all traffic. Exempt specific ports (for example, the debugger channel or a live capture tool) so their traffic is not affected:
+
+```cmd
+xbstress start /profile:avg /exempt:4201,5000-5010
+```
+
+<Warning>
+  Debugger and Xbox Device Portal ports should generally be exempted; otherwise the devkit may appear to hang under heavy loss profiles.
+</Warning>
+
+## Recommended validation matrix
+
+- Run the title's multiplayer, matchmaking, and Store flows under each of `min`, `avg`, and `broken`.
+- Verify that no flow deadlocks under `broken` — all failures should surface as user-visible errors within a reasonable timeout.
+- Compare telemetry against the `exc` baseline to isolate stress-induced regressions.

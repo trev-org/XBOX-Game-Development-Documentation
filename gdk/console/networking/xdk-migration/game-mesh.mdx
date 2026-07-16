@@ -1,0 +1,62 @@
+---
+title: "Migrating Game Mesh"
+sidebarTitle: "Game Mesh"
+description: "Port XDK SecureDeviceAssociation-based peer-to-peer code to GDK Game Mesh."
+icon: "network-wired"
+tag: "NDA"
+---
+
+<Note tag="NDA">
+  This page contains confidential Xbox information and is available to partners under NDA.
+</Note>
+
+XDK titles typically built peer-to-peer game traffic on `Windows.Xbox.Networking.SecureDeviceAssociation`. That API is not available in the GDK. Replace it with one of the supported GDK transports.
+
+## Pick a transport
+
+<CardGroup cols={2}>
+  <Card title="PlayFab Party" icon="users" href="/gdk/console/networking/game-mesh/playfab-party">
+    Recommended default. Handles NAT traversal, voice chat, and reliable/unreliable game data channels.
+  </Card>
+
+  <Card title="MsQuic" icon="bolt" href="/gdk/console/networking/game-mesh/msquic">
+    Use when you need a custom QUIC-based transport and do not need PlayFab Party's voice or matchmaking features.
+  </Card>
+
+  <Card title="Winsock" icon="plug" href="/gdk/console/networking/game-mesh/winsock">
+    Raw sockets for teams with an existing custom netcode stack.
+  </Card>
+
+  <Card title="Unreal Party" icon="u" href="/gdk/console/networking/game-mesh/party-unreal">
+    Unreal Engine integration for PlayFab Party.
+  </Card>
+</CardGroup>
+
+## API mapping
+
+| XDK concept | GDK equivalent |
+| --- | --- |
+| `SecureDeviceAssociationTemplate` in the app manifest | Port declarations in the MicrosoftGame.config `NetworkManifest`; see [Xbox console port behavior](/gdk/console/networking/game-mesh/xbox-console-port-behavior). |
+| `SecureDeviceAssociation.CreateAssociationAsync` | `PartyManager::CreateNewNetwork` (PlayFab Party) or a QUIC connection (MsQuic). |
+| `SecureDeviceAssociation.StateChanged` | `PartyNetworkStateChangedStateChange` (PlayFab Party) or MsQuic connection events. |
+| Reliable / unreliable channels via multiple templates | PlayFab Party endpoint properties (reliable, sequenced, unsequenced) on a single network. |
+| Automatic Multiplayer session integration | Explicit invitation flow using PlayFab Party network descriptors passed via MPSD. |
+
+## Ports and firewall
+
+Declare the UDP ports your title uses in `MicrosoftGame.config`. Configuration differs between console and PC — see:
+
+- [Xbox console port behavior](/gdk/console/networking/game-mesh/xbox-console-port-behavior)
+- [PC port behavior](/gdk/console/networking/game-mesh/pc-port-behavior)
+- [Preferred UDP port](/gdk/console/networking/game-mesh/preferred-udp-port)
+
+## QoS and traffic tagging
+
+Unlike the XDK, GDK titles must tag their own outgoing traffic:
+
+- [QoS traffic tagging](/gdk/console/networking/qos-tagging)
+- [QoS measurement API](/gdk/console/networking/game-mesh/qos)
+
+## Validation
+
+Once ported, validate against the standard NetStress profiles to confirm the new transport recovers from packet loss and latency spikes the way the XDK version did. See [NetStress](/gdk/console/networking/tools/netstress).

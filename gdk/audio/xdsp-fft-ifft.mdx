@@ -1,0 +1,32 @@
+---
+title: "XDSP FFT/IFFT walkthrough"
+sidebarTitle: "XDSP FFT/IFFT"
+description: "Single-stream FFT/IFFT on XDSP."
+icon: "chart-line"
+tag: "NDA"
+---
+
+Perform frequency-domain analysis and synthesis on a single audio stream using the [XDSP](/gdk/audio/xdsp) hardware FFT/IFFT commands. Useful for spectral effects, custom filtering, HRTF processing, and analysis features driving gameplay.
+
+## Pipeline
+
+<Steps>
+  <Step title="Allocate buffers (16-byte aligned)">
+    - Time-domain input (real samples)
+    - Frequency-domain buffer (complex bins)
+    - Time-domain output (post-IFFT)
+    - Processing buffer for scratch
+  </Step>
+</Steps>
+
+## Best practices
+
+- Match FFT block size to the mixing block size (e.g. 128 samples per audio frame at 48 kHz → use overlap-add with a larger FFT window).
+- Overlap-add windows reduce artifacts at block boundaries — apply a windowing function (Hann, Blackman) before the FFT and cross-fade blocks on synthesis.
+- Reuse the same input/output buffers across frames to avoid allocation churn.
+- 16-byte alignment on all hardware buffers is required.
+
+## Related
+
+- [XDSP overview](/gdk/audio/xdsp)
+- [XDSP convolution walkthrough](/gdk/audio/xdsp-convolution)

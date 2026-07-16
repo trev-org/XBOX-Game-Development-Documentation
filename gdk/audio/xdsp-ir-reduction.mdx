@@ -1,0 +1,39 @@
+---
+title: "XDSP IR reduction walkthrough"
+sidebarTitle: "XDSP IR reduction"
+description: "Reduce impulse-response length to lower convolution cost."
+icon: "minimize"
+tag: "NDA"
+---
+
+Use [XDSP](/gdk/audio/xdsp) to shrink an impulse response (IR) in length while preserving its perceptual character. Reducing an IR that would otherwise be thousands of taps long dramatically cuts runtime convolution cost.
+
+## When to use it
+
+- Convolution reverbs where full-length IRs are prohibitively expensive.
+- Guitar-cab or environmental IRs captured at high resolution.
+- Middleware pipelines that need to ship compact IR variants for lower-power targets.
+
+## Pipeline
+
+<Steps>
+  <Step title="Configure the reduction target">
+    Decide the target length (in samples or taps) and quality parameters. Trade-off: shorter IR = less DSP cost but a possible loss of tail detail.
+  </Step>
+  <Step title="Submit the IR-reduction command">
+    Queue the reduction command with source, destination, target length, and quality settings. Optionally set `SignalOnCompletion`.
+  </Step>
+</Steps>
+
+## Best practices
+
+- Reduce IRs **offline** where possible and ship the reduced IR with the title, not the raw capture.
+- Reuse the XDSP client across multiple reductions in a batch — client creation is expensive.
+- Validate the reduced IR audibly against reference material — automated metrics don't always align with perceived quality.
+- 16-byte alignment on source and destination buffers is required.
+
+## Related
+
+- [XDSP overview](/gdk/audio/xdsp)
+- [XDSP convolution walkthrough](/gdk/audio/xdsp-convolution)
+- [XDSP convolution with envelope walkthrough](/gdk/audio/xdsp-convolution-envelope)

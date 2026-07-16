@@ -1,0 +1,259 @@
+---
+title: "ACP overview"
+sidebarTitle: "ACP"
+description: "The Audio Control Processor drives SHAPE flowgraphs."
+icon: "microchip-ai"
+tag: "NDA"
+---
+
+This topic describes the flowgraphs used to direct the **Audio Control Processor (ACP)** and the utility methods for preparing SHAPE audio data.
+
+## Overview
+
+The `acphal` library (`acphal.lib`) defines the API set for the [SHAPE](/gdk/audio/shape) hardware. The GDK also ships a collection of audio utilities and source code that help prepare data for SHAPE. Utility headers define:
+
+- Context structures for each supported data format
+- A full set of functions to read and write these contexts
+
+Define at least one flowgraph to route audio data **through** the SHAPE blocks. The ACP manages the blocks and ensures efficiency.
+
+In title source, include `ShapeContext.h`, not the individual context header files.
+
+## Flowgraphs
+
+A SHAPE flowgraph is an array of commands (one per SHAPE block) plus context data describing operation order and operands. The ACP uses the flowgraph to correctly schedule operations within SHAPE blocks. The title is responsible for **building** the flowgraph and **submitting** it. Build with `ShapeFlowGraph` (flowgraph utility methods).
+
+In the reference figures, green blocks are SHAPE components, cyan blocks are source material, and labeled yellow circles are hardware mix buffers.
+
+### Example: 3D sounds — two voices, each panned between two outputs, with a send to a common output
+
+```cpp
+typedef enum mixBuffers
+{
+  noBuffer     =  0,
+  mixBuffer_1  =  1, mixBuffer_2  =  2, mixBuffer_3  =  3, mixBuffer_4  =  4,
+  mixBuffer_5  =  5, mixBuffer_6  =  6, mixBuffer_7  =  7, mixBuffer_8  =  8,
+  mixBuffer_9  =  9, mixBuffer_10 = 10, mixBuffer_11 = 11
+};
+
+typedef enum DMAcontexts    { DMAcontext_0 = 0, DMAcontext_1, DMAcontext_2, DMAcontext_3, DMAcontext_4 };
+typedef enum FLTVOLcontexts { FLTVOLcontext_0 = 0, FLTVOLcontext_1, FLTVOLcontext_2, FLTVOLcontext_3,
+                              FLTVOLcontext_4, FLTVOLcontext_5, FLTVOLcontext_6, FLTVOLcontext_7 };
+typedef enum EQcontexts     { EQcontext_0 = 0, EQcontext_1 };
+typedef enum SRCcontexts    { SRCcontext_0 = 0, SRCcontext_1 };
+typedef enum XMAcontexts    { XMAcontext_0 = 0, XMAcontext_1 };
+
+#define nSHAPE_3Dpan_commands 28
+SHAPE_FLOWGRAPH_COMMAND cmd[nSHAPE_3Dpan_commands];
+
+// Shared mix buffer
+SetShapeAllocMixBufferCommand(&cmd[0], mixBuffer_1, 2, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+
+// Mix buffers for voice A
+SetShapeAllocMixBufferCommand(&cmd[1], mixBuffer_2, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[2], mixBuffer_3, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[3], mixBuffer_4, 1, 3, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[4], mixBuffer_5, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[5], mixBuffer_6, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+
+// Voice A
+SetShapeSrcXmaCommand( &cmd[6], SRCcontext_0,   XMAcontext_0, mixBuffer_2, noBuffer);
+SetShapeFiltVolCommand(&cmd[7], FLTVOLcontext_0, mixBuffer_2, mixBuffer_3);
+SetShapeEqCompCommand( &cmd[8], EQcontext_0,     mixBuffer_3, noBuffer, mixBuffer_4);
+SetShapeFiltVolCommand(&cmd[9],  FLTVOLcontext_1, mixBuffer_4, mixBuffer_5);
+SetShapeFiltVolCommand(&cmd[10], FLTVOLcontext_2, mixBuffer_4, mixBuffer_6);
+SetShapeFiltVolCommand(&cmd[11], FLTVOLcontext_3, mixBuffer_4, mixBuffer_1);
+
+// Voice B (analogous — buffers 7..11, contexts _1 / _4..7)
+SetShapeAllocMixBufferCommand(&cmd[12], mixBuffer_7,  1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[13], mixBuffer_8,  1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[14], mixBuffer_9,  1, 3, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[15], mixBuffer_10, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[16], mixBuffer_11, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+
+SetShapeSrcXmaCommand( &cmd[17], SRCcontext_1,   XMAcontext_1, mixBuffer_7, noBuffer);
+SetShapeFiltVolCommand(&cmd[18], FLTVOLcontext_4, mixBuffer_7, mixBuffer_8);
+SetShapeEqCompCommand( &cmd[19], EQcontext_1,    mixBuffer_8, noBuffer, mixBuffer_9);
+SetShapeFiltVolCommand(&cmd[20], FLTVOLcontext_5, mixBuffer_9, mixBuffer_10);
+SetShapeFiltVolCommand(&cmd[21], FLTVOLcontext_6, mixBuffer_9, mixBuffer_11);
+SetShapeFiltVolCommand(&cmd[22], FLTVOLcontext_7, mixBuffer_9, mixBuffer_1);
+
+// DMA all outputs to memory
+SetShapeDmaCommand(&cmd[23], DMAcontext_0, mixBuffer_1,  true);
+SetShapeDmaCommand(&cmd[24], DMAcontext_1, mixBuffer_5,  true);
+SetShapeDmaCommand(&cmd[25], DMAcontext_2, mixBuffer_6,  true);
+SetShapeDmaCommand(&cmd[26], DMAcontext_3, mixBuffer_10, true);
+SetShapeDmaCommand(&cmd[27], DMAcontext_4, mixBuffer_11, true);
+```
+
+### Example: basic front end to a software audio engine
+
+```cpp
+#define nSHAPE_frontend_commands 7
+SHAPE_FLOWGRAPH_COMMAND cmd[nSHAPE_frontend_commands];
+
+SetShapeAllocMixBufferCommand(&cmd[0], mixBuffer_1, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[1], mixBuffer_2, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+SetShapeAllocMixBufferCommand(&cmd[2], mixBuffer_3, 1, 1, SHAPE_MIXBUFFER_ATTENUATION_0_DB);
+
+SetShapeSrcXmaCommand( &cmd[3], SRCcontext_0,    XMAcontext_0, mixBuffer_1, noBuffer);
+SetShapeEqCompCommand( &cmd[4], EQcontext_0,     mixBuffer_1, noBuffer, mixBuffer_2);
+SetShapeFiltVolCommand(&cmd[5], FLTVOLcontext_0, mixBuffer_2, mixBuffer_3);
+SetShapeDmaCommand(    &cmd[6], DMAcontext_0,    mixBuffer_3, true);
+```
+
+### Rendering audio
+
+<Steps>
+  <Step title="Update contexts each frame">
+    Use the `ACP_COMMAND_UPDATE_*_CONTEXT` commands, or manually update contexts while synchronizing with flowgraph processing:
+
+    - `ACP_COMMAND_UPDATE_DMA_CONTEXT`
+    - `ACP_COMMAND_UPDATE_EQCOMP_CONTEXT`
+    - `ACP_COMMAND_UPDATE_FILTVOL_CONTEXT`
+    - `ACP_COMMAND_UPDATE_PCM_CONTEXT`
+    - `ACP_COMMAND_UPDATE_SRC_CONTEXT`
+    - `ACP_COMMAND_UPDATE_XMA_CONTEXT`
+
+    A flag on `SubmitCommand` decides whether the update happens ASAP or at the next audio frame.
+  </Step>
+</Steps>
+
+<Tip>
+  For many contexts per frame, prefer non-persistent flowgraphs or `ACP_COMMAND_TYPE_START_FLOWGRAPH` with the `waitForStart` parameter to `ACP_COMMAND_LOAD_SHAPE_FLOWGRAPH`. Or use double-buffering: update the second copy of contexts while the flowgraph is being processed and swap at the start of an audio frame.
+</Tip>
+
+### Flowgraph parsing and lifetime
+
+The ACP terminates persistent-flowgraph parsing at the end of the audio frame (2.667 ms limit). If a title starts processing late and parts of the flowgraph don't finish, they are purged (the flowgraph itself is not altered). The ACP sends `ACP_MESSAGE_TYPE_FLOWGRAPH_TERMINATED` if the title registered for messages. Inspect the `queued` flag of each command to see what didn't get inserted into SHAPE queues.
+
+Non-persistent flowgraphs are usually processed to completion regardless of submission time — exceptions are commands blocked by unavailable source data or misuse of `disabled` flags. A title doesn't need to be perfectly synchronous with the audio clock as long as it services flowgraphs within the 2.667 ms ACP audio frame.
+
+**Lifetime summary:**
+
+- A **persistent** flowgraph stays active until replaced (by another flowgraph or a null flowgraph).
+- The ACP starts processing at the beginning of an audio frame unless the client instructs it to wait for a start command.
+- The ACP stops processing a persistent flowgraph shortly before the end of the audio frame, even if not complete.
+- A **non-persistent** flowgraph is active only until it completes, then removed. It can span audio frames.
+
+<Note>
+  Command processing is **not** tied to flowgraph parsing. The ACP constantly scans for new commands and processes them as fast as possible while parsing.
+</Note>
+
+### Updating flowgraphs
+
+Don't update a flowgraph while it's being processed. Three strategies:
+
+<AccordionGroup>
+  <Accordion title="Non-persistent, rebuild as needed">
+    Submit at the start of the audio frame. Reuse the same flowgraph if unchanged. Double-buffer by constructing a new flowgraph while the old runs. Sections can be stored and re-linked via mix buffer IDs.
+  </Accordion>
+
+  <Accordion title="Persistent, replace on change">
+    Rebuild and replace only when needed. Double-buffering also works here. `waitForStart` on `ACP_COMMAND_LOAD_SHAPE_FLOWGRAPH` gates the start on `ACP_COMMAND_TYPE_START_FLOWGRAPH` for slight synchronization improvements.
+  </Accordion>
+
+  <Accordion title="Disable portions of a master flowgraph">
+    Use the `disabled` flag on commands. **Must disable complete paths**, not just first nodes — partial disables stall hardware.
+  </Accordion>
+</AccordionGroup>
+
+Use double-buffering for large voice counts or many updates per frame. If you drive updates from `ACP_MESSAGE_TYPE_FLOWGRAPH_COMPLETED`, don't let the ACP go idle between message enqueue and your `PopMessage` — keep the ACP active.
+
+### Multiple flowgraphs
+
+A title can process multiple flowgraphs per audio frame if their combined requirements fit within hardware capabilities. Efficiency drops — SHAPE can't keep every block 100% busy across multiple graphs.
+
+**Only one flowgraph per ACP client.** For multiple flowgraphs, create multiple clients (each has its own command and message queues) or wait for the current graph to finish. Multiple clients are the intended pattern (e.g. middleware submits its graph while the title submits its own for custom processing). Create one instance of `IACPHAL` per client. ACP and SHAPE resources (particularly context arrays) are shared — clients must coordinate.
+
+## Utility groups
+
+Each utility group operates on its own context structure. Include only `ShapeContext.h` in title code — it references the individual utility headers.
+
+| Utility | Header | Context |
+| --- | --- | --- |
+| DMA | `ShapeDMAContext.h` | `SHAPE_DMA_CONTEXT` |
+| EQ compressor | `ShapeEqCompContext.h` | `SHAPE_EQCOMP_CONTEXT` |
+| Filter/volume | `ShapeFiltVolContext.h` | `SHAPE_FILTVOL_CONTEXT` |
+| PCM | `ShapePCMContext.h` | `SHAPE_PCM_CONTEXT` |
+| SRC | `ShapeSRCContext.h` | `SHAPE_SRC_CONTEXT` |
+| XMA | `ShapeXMAContext.h` | `SHAPE_XMA_CONTEXT` |
+| Flowgraph | (as above) | `SHAPE_FLOWGRAPH_COMMAND` |
+
+XMA decode capabilities of hardware **emulation** are limited — see the `SHAPE_XMA_CONTEXT` reference for details.
+
+### Using XMA without a flowgraph
+
+A title can use XMA data without flowgraphs, but the data still has to go through the ACP via `ACP_COMMAND_TYPE` commands:
+
+| Command | Purpose |
+| --- | --- |
+| `ACP_COMMAND_TYPE_ENABLE_XMA_CONTEXT` | Enable one XMA context; ACP starts decoding its buffer |
+| `ACP_COMMAND_TYPE_ENABLE_XMA_CONTEXTS` | Enable a block of XMA contexts |
+| `ACP_COMMAND_TYPE_DISABLE_XMA_CONTEXT` | Disable one; ACP stops decoding |
+| `ACP_COMMAND_TYPE_DISABLE_XMA_CONTEXTS` | Disable a block |
+| `ACP_COMMAND_TYPE_UPDATE_XMA_CONTEXT` | Update fields in an XMA context (sync on ACP or async) |
+
+Order of operations mirrors Xbox 360's XMA HAL: populate context, enable, update. If the context is enabled, either disable it first or use `UPDATE_XMA_CONTEXT`, which lets the ACP do the disable/wait/update.
+
+<Tip>
+  In general, don't use only the XMA component. It's trivial to add a small "front-end" flowgraph that gives you free high-quality SRC and other features, offloads SRC from the CPU, and improves quality.
+</Tip>
+
+## Target values
+
+Target values in utility functions are the final values at the end of the audio frame. Example — `SHAPE_FILTVOL_CONTEXT` has `gain` and `gainTarget`; during a frame:
+
+```cpp
+gain = ((gainTarget - gain) / 127) * i + gain;  // i = 0..127
+```
+
+At frame end, `gain == gainTarget`.
+
+| Component | Target field | Description |
+| --- | --- | --- |
+| EQCOMP | `eqAB0Target` .. `eqCA2Target_H` | EQ A/B/C biquad coefficient targets (split into low/high halves) |
+| EQCOMP | `compGainTarget` | User-settable target for output gain |
+| FILTVOL | `gainTarget` | Volume target |
+| FILTVOL | `qRecipTarget` | Target 1/Q |
+| FILTVOL | `fcTarget` | Target frequency |
+| SRC | `samplingIncrementTarget` | End value of sampling increment |
+
+## Thread safety
+
+`IACPHAL` interface methods and ACPHAL methods are **thread-safe**. If you call `ApuCreateHeap`, the heap is used by all threads.
+
+Utility functions listed below are **not** thread-safe — source is provided so you can protect them (typically with critical sections):
+
+- ShapeFlowGraph
+- ShapeDmaContext
+- ShapeEqCompContext
+- ShapeFiltVolContext
+- ShapePcmContext
+- ShapeSrcContext
+- ShapeXmaContext
+
+## Guidelines for SRC with PCM and XMA data
+
+| Target | Implementation |
+| --- | --- |
+| Non-looping linear PCM | Start with `SHAPE_SRC_COMMAND_TYPE_START`. Play to end. Optionally cut short with `STOP_IMMEDIATE`. |
+| Infinite looping linear PCM | Set PCM `loopCount = SHAPE_PCM_INFINITE_LOOP_COUNT`. Start with `START`. Stop at end of loop with `STOP_END`, or immediately with `STOP_IMMEDIATE`. |
+| Finite looping linear PCM | Set `loopCount` in \[0, 254\]. Start with `START`. Optionally `STOP_END` (at end of loop) or `STOP_IMMEDIATE`. |
+| Circular PCM | Start with `START`. Keep streaming data and updating the write pointer. `STOP_END` plays to the current write pointer (`loopStartWritePointer`); `STOP_IMMEDIATE` stops immediately. |
+| Streaming (non-HW-looping) XMA | Start with `START`. When last XMA input buffer is consumed, `STOP_END` (or `STOP_IMMEDIATE`). |
+| Infinite HW-looping XMA | Set XMA `numLoops = SHAPE_XMA_INFINITE_LOOP_COUNT`. Start with `START`. To stop at end of loop, set loops to zero and `STOP_END`; or `STOP_IMMEDIATE`. |
+| Finite HW-looping XMA | Set `numLoops` in \[0, 254\]. Start with `START`. Watch loop count; on zero, `STOP_END`. To end at next loop, set count to zero. `STOP_IMMEDIATE` stops immediately. |
+
+<Note>
+  When any of these scenarios completes, the resulting SRC command is `SHAPE_SRC_COMMAND_TYPE_STOP_IMMEDIATE`. Check XMA input buffer valid bits at the same frequency you process SHAPE flowgraphs — checking only in your streaming logic (which runs at longer intervals) can let the XMA output buffer empty before you stop the SRC, stalling the flowgraph.
+</Note>
+
+## Pausing and resuming a title
+
+When coding directly to SHAPE via `IAcpHal`, pause by simply stopping command submission — already-submitted commands complete normally and may fill the message queue. If using persistent flowgraphs, load a null flowgraph to stop processing. This differs from pause/resume in `XAudio2` — see [XAudio2 overview](/gdk/audio/xaudio2).
+
+## Related
+
+- [SHAPE overview](/gdk/audio/shape)
+- [Best practices for constructing audio flowgraphs](/gdk/audio/best-practices-flowgraph)

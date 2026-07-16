@@ -1,0 +1,59 @@
+---
+title: "PlayFab Party Online Subsystem for Unreal"
+sidebarTitle: "PFP OSS for Unreal"
+description: "Use the PlayFab Party Online Subsystem (PFP OSS) to bring Party networking, VoIP, and Azure Cognitive Services into your Unreal Engine game."
+icon: "gamepad"
+---
+
+Use the **PlayFab Party Online Subsystem (PFP OSS)** to use Party and Azure Cognitive Services in your Unreal Engine 4 (UE4) game — including cross-talk, cross-play, and accessibility features like real-time text chat translation and voice transcription.
+
+PFP OSS is designed for PC and Xbox game development. It works alongside the Epic-provided base Online Subsystem (OSS) for GDK/Live for Xbox services, adding Party networking and VoIP.
+
+It also complements the PlayFab SDK marketplace plug-in, which provides features like commerce and leaderboards. See [PlayFab SDK on the UE4 Marketplace](https://www.unrealengine.com/marketplace/product/playfab-sdk).
+
+## What's included
+
+- Game networking
+- VoIP
+- Support for:
+  - GDK (Xbox consoles, Windows 10)
+  - Xbox One SDK
+- Cross-play and cross-talk across GDK and Xbox One SDK (extra configuration required — see [PFP OSS Quickstart](/gaming/playfab/features/multiplayer/networking/party-unreal-engine-oss-quickstart) and [Obtaining PlayFab Party libraries](/gaming/playfab/features/multiplayer/networking/party-unreal-engine-oss-obtaining-playfab-party-libraries))
+- Azure Cognitive Services:
+  - Real-time text chat translation
+  - Real-time voice chat transcription
+  - Real-time voice chat transcription translation
+  - Text-to-speech synthesis
+
+## Supported Unreal Engine versions
+
+Use **Unreal Engine 4.25\+**, the first approved version of UE4 for shipping on the GDK. Earlier UE4 versions can be backported with minimal work — see [Using older versions of Unreal Engine 4](/gaming/playfab/features/multiplayer/networking/party-unreal-engine-using-older-versions).
+
+<Note>
+  On UE4 versions earlier than 4.25, rename all references from GDK to Anvil with find & replace.
+</Note>
+
+## Supported GDK versions
+
+| Platform | Minimum | Recommended |
+| --- | --- | --- |
+| **Windows 10** | November 2019 GDK (1911) | June 2020 GDK (2006) or later |
+| **Xbox consoles** | June 2020 GDK (2006) | June 2020 GDK (2006) or later |
+| **Xbox One SDK** | July 2018 XDK QFE 15 (1807) | July 2018 XDK QFE 15 (1807) |
+
+<Tip>
+  If you're on a GDK version earlier than 2006 on PC, contact your Microsoft representative for guidance.
+</Tip>
+
+## Pricing
+
+<Note>
+  VoIP and game networking are free for users signed in with an Xbox services account, on all platforms.
+</Note>
+
+Cognitive Services and other services may incur cost. See [PlayFab Party Pricing](/gaming/playfab/multiplayer/networking/xbl-discount) or contact your Microsoft representative.
+
+## See also
+
+- [PlayFab Party](/gdk/networking/game-mesh/playfab-party)
+- [PlayFab Party SDK for Unity](/gdk/networking/game-mesh/party-unity)

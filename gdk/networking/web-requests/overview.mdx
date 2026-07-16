@@ -1,0 +1,98 @@
+---
+title: "Web requests overview"
+sidebarTitle: "Overview"
+description: "How to send and receive HTTP and WebSocket requests in a GDK title — recommended API choices and common patterns."
+icon: "globe"
+---
+
+Starting with the right API set makes it easier to implement secure, robust web requests. This page maps common use cases to the recommended API.
+
+## Common API choices
+
+| Use case | Recommended API |
+| --- | --- |
+| REST requests with GRTS-style APIs | [Microsoft Xbox Live Service API (XSAPI)](#xsapi) |
+| General purpose HTTP requests | [xCurl](/gdk/networking/web-requests/xcurl) |
+| WebSocket requests | [libHttpClient](#libhttpclient) |
+
+### WinHTTP
+
+[WinHTTP](/gdk/networking/web-requests/winhttp) can create both HTTP and WebSocket endpoints on PC and Xbox with no code changes. Because it doesn't automatically handle all security best practices, read the [Communication Security Overview (NDA)](/gdk-dev/game-principles/security/communication-security/communication-security-overview) and the [WinHTTP overview](/gdk/networking/web-requests/winhttp) to make sure your integration is secure and robust.
+
+<Note>
+  **xCurl** handles security best practices (certificate chain validation, connectivity checks) and manages network initialization \+ suspend/resume automatically.
+
+  If you use WinHTTP or another HTTP stack, your title owns platform integration — network initialization, suspend/resume, explicit security configuration. See [Network initialization and connectivity](/gdk/networking/initialization) and [WinHTTP overview](/gdk/networking/web-requests/winhttp).
+</Note>
+
+For proxy-based debugging on Xbox, start with [Fiddler on Xbox devkits](/gdk/networking/tools/fiddler-setup). If your title uses a custom HTTP stack, see [Debugging custom HTTP stacks](/gdk/networking/web-requests/debugging-custom-http-stacks).
+
+<a id="xcurl" />
+
+## xCurl
+
+**xCurl** is a GDK HTTP API that simplifies development by adhering to all security best practices automatically. Its API surface broadly matches [libCurl](https://curl.haxx.se/libcurl/), so it also has libCurl's flexibility and HTTP feature set.
+
+See [xCurl overview](/gdk/networking/web-requests/xcurl) for the API and the differences from libCurl.
+
+<a id="xsapi" />
+
+## XSAPI
+
+[Xbox Services API (XSAPI)](https://developer.microsoft.com/games/xbox/docs/gdk/atoc-xsapi-c) provides a generic REST wrapper for GDK titles — the simplest interface when you only need REST requests.
+
+<Steps>
+  <Step title="Create the handle">
+    Call [XblHttpCallCreate](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallcreate) to create an HTTP handle that tracks your REST request.
+  </Step>
+  <Step title="Configure body and headers">
+    Fill in body and extra configuration with `XblHttpCallRequestSet*` functions.
+  </Step>
+  <Step title="Perform the request">
+    Call [XblHttpCallPerformAsync](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallperformasync).
+  </Step>
+  <Step title="Retrieve the response">
+    Use one of the `XblHttpCallGet*` functions.
+  </Step>
+  <Step title="Close the handle">
+    Call [XblHttpCallCloseHandle](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallclosehandle).
+  </Step>
+</Steps>
+
+<Accordion title="XblHttpCallRequestSet* and XblHttpCallGet* function families">
+  **Request setters**
+
+  - [XblHttpCallRequestSetHeader](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallrequestsetheader)
+  - [XblHttpCallRequestSetLongHttpCall](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallrequestsetlonghttpcall)
+  - [XblHttpCallRequestSetRequestBodyBytes](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallrequestsetrequestbodybytes)
+  - [XblHttpCallRequestSetRequestBodyString](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallrequestsetrequestbodystring)
+  - [XblHttpCallRequestSetRetryAllowed](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallrequestsetretryallowed)
+  - [XblHttpCallRequestSetRetryCacheId](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallrequestsetretrycacheid)
+
+  **Response getters**
+
+  - [XblHttpCallGetHeader](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetheader)
+  - [XblHttpCallGetHeaderAtIndex](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetheaderatindex)
+  - [XblHttpCallGetNetworkErrorCode](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetnetworkerrorcode)
+  - [XblHttpCallGetNumHeaders](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetnumheaders)
+  - [XblHttpCallGetPlatformNetworkErrorMessage](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetplatformnetworkerrormessage)
+  - [XblHttpCallGetRequestUrl](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetrequesturl)
+  - [XblHttpCallGetResponseBodyBytes](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetresponsebodybytes)
+  - [XblHttpCallGetResponseBodyBytesSize](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetresponsebodybytessize)
+  - [XblHttpCallGetResponseString](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetresponsestring)
+  - [XblHttpCallGetStatusCode](/reference/live/xsapi-c/http_call_c/functions/xblhttpcallgetstatuscode)
+</Accordion>
+
+<a id="libhttpclient" />
+
+## libHttpClient
+
+[libHttpClient](https://github.com/Microsoft/libHttpClient) is a two-way-communication abstraction layer designed for use by XSAPI to enable HTTP and WebSocket service endpoints. It's shipped in the GDK as part of XSAPI.
+
+## See also
+
+- [Windows HTTP Services (WinHTTP)](/windows/desktop/winhttp/winhttp-start-page)
+- [libCurl](https://curl.haxx.se/libcurl/)
+- [Setting up web services at Partner Center (NDA)](/services/fundamentals/s2s-auth-calls/custom-service-config/web-services/live-web-services)
+- [Fiddler on Xbox devkits](/gdk/networking/tools/fiddler-setup)
+- [Communication Security Overview (NDA)](/gdk-dev/game-principles/security/communication-security/communication-security-overview)

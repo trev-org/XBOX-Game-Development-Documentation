@@ -1,72 +1,85 @@
 ---
-title: "Text-to-speech and speech-to-text for accessibility"
+title: "Text-to-speech"
 sidebarTitle: "Text-to-speech"
-description: "Integrate the platform text-to-speech and speech-to-text APIs to power accessible chat and narration in GDK titles, including Game Chat 2 transcription."
+description: "Use the XSpeechSynthesizer API to convert a text string into an audio stream (WAV), with SSML 1.0 support for voice, pronunciation, volume, pitch, rate, and emphasis."
 icon: "comment-dots"
 ---
 
-Text-to-speech (TTS) and speech-to-text (STT) are core accessibility features for XBOX titles, primarily used by players who are deaf, hard of hearing, mute, or speech-impaired. The GDK exposes the platform speech pipeline through Game Chat 2 for voice chat translation, and the Windows speech APIs (`Windows.Media.SpeechSynthesis` and `Windows.Media.SpeechRecognition`) are available for general narration and command input.
+The **`XSpeechSynthesizer`** API provides support for initializing and configuring a speech synthesis engine (a voice) to convert a text string into an audio stream — also known as text-to-speech (TTS). Voice characteristics, pronunciation, volume, pitch, rate/speed, and emphasis are customized through [Speech Synthesis Markup Language (SSML) Version 1.0](https://www.w3.org/TR/speech-synthesis/).
 
-## When you must support TTS / STT
+<Note>
+  This API requires callers to use **SSML version 1.0**.
+</Note>
 
-If your title supports in-game voice chat, **Game Chat 2 TTS and STT are required by XBOX certification**. Players who type chat messages should have those messages synthesized to speech for other players, and players who speak should have their voice transcribed to text for players who cannot hear.
+## Using the API
 
-Game Chat 2 ships with both capabilities built in; you turn them on per local user.
+<Steps>
+  <Step title="Create the synthesizer">
+    Call `XSpeechSynthesizerCreate` and hold on to the returned handle for the lifetime of the synthesizer.
+  </Step>
+  <Step title="Choose a voice (optional)">
+    Call either `XSpeechSynthesizerSetCustomVoice` or `XSpeechSynthesizerSetDefaultVoice` to select the voice you want.
+  </Step>
+  <Step title="For each string, create a stream">
+    Call `XSpeechSynthesizerCreateStreamFromText`. When this function returns, conversion of the text to a `.wav` file is already complete.
+
+    <Warning>
+      Conversion can take a non-trivial amount of time. **Do not call `XSpeechSynthesizerCreateStreamFromText` on time-critical threads.**
+    </Warning>
+  </Step>
+  <Step title="Query the buffer size">
+    Call `XSpeechSynthesizerGetStreamDataSize` to determine the size of the buffer you need for the audio data.
+  </Step>
+  <Step title="Read the audio data">
+    Call `XSpeechSynthesizerGetStreamData` to copy the `.wav` audio data out of the stream, then pass it to an audio renderer.
+  </Step>
+  <Step title="Close the stream handle">
+    Call `XSpeechSynthesizerCloseStreamHandle` when you're done with the current stream. Repeat steps 3–6 for each additional string.
+  </Step>
+  <Step title="Close the synthesizer handle">
+    When you're completely done with speech synthesis, call `XSpeechSynthesizerCloseHandle`.
+  </Step>
+</Steps>
+
+### Example
 
 ```cpp
-using namespace xbox::services::game_chat_2;
+#include <XSpeechSynthesizer.h>
 
-chat_user* localUser = chat_manager::singleton_instance().add_local_user(xuid);
+XSpeechSynthesizerHandle synth = nullptr;
+XSpeechSynthesizerCreate(&synth);
 
-// Enable text-to-speech: synthesize this user's typed messages
-// to audio that other users hear.
-localUser->local()->set_text_to_speech_conversion_preference_enabled(true);
+// Optional: pick a specific voice.
+// XSpeechSynthesizerSetDefaultVoice(synth, ...);
 
-// Enable speech-to-text: transcribe other users' voice to text
-// that this user can read.
-localUser->local()->set_speech_to_text_conversion_preference_enabled(true);
+XSpeechSynthesizerStreamHandle stream = nullptr;
+XSpeechSynthesizerCreateStreamFromText(synth, "You have unlocked a new ability.", &stream);
+
+size_t byteCount = 0;
+XSpeechSynthesizerGetStreamDataSize(stream, &byteCount);
+
+auto buffer = std::make_unique<uint8_t[]>(byteCount);
+XSpeechSynthesizerGetStreamData(stream, byteCount, buffer.get(), nullptr);
+
+// Pass 'buffer' (a .wav) to an audio renderer.
+
+XSpeechSynthesizerCloseStreamHandle(stream);
+XSpeechSynthesizerCloseHandle(synth);
 ```
 
-Game Chat 2 routes the synthesized voice through the same chat audio path as real voice, so distance attenuation, muting, and mixer controls Just Work.
+## Reference API documentation
 
-## Narration outside of chat
-
-For narrated UI, tutorial voiceover, or accessibility narration of HUD elements, use the Windows speech synthesis API directly. It works the same way on XBOX as on Windows.
-
-```cpp
-#include <winrt/Windows.Media.SpeechSynthesis.h>
-
-using namespace winrt::Windows::Media::SpeechSynthesis;
-
-SpeechSynthesizer synth;
-auto stream = co_await synth.SynthesizeTextToStreamAsync(L"You have unlocked a new ability.");
-// Play 'stream' through your XAudio2 pipeline.
-```
-
-## Voice command input
-
-Use the platform speech recognition API for hands-free menu navigation or command input. The XBOX player must grant microphone access in system settings, and your title must declare the `microphone` capability in `MicrosoftGame.config`.
-
-## Language coverage
-
-Game Chat 2 TTS / STT supports the languages the platform speech service supports, which broadly tracks the XBOX console UI languages. Players whose language is not covered fall back to text-only chat without speech translation. List the supported chat languages in your store listing so players know what to expect.
-
-## Accessibility certification
-
-XBOX requirements include specific tests for:
-
-- Game Chat 2 TTS enabled by default for the local user
-- Game Chat 2 STT enabled by default for the local user
-- Chat transcription visible in the chat UI
-
-Verify with the accessibility test cases before submitting to cert.
-
-## Related API documentation
-
-- [XSpeechSynthesizer API reference](/reference/xspeechsynthesizer) — `XSpeechSynthesizerCreate`, `XSpeechSynthesizerCreateStreamFromText`, `XSpeechSynthesizerGetStreamData`, `XSpeechSynthesizerGetStreamDataSize`, `XSpeechSynthesizerSetCustomVoice`, `XSpeechSynthesizerSetDefaultVoice`, `XSpeechSynthesizerCloseHandle`, `XSpeechSynthesizerCloseStreamHandle`
+- **`XSpeechSynthesizer`** — API contents
+  - Functions
+    - `XSpeechSynthesizerCreate`
+    - `XSpeechSynthesizerSetCustomVoice`
+    - `XSpeechSynthesizerSetDefaultVoice`
+    - `XSpeechSynthesizerCreateStreamFromText`
+    - `XSpeechSynthesizerGetStreamDataSize`
+    - `XSpeechSynthesizerGetStreamData`
+    - `XSpeechSynthesizerCloseStreamHandle`
+    - `XSpeechSynthesizerCloseHandle`
 
 ## See also
 
-- [Game Chat 2](/services/game-chat)
-- [Audio systems](/gdk/audio) — voice and game audio mixing
-- [Microsoft Gaming Accessibility Testing](/publishing/certification)
+- **`XSpeechSynthesizer` API reference**

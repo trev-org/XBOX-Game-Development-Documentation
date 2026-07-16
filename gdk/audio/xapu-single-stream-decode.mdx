@@ -1,0 +1,62 @@
+---
+title: "XAPU single-stream Opus decode walkthrough"
+sidebarTitle: "XAPU Opus decode"
+description: "Decode a single Opus stream on the Series X|S XAPU pipeline."
+icon: "play"
+tag: "NDA"
+---
+
+Use [XAPU](/gdk/audio/xapu) to hardware-decode a single Opus stream on Xbox Series X|S. Opus offers better quality-per-byte than XMA and is decoded entirely in hardware, freeing the CPU for other work.
+
+## Prerequisites
+
+- Xbox Series X|S target
+- An Opus file encoded as **VBR** (CBR is not supported)
+- 20 ms packet size recommended for best performance
+
+## Pipeline
+
+<Steps>
+  <Step title="Connect an XAPU client">
+    At engine startup, call `XApuConnect` to allocate an XAPU client. **Reuse this client for the lifetime of the game** — create/delete is expensive.
+  </Step>
+  <Step title="Allocate hardware buffers (16-byte aligned)">
+    - Opus input buffer
+    - PCM output buffer (max frame size 1024)
+    - Processing buffer
+  </Step>
+  <Step title="Prepare the decode command">
+    Build an `XApuDecodeCommand` (or `XApuDecodeConvertCommand` if you also want the hardware SRC). Fill in:
+
+    - Input pointer to the Opus packets
+    - Output pointer to the PCM buffer
+    - Format flags (CELT / SILK / Hybrid; mono or stereo; 48 kHz)
+    - `firstFrameIndex` and `frameCount` to select the output window
+
+    Set `XApuCommandOptions::SignalOnCompletion` if you need to be notified when the command finishes.
+  </Step>
+  <Step title="Consume the output">
+    Poll the response queue or wait for the completion signal (3 ms cadence). Then feed the decoded PCM into an XAudio2 source voice or a submix stage.
+  </Step>
+  <Step title="Loop / seek">
+    For looping or sample-accurate seek, submit an `XApuCommandType::Reset` and re-submit decode commands with pre-roll packets to avoid transient artifacts.
+  </Step>
+</Steps>
+
+## Best practices
+
+- Use **20 ms** Opus packets for best throughput.
+- `XApuConnect` / `XApuDisconnect` are expensive — do them once, not per sound.
+- Wait for all responses before disconnecting — `XApuDisconnect` returns `XAPU_E_PENDING_RESULTS` if requests are outstanding. Disconnecting early can cause memory corruption because the hardware is still writing.
+- On suspend, stop submitting new commands — in-flight work completes normally.
+- The high-quality SRC has a **~5-frame group delay** for frequencies below 10 kHz when engaged — compensate for it or let middleware handle it.
+
+## Sample code
+
+A `SimpleXAPU` sample (Opus decode inside a GDK title with UI) plus additional multi-stream and decode-convert samples are available on request — email [AnaAud@microsoft.com](mailto:AnaAud@microsoft.com).
+
+## Related
+
+- [XAPU overview](/gdk/audio/xapu)
+- [Xbox Series X|S audio hardware](/gdk/audio/scarlett-audio)
+- [XAudio2 overview](/gdk/audio/xaudio2)

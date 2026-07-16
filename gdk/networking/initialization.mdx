@@ -1,0 +1,242 @@
+---
+title: "Network initialization and connectivity"
+sidebarTitle: "Initialization & connectivity"
+description: "Wait for the network to be initialized before using WinSock, WinHTTP, and other networking APIs. Query connectivity with XNetworkingGetConnectivityHint."
+icon: "plug"
+---
+
+GDK titles are often launched before core OS components and networking services are running. Calling most networking and security APIs — including `WinSock`, `WinHTTP`, `BCrypt`, `WinCrypt`, `schannel`, and `IPHLPAPI` — too soon after launch causes **indeterminate behavior**: unexpected failures, uninitialized return values, arbitrary packet loss, and even memory corruption and crashes.
+
+To avoid this, use `XNetworkingGetConnectivityHint` and `XNetworkingRegisterConnectivityHintChanged`. The `XNetworkingConnectivityHint::networkInitialized` field indicates whether the network is initialized. **Wait for `networkInitialized` to be `true` before calling any networking or security API.**
+
+<Warning>
+  Many middleware libraries — even non-networking middleware used for telemetry or debugging — internally call networking APIs. If middleware does not wait for network initialization itself, delay loading it until the network becomes initialized. GDK libraries such as XSAPI and PlayFab Party require the network to be initialized before use.
+</Warning>
+
+## HTTP stack sequencing
+
+`xCurl` and `libHttpClient` are the only HTTP libraries covered in this docset that manage network initialization automatically. For any other HTTP stack, make the startup sequence explicit:
+
+<Steps>
+  <Step title="Query or register for connectivity">
+    Call `XNetworkingGetConnectivityHint` or register a change callback with `XNetworkingRegisterConnectivityHintChanged`.
+  </Step>
+  <Step title="Wait for networkInitialized">
+    Only proceed once `XNetworkingConnectivityHint::networkInitialized` is `true`.
+  </Step>
+  <Step title="Initialize WinSock and dependencies">
+    Call `WSAStartup` and any other networking dependencies.
+  </Step>
+  <Step title="Configure certificate trust">
+    Access certificate state and set up trust for your HTTP stack.
+  </Step>
+  <Step title="Create the HTTP stack and issue requests">
+    Bring up HTTP objects; begin work.
+  </Step>
+</Steps>
+
+Network readiness must come first. Bringing up `WinSock`, certificate state, or HTTP state too early produces failures that are hard to diagnose because the visible error often surfaces later than the root cause.
+
+Example bring-up:
+
+```cpp
+HRESULT InitializeNetworkingDependencies()
+{
+    XNetworkingConnectivityHint connectivityHint{};
+    HRESULT hr = XNetworkingGetConnectivityHint(&connectivityHint);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
+    if (!connectivityHint.networkInitialized)
+    {
+        // Try again after your title receives a connectivity change notification.
+        return E_PENDING;
+    }
+
+    WSADATA wsaData{};
+    int winsockResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (winsockResult != 0)
+    {
+        return HRESULT_FROM_WIN32(winsockResult);
+    }
+
+    return S_OK;
+}
+```
+
+After this succeeds, create your HTTP stack objects and apply stack-specific trust configuration before issuing requests. For non-Schannel stacks, that may include loading a proxy certificate required by your debugging tool.
+
+## Suspend and resume
+
+Title suspend / resume cycles reset `networkInitialized` back to `false`. On suspend:
+
+- Clean up all handles to all network and security components.
+- Cease all network operations.
+- See each API's overview for its specific suspend requirements.
+
+On resume:
+
+- Wait for `networkInitialized` to become `true` again before reconnecting or using any networking or security API.
+- Use the **same code path** as your initial launch. Middleware unaware of suspend/resume (GameChat2, PlayFab Party) must be torn down on suspend and reinitialized on resume after the network is ready.
+
+Assume every HTTP stack other than xCurl requires explicit lifecycle handling. On suspend or shutdown, stop queueing new requests and cancel or drain in-flight work. Destroy request handles, sessions, and sockets that shouldn't survive suspend. Designs based on cancelable, non-blocking work are easier to unwind cleanly than long-lived blocking calls.
+
+## Testing network initialization
+
+Network init usually takes a couple of seconds on both resume and title launch, and varies with console type and network environment. During development it is nearly instantaneous — which can hide bugs where code fails to wait.
+
+To stress-test:
+
+```text
+xbconfig NetworkInitDelayInSeconds=30
+```
+
+Fully restart the title between tests with `xbapp terminate /full`. Set the delay back to `0` when done.
+
+Include at least these scenarios in test coverage for stacks that create their own networking state:
+
+- Cold boot
+- Suspend while requests are active
+- Resume after clean suspend
+- Quick Resume or equivalent restore flows
+- Network disconnects around suspend and resume boundaries
+
+## Code examples
+
+### Real-time poll
+
+```cpp
+bool IsNetworkInitialized()
+{
+    XNetworkingConnectivityHint connectivityHint;
+    if (SUCCEEDED(XNetworkingGetConnectivityHint(&connectivityHint)))
+    {
+        return connectivityHint.networkInitialized;
+    }
+    return false;
+}
+```
+
+### Block until initialized
+
+```cpp
+static void NetworkConnectivityHintChangedCallback(
+    _In_ void* context,
+    _In_ const XNetworkingConnectivityHint* connectivityHint)
+{
+    HANDLE networkInitializedEvent = static_cast<HANDLE>(context);
+    if (connectivityHint->networkInitialized)
+    {
+        (void)SetEvent(networkInitializedEvent);
+    }
+}
+
+HRESULT EnsureNetworkInitialized()
+{
+    HRESULT hr = S_OK;
+    XNetworkingConnectivityHint connectivityHint;
+    XTaskQueueHandle queue;
+
+    hr = XTaskQueueCreate(XTaskQueueDispatchMode::Immediate,
+                          XTaskQueueDispatchMode::Immediate, &queue);
+    if (SUCCEEDED(hr))
+    {
+        hr = XNetworkingGetConnectivityHint(&connectivityHint);
+        if (SUCCEEDED(hr) && !connectivityHint.networkInitialized)
+        {
+            HANDLE networkInitializedEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+            if (networkInitializedEvent != nullptr)
+            {
+                XTaskQueueRegistrationToken token;
+                hr = XNetworkingRegisterConnectivityHintChanged(
+                        queue, networkInitializedEvent,
+                        NetworkConnectivityHintChangedCallback, &token);
+                if (SUCCEEDED(hr))
+                {
+                    DWORD result = WaitForSingleObjectEx(
+                        networkInitializedEvent, INFINITE, FALSE);
+                    if (result != WAIT_OBJECT_0)
+                    {
+                        hr = HRESULT_FROM_WIN32(GetLastError());
+                    }
+                    XNetworkingUnregisterConnectivityHintChanged(token, true);
+                }
+                CloseHandle(networkInitializedEvent);
+            }
+            else
+            {
+                hr = HRESULT_FROM_WIN32(GetLastError());
+            }
+        }
+        XTaskQueueCloseHandle(queue);
+    }
+    return hr;
+}
+```
+
+## Network information
+
+`XNetworkingGetConnectivityHint` is a real-time, safe API that returns device-wide information: connectivity level, data limits, wired vs. wireless, and whether the network is initialized. Listen for changes with `XNetworkingRegisterConnectivityHintChanged` / `XNetworkingUnregisterConnectivityHintChanged`.
+
+```cpp
+XNetworkingConnectivityHint connectivityHint;
+if (SUCCEEDED(XNetworkingGetConnectivityHint(&connectivityHint)))
+{
+    printf("network initialized %u\n", connectivityHint.networkInitialized);
+    printf("connectivity level hint %u\n", connectivityHint.connectivityLevel);
+    printf("connectivity cost hint %u\n", connectivityHint.connectivityCost);
+    printf("approaching data limit %u\n", connectivityHint.approachingDataLimit);
+    printf("over data limit %u\n", connectivityHint.overDataLimit);
+    printf("device is roaming %u\n", connectivityHint.roaming);
+    switch (connectivityHint.ianaInterfaceType) {
+    case IF_TYPE_ETHERNET_CSMACD: printf("network type is wired\n"); break;
+    case IF_TYPE_IEEE80211:       printf("network type is wireless\n"); break;
+    case IF_TYPE_WWANPP:
+    case IF_TYPE_WWANPP2:         printf("network type is broadband\n"); break;
+    default: printf("network type is unusually esoteric %u\n",
+                    connectivityHint.connectivityLevel); break;
+    }
+}
+```
+
+## Best practices
+
+All fields **other than** `networkInitialized` are **hints** — best-effort guesses based on heuristics of observed traffic.
+
+`XNetworkingConnectivityLevelHint::None` reflects a network-medium disconnect and general lack of connectivity in steady state (unchanged for several minutes). Other states do **not** guarantee connectivity to your specific endpoints.
+
+Recommended pattern:
+
+1. Wait for network initialization.
+2. Try to establish a connection to your endpoint with `WinSock` / `WinHTTP` regardless of `connectivityLevelHint`.
+3. If those APIs fail, call `XNetworkingGetConnectivityHint` for UI and diagnostic reporting.
+4. Wait for a change in connectivity level before retrying.
+
+## Retrieving advanced network information
+
+Most GDK titles should use `XNetworkingGetConnectivityHint` combined with `WinSock` for basic state (IP addresses, etc.). For more, the low-level [IP Helper API](/windows/desktop/IpHlp/ip-helper-start-page) is available.
+
+1. `#include <iphlpapi.h>` **after** `#include <winsock2.h>`.
+2. Link against `XGamePlatform.lib` instead of `Ws2_32.lib` and `Iphlpapi.lib` directly.
+3. Only APIs under `WINAPI_PARTITION_GAMES` work in GDK titles.
+
+On Xbox consoles, some IP Helper values are abstracted:
+
+- MAC address is always `AA-AA-AA-AA-AA-AA`.
+- Interfaces always report as wired regardless of the true medium. Use `XNetworkingGetConnectivityHint` for the real interface type.
+
+## Unsupported connectivity APIs
+
+These are **not supported** in GDK titles — use `XNetworkingGetConnectivityHint` instead:
+
+- [Windows.Networking.Connectivity Namespace](/uwp/api/windows.networking.connectivity)
+- [Network List Manager](/windows/desktop/nla/portal)
+
+## See also
+
+- [Introduction to GDK networking](/gdk/networking/overview)
+- [Windows Sockets 2 (Winsock)](/windows/desktop/WinSock/windows-sockets-start-page-2)
+- [Windows HTTP Services (WinHTTP)](/windows/desktop/winhttp/winhttp-start-page)
+- [IP Helper API](/windows/desktop/IpHlp/ip-helper-start-page)

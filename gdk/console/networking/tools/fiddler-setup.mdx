@@ -1,0 +1,65 @@
+---
+title: "Fiddler on Xbox"
+sidebarTitle: "Fiddler on Xbox"
+description: "Configure Fiddler as a proxy for Xbox devkits to inspect title HTTP/HTTPS traffic."
+icon: "filter"
+---
+
+Fiddler Classic can act as a proxy for an Xbox devkit, letting you inspect all HTTP and HTTPS traffic issued by a title running on the console.
+
+## Prerequisites
+
+- Fiddler Classic installed on a PC on the same network as the devkit.
+- Xbox devkit in developer mode with network access.
+- Firewall rules on the Fiddler host allowing inbound connections on the Fiddler listen port (default `8888`).
+
+## Firewall rule
+
+Add an inbound rule on the Fiddler PC allowing traffic on the Fiddler port:
+
+| Setting | Value |
+| --- | --- |
+| Rule type | Port |
+| Protocol | TCP |
+| Local port | `8888` |
+| Action | Allow the connection |
+| Profile | Domain, Private (add Public only if required) |
+| Name | Fiddler |
+
+## Configure the devkit
+
+<Steps>
+  <Step title="Enable HTTPS decryption in Fiddler">
+    **Tools → Options → HTTPS** → enable **Capture HTTPS CONNECTs** and **Decrypt HTTPS traffic**.
+  </Step>
+  <Step title="Allow remote clients">
+    **Tools → Options → Connections** → enable **Allow remote computers to connect**. Restart Fiddler.
+  </Step>
+  <Step title="Export the Fiddler root certificate">
+    From Fiddler, export the root certificate (`FiddlerRoot.cer`).
+  </Step>
+  <Step title="Install the certificate on the devkit">
+    Open the Xbox Device Portal for the console at `https://<console-ip>:11443` and upload `FiddlerRoot.cer` to the console's Trusted Root store.
+  </Step>
+  <Step title="Point the devkit at the proxy">
+    In the Xbox Device Portal networking settings, set the HTTP proxy to `<fiddler-pc-ip>:8888`.
+  </Step>
+</Steps>
+
+## Store endpoints bypass list
+
+Certain Microsoft Store and Xbox Live endpoints do certificate pinning and will fail if routed through Fiddler. Add these to Fiddler's bypass list (**Tools → Options → Gateway** or via `hosts` exclusion) so they connect directly:
+
+- `*.xboxlive.com`
+- `*.microsoft.com`
+- `*.windows.com`
+- `*.dnet.xboxlive.com`
+- `*.licensing.xboxlive.com`
+
+<Warning>
+  If Store sign-in or license acquisition breaks while Fiddler is enabled, the endpoint is almost certainly pinned. Add it to the bypass list.
+</Warning>
+
+## Cleanup
+
+Remove the proxy from the Device Portal and delete the Fiddler root certificate from the devkit when finished, or Store services may continue to fail.

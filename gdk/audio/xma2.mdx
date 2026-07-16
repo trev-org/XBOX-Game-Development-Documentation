@@ -1,0 +1,102 @@
+---
+title: "XMA2 overview"
+sidebarTitle: "XMA2"
+description: "Hardware-decoded audio compression on Xbox — encoding, buffers, and the AXI bus workaround."
+icon: "file-music"
+tag: "NDA"
+---
+
+On Xbox One and Series X|S, **XMA2 audio decompression is implemented in hardware** by the SHAPE XMA block. xWMA uses the same underlying compression algorithms as XMA2 but requires software decoding — xWMA offers a broader range of formats, while XMA2 has performance and compression advantages.
+
+<Note>
+  Coding XMA2 through `XAudio2` is the simplest approach; XMA2 can also be coded directly to the hardware via the Audio Control Processor (ACP) commands.
+</Note>
+
+<Warning>
+  xWMA and XMA2 share heritage but are **not interchangeable**. Their file headers differ, and both formats are incompatible with PC versions of Windows. The codecs also differ slightly, so each has its own compression artifacts.
+</Warning>
+
+## XMA2 encoding
+
+Encode PCM to XMA2 using the [XMA2 encoder tool](/gdk/audio/tools/xma2encoder). XMA2 files are `.wav` files carrying an `XMA2WAVEFORMATEX` format header and an additional `seek` chunk within the seek location table.
+
+The XMA2 format is compatible with Xbox 360. On Xbox One / Series X|S the `Seek` table must be `ULONG` byte-swapped. If the input is a `.wav` file, the output can be used without alteration.
+
+```cpp
+for (UINT32 i = 0; i < xmaformat->BlockCount; i++)
+{
+    rgpXMASeekTable[i] = _byteswap_ulong(rgpXMASeekTable[i]);
+}
+```
+
+<Tip>
+  Add this code to your app first to verify functionality, then move the swap into an offline tool so no preprocessing is required at runtime.
+</Tip>
+
+## Buffer allocation
+
+On Xbox One / Series X|S, all DMA input/output buffers used with flowgraphs, and all XMA content submitted to a source buffer, must be allocated with [`ApuAlloc`](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/audio/apu/functions/apualloc) and freed with [`ApuFree`](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/audio/apu/functions/apufree). Use the `SHAPE_XMA_INPUT_BUFFER_ALIGNMENT` flag so blocks are aligned correctly.
+
+```cpp
+HRESULT ApuVirtualAllocate(void** virtualAddress, UINT32 sizeInBytes)
+{
+    DWORD change = 0;
+    if (FixBlockAlign((DWORD*)&sizeInBytes,
+                      SHAPE_XMA_INPUT_BUFFER_SIZE_ALIGNMENT, &change))
+    {
+        return E_INVALIDARG;
+    }
+    return ApuAlloc(virtualAddress, NULL, sizeInBytes,
+                    SHAPE_XMA_INPUT_BUFFER_ALIGNMENT);
+}
+
+void ApuVirtualFree(void* virtualAddress)
+{
+    if (virtualAddress) ApuFree(virtualAddress);
+}
+
+BOOL FixBlockAlign(DWORD* pBYTES, DWORD BLOCKALIGN, DWORD* pChange)
+{
+    if (pBYTES && (BLOCKALIGN > 1))
+    {
+        DWORD bytes = *pBYTES;
+        *pBYTES /= BLOCKALIGN;
+        *pBYTES *= BLOCKALIGN;
+        if (pChange)
+        {
+            *pChange = bytes - *pBYTES;
+            if (*pChange > 0) return TRUE;
+        }
+    }
+    return FALSE;
+}
+```
+
+## XMA2 AXI bus error
+
+A long-standing hardware bug in the XMA decoder (also on Xbox 360) requires a workaround when using `AcpHal` directly. `XAudio2` already applies the workaround. Until the XMA2 encoder tool is updated to guarantee otherwise:
+
+<Warning>
+  Decoding an XMA bit stream with a **single input buffer** where the last 64 bytes contain encoded data can trigger an AXI bus error. It's rare, but must be handled.
+</Warning>
+
+Any of these workarounds prevents the XMA prefetcher from reading an invalid address:
+
+- Always use both XMA input buffers, and never leave either input buffer pointer set to an invalid value.
+- Set the unused input buffer's pointer equal to the other input buffer's pointer, even though it won't be enabled:
+  ```cpp
+  context->ptrRead1 = context->ptrRead0;
+  ```
+- During content generation, use an offline tool to scan XMA files. If any of the last 64 bytes of the encoded bit stream is a value other than `0xFF`, re-encode the file.
+
+## Reference API
+
+- **APU** — [`ApuAlloc`](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/audio/apu/functions/apualloc), [`ApuFree`](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/audio/apu/functions/apufree)
+- **XMA2Defs** — `XMA2WAVEFORMATEX`
+
+## See also
+
+- [XMA2 encoder tool](/gdk/audio/tools/xma2encoder)
+- [xWMA overview](/gdk/audio/xwma)
+- [XAudio2 overview](/gdk/audio/xaudio2)
+- [SHAPE overview](/gdk/audio/shape)

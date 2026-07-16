@@ -1,0 +1,147 @@
+---
+title: "Local storage on XBOX console"
+sidebarTitle: "Local storage"
+description: "Temporary storage, installed game data, developer scratch, Persistent Local Storage (PLS), Growable PLS, Shareable PLS, DLC, and XR-133 write limits on XBOX consoles."
+icon: "folder-tree"
+---
+
+Four types of local storage are accessible on the XBOX console. Understanding what each is for — and what its lifetime guarantees are — is essential to shipping a stable title.
+
+| Storage type | Location |
+| --- | --- |
+| Installed game data | `G:\` |
+| Temporary local storage | `T:\` |
+| Developer scratch partition | `D:\` |
+| Persistent Local Storage (PLS) | `XPersistentLocalStorageGetPathSize` / `XPersistentLocalStorageGetPath` |
+| Downloadable Content (DLC) | `XPackageMount` / `XPackageGetMountPath` |
+
+<Warning>
+  **XR-133 — Local storage write limitations.** Titles running on XBOX Series S, XBOX Series X, or any consoles in the same family must not write more than **1 GiB of data to PLS or Temporary Local Storage over a rolling 5-minute window**. Titles that exceed 1 GiB of writes will not pass certification testing. Use PIX timing captures for warnings, and query `XPackageGetWriteStats` at runtime to monitor your write budget.
+</Warning>
+
+## Temporary local storage (`T:\`)
+
+Temporary local storage is exposed to titles as **drive T**. It is intended for temporary files such as logs, and can be accessed remotely while the title is running by passing `/x:/title` to any `XtfFileIO` command.
+
+- 2 GB of dedicated storage.
+- Contents persist across suspend/resume, **including Quick Resume**.
+- Contents are deleted at some point after the title is terminated — there is **no** guarantee data survives from one game launch to the next.
+
+## Installed game data (`G:\`)
+
+The currently running title's installed game data is mapped to **drive G**. This volume is read-only inside the game's view when using packaged builds.
+
+## Developer scratch partition (`D:\`)
+
+Exposed as **drive D**. For development use only. **Compile out all references in retail** to avoid certification and runtime issues.
+
+## Persistent Local Storage (PLS)
+
+PLS is a long-term cache for non-save data such as replays and custom rendered gameplay recordings. It is **not** a primary storage space — never use it for game saves, content updates, or any data required for the title to run. Use Connected Storage, Xbox services Title Storage, or a publisher-hosted cloud service for saves.
+
+**Characteristics**
+
+- **Title specific** — only the title that requested it can access this space.
+- **Console specific** — created in a console-specific XVD; not portable between consoles even if installed on external media.
+- **Guaranteed allocation** — space is allocated before the title is allowed to launch. Insufficient disk space prompts the user to free space.
+- **User controlled** — users can delete the space from the system shell; the system never deletes it automatically.
+- **Tied to install lifetime** — uninstall removes the space; reinstall does not restore prior contents.
+- **Resilient and tamper resistant** — encrypted and integrity-checked.
+
+### Requesting PLS
+
+Add this to `MicrosoftGame.config` as a child of `<Game>`:
+
+```xml MicrosoftGame.config
+<?xml version="1.0" encoding="utf-8"?>
+<Game configVersion="1">
+    <PersistentLocalStorage>
+        <SizeMB>1024</SizeMB>
+    </PersistentLocalStorage>
+</Game>
+```
+
+At runtime, call `XPersistentLocalStorageGetPathSize` and `XPersistentLocalStorageGetPath` to obtain the PLS path. Total space is what your title requested in the manifest.
+
+<Warning>
+  If a content update **increases** the requested PLS size, the previous PLS is deleted and its contents are lost during the upgrade.
+</Warning>
+
+## Shareable PLS
+
+A title can opt in to share its PLS read-only with other titles. The relationships allowed:
+
+| Product sharing the PLS | Products reading the shareable PLS |
+| --- | --- |
+| Franchise game hub | All hub-aware games dependent on the hub and all games with `RelatedProduct` relationships to the hub. |
+| Hub-aware game | The associated franchise game hub and all games with `RelatedProduct` relationships to this game. |
+| Hub-unaware game | All games with `RelatedProduct` relationships to this game. |
+
+Add `<Shareable>` inside `<PersistentLocalStorage>`:
+
+```xml MicrosoftGame.config
+<PersistentLocalStorage>
+    <Shareable>true</Shareable> <!-- optional; default is false -->
+</PersistentLocalStorage>
+```
+
+<Note>
+  If your PLS is shareable, **close all PLS handles before suspending**. Otherwise suspend fails and the game will be terminated.
+</Note>
+
+## Growable PLS
+
+Growable PLS allows titles to request a much larger PLS ceiling without permanently reserving the space up front. It suits scenarios such as User Generated Content downloads or large replay files that not every user needs.
+
+```xml MicrosoftGame.config
+<PersistentLocalStorage>
+    <!-- <SizeMB>1024</SizeMB>  Optional pre-allocation before launch -->
+    <GrowableToMB>20480</GrowableToMB> <!-- Max size the PLS can grow to -->
+</PersistentLocalStorage>
+```
+
+Before writing, query available space with `XPersistentLocalStorageGetSpaceInfo`. `GetDiskFreeSpaceExW` only reports the maximum free PLS space, which is not guaranteed to be available; `XPersistentLocalStorageGetSpaceInfo` returns both total free space and actually available free space.
+
+If your title needs more space than is available and the underlying drive can't grow the PLS XVD, prompt the user with `XPersistentLocalStoragePromptUserForSpaceAsync`.
+
+<Warning>
+  If a content update **changes** a non-growable PLS to a growable PLS, the previous storage is deleted and its contents are lost.
+</Warning>
+
+## Downloadable Content (DLC)
+
+Once installed, DLC can be mounted and unmounted on demand:
+
+- `XPackageMount` — mount DLC.
+- `XPackageGetMountPath` — obtain the mount path.
+
+<Warning>
+  **Never hardcode returned path values.** They may vary over time and are only valid after the package is mounted.
+</Warning>
+
+## Accessing game data from a dev PC
+
+The remote console tools use the same drive mapping as the running title when you pass `/title` with the `/X` switch. This lets you copy files to and from the scratch volume and installed game data for the current title.
+
+Copy scratch-volume files **to** your dev PC:
+
+```powershell
+xbcp /x:/title xd:\<file-name> c:\<local-path>
+```
+
+Copy files **from** your dev PC to the title volume:
+
+```powershell
+xbcp /x:/title c:\<file-name> xg:\<dest-path>
+```
+
+PLS is only accessible from the dev PC while the title is running:
+
+```powershell
+xbcp /x:/title c:\<file-name> xr:\<dest-path>
+```
+
+## Reference APIs
+
+- **`XPackage`** — `XPackageMount`, `XPackageGetMountPath`, `XPackageGetWriteStats`
+- **`XPersistentLocalStorage`** — `XPersistentLocalStorageGetPathSize`, `XPersistentLocalStorageGetPath`, `XPersistentLocalStorageGetSpaceInfo`, `XPersistentLocalStoragePromptUserForSpaceAsync`

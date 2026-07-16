@@ -1,0 +1,50 @@
+---
+title: "ADPCM command-line encoder"
+sidebarTitle: "ADPCM encoder"
+description: "AdpcmEncode command-line tool."
+icon: "file-waveform"
+tag: "NDA"
+---
+
+The **ADPCM command-line encoder** (`AdpcmEncode`) converts sound files between ADPCM and PCM.
+
+## Usage
+
+```bash
+AdpcmEncode [-b N] IN.wav OUT.wav
+```
+
+Direction is determined by the input format:
+
+- **PCM in** → ADPCM out (encode)
+- **ADPCM in** → PCM out (decode)
+
+<Note>
+  `AdpcmEncode` only supports input ADPCM files that have the same ADPCM format that `AdpcmEncode` itself generates.
+</Note>
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `-b N` | PCM samples per output ADPCM block. Valid values: **32, 64, 128, 256, 512**. Default: 128. |
+| `IN.wav` | Input file. |
+| `OUT.wav` | Output file. |
+
+## PCM input constraints
+
+PCM input files must be:
+
+- **Mono or stereo**
+- Sample rate in the range **1 kHz – 50 kHz**
+- **8, 16, or 32-bit** samples
+- At least **128 samples** long — loops must also be at least 128 samples
+- Have a `WAVEFORMATEX` structure in the format chunk (`WAVEFORMATEXTENSIBLE` is not supported)
+
+Inputs that don't meet these constraints are rejected with a detailed error message.
+
+## See also
+
+- [ADPCM overview](/gdk/audio/adpcm)
+- [XAudio2 overview](/gdk/audio/xaudio2)
+- [Use XAudio2 to play a sound](/gdk/audio/xaudio2-play-sound)

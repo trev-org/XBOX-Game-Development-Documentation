@@ -1,0 +1,62 @@
+---
+title: "Xbox reserved ports and firewall exceptions"
+sidebarTitle: "Reserved ports"
+description: "Ports reserved by Xbox consoles that GDK titles must not bind. Includes the ephemeral 49152-57343 range and the low port range 1-1024."
+icon: "shield-halved"
+tag: "NDA"
+---
+
+Xbox consoles have several reserved ports that GDK titles must be aware of.
+
+<Warning>
+  Do **not** pass any of these ports to [`bind`](/windows/desktop/api/winsock/nf-winsock-bind). Use of a reserved port produces indeterminate behavior and may fail testing.
+</Warning>
+
+## Reserved ports
+
+| Port | Protocol |
+| :-: | :-: |
+| 1–1024, inclusive | TCP and UDP |
+| 1900 | UDP |
+| 2375 | TCP |
+| 2869 | TCP |
+| 3544 | UDP |
+| 4016 | TCP |
+| 4020 | TCP |
+| 4022 | TCP |
+| 4024 | TCP |
+| 4201 | TCP |
+| 4211 | TCP |
+| 4221 | TCP |
+| 4222 | TCP |
+| 4223 | TCP |
+| 4224 | TCP |
+| 4500 | UDP |
+| 5050 | UDP |
+| 5353 | UDP |
+| 5355 | UDP |
+| 7250 | TCP |
+| 7680 | TCP |
+| 8116 | TCP |
+| 8117 | TCP |
+| 8119–8129, inclusive | TCP |
+| 8878 | TCP |
+| 9002 | UDP |
+| 9955 | TCP |
+| 9956 | UDP |
+| 10242 | TCP |
+| 10247 | TCP |
+| 10248 | TCP |
+| 11080 | TCP |
+| 11442 | TCP |
+| 11443 | TCP |
+| 19183 | TCP |
+| 29817 | TCP |
+| 29819 | TCP |
+| 29820 | TCP |
+| 49152–57343, inclusive | TCP and UDP |
+
+## See also
+
+- [Introduction to GDK networking](/gdk/networking/overview)
+- [Quality of service (QoS) packet tagging](/gdk/networking/qos-tagging)

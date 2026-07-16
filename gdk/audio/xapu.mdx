@@ -1,0 +1,131 @@
+---
+title: "XAPU overview"
+sidebarTitle: "XAPU"
+description: "Xbox Audio Processing Unit APIs for hardware-accelerated Opus decoding and high-quality sample rate conversion."
+icon: "chip"
+tag: "NDA"
+---
+
+The **XAPU** (Xbox Audio Processing Unit) API provides hardware-accelerated Opus file decoding and high-quality sample rate conversion on Xbox Series X|S consoles.
+
+Historically, XMA was the only hardware-offload decode option on Xbox One. Series X|S introduces Opus hardware offload through XAPU. Opus is a royalty-free, low-latency audio compression codec that in internal evaluations surpasses XMA in quality and file-size compression ratio.
+
+A **High-quality Sample Rate Convertor (HSRC)** works alongside Opus decode. Combining Opus decode with HSRC pitch changes yields improved output quality over the previous SHAPE offering (still supported for backward compatibility).
+
+## What's new
+
+<AccordionGroup>
+  <Accordion title="June FAL QFE3 — Quick Resume">
+    For Quick Resume scenarios, titles no longer need to re-establish their connection to the hardware after a resume.
+  </Accordion>
+
+  <Accordion title="June FAL QFE4 — short CELT packets">
+    2.5 ms and 5 ms Opus packet lengths are now supported for CELT.
+  </Accordion>
+
+  <Accordion title="August 2020 Preview Recovery — breaking change">
+    Recovery 10.0.19041.4124 (`rs_xbox_release_2008-19041.4124.200814-0000`) / 10.0.19041.3562 (`rs_xbox_release_sirius-19041.3562.200814-2300`) or higher: **breaking change** to `XApuDecodeConvertCommand` — residual data when using `firstFrameIndex` is no longer included. See the best practices below.
+  </Accordion>
+
+  <Accordion title="Other fixes">
+    - Flush command no longer loses data when the HSRC output processing buffer has pending data.
+    - Unsupported Opus packets now throw an error instead of hanging (e.g. a 2.5 ms packet when only 10 ms / 20 ms is supported).
+    - FIFO is on by default.
+    - Overall performance improvements and stabilization fixes.
+  </Accordion>
+</AccordionGroup>
+
+## Command / feature matrix
+
+| Command | CELT | SILK | Hybrid | PCM |
+| --- | --- | --- | --- | --- |
+| **DECODE** — mode, seeking/looping, reset, HSRC | ✅ all | ✅ all | ✅ all | — |
+| **DECODE and CONVERT** — mode, seeking/looping, reset, HSRC | ✅ all | ✅ all | ✅ all | — |
+| **CONVERT ONLY** — mode, seeking/looping, reset, HSRC | — | — | — | ✅ all |
+
+## HSRC group delay
+
+<Warning>
+  The HSRC has a frequency-dependent group delay of approximately **5 frames** for frequencies below 10 kHz. Adjust for this delay when the sample rate converter is engaged. Middleware audio solutions may already handle this for you.
+</Warning>
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="XApuDecodeConvertCommand.firstFrameIndex">
+    `firstFrameIndex` specifies the first frame that will be copied to the PCM output buffer. Together with `frameCount` it decides what gets copied. The implementation **does not include** residual data when using `firstFrameIndex`.
+
+    Example: with 100 residual frames, `firstFrameIndex = 50` and `frameCount = 200`, 200 frames are added to the entire residual starting from the 50th frame in the decoded data. The buffer into the HSRC will contain the 100 residual frames followed by 200 frames starting from the 50th frame in the current decoded packet.
+  </Accordion>
+
+  <Accordion title="Create clients up front">
+    `XApuConnect` and `XApuDisconnect` are computationally expensive. Create XAPU clients up front during audio engine activation and reuse them for the game's lifetime. Frequent create/delete of clients with varying memory requirements risks resource exhaustion.
+  </Accordion>
+
+  <Accordion title="Reset for looping">
+    Using `XApuCommandType::Reset` for looping is optional — it may cause a transient effect in the output. When you do use `Reset`, submit pre-roll packets to avoid the transient.
+  </Accordion>
+
+  <Accordion title="Packet size and stream layout">
+    - For best performance, use Opus streams encoded with **20 ms packet size**.
+    - Prefer fewer clients with more streams over many clients with few streams each. E.g. 5 clients × 20 streams outperforms 50 clients × 2 streams for the same 100 total streams.
+  </Accordion>
+
+  <Accordion title="OPUS_SET_PREDICTION_DISABLED">
+    Supported. Disables inter-packet prediction. Reduces compression performance and thereby the quality of decoded output.
+  </Accordion>
+
+  <Accordion title="XAPU_E_DEVICE_FATAL recovery">
+    Returned when the hardware device is in a bad state. All XAPU clients must be disconnected before creating new clients to recover.
+  </Accordion>
+
+  <Accordion title="Command completion signaling">
+    Command-completion signaling runs on a **3 ms timer** and signals once for all completed commands per XAPU client, regardless of how many commands used `XApuCommandOptions::SignalOnCompletion`.
+
+    If 3 ms is too coarse, poll for responses in a loop or use `Sleep(0)` and check.
+  </Accordion>
+
+  <Accordion title="Wait before disconnecting">
+    Wait for all responses before disconnecting a client. `XApuDisconnect` returns `XAPU_E_PENDING_RESULTS` if outstanding requests aren't picked up. This error is dev-time only — disconnect while the hardware is still processing can cause memory corruption because the hardware writes to freed memory.
+  </Accordion>
+
+  <Accordion title="Alignment and frame counts">
+    - All hardware memory pointers (`inputData`, `outputData`, `processingBuffer`) must be **16-byte aligned**.
+    - For ConvertOnly / DecodeConvert modes, larger output frame counts perform better. Maximum output frame size is **1024**.
+  </Accordion>
+
+  <Accordion title="VBR only">
+    Only **Variable Bit Rate (VBR)** encoding is supported. CBR is not supported — it adds transition packets that are less efficient and lower quality than the redundancy packets used in VBR.
+  </Accordion>
+
+  <Accordion title="Supported packet lengths and formats">
+    - **HYBRID / SILK**: mono and stereo Opus at 48000 Hz, 10 ms or 20 ms packets.
+    - **CELT**: mono and stereo Opus at 48000 Hz, 2.5 / 5 / 10 / 20 ms packets.
+  </Accordion>
+</AccordionGroup>
+
+## Pause and resume
+
+When the suspend handler is called, simply stop submitting XAPU commands. In-flight commands complete normally and land in their response queues.
+
+## Samples
+
+Source code available on request (email `AnaAud@microsoft.com`):
+
+- Decode One Opus Stream
+- Decode Multi-Opus Streams
+- Play One Opus Stream (different threading than "Decode One")
+- Play Multi-Opus Streams
+- Decode Convert One Opus Stream (with loop and sample-accurate seek)
+- Decode Convert Multi-Opus Streams
+- Play Decode Convert One Opus Stream
+- SimpleXAPU (Opus decode inside a GDK title with UI)
+
+## Contact
+
+Questions or concerns: email [AnaAud@microsoft.com](mailto:AnaAud@microsoft.com) or use the online forums.
+
+## Related
+
+- [Xbox Series X|S audio hardware](/gdk/audio/scarlett-audio)
+- [Audio overview](/gdk/audio/overview)

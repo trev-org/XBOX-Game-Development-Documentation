@@ -1,0 +1,38 @@
+---
+title: "XDSP convolution walkthrough"
+sidebarTitle: "XDSP convolution"
+description: "Single-stream convolution on XDSP for IR-based effects."
+icon: "filter"
+tag: "NDA"
+---
+
+Run time-domain convolution against an impulse response using the [XDSP](/gdk/audio/xdsp) hardware pipeline. Convolution powers IR-based reverb, environmental effects, and cabinet/mic simulation.
+
+## Pipeline
+
+<Steps>
+  <Step title="Load and prepare the IR">
+    Load the impulse response into a 16-byte-aligned buffer. For long IRs, consider running [IR reduction](/gdk/audio/xdsp-ir-reduction) first to lower runtime cost.
+  </Step>
+  <Step title="Allocate audio buffers (16-byte aligned)">
+    - Dry input
+    - Wet output
+    - Processing buffer
+  </Step>
+  <Step title="Configure the convolution command">
+    Set source, IR, destination, and frame count. Output frame count is capped at **1024**; larger output frames perform better.
+  </Step>
+</Steps>
+
+## Best practices
+
+- **Reduce long IRs offline** with the [IR reduction](/gdk/audio/xdsp-ir-reduction) command and ship the compact IR.
+- Reuse the XDSP client across all voices sharing an IR — fewer clients with more streams beats many clients with few streams.
+- Use one convolution client per IR bank when convolving many voices against a small set of IRs.
+- Wait for command completion before freeing the IR or input buffers — the hardware may still be reading.
+
+## Related
+
+- [XDSP overview](/gdk/audio/xdsp)
+- [XDSP convolution with envelope walkthrough](/gdk/audio/xdsp-convolution-envelope)
+- [XDSP IR reduction walkthrough](/gdk/audio/xdsp-ir-reduction)

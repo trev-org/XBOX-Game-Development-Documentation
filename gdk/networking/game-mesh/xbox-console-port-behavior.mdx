@@ -1,0 +1,58 @@
+---
+title: "Xbox console port behavior"
+sidebarTitle: "Xbox console port behavior"
+description: "Port rules, reserved ports, and DevelopmentOnly / DebugNetworkPortList configuration for GDK titles on Xbox consoles."
+icon: "xbox"
+tag: "NDA"
+---
+
+## Port rules
+
+- All Xbox console ports a title can bind to (except the preferred local UDP multiplayer port) match PC behavior with the default firewall: allow all outbound TCP and UDP, block unsolicited inbound.
+- The preferred local UDP multiplayer port behaves the same but allows **unsolicited inbound UDP**. TCP can't be used on it.
+- For peer-to-peer, use UDP on the preferred multiplayer port and perform firewall/NAT punching.
+
+<Tip>
+  [PlayFab Party](/gdk/networking/game-mesh/playfab-party) handles this automatically. Alternatively, see [STUN (RFC 5389)](https://tools.ietf.org/html/rfc5389) and [ICE (RFC 8445)](https://tools.ietf.org/html/rfc8445) for your own implementation.
+</Tip>
+
+## Port availability and reserved ports
+
+A title can use any available port it can bind to. If the port is in use, [`bind`](/windows/desktop/api/winsock/nf-winsock-bind) returns `E_ADDRINUSE`, just like on PC. See the [list of reserved ports](/gdk/networking/reserved-ports) for ports the system always reserves.
+
+<Warning>
+  GDK titles can't reserve ports ahead of time. Any port may be in use when your title tries to bind. Include appropriate fallback and retry logic.
+</Warning>
+
+The single exception is the [preferred local UDP multiplayer port](/gdk/networking/game-mesh/preferred-udp-port), which is reserved for the title and always available.
+
+## Development ports
+
+During development it's useful to allow unsolicited inbound TCP and UDP for tools and debugging. List these ports under the `DevelopmentOnly` node in `MicrosoftGame.config`. There's no cap on how many ports you can specify. Usage within the title is the same as any other port. **Development ports only work on dev kits** — on retail consoles they revert to blocking unsolicited inbound.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Game configVersion="1">
+
+  ...
+
+  <DevelopmentOnly>
+    <DebugNetworkPortList>
+      <DebugNetworkPort>4600</DebugNetworkPort>
+      <DebugNetworkPort>4601</DebugNetworkPort>
+    </DebugNetworkPortList>
+  </DevelopmentOnly>
+</Game>
+```
+
+<Note>
+  After editing `DebugNetworkPortList`, redeploy your title **and** run `xbapp applyconfig` for the changes to take effect.
+</Note>
+
+## See also
+
+- [Xbox reserved ports and firewall exceptions](/gdk/networking/reserved-ports)
+- [PC port behavior](/gdk/networking/game-mesh/pc-port-behavior)
+- [Windows Sockets 2 (Winsock)](/windows/desktop/WinSock/windows-sockets-start-page-2)
+- [Preferred UDP multiplayer port](/gdk/networking/game-mesh/preferred-udp-port)
+- [PlayFab Party](/gdk/networking/game-mesh/playfab-party)

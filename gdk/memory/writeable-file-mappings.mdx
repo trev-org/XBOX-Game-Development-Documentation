@@ -1,0 +1,77 @@
+---
+title: "Writeable memory-mapped files"
+sidebarTitle: "Writeable file mappings"
+description: "Opt into writable file-backed memory via eXMEMOPT_ALLOW_WRITEABLE_FILEMAPPINGS and MapViewOfFileEx + XMemCreateWin32Heap."
+icon: "file-pen"
+tag: "NDA"
+---
+
+By default the GDK Game OS disallows writable file mappings on the game partition to keep local storage write behavior predictable. Games that need a writable, file-backed memory region can opt in explicitly.
+
+## Opting in — `XMemSetOption`
+
+Before calling `MapViewOfFile[Ex]` with `PAGE_READWRITE`, enable the feature:
+
+```cpp
+XMemSetOption(eXMEMOPT_ALLOW_WRITEABLE_FILEMAPPINGS, 1);
+```
+
+Once enabled for the process, mappings can request read/write access.
+
+<Warning>
+  Writes to a writable mapping produce disk I/O against local storage. Every dirty page eventually flushes to the file, which counts against your local-storage write budget. Do not use writable file mappings as a general-purpose scratch buffer.
+</Warning>
+
+## Full example
+
+The following sequence creates a large file-backed heap accessible with the Win32 heap APIs:
+
+```cpp
+XMemSetOption(eXMEMOPT_ALLOW_WRITEABLE_FILEMAPPINGS, 1);
+
+HANDLE file = CreateFile2(L"D:\\heap.bin", GENERIC_READ | GENERIC_WRITE, 0, OPEN_ALWAYS, nullptr);
+
+// Size the file to the desired heap size.
+LARGE_INTEGER size = { .QuadPart = 256 * 1024 * 1024 };
+SetFilePointerEx(file, size, nullptr, FILE_BEGIN);
+SetEndOfFile(file);
+
+HANDLE mapping = CreateFileMappingW(file, nullptr, PAGE_READWRITE, size.HighPart, size.LowPart, nullptr);
+
+void* base = MapViewOfFileEx(mapping, FILE_MAP_ALL_ACCESS, 0, 0, 0, nullptr);
+
+// Wrap the mapped view in an in-place Win32 heap.
+HANDLE heap = XMemCreateWin32Heap(XMEM_HEAP_INPLACE, base, size.QuadPart);
+
+void* block = HeapAlloc(heap, 0, 4096);
+// ... use block ...
+HeapFree(heap, 0, block);
+
+HeapDestroy(heap);
+UnmapViewOfFile(base);
+CloseHandle(mapping);
+CloseHandle(file);
+```
+
+## Notes on behavior
+
+- Writable file mappings use **4 KB** backing pages regardless of the surrounding heap page size.
+- The OS lazily writes dirty pages back to the file. Explicit flush via `FlushViewOfFile` guarantees persistence.
+- Mapping views are tracked in `XMemVirtualQuery` results with a partition ownership that reflects the file's classification (title vs. system).
+- The size of the underlying file must be established with `SetEndOfFile` before mapping; extending the file after a view is created is not supported.
+
+## When to use this
+
+- Persistent memory pools that must survive title suspend/resume without occupying full RAM.
+- Content that benefits from OS paging (write-once, occasionally read).
+- Custom asset caches that trade RAM for local-storage read bandwidth.
+
+<Warning>
+  Do **not** use this to replace normal game saves. Use the [Game Save](/gdk/game-save) system for player-visible saves.
+</Warning>
+
+## See also
+
+- [Working with the memory manager](/gdk/memory/working)
+- [Virtual Memory Allocator](/gdk/memory/virtual-allocator)
+- [Configuring memory](/gdk/memory/tooling)

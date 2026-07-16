@@ -1,50 +1,76 @@
 ---
-title: "Game DVR"
+title: "Game DVR and broadcasting"
 sidebarTitle: "Game DVR"
-description: "Trigger and tag Game DVR clips, screenshots, and broadcasts from your title."
+description: "Use the GDK APIs to show broadcasting UI, tag screenshots, clips, and broadcasts with metadata, and capture diagnostic or normal screenshots and video."
 icon: "video"
 ---
 
-Game DVR records gameplay clips and screenshots on XBOX and PC. Use [XAppCapture](/reference/xappcapture) to trigger captures and tag metadata.
+The Microsoft Game Development Kit (GDK) includes APIs for broadcast notifications and UI, adding metadata to screenshots, video clips, and broadcasts, and capturing diagnostic screenshots and video. Broadcast notifications provide insight into the broadcasting pipeline. Broadcasting UI puts the user in control of starting and stopping a broadcast. Metadata makes it easier to search recordings — for example, adding the name of a map, a level, or anything about the specific moment captured. Together these APIs give you better control and insight over your screenshots, video clips, and broadcast.
 
-## Capture types
+## Broadcasting notifications and UI
 
-- **Manual** — player triggers via the XBOX shell or share button.
-- **Title-initiated** — your title programmatically captures a clip or screenshot at a key moment.
-- **Broadcasting** — live streaming to Twitch / supported services.
+Use the `XAppBroadcast*` APIs to detect broadcast state and hand off to the shell UI:
 
-## Metadata tagging
+| API | Purpose |
+| --- | --- |
+| `XAppBroadcastGetStatus` | Retrieve status updates on the state of broadcasting. Use this to determine whether a broadcast **can** start. |
+| `XAppBroadcastShowUI` | Show the broadcast UI for the current user. The user then manually initiates the broadcast. |
+| `XAppBroadcastIsAppBroadcasting` | Determine whether the current app is currently broadcasting. |
+| `XAppBroadcastUnregisterIsAppBroadcasting` | Unregister from broadcast-status change events. |
 
-Tag captures with `XAppCapture` metadata so highlights are easier to find in the player's gallery (boss kills, achievements, milestones).
+Many factors go into determining whether a broadcast can start: capture resource availability, whether the game allows broadcasting, and whether the user or system has disabled broadcasting.
 
-## Broadcasting
+<Tip>
+  If all members of the `XAppBroadcastStatus` struct (besides `canStartBroadcast`) return `false`, then `canStartBroadcast` returns `true` — the broadcast is ready to launch.
+</Tip>
 
-Broadcasting captures and streams gameplay live to supported services (e.g., Twitch) through the XBOX shell:
+## Adding metadata to screenshots, clips, and broadcasts
 
-- Players start a broadcast from the **share** button or guide
-- Your title cannot start or stop a broadcast directly; the shell owns the user-facing flow
-- Use `XGameUserPresenceWriter` and the broadcast state APIs to detect when a broadcast is in progress and adjust telemetry, voice chat exclusion, and HUD privacy as needed
-- Privacy: chat-only HUD elements (player names, sensitive UI) should respect the broadcast state and hide identifying content where appropriate
+Several APIs add and manage metadata attached to a screenshot, video clip, or broadcast. Adding metadata is optional, but it makes it easier for a user to find the recording they want. Metadata items can be strings, integers, or doubles.
 
-## Excluding voice chat from captures
+The system allocates storage space for metadata items. If the allocated space runs low, `AppCaptureMetadataPriority` determines the relative priority of stored items and the order in which metadata is purged to free space.
 
-User voice chat must never be captured into clips or broadcasts. Set the `AudioCategory_GameChat` category on any XAudio2 source voice or WASAPI render stream that carries microphone audio so the capture pipeline excludes it automatically. See [Audio](/gdk/audio) for the integration pattern.
+## Voice chat
 
-## Capture restrictions
+<Warning>
+  Voice chat should be considered **user-generated content** and can contain personally identifiable information or other potentially sensitive data. A user's rendered voice in game chat should **never** be included in any recorded clips or game captures.
+</Warning>
 
-Capture is gated by several user and content controls. Always check before assuming a capture will land:
+Exclude voice from captures by assigning the proper audio category to the render stream that contains the user's voice: `AudioCategory_GameChat`. Tagging the stream this way signals the system to ignore it when capturing for Game DVR clips.
 
-- **User privilege** — `XPRIVILEGE_GAME_DVR`. Children, restricted accounts, and guests may not capture
-- **Title metadata** — your `MicrosoftGame.config` can disable capture per-segment for cutscenes or pre-rendered content that should not be re-shared
-- **Storage** — the player may be out of space on the share device; surface a friendly notification rather than silently failing
-- **Concurrency** — only one broadcast or one explicit clip can be in flight at a time; queue subsequent requests
+See [Audio](/gdk/audio/overview) for the WASAPI/XAudio2 integration pattern.
 
-## Related API documentation
+## Diagnostic screenshots and video clips
 
-- [XAppCapture API reference](/reference/xappcapture)
+With the GDK diagnostic APIs you can capture screenshots and video clips for debugging and diagnostics.
+
+<Note>
+  Diagnostic capture APIs are available **only on Development Kits**. Calling them on a retail console results in an immediate failure.
+</Note>
+
+Diagnostic captures behave differently from user-facing captures:
+
+- Captured screenshots and video clips go to the **local game partition**, not to the usual user storage.
+- If the game is running in high dynamic range (HDR), the caller can specify whether to capture an **SDR** screenshot, an **HDR** screenshot, or **both**.
+- After a screenshot is recorded, the resulting struct contains path information for the screenshot files.
+- Depending on the user's Game DVR setting, video clips can be returned as either **H.264 (AVC)** or **H.265 (HEVC)** encoded video.
+- The video result struct also includes start time, duration, width, and height.
+
+## Normal screenshots
+
+The GDK also supports capturing **normal** screenshots (the same as a user-initiated screenshot):
+
+- Resulting screenshots are stored in the normal user storage for screenshots.
+- The system displays a notification confirming that a screenshot was captured.
+- Because screenshots are stored in a separate partition that isn't directly accessible from the game partition, you must use the provided **open / read / close stream APIs** to access the recorded screenshots.
+- If the game is running in HDR, the paths for both the **SDR** and **HDR** versions of the screenshot are returned.
+
+## Reference API documentation
+
+- [XAppCapture (API contents)](/reference/xappcapture)
 
 ## See also
 
+- [XAppCapture](/reference/xappcapture)
+- [Audio](/gdk/audio/overview) — voice chat exclusion
 - [Game streaming overview](/gdk/game-streaming-overview)
-- [ATG engagement](/gdk/atg-engagement)
-- [Audio](/gdk/audio) — game chat exclusion

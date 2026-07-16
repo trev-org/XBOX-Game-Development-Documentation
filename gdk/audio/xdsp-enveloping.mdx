@@ -1,0 +1,36 @@
+---
+title: "XDSP enveloping walkthrough"
+sidebarTitle: "XDSP enveloping"
+description: "Apply a dynamic amplitude envelope via XDSP."
+icon: "chart-simple"
+tag: "NDA"
+---
+
+Applies a dynamic amplitude envelope to an audio stream using the [XDSP](/gdk/audio/xdsp) hardware pipeline. Enveloping is useful for tremolo, ducking, sidechain-style attenuation, and dynamic mixing driven by gameplay signals.
+
+## Pipeline
+
+<Steps>
+  <Step title="Prepare buffers">
+    - Audio input (PCM, 16-byte aligned)
+    - Envelope control signal (one sample per frame or matching-rate)
+    - Output buffer (16-byte aligned)
+    - Processing buffer (16-byte aligned)
+  </Step>
+  <Step title="Build the envelope command">
+    Configure the envelope description: attack, sustain, release curves (or an externally supplied envelope buffer), input/output pointers, and frame count.
+  </Step>
+</Steps>
+
+## Best practices
+
+- Use envelope frame sizes that match your mixing block. Larger output frames perform better; maximum output frame size is **1024**.
+- Batch multiple enveloping streams into a single client when possible — fewer clients with more streams outperforms many clients with few streams.
+- Keep the envelope control signal in the same buffer for the life of the sound to avoid reallocation churn.
+- Guarantee 16-byte alignment on all hardware buffers.
+
+## Related
+
+- [XDSP overview](/gdk/audio/xdsp)
+- [XDSP convolution with envelope walkthrough](/gdk/audio/xdsp-convolution-envelope)
+- [XDSP IR reduction walkthrough](/gdk/audio/xdsp-ir-reduction)

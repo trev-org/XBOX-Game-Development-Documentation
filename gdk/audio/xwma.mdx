@@ -1,0 +1,72 @@
+---
+title: "xWMA overview"
+sidebarTitle: "xWMA"
+description: "Software-decoded WMA Professional subset for dialog and music."
+icon: "file-audio"
+tag: "NDA"
+---
+
+**xWMA** is a subset of the Windows Media Audio (WMA) Professional compression format. xWMA decoding is supported by [XAudio2](/gdk/audio/xaudio2) in software.
+
+xWMA uses the WMA bit-stream format in a lightweight wrapper and is useful for **dialog and music** where a small usage of the CPU can be traded for greater compression. A quality setting varies the bit rate.
+
+<Warning>
+  xWMA and XMA2 share heritage but are **not interchangeable**. Their file headers differ, and both formats are incompatible with PC versions of Windows. The codecs also differ slightly, so each has its own compression artifacts.
+</Warning>
+
+## xWMA encoding
+
+Encode audio to xWMA using the [xWMA command-line encoder](/gdk/audio/tools/xwmaencoder), or use `XWMAEncoder.lib` for a custom pipeline.
+
+<CardGroup cols={2}>
+  <Card title="xWMAEncode" icon="terminal" href="/gdk/audio/tools/xwmaencoder">
+    Command-line tool for encoding `.wav` files as xWMA for XAudio2 playback.
+  </Card>
+
+  <Card title="XWMAEncoder.lib" icon="code">
+    Statically linked library that exposes the `XWMAEncoder` function for custom tools.
+  </Card>
+</CardGroup>
+
+## xWMA decoding
+
+Software decoding is supported on Xbox in XAudio2, and separately through the `XWMADecode` API.
+
+| Technology | Description |
+| --- | --- |
+| **XACT** | Not supported on Xbox. |
+| **XAudio2** | Initialize a `WAVEFORMATEXTENSIBLE` with xWMA-specific values, then pass it to [`CreateSourceVoice`](https://learn.microsoft.com/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice). See [Use XAudio2 to play a sound](/gdk/audio/xaudio2-play-sound). |
+| **XWMADecode** | Decode xWMA buffers directly into PCM buffers without XAudio2. |
+
+## xWMA looping
+
+xWMA does not support loop regions or looping of arbitrary packets within a file — only an entire xWMA file can be looped.
+
+When all xWMA audio data is submitted as a single buffer:
+
+<Steps>
+</Steps>
+
+If xWMA data is split across multiple buffers, you must loop manually by resubmitting the series of buffers.
+
+<Tip>
+  A brief silence can be introduced at the loop boundary. Prefer xWMA looping for sounds that fade in and out smoothly — ocean waves, subtle ambient beds, etc.
+</Tip>
+
+## Structure of an xWMA file
+
+An xWMA file is a standard RIFF file:
+
+| Chunk FCC | Description |
+| --- | --- |
+| `RIFF` | Standard RIFF chunk. First four bytes of the data section contain the file type `XWMA`; the remainder holds the other chunks. |
+| `fmt` | Format header. Corresponds to a `WAVEFORMATEX` for mono/stereo xWMA, or `WAVEFORMATEXTENSIBLE` for 3\+ channels. |
+| `data` | Encoded xWMA audio. Passed to a source voice as the `pAudioData` member of `XAUDIO2_BUFFER`. Contents do **not** need to be byte-swapped. |
+| `dpds` | Decoded packet cumulative data size array — each `UINT32` is the byte count accumulated after decoding the corresponding xWMA packet. Used to fill an `XAUDIO2_BUFFER_WMA`. |
+
+## See also
+
+- [xWMA command-line encoder](/gdk/audio/tools/xwmaencoder)
+- [XAudio2 overview](/gdk/audio/xaudio2)
+- [Use XAudio2 to play a sound](/gdk/audio/xaudio2-play-sound)
+- [XMA2 overview](/gdk/audio/xma2)

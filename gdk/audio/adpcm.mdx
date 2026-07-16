@@ -1,0 +1,30 @@
+---
+title: "ADPCM overview"
+sidebarTitle: "ADPCM"
+description: "Lightweight software-decoded compression format for XAudio2."
+icon: "file-waveform"
+tag: "NDA"
+---
+
+**Adaptive Differential Pulse Code Modulation (ADPCM)** is a lossy compression format — some data is altered and lost during compression. ADPCM can achieve compression ratios up to **4:1**.
+
+The `XAudio2` implementation of ADPCM adds features to specify the **size of the compression sample block**. Audio designers can trade off size, quality, and resolution (for placing loop points).
+
+<Warning>
+  Because `XAudio2` implements ADPCM with a configurable sample block size, `XAudio2` ADPCM is **not compatible** with previous ADPCM formats such as IMA ADPCM or Microsoft ADPCM. `XAudio2` requires ADPCM content created with its own ADPCM command-line encoder tool. Decoding `XAudio2` ADPCM content in an external audio authoring or rendering engine requires explicit support.
+</Warning>
+
+## Encoding
+
+Encode audio data to ADPCM with the ADPCM command-line encoder tool that ships in the GDK tools.
+
+## Playback
+
+Play back ADPCM on Xbox via `XAudio2`. Initialize a [`WAVEFORMATEX`](https://learn.microsoft.com/windows/desktop/api/mmreg/ns-mmreg-waveformatex) structure with ADPCM-specific values and pass it to [`IXAudio2::CreateSourceVoice`](https://learn.microsoft.com/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice) when creating a source voice.
+
+For a walkthrough, see [How to: Play a Sound with XAudio2](https://learn.microsoft.com/windows/desktop/xaudio2/how-to--play-a-sound-with-xaudio2) and [Use XAudio2 to play a sound](/gdk/audio/xaudio2-play-sound).
+
+## Related
+
+- [XAudio2 overview](/gdk/audio/xaudio2)
+- [Use XAudio2 to play a sound](/gdk/audio/xaudio2-play-sound)

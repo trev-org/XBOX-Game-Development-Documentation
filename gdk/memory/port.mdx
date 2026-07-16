@@ -1,0 +1,66 @@
+---
+title: "Porting your title to the GDK memory manager"
+sidebarTitle: "Porting from Xbox One ERA"
+description: "Migrate Xbox One ERA memory code to the GDK Game OS: which flags map to which XMem APIs."
+icon: "arrow-right-arrow-left"
+tag: "NDA"
+---
+
+The GDK memory manager is designed to keep the substantial similarity to the Xbox One ERA memory manager that developers were successful with. Nevertheless, some API changes are required to port an Xbox One ERA title to the GDK Game OS.
+
+## `VirtualAlloc` → `XMemVirtualAlloc`
+
+The `MEM_TITLE`, `MEM_GRAPHICS`, and `MEM_TOOL` flags are **no longer supported** on `VirtualAlloc`. Move those calls to `XMemVirtualAlloc`.
+
+| Xbox One ERA `VirtualAlloc` flag | GDK `XMemVirtualAlloc` flag |
+| --- | --- |
+| `MEM_TITLE` | Default (no flag needed) |
+| `MEM_GRAPHICS` | `XMEM_GRAPHICS` |
+| `MEM_TOOL` | `XMEM_TOOL` |
+
+## Physical page APIs — rename only
+
+| Xbox One ERA | GDK |
+| --- | --- |
+| `AllocateTitlePhysicalPages` | `XMemAllocatePhysicalPages` |
+| `MapTitlePhysicalPages` | `XMemMapPhysicalPages` |
+| `FreeTitlePhysicalPages` | `XMemFreePhysicalPages` |
+
+## `XMemAlloc` allocator hooks
+
+`XMemAlloc` and `XMemFree` remain the same. To hook or override them, use the new macro:
+
+```cpp
+XMEM_SET_ALLOCATION_HOOKS(myAllocHook, myFreeHook);
+```
+
+This replaces the ERA mechanism of exporting `XMemAlloc` / `XMemFree` from the title EXE.
+
+## Query APIs
+
+| Xbox One ERA | GDK |
+| --- | --- |
+| `TitleMemoryStatus` | `XMemGetWorkingSetStatistics` |
+| `VirtualQueryTitle` | `XMemVirtualQuery` |
+
+## Graphics memory flags
+
+The granular ERA graphics flags collapse into a single `XMEM_GRAPHICS` value. Attribute selection (cached vs write-combine, GPU-visible) is now managed via a smaller set of `XMemFlags`. See the GDK headers for the full list.
+
+## Tools / debug memory
+
+- `MEM_TOOL` on `VirtualAlloc` → `XMEM_TOOL` on `XMemVirtualAlloc`.
+- `HEAP_TOOL` on `HeapAlloc` is **deprecated**; a replacement is planned.
+
+## Testing your port
+
+1. Enable `XMEM_SET_ALLOCATION_HOOKS` and `XMemSetWin32HeapTrackingHooks` early in startup to log every allocation.
+2. Turn on the Win32 heap tracking to catch `malloc` / `new` traffic.
+3. Compare `XMemGetWorkingSetStatistics` snapshots between ERA and GDK builds at the same content checkpoints.
+4. Use PIX for Xbox to correlate high-water marks against gameplay events.
+
+## See also
+
+- [Working with the memory manager](/gdk/memory/working)
+- [Diagnostics and memory tracking](/gdk/memory/diagnostics)
+- [Configuring memory](/gdk/memory/tooling)

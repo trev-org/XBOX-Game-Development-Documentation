@@ -1,0 +1,283 @@
+---
+title: "Optimizing compressed content with DirectStorage and XBTC"
+sidebarTitle: "Compression & XBTC"
+description: "Use the Memory Decompression Unit (MDU) on XBOX Series X|S efficiently: zlib + BCPack + Swizzle stages, SFS 64 KiB tiling, RDO, and BC7 mode restrictions with the XBTC tool."
+icon: "file-zipper"
+tag: "NDA"
+---
+
+<Note>
+  **Prerequisite:** read [DirectStorage usage and internal details](/gdk/storage/directstorage/usage-and-internals) first for the underlying NVMe I/O characteristics. Numbers use industry-standard notation — **MB** = base-10, **MiB** = base-2. Performance measurements were taken with the June 2020 GDK on packaged XVCs in retail drive mode; loose-file numbers are slightly lower.
+</Note>
+
+The **Memory Decompression Unit (MDU)** is XBOX Series's dedicated hardware decompression block. It is multi-stage and can decompress in-memory or inline with DirectStorage disk I/O. Its throughput exceeds the full 2 GB/s NVMe rate.
+
+This article covers:
+
+- The MDU pipeline (zlib → BCPack → Swizzle).
+- Packaging data for the MDU.
+- Texture tiling and SFS.
+- Memory pool and single-request limits.
+- The **Xbox Texture Compression Tool (XBTC)**: import, compression, region selection, application, RDO, BC7 mode restrictions.
+- Considerations for optimal performance.
+
+## Architecture
+
+DirectStorage batches requests in a pipeline. The MDU is bolted directly into that pipeline so decompression can be offloaded from the CPU with minimal effort. Each DirectStorage request is enqueued with metadata describing how the data should flow through the MDU.
+
+The MDU uses an intermediate memory pool shared across all DirectStorage scenarios and writes final decompressed bytes directly into the title-supplied destination buffer.
+
+For most titles, textures dominate. XBTC handles the compression and boxing of textures for MDU-driven decompression at runtime. For data streams that arrive by another route (for example a network request), the MDU can still be used through a **memory-to-memory** DirectStorage queue type.
+
+## Memory Decompression Unit
+
+The MDU consists of two hardware modules, each with three stages:
+
+1. **zlib** (RFC 1950 deflate).
+2. **BCPack** (custom entropy coder for BCn textures).
+3. **Swizzle Block** (optional post-decompression transform).
+
+Per-module rate: **1.6 GB/s in, 4 GB/s out**. Combined: **3.2 GB/s in, 8 GB/s out** — exceeds the 2 GB/s NVMe ceiling. So the MDU can service in-memory decompression _even while_ saturating disk I/O.
+
+<Note>
+  Real-world caps are 3.2 GB/s in and 8 GB/s out. When using the MDU to decompress perfectly compressible pages as a form of memset, the absolute limit is **12 GB/s out**. The `SimpleMDU` sample demonstrates throughput behaviors.
+</Note>
+
+All three stages can run in sequence at full speed. Any stage can be skipped via `DSTORAGE_REQUEST_OPTIONS`. Non-texture data typically uses only zlib. Uncompressed reads skip all three stages but still route through the MDU into title memory.
+
+### MDU zlib stage
+
+Decompresses [IETF RFC 1950](https://ietf.org/rfc/rfc1950.txt) streams. XBOX Series supports the full 32 KiB window (XBOX One was limited to 4 KiB).
+
+Two deviations from the spec:
+
+1. **Compressed size must be smaller than decompressed size.** If your stream would expand under compression, package it as **uncompressed** and have your tooling and load paths distinguish the two.
+2. **Upper limit on decompressed stream size:** 32 MiB (title memory reservation).
+
+Enable via:
+
+```cpp
+UINT64 DSTORAGE_REQUEST_OPTIONS::ZlibDecompress:1;
+```
+
+If zlib is combined with BCPack, set `DSTORAGE_REQUEST::IntermediateSize` to the size **after zlib, before BCPack**. Otherwise leave it 0.
+
+In an XBTC archive, zlib is present on a stream when `XBTC_STREAM_INFO::InflatedSize != CompressedSize`. From `SimpleSFS/TiledTexture.cpp`:
+
+```cpp SimpleSFS/TiledTexture.cpp
+for (UINT x = 0; x < TilingInfo[mip].WidthInTiles; x++)
+{
+    auto tileInfo = xbtcFile.GetStreamInfo(tileIndex);
+    Tiles[tileIndex].LoadSize     = tileInfo->CompressedSize;
+    Tiles[tileIndex].OffsetInFile = baseOffset + tileInfo->RelativeOffset;
+    Tiles[tileIndex].Coord        = { x, y, 0, mip };
+    Tiles[tileIndex].ZlibCompressed = (tileInfo->CompressedSize   != tileInfo->InflatedSize);
+    Tiles[tileIndex].BCPacked       = (tileInfo->UncompressedSize != tileInfo->InflatedSize);
+
+    auto parentTileX = x >> 1;
+    auto parentTileY = y >> 1;
+    Tiles[tileIndex].pParentTile = GetTile(parentTileX, parentTileY, mip + 1);
+
+    tileIndex++;
+
+    // Tiles are required to be 64 KB.
+    assert(tileInfo->UncompressedSize == D3D12_TILED_RESOURCE_TILE_SIZE_IN_BYTES);
+}
+```
+
+### MDU BCPack stage
+
+BCPack is a Microsoft-authored texture entropy coder targeting the block-compressed GPU formats BC1–BC7. It also understands XBOX Series's native texture swizzle patterns. Each BCn format has a dedicated encode/decode path; the mode must be specified at decompress-request time.
+
+```cpp
+DSTORAGE_BCPACK_MODE DSTORAGE_REQUEST_OPTIONS::BcpackMode : 4;
+
+enum DSTORAGE_BCPACK_MODE : UINT64 {
+    DSTORAGE_BCPACK_MODE_NONE = 0,
+    DSTORAGE_BCPACK_MODE_BC1  = 1,
+    DSTORAGE_BCPACK_MODE_BC2  = 2,
+    DSTORAGE_BCPACK_MODE_BC3  = 3,
+    DSTORAGE_BCPACK_MODE_BC4  = 4,
+    DSTORAGE_BCPACK_MODE_BC5  = 5,
+    DSTORAGE_BCPACK_MODE_BC6H = 6,
+    DSTORAGE_BCPACK_MODE_BC7  = 7,
+};
+```
+
+<Note>
+  When combined with zlib, set `IntermediateSize` to the size between the two stages. Otherwise 0.
+</Note>
+
+In an XBTC archive, BCPack is present on a stream when `XBTC_STREAM_INFO::InflatedSize != UncompressedSize`.
+
+### MDU Swizzle Block stage
+
+Post-decompression transforms written on the way out to title memory. Starting with the March 2024 GDK, several **shuffle formats** exist for further size reductions on BC1, BC3, BC4, and BC5 when combined with Deflate or BCPack. See [DirectStorage shuffle formats](/gdk/storage/directstorage/shuffle-formats).
+
+```cpp
+DSTORAGE_SWIZZLE_MODE DSTORAGE_REQUEST_OPTIONS::SwizzleMode : 16;
+```
+
+Set to `DSTORAGE_SWIZZLE_MODE_NONE` (0) if the specialized shuffle formats are not used. If you have a use case for a swizzle not covered today, contact your Microsoft account manager.
+
+## Packaging data for the MDU
+
+Two primary compression paths:
+
+- **Deflate-only** — typically non-texture resources; you choose data-stream sizes.
+- **Deflate \+ BCPack** — for texture resources; stream sizes are predefined by the texture layout.
+
+Both paths require **16-byte alignment** for data streams (same as all NVMe requests).
+
+Swizzle/shuffle modes work in conjunction with Deflate and BCPack. See [DirectStorage shuffle formats](/gdk/storage/directstorage/shuffle-formats).
+
+## Texture tiling and Sampler Feedback Streaming (SFS)
+
+Texture tiling breaks a large texture into small subsections that stream independently — also known as Partially Resident Textures (PRT), Virtual Textures, or Tiled Resources. XBOX Series has GPU hardware extensions for this; the combined system is **SFS**.
+
+XBOX Series uses **64 KiB pages** for graphics resources, which is the size of the most common native texture swizzle patterns when optimized for GPU-native layout. Each 64 KiB page in a texture can be loaded or discarded independently — the most granular use of memory.
+
+**Example — 2048 × 2048 BC7 texture.** BC7 uses 16 bytes per 4×4 texel block, so mip0 = 4,194,304 bytes = 64 pages of 64 KiB. All mips together: 86 tiles.
+
+### Compressibility comparison
+
+Tests on the Insects HDR 4K content pool:
+
+- **Deflate implementations (zlib and zopfli)** improve as tile size grows, but hit diminishing returns around **~1,024 KiB**. Zopfli beats zlib by 1–2% at roughly **10×** the compression-time cost.
+- **BCPack \+ Deflate (via XBTC)** significantly outperforms any Deflate-only option. **Strongly recommended for texture resources.**
+
+<Note>
+  `xbtc-mip` packaging (one stream per mip) yields variable stream sizes and no compression advantage over per-tile SFS packaging.
+</Note>
+
+## Memory pool requirements
+
+- On the first `DStorageGetFactory`, **32 MiB** is reserved as the Staging Buffer. Resize (or free to 0) with `SetStagingBufferSize`.
+- The staging buffer is shared across DirectStorage stages. The last stage writes final output directly into title memory.
+
+**Hard limits enforced at enqueue time:**
+
+- For decompression requests, **compressed size must be smaller than decompressed size**.
+- The upper limit for **any** single DirectStorage request is **1 GiB** — for decompression, this is the sum of source \+ destination sizes.
+
+Additional debug behavior is available via `SetDebugFlags`.
+
+## Xbox Texture Compression Tool (`XBTC.exe`)
+
+XBTC imports, exports, and encodes textures for XBOX Series. Available as:
+
+- Command line — `XBTC.exe`.
+- Library — `XBTC.dll`.
+- Source — requires additional NDA. Contact your Microsoft account manager.
+
+Default install path:
+
+```text
+C:\Program Files (x86)\Microsoft GDK\<version>\GXDK\bin\Scarlett\
+```
+
+### Importing content
+
+- Imports/exports `.png`, `.tiff`, `.jpg`.
+- Contains a BC1–BC7 encoder and can swizzle to/from native XBOX Series GPU texture layouts.
+- Any lossy operation (for example raw → block-compressed) produces image quality metrics.
+- Exporting to `.dds` uses only the importer and BC encoder — no compression is applied.
+
+### Compression
+
+XBTC compresses each selected texture region into a substream within an archive. By default it tries **three combinations** per region — Deflate-only, BCPack-only, BCPack\+Deflate — and keeps the smallest.
+
+Region selection depends on `--tilemode` and `--mipstreams`.
+
+### SFS region selection
+
+For a 2K BC7 texture (86 pages of 64 KiB):
+
+- **All mips streamable** — 86 separate regions.
+- **Only mip0 streamable** — 65 streams: 64 for mip0, plus one always-resident stream containing all remaining mips.
+
+### Non-SFS region selection
+
+For the same 2K BC7 texture with the default 64 KB non-SFS tile mode: **5 regions**, compressed individually. If only two mips should be streamable: **3 regions**, with mip2–11 combined into an always-resident stream.
+
+<Warning>
+  For extremely large textures (≥ 8K), non-SFS whole-mip streams can exceed the MDU's 32 MiB max. A forthcoming release adds options to break non-SFS texture mips into optimally-sized tiles for sequential load.
+</Warning>
+
+### Application
+
+After regions are selected and a Deflate implementation is chosen (`--usezopfli` toggles zopfli), XBTC compresses each region three ways — Deflate, BCPack, and both — and keeps the winner. The MDU decompresses any of these (or uncompressed) at full I/O speed.
+
+The archive contains the set of compressed streams and a header describing them. You can:
+
+- Use the archive as-is with the GDK sample loader code, or
+- Extract streams \+ metadata and repackage into your own container.
+
+At runtime the header feeds directly into the DirectStorage requests for that asset.
+
+### Rate Distortion Optimization (RDO)
+
+RDO trades compression quality for compression ratio by re-encoding BCn blocks to reduce discrete color points or coerce colors to their neighbours — which then compresses better under BCPack/Deflate.
+
+- Added in the **2006 QFE1** GDK release for **BC1–BC5**. Other modes to follow.
+- Implemented inside the BC encoder stage. Works when exporting to `.dds` but is designed with BCPack in mind.
+- Not one-setting-fits-all — different asset types have different ideal quality points. Iterate.
+
+Subcommands to build a rule system:
+
+| Subcommand | Purpose |
+| --- | --- |
+| `compare` | Image-quality analysis (RDO vs. original or vs. pre-RDO BC). |
+| `view` | Spot-check the processed asset. |
+| `export` | Export back to a common format for external tools. |
+
+**Example workflow:** "BC1 normal maps may lose up to 2 dB PSNR." When an asset lands, run a one-time pass to find the quality level that matches the budget, record it for future builds.
+
+<Note>
+  RDO changes compression ratio, which can affect **optimal load behaviour**.
+
+  BC1 tiles (~2:1) compress to ~32 KiB from 64 KiB. Shrinking another 25% with RDO does not linearly translate to \+25% throughput because per-request overhead dominates at small sizes.
+
+  For larger tiles, throughput scales with compression ratio until you approach the 8 GiB/s MDU output ceiling.
+
+  In tests on the Insects HDR 4K pool, RDO settings that shrank XBTC archives ~14% (~7% vs. original uncompressed) yielded roughly **\+13% throughput for streams ≥ 128 KiB**, with diminishing gains under 64 KiB.
+</Note>
+
+### BC7 encoder mode restrictions
+
+BC7 allows each 4×4 block to be encoded in one of **8 modes**. The result is very high fidelity but high per-block entropy — BC7 textures are inherently less compressible than most other BCn formats.
+
+XBTC lets you restrict which BC7 modes are allowed. This trades some fidelity for much better compressibility.
+
+**Example** — the Insects HDR 4K pool:
+
+| Encoding | Compressed size (via XBTC BCPack\+Deflate) |
+| --- | --- |
+| All BC7 modes | ~61.5% of original |
+| BC7 mode 7 only (`--bc7modes 0x80`) | **\> 2:1 ratio** |
+
+Compared with the same textures encoded as BC1 at lower fidelity, the mode-7-only BC7 retains a **3–5 dB PSNR advantage**. NVMe read speed is nearly identical; the mode-7-only content shows a **20–40% throughput advantage** at the MDU output.
+
+<Warning>
+  Spot-check and iterate. Aggressive mode restrictions can produce visible quality loss on some content.
+</Warning>
+
+## Considerations for optimal performance
+
+The guidance in [DirectStorage usage and internal details](/gdk/storage/directstorage/usage-and-internals) applies to MDU-driven decompression as well.
+
+**Keep the pipeline full.** If you enqueue every 16.7 ms (60 FPS), the drive reads up to 33.4 MB in that window. Keep **~64 MiB in flight** (33.4 MB per interval \+ 32 MiB staging) or more, since the 2 GB/s guarantee is averaged over 250 ms.
+
+MDU-specific factors:
+
+- **Per-job setup cost.** Avoid many small MDU jobs. The lower bound for keeping up with the NVMe SSD is **32 KiB compressed / 64 KiB decompressed** per request. Maximum throughput is only reached at 2–4× that size.
+- **Large requests split.** Requests \> 512 KiB of compressed data are split into multiple I/Os and submitted to the MDU as multiple requests. Small but measurable throughput hit, most visible just above the threshold.
+- **Compression ratio directly scales decompressed-bytes throughput** to title memory. RDO and BC7 mode restrictions produce two-fold gains (smaller size \+ faster load).
+- **For texture data, XBTC SFS 64 KiB tiling \+ BCPack \+ Deflate per tile** is the best hardware-supported compression combined with the highest (or comparable) throughput.
+
+## Related
+
+- [DirectStorage overview](/gdk/storage/directstorage/overview)
+- [DirectStorage usage and internal details](/gdk/storage/directstorage/usage-and-internals) (NDA)
+- [DirectStorage shuffle formats](/gdk/storage/directstorage/shuffle-formats) (NDA)
+- **Analyzing DirectStorage performance in PIX** (NDA)

@@ -1,0 +1,63 @@
+---
+title: "GDK memory manager technical details"
+sidebarTitle: "Technical details"
+description: "Internals of the GDK memory manager: partitions, Win32 segment heap, load-time import redirection, and page tables."
+icon: "microchip"
+tag: "NDA"
+---
+
+## Memory partitions
+
+Memory partitions are the fundamental component of the memory manager. They divide memory into separately managed regions that are completely isolated from each other. A process is created with a specific partition association, and by default all memory charges are satisfied by the owning partition. Within Windows there is typically only one partition (the system partition). During GDK Game OS startup, two additional partitions are created and configured. **All GDK memory partitions have their page files disabled and manage only physical RAM.**
+
+The primary way to obtain memory from a partition is through `VirtualAlloc`, `XMemVirtualAlloc`, `XMemAllocatePhysicalPages`, and related APIs.
+
+For security, memory is normally zero-initialized before being returned from the OS. Zeroing is expensive, so on Windows the memory manager delays assigning physical pages until the first access — amortizing the cost across usage. This behavior is **undesirable for games**, so the GDK memory manager is customized:
+
+- In the **title** and **tools** partitions, allocations made by `XMemVirtualAlloc` for **64 KB** and **2 MB** page sizes are returned **uninitialized** (as in Xbox One ERA).
+- These allocations have all their physical pages gathered and assigned **at allocation time** rather than on first use, making the true cost measurable at the allocation site.
+
+<Note>
+  Allocations made by `VirtualAlloc` still follow the typical Windows behavior, including zero-initialization. This preserves compatibility with existing code that relies on zeroed memory.
+</Note>
+
+## Win32 heap support
+
+Most AAA games manage most memory in custom allocators, but the Win32 heap is used extensively by system code and occasionally by game code. It underpins the `HeapAlloc` family, which the CRT uses to implement `malloc` / `new`. Platform APIs also use it for temporary storage too large for the stack.
+
+The GDK uses the **segment heap** introduced in Windows 10 — a significant upgrade over the Xbox One ERA NT heap. The game process heap uses **2 MB page sizes**, reducing TLB misses and cutting how often the heap needs additional pages from the memory manager.
+
+Internally, Win32 heaps use a hybrid strategy depending on allocation size:
+
+| Allocation size | Strategy |
+| --- | --- |
+| **\< 16 KB** | Low-fragmentation heap (LFH). 128 block sizes in an exponential progression from 16 bytes to 16 KB, allocated with lock-free synchronization. |
+| **16 KB – 512 KB** | Standard heap design with a coalescing free list that combines adjacent free memory. A critical section manages concurrent access. |
+| **\> 512 KB** | Mostly passes allocations through to `VirtualAlloc` and keeps a limited free list. |
+
+Both the LFH and the variable-size heap share a back-end page allocator and free lists to reduce footprint after large alloc/free cycles.
+
+## Load-time import redirection
+
+The GDK OS contains a customized loader that classifies every loaded module as either a **system module** or a **title module**. Modules on the Game OS C:\\ drive count as system modules, along with a select set of DLLs typically delivered alongside the game (for example, `vcruntime140.dll`).
+
+The loader uses this classification to redirect imported memory-management functions to implementations that target the correct partition. Import address table manipulation is a well-known technique; performing it inside the loader **before any code runs** avoids the security issues and race conditions normally associated with runtime IAT patching. This is the primary mechanism for enforcing memory-partition isolation between game and platform components.
+
+## Page tables
+
+The Xbox CPU adheres to the AMD64 standard **4-level page table** model common to all modern PCs. Additional memory must be used as a page table — a sparsely populated lookup table that maps virtual addresses to physical addresses.
+
+Page-table memory is allocated from the **title partition** of the process as needed — effectively a small tax on most `VirtualAlloc`, `XMemVirtualAlloc`, and `XMemMapPhysicalMemory` calls. As those allocations are freed, page-table memory is returned.
+
+As part of `VirtualFree`, the memory manager recursively inspects all levels of the page table and aggressively releases table memory no longer needed for address translation. Memory that is **decommitted** rather than released still retains its page-table allocation until its virtual address range is also released.
+
+**64 KB** page size is very common in Xbox game code because the Xbox GPU supports it natively. It is not a standard AMD64 CPU page size; a 64 KB page consists of **16 consecutive 4 KB CPU page-table entries**.
+
+For details on computing the page-table cost, see [Diagnostics and memory tracking](/gdk/memory/diagnostics).
+
+## See also
+
+- [Overview](/gdk/memory/overview)
+- [Diagnostics and memory tracking](/gdk/memory/diagnostics)
+- [Working with the memory manager](/gdk/memory/working)
+- [Virtual Memory Allocator](/gdk/memory/virtual-allocator)

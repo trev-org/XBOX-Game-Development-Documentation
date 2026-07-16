@@ -1,0 +1,192 @@
+---
+title: "WinHTTP overview"
+sidebarTitle: "WinHTTP"
+description: "How to use Windows HTTP Services (WinHTTP) safely and efficiently in GDK titles, including secure defaults, NSAL, and TLS validation."
+icon: "globe-pointer"
+---
+
+[Windows HTTP Services (WinHTTP)](/windows/desktop/winhttp/winhttp-start-page) is a lower-level HTTP client API available for PC and Xbox GDK titles. You can use it to create regular HTTP and WebSocket service endpoints.
+
+Because it's lower-level, there are more considerations to implement secure, robust communication. We recommend your implementation adhere to all [communication security best practices (NDA)](/gdk-dev/game-principles/security/communication-security/communication-security-overview).
+
+## Version differences
+
+GDK titles interact with WinHTTP the same way Win32 apps do. Only the flat C/C\+\+ API for WinHTTP is available in GDK titles — HTTP functionality must be built on this client API.
+
+## Add WinHTTP to your Xbox console project
+
+- `#include <winhttp.h>` in your source files.
+- On console, link against `XGamePlatform.lib` (not directly against `Winhttp.lib`).
+- On PC, continue linking against `Winhttp.lib`.
+- Only APIs under `WINAPI_PARTITION_GAMES` work in GDK titles.
+
+See the [SimpleWinHttp sample](https://aka.ms/gdkdl) for a solid starting point. It includes a `WinHttpManager` class with a simple asynchronous API surface.
+
+## Network initialization
+
+Before your first call to [WinHttpOpen](/windows/desktop/api/winhttp/nf-winhttp-winhttpopen), ensure the network stack is initialized. Calling `WinHttpOpen` too early may fail or crash non-deterministically; requests may appear to succeed but actually fail (and vice versa). See [Network initialization](/gdk/networking/initialization).
+
+## Suspend and resume
+
+On suspend, close all WinHTTP handles. Cleanup is asynchronous — close in this order:
+
+<Steps>
+</Steps>
+
+Handle cleanup is asynchronous for threading safety but doesn't add delay — it fits within the one-second suspend-deferral timeout.
+
+On resume, wait for the network to reach the ready state (like on launch) before using WinHTTP again — a long time may have passed and the network needs to stabilize.
+
+## Memory and concurrency
+
+<Warning>
+  Keep concurrent WinHTTP requests **under eight** across your entire process, including calls from XSAPI and xCurl. Beyond that, WinHTTP's asynchronous state may not fit within its memory budget.
+</Warning>
+
+As an extension to [Winsock memory considerations](/gdk/networking/game-mesh/winsock#socket-memory-considerations), always keep a buffer pended with `WinHttpReadData` (or a callback pending from `WinHttpQueryDataAvailable`) so you transfer data from the kernel to user mode as quickly as possible.
+
+`WinHttpQueryHeaders` requires transient allocations — use the `WINHTTP_NO_OUTPUT_BUFFER` double-call pattern to minimize scratch buffer size, and limit concurrent calls. Default max header size is 64 KB (`WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE`).
+
+## WinHttpOpen considerations
+
+### Flags
+
+| Parameter | Value |
+| --- | --- |
+| `dwAccessType` | `WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY` |
+| `pszProxyW` | `WINHTTP_NO_PROXY_NAME` |
+| `pszProxyBypassW` | `WINHTTP_NO_PROXY_BYPASS` |
+| `dwFlags` | `WINHTTP_FLAG_SECURE_DEFAULTS` |
+
+The combination of `AUTOMATIC_PROXY`, `NO_PROXY_NAME`, `NO_PROXY_BYPASS` lets the GDK platform handle proxies like [Fiddler](/gdk/networking/tools/fiddler-setup) and other edge-case networking environments.
+
+`WINHTTP_FLAG_SECURE_DEFAULTS` helps GDK titles adhere to security best practices by setting the recommended secure connection behavior. It's available on Xbox One consoles and will be available on Windows PC in a future OS update. On existing Windows OS versions it fails with invalid parameter.
+
+<Warning>
+  `WINHTTP_FLAG_SECURE_DEFAULTS` implicitly includes `WINHTTP_FLAG_ASYNC` — it forces WinHTTP into async mode. On Windows PC OS versions that don't support the secure-defaults flag yet, pass `WINHTTP_FLAG_ASYNC` instead to minimize implementation differences.
+</Warning>
+
+<Note>
+  The `WINHTTP_FLAG_SECURE_DEFAULTS` flag requires a matching `WINHTTP_FLAG_SECURE` flag on `WinHttpOpenRequest` and blocks unencrypted HTTP. On devkits for debugging you may create a session handle with just `WINHTTP_FLAG_ASYNC` and issue unencrypted HTTP without `WINHTTP_FLAG_SECURE`. Use secure-defaults session handles for non-debug traffic to match RETAIL behavior.
+</Note>
+
+### WINHTTP\_OPTION\_SECURE\_PROTOCOLS
+
+After creating a new session handle with `WinHttpOpen`, call [WinHttpSetOption](/windows/win32/api/winhttp/nf-winhttp-winhttpsetoption) with `WINHTTP_OPTION_SECURE_PROTOCOLS` and pass `XNetworkingSecurityInformation::enabledHttpSecurityProtocolFlags` retrieved from [XNetworkingQuerySecurityInformationForUrlUtf16Async](/reference/networking/xnetworking/functions/xnetworkingquerysecurityinformationforurlutf16async) for a matching URL. Store the returned [XNetworkingSecurityInformation](/reference/networking/xnetworking/structs/xnetworkingsecurityinformation) on your context for the TLS/SSL handshake later.
+
+### Caching session handles
+
+Session handles are memory-expensive and have a large start-up cost that delays the first HTTP request — cache them wherever possible.
+
+However, `WINHTTP_OPTION_SECURE_PROTOCOLS` can't be changed on a session handle. Cache `XNetworkingSecurityInformation::enabledHttpSecurityProtocolFlags` → session-handle mappings so you have a separate session handle per unique secure protocol flag.
+
+<Warning>
+  Clear the cache on suspend and rebuild from scratch on resume (after waiting for network initialization).
+</Warning>
+
+## WinHttpConnect considerations
+
+Unlike sessions, connection handles from [WinHttpConnect](/windows/win32/api/winhttp/nf-winhttp-winhttpconnect) should **never** be cached — create new handles per request/retry. Connection handles have no relationship to underlying TCP connections; WinHTTP manages those on the session and reuses them across connection handles.
+
+### URL canonicalization
+
+WinHTTP expects URLs canonicalized to a–z, A–Z, 0–9 ASCII. See [URLs in WinHTTP](/windows/win32/winhttp/uniform-resource-locators--urls--in-winhttp). Hard-code URLs in canonical form to avoid the memory allocations and performance cost of [WinHttpCrackUrl](/windows/win32/api/winhttp/nf-winhttp-winhttpcrackurl) and [WinHttpCreateUrl](/windows/win32/api/winhttp/nf-winhttp-winhttpcreateurl).
+
+### URL splitting
+
+WinHTTP wants a host name for `WinHttpConnect` and path \+ object for `WinHttpOpenRequest`. Your title must pass the full URL in some places and only host or path in others. Hard-code both to avoid dynamic split/join.
+
+## WinHttpOpenRequest considerations
+
+Don't cache [WinHttpOpenRequest](/windows/win32/api/winhttp/nf-winhttp-winhttpopenrequest) handles — create per request/retry. Always pass `WINHTTP_FLAG_SECURE` for `dwFlags`.
+
+## Retrieving and applying Xbox services tokens
+
+GDK titles don't get automatic token insertion. Use [XUser](/reference/system/xuser/xuser_members) APIs. After you have a user, call [XUserGetTokenAndSignatureUtf16Async](/reference/system/xuser/functions/xusergettokenandsignatureutf16async) for each request. Pass the token/signature strings via `WinHttpAddRequestHeadersEx`, [WinHttpSendRequest](/windows/desktop/api/winhttp/nf-winhttp-winhttpsendrequest), or [WinHttpAddRequestHeaders](/windows/desktop/api/winhttp/nf-winhttp-winhttpaddrequestheaders).
+
+To generate a proper signature, `XUserGetTokenAndSignatureUtf16Async` expects the full headers \+ body. For large `POST`/`PUT` bodies, pass the subset configured in Partner Center. See [Web services (NDA)](/services/fundamentals/s2s-auth-calls/custom-service-config/web-services/live-web-services-nav). Xbox network doesn't expose that config — hard-code or fetch via your own endpoint.
+
+`XUserGetTokenAndSignatureUtf16Async` caches internally; call it per attempt (including retries). On HTTP 401, retry with `XUserGetTokenAndSignatureOptions::ForceRefresh`.
+
+Use `WinHttpAddRequestHeadersEx` (new API specifically for GDK titles) to reduce complexity. Available on Xbox One consoles now; coming to Windows PC in a future OS update. On console we recommend `WinHttpAddRequestHeadersEx` to avoid extra allocations and string-format changes.
+
+```cpp
+HRESULT AddTokenAndSignatureDataToHttpRequest(
+    XUserGetTokenAndSignatureUtf16Data* userTokenAndSignatureData,
+    HINTERNET requestHandle)
+{
+    WINHTTP_EXTENDED_HEADER winhttpHeader[2];
+    winhttpHeader[0].pwszName = L"Authorization";
+    winhttpHeader[0].pwszValue = userTokenAndSignatureData->token;
+    winhttpHeader[1].pwszName = L"Signature";
+    winhttpHeader[1].pwszValue = userTokenAndSignatureData->signature;
+    return HRESULT_FROM_WIN32(WinHttpAddRequestHeadersEx(
+        m_handshakeRequest,
+        WINHTTP_ADDREQ_FLAG_ADD,
+        WINHTTP_EXTENDED_HEADER_FLAG_UNICODE,
+        0,
+        tokenAndSignature->signatureCount ? 2 : 1,
+        winhttpHeader));
+}
+```
+
+<Note>
+  The device or signed-in account needs access to the sandbox it's set to; otherwise `XUserGetTokenAndSignatureUtf16Data` fails.
+</Note>
+
+### Xbox Network Security Authorization List (NSAL)
+
+Xbox network uses the NSAL to ensure clients establish secure and authenticated connections to your web services. You manage NSAL contents in Partner Center — see [Setting up web services at Partner Center (NDA)](/services/fundamentals/s2s-auth-calls/custom-service-config/web-services/live-web-services). The NSAL config downloads automatically per title, and is used both to generate proper tokens and to perform certificate pinning for your endpoints.
+
+## Asynchronous state machine
+
+The async state machine is the same on console as on Windows PC. Use [WinHttpSetStatusCallback](/windows/win32/api/winhttp/nf-winhttp-winhttpsetstatuscallback); for debugging pass `WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS` — WinHTTP is verbose and transparent, which is useful for diagnosis.
+
+<Warning>
+  WinHTTP uses a single notification thread. Never block a notification function — that prevents all HTTP requests in your process from progressing. Unserviced notifications also grow kernel memory and can cause crashes.
+</Warning>
+
+WinHTTP doesn't copy send/receive buffers — keep them allocated until the corresponding completion callback:
+
+- Send buffer valid from `WinHttpSendRequest` until `WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE`.
+- Receive buffer valid from `WinHttpReadData` until `WINHTTP_CALLBACK_STATUS_READ_COMPLETE`.
+
+Use a receive buffer of at least 8 KB to avoid recursion problems that can lead to stack exhaustion. Keep the `WinHttpQueryDataAvailable`/`WinHttpReadData` cycle draining continuously, and don't block callbacks.
+
+### Validating the TLS/SSL handshake
+
+As a security best practice, validate the TLS/SSL handshake and use TLS 1.2 only.
+
+Inside the `WINHTTP_CALLBACK_STATUS_SENDING_REQUEST` notification, call [XNetworkingVerifyServerCertificate](/reference/networking/xnetworking/functions/xnetworkingverifyservercertificate) and pass the [XNetworkingSecurityInformation](/reference/networking/xnetworking/structs/xnetworkingsecurityinformation) from a prior [XNetworkingQuerySecurityInformationForUrlUtf16Async](/reference/networking/xnetworking/functions/xnetworkingquerysecurityinformationforurlutf16async). If the certificate chain is invalid the call fails — **immediately close the WinHTTP handle before the callback completes** so no data flows to/from the compromised server.
+
+`XNetworkingVerifyServerCertificate` is also required for Fiddler functionality on console.
+
+## Debugging WinHTTP
+
+[Fiddler](/gdk/networking/tools/fiddler-setup) is useful for viewing/debugging WinHTTP traffic. For Fiddler to capture your title traffic, pass `WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY`, `WINHTTP_NO_PROXY_NAME`, and `WINHTTP_NO_PROXY_BYPASS` to `WinHttpOpen`, and call `XNetworkingVerifyServerCertificate` in the `SENDING_REQUEST` callback.
+
+<Note>
+  HTTP Monitor doesn't work with GDK titles.
+</Note>
+
+## Reference API documentation
+
+- [XUser members](/reference/system/xuser/xuser_members)
+  - Functions
+    - [XUserGetTokenAndSignatureUtf16Async](/reference/system/xuser/functions/xusergettokenandsignatureutf16async)
+  - Structures
+    - [XUserGetTokenAndSignatureUtf16Data](/reference/system/xuser/structs/xusergettokenandsignatureutf16data)
+- [XNetworking members](/reference/networking/xnetworking/xnetworking_members)
+  - Functions
+    - [XNetworkingQuerySecurityInformationForUrlUtf16Async](/reference/networking/xnetworking/functions/xnetworkingquerysecurityinformationforurlutf16async)
+    - [XNetworkingVerifyServerCertificate](/reference/networking/xnetworking/functions/xnetworkingverifyservercertificate)
+  - Structures
+    - [XNetworkingSecurityInformation](/reference/networking/xnetworking/structs/xnetworkingsecurityinformation)
+
+## See also
+
+- [Windows HTTP Services (WinHTTP)](/windows/desktop/winhttp/winhttp-start-page)
+- [XSAPI C overview](https://developer.microsoft.com/games/xbox/docs/gdk/atoc-xsapi-c)
+- [Setting up web services at Partner Center (NDA)](/services/fundamentals/s2s-auth-calls/custom-service-config/web-services/live-web-services)
+- [Fiddler on Xbox devkits](/gdk/networking/tools/fiddler-setup)
+- [Communication Security Overview (NDA)](/gdk-dev/game-principles/security/communication-security/communication-security-overview)

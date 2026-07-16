@@ -1,0 +1,73 @@
+---
+title: "Spatial sound overview"
+sidebarTitle: "Spatial sound"
+description: "Render immersive audio with elevation and surround cues via Dolby Atmos, DTS:X, DTS Headphone:X, and Windows Sonic."
+icon: "cube"
+tag: "NDA"
+---
+
+Spatial sound audio adds Dolby Atmos, DTS:X, DTS Headphone:X, and Windows Sonic for Headphones support to your streaming media application or game. It provides:
+
+- **Elevation rendering** to speaker systems that support these formats (e.g. Dolby Atmos receivers)
+- **Psychoacoustic spatialization** on headsets via head-related transfer function (HRTF), including Microsoft HRTF (originally developed for HoloLens)
+
+The Xbox One and Xbox Series X|S consoles use **hardware acceleration** for spatial audio — CPU cost of spatial processing is minimal.
+
+## Dynamic object capacity on Xbox Series X|S
+
+Games using the **2303 or later GDK** get significantly higher dynamic object counts on Series X|S:
+
+| Format | Dynamic objects |
+| --- | --- |
+| Windows Sonic (headphones) | 220 |
+| Dolby Atmos for headphones | 128 |
+| DTS Headphone:X | 200 |
+| DTS:X for home theater (HDMI) | 20 (up from 16) |
+| Dolby Atmos for home theater (HDMI) | unchanged |
+
+Query these via [`ISpatialAudioClient::GetMaxDynamicObjectCount`](https://learn.microsoft.com/windows/win32/api/spatialaudioclient/nf-spatialaudioclient-ispatialaudioclient-getmaxdynamicobjectcount).
+
+<Tip>
+  To test titles built with older GDKs against the new caps, copy an empty file named `ForceCFPU2SpatialOffload` (no extension) to the root of the `d:` drive (**SystemScratch** in Xbox Manager) on the Series X|S devkit.
+</Tip>
+
+## ISAC — Interactive Spatial Audio Client
+
+ISAC is a spatial audio sink that abstracts spatial output formats (height speakers, psychoacoustic headset encoding) from the concept of positioned sound objects the game manages. ISAC supports:
+
+- User-specified switching between output and encoding formats
+- Virtual surround downmix fallback when spatial output isn't available
+- Simultaneous playback of multiple spatial and non-spatial clients (including WASAPI)
+
+Most titles reach ISAC through an audio middleware plug-in; titles with their own rendering engine can use ISAC directly.
+
+See the [`AdvancedSpatialSounds`](https://aka.ms/gdkdl) sample for static beds plus dynamic path-following objects across Windows Sonic and other spatial formats.
+
+## Capabilities
+
+| Feature | Support |  |
+| --- | --- | --- |
+| Operating systems | Xbox One family, Xbox Series X | S, Windows 10 (Win32 desktop and UWP) |
+| Audio output formats | Dolby Atmos (speakers, headsets); DTS:X (speakers, headsets); Microsoft HRTF (headsets) |  |
+| Audio input formats | Mono channels and objects at 48 kHz float. Engines can SRC other formats at input. |  |
+| Sound object formats | Flexible channel bed up to 7.1.4, plus multiple dynamic spatial objects |  |
+| Downmix behavior | When spatial isn't available (e.g. stereo TV), the channel bed is virtual-surround downmixed and zero dynamic objects are reported |  |
+| CPU cost (Xbox) | Hardware-accelerated encoding for Dolby Atmos and Microsoft HRTF |  |
+| Storage cost | Prerendered 7.1.4 cut scenes are larger than 5.1 / 7.1 assets |  |
+
+## Recommended studio hardware
+
+| Device | Recommendation |
+| --- | --- |
+| AV receiver | Dolby Atmos or DTS:X capable receiver / soundbar, at least 5.1.2, preferably 7.1.4 |
+| Speakers | 5.1.2 or 7.1.4, or integrated soundbar |
+| Headsets | Any stereo headset — spatialization is done in software |
+| DAW | Elevation channels and height panners for authoring linear / prerendered content |
+
+## Related
+
+- [Spatial Sound on Microsoft Learn](https://learn.microsoft.com/windows/win32/coreaudio/spatial-sound)
+- [`ISpatialAudioClient`](https://learn.microsoft.com/windows/desktop/api/spatialaudioclient/nn-spatialaudioclient-ispatialaudioclient)
+- [`ISpatialAudioObject`](https://learn.microsoft.com/windows/desktop/api/spatialaudioclient/nn-spatialaudioclient-ispatialaudioobject)
+- [`ISpatialAudioObjectForHrtf`](https://learn.microsoft.com/windows/desktop/api/spatialaudiohrtf/nn-spatialaudiohrtf-ispatialaudioobjectforhrtf)
+- [Audio overview](/gdk/audio/overview)

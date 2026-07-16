@@ -1,0 +1,60 @@
+---
+title: "Quality of Service measurements"
+sidebarTitle: "QoS measurements"
+description: "Measure latency and bandwidth for multiplayer connections in a GDK title."
+icon: "gauge"
+---
+
+Measuring QoS latency matters for multiplayer titles. For peer-to-peer, it decides whether gameplay with another client is feasible. For client/server, it identifies the best datacenter for gameplay.
+
+Xbox One ERA titles received QoS APIs for latency and bandwidth measurements via secure sockets. GDK titles achieve the same functionality as follows.
+
+## Peer-to-peer
+
+P2P titles can implement custom QoS in title code, the engine, or middleware. All implementations should follow these guidelines:
+
+| Guideline | Detail |
+| --- | --- |
+| Secure communication best practices | Perform QoS probes through a secure protocol connection, just like gameplay traffic. |
+| UDP packet size | Don't exceed the platform MTU (default 1,384 bytes on Xbox and Windows 10). Larger packets are likely to fragment, adding latency or drops. |
+| Matching protocol and channel | Run QoS on the same channel and protocol used for gameplay traffic so measurements reflect gameplay behavior. |
+| Session browse behavior | Session-browse lists that automatically QoS-test top entries can flood popular hosts. Partially randomize browse lists to avoid this. |
+| Other title bandwidth usage | Minimize your title's own downloads or other traffic during QoS measurements. |
+
+## Client/server
+
+Client/server titles typically measure latency to a specific datacenter. Same guidelines apply as for P2P.
+
+<Tip>
+  Titles using **Azure PlayFab multiplayer servers** should use the provided QoS APIs. See [Using Quality-of-Service (QoS) beacons to measure player latency to Azure](/gaming/playfab/features/multiplayer/servers/using-qos-beacons-to-measure-player-latency-to-azure).
+</Tip>
+
+## QoS metric considerations
+
+The two most common QoS metrics are **latency** and **bandwidth**.
+
+<CardGroup cols={2}>
+  <Card title="Latency testing" icon="stopwatch">
+    Send a small number of packets below MTU size to a remote endpoint that echoes them back. Average multiple RTTs. Fast to measure.
+  </Card>
+
+  <Card title="Bandwidth testing" icon="chart-line">
+    Send large volumes at increasing frequency to saturate the local link. Infer bandwidth from send/receive buffer state. Slower and affects link quality during the test.
+  </Card>
+</CardGroup>
+
+Latency and bandwidth are strongly linked. Limited bandwidth increases latency because packets queue locally under congestion. Low latency implies available bandwidth.
+
+<Tip>
+  For gameplay traffic QoS, only measure **latency**. Bandwidth tests are generally not needed.
+</Tip>
+
+## QoS testing tools
+
+Xbox One Dev Kits can simulate limited bandwidth, packet loss, and latency. Use this for testing custom QoS implementations and end-to-end coverage. See [Xbox One network stress](/gdk/networking/tools/netstress).
+
+## See also
+
+- [Windows Sockets 2 (Winsock)](/windows/desktop/WinSock/windows-sockets-start-page-2)
+- [PlayFab Party](/gdk/networking/game-mesh/playfab-party)
+- [Using QoS beacons to measure player latency to Azure](/gaming/playfab/features/multiplayer/servers/using-qos-beacons-to-measure-player-latency-to-azure)

@@ -1,0 +1,92 @@
+---
+title: "Configuring memory for your title and dev kit"
+sidebarTitle: "Configuring memory"
+description: "Xbox One X and Series X|S memory modes, ExtraTitleMemory, ProfilingMode, and XMEM_TOOL flags for extended/debug memory."
+icon: "sliders"
+tag: "NDA"
+---
+
+By default, a dev kit is configured to give your title the exact memory footprint of the **retail consumer** environment. On dev kits, you can trade some of that isolation for extra debugging memory (the **tools partition**) or divert system OS resources to your process (**profiling mode**).
+
+## Console modes
+
+Both Xbox One X and Xbox Series X|S devkits ship with two modes:
+
+<CardGroup cols={2}>
+  <Card title="Standard mode" icon="box">
+    Retail-equivalent memory layout. What the shipped title sees on a consumer console.
+  </Card>
+
+  <Card title="Advanced mode" icon="box-open">
+    Extra title / tools memory unlocked. For memory profiling, dev builds, and debug tooling. Never ship with Advanced mode assumptions.
+  </Card>
+</CardGroup>
+
+### Memory configuration table
+
+| Console | Mode | Title partition | Tools partition |
+| --- | --- | --- | --- |
+| Xbox One X | Standard | ~9 GB | 0 |
+| Xbox One X | Advanced | ~9 GB | ~3 GB |
+| Xbox Series S | Standard | ~8 GB | 0 |
+| Xbox Series S | Advanced | ~8 GB | ~2 GB |
+| Xbox Series X | Standard | ~13.5 GB | 0 |
+| Xbox Series X | Advanced | ~13.5 GB | ~2.5 GB |
+
+<Note>
+  Exact partition sizes vary by GDK version. Query `XMemGetWorkingSetStatistics` at runtime for the ground truth on the currently connected kit.
+</Note>
+
+## `ExtraTitleMemory`
+
+Setting `ExtraTitleMemory` diverts additional RAM from the system partition into the title partition. Use this to reproduce, on a dev kit, more memory than a retail console offers — for stress testing, capture buffers, or debug data.
+
+```text
+xbconfig ExtraTitleMemory=<value_in_MB>
+```
+
+Available amounts depend on the console mode.
+
+## `ProfilingMode`
+
+Profiling mode gives your title access to additional CPU/GPU headroom by parking or throttling background OS features (Hub Apps, Game DVR, Microsoft Edge). It is **required** for full-capacity PIX for Xbox captures.
+
+Toggle from any of:
+
+- Xbox Manager
+- `xbconfig.exe`
+- `wdconfig.exe`
+- Developer Home on the kit
+
+<Warning>
+  Never validate release performance targets in Profiling Mode. Consumers do not run in that mode.
+</Warning>
+
+## `XMEM_TOOL` and `XMEM_HEAP_TOOL`
+
+The tools partition is accessed with the following flags:
+
+| Flag | Where used | Purpose |
+| --- | --- | --- |
+| `XMEM_TOOL` | `XMemVirtualAlloc` | Allocate virtual memory from the tools partition. |
+| `XMEM_HEAP_TOOL` | `XMemCreateWin32Heap` | Create a Win32 heap whose backing storage comes from the tools partition. |
+
+Tools memory can also be allocated via `XMemAllocatePhysicalPages` with an appropriate flag.
+
+<Warning>
+  Any code path that depends on `XMEM_TOOL` / `XMEM_HEAP_TOOL` must be compiled out of retail builds. Retail consoles have **no tools partition**.
+</Warning>
+
+## Recommended dev workflow
+
+1. Develop everyday in **Standard mode** to match retail budgets.
+2. Switch to **Advanced mode** only when you need Address Sanitizer, heap tracing, PIX GPU counters, or Live\+\+ hot-reload.
+3. Use `ExtraTitleMemory` sparingly — easy to grow reliance on memory that will not exist at ship.
+4. Turn on Profiling Mode only for the duration of the capture.
+
+## See also
+
+- [Overview](/gdk/memory/overview)
+- [Diagnostics and memory tracking](/gdk/memory/diagnostics)
+- [Kernel memory usage](/gdk/memory/kernel)
+- [Virtual Memory Allocator](/gdk/memory/virtual-allocator)

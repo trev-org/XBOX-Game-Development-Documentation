@@ -1,0 +1,64 @@
+---
+title: "Introduction to GDK networking"
+sidebarTitle: "Overview"
+description: "The GDK network stack, available APIs from PlayFab Party to Winsock, and the two must-know concepts: network initialization and suspend/resume."
+icon: "wifi"
+---
+
+The networking stack and available APIs for Microsoft Game Development Kit (GDK) titles are similar to Win32 network APIs, which simplifies porting from existing Win32 titles and enables more unified network implementations.
+
+## Available APIs
+
+| Feature | API |
+| --- | --- |
+| All-in-one solution (network game data and in-game chat) | [PlayFab Party](/gdk/networking/game-mesh/playfab-party) |
+| Secure client/server network game data transport | [MsQuic](/gdk/networking/game-mesh/msquic) |
+| REST | [XSAPI](/services/xbox-live) |
+| HTTP | [xCurl](/gdk/networking/web-requests/xcurl) or [WinHTTP](/gdk/networking/web-requests/winhttp) |
+| WebSocket | [libHttpClient](/gdk/networking/web-requests/overview) (recommended) or [WinHTTP](/gdk/networking/web-requests/winhttp) |
+| Sockets | [Winsock](/gdk/networking/game-mesh/winsock) |
+| Socket security | OpenSSL DTLS or Bcrypt DTLS |
+| Network connectivity | [XNetworkingGetConnectivityHint](/gdk/networking/initialization) |
+| Port behavior | Identical to Win32 Windows PC (see [Winsock](/gdk/networking/game-mesh/winsock)) |
+| In-game chat | [PlayFab Party](/gdk/networking/game-mesh/playfab-party) or [Game Chat 2](/services/multiplayer/game-chat-2) |
+
+For guidance on choosing an HTTP or WebSocket API, see [Web requests](/gdk/networking/web-requests/overview).
+
+## New and important concepts
+
+Two concepts apply to almost every one of the GDK networking APIs.
+
+### Network initialization
+
+All networking APIs only function properly **once the network is initialized**. Your title should wait for network initialization before calling any networking API or middleware that relies on one. For details, see [Network initialization and connectivity](/gdk/networking/initialization).
+
+<Warning>
+  Calling `WinSock`, `WinHTTP`, `BCrypt`, `WinCrypt`, `schannel`, or `IPHLPAPI` before the network is initialized can produce unexpected failures, uninitialized return values, arbitrary packet loss, and even memory corruption.
+</Warning>
+
+### Suspend and resume
+
+Almost all network handles and objects created from networking APIs must be **cleaned up during your title's suspend notification** and re-created on resume, after re-verifying network initialization. Each API overview describes what to do; both your title code and any middleware consuming these APIs must follow that guidance.
+
+Suspend and resume handling by API:
+
+- [PlayFab Party](/gdk/networking/game-mesh/playfab-party#suspend-and-resume)
+- [MsQuic](/gdk/networking/game-mesh/msquic#suspend-and-resume)
+- [xCurl](/gdk/networking/web-requests/xcurl#suspend-and-resume)
+- [WinHTTP](/gdk/networking/web-requests/winhttp)
+- [WinSock](/gdk/networking/game-mesh/winsock#suspend-and-resume)
+- [Preferred Local UDP Multiplayer Port](/gdk/networking/game-mesh/preferred-udp-port#suspend-and-resume)
+- [Network initialization](/gdk/networking/initialization#suspend-and-resume)
+- Game Chat 2
+
+## Xbox One Software Development Kit migration
+
+Titles migrating from the previous Xbox One Software Development Kit should see the [XDK migration guide](/gdk/networking/xdk-migration/overview), including guidance for interoperating between XDK and GDK title versions.
+
+## See also
+
+- [Network initialization and connectivity](/gdk/networking/initialization)
+- [Quality of service (QoS) packet tagging](/gdk/networking/qos-tagging)
+- [Xbox reserved ports and firewall exceptions](/gdk/networking/reserved-ports)
+- [Web requests: HTTP and WebSocket](/gdk/networking/web-requests/overview)
+- [Game Mesh](/gdk/networking/game-mesh/overview)

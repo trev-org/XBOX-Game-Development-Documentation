@@ -1,0 +1,62 @@
+---
+title: "Backcompat only titles"
+sidebarTitle: "Backcompat only"
+description: "Guidance for GDK titles that will only be playable on XBOX Series X|S through backward compatibility with the XBOX One family."
+icon: "clock-rotate-left"
+tag: "NDA"
+---
+
+If you have an existing or new Microsoft Game Development Kit (GDK) title and you don't plan to ship a separate XBOX Series X|S native version, the title is still playable on XBOX Series X|S via **backward compatibility**. In backward compatibility mode, the title runs on the XBOX Series consoles at parity with the XBOX One hardware and cannot take advantage of any of the advanced features of the newer console.
+
+<Note>
+  When a GDK title has set `TargetDeviceFamily="XboxOne"` in its [MicrosoftGame.config](/gdk/game-configuration/microsoftgame-config) and is run on an XBOX Series consoles device, it ignores the `SMTEnabled` flag and always runs with SMT disabled.
+</Note>
+
+You can alternatively ship a separate native XBOX Series X|S version of your title that takes full advantage of the advanced features of the XBOX Series consoles. See [Dual SKU cross-generation games](/gdk/cross-gen/dual-sku).
+
+## Development steps
+
+<Steps>
+  <Step title="Use a supported GDK">
+    Make sure you are using the **June 2020 GDK or newer**.
+  </Step>
+  <Step title="Target the XBOX One device family">
+    In your MicrosoftGame.config file, set `TargetDeviceFamily="XboxOne"`. See the [MicrosoftGame.config overview](/gdk/game-configuration/microsoftgame-config).
+  </Step>
+  <Step title="Set optional compatibility settings">
+    Configure `XboxCompatibility` and any other optional settings in MicrosoftGame.config as needed.
+  </Step>
+</Steps>
+
+## Validation
+
+It is important to test your XBOX One title and ensure it will perform well for players enjoying it on XBOX Series X|S consoles.
+
+### Deploy to an XBOX Series consoles dev kit
+
+Use any deployment method to deploy your title to an XBOX Series consoles dev kit for iteration, testing, and debugging.
+
+### Memory configurations and testing
+
+There are multiple **Console Modes** and memory profiles you can set for testing your title on an XBOX Series X|S dev kit. Console Modes let you emulate various console family devices with corresponding memory footprints:
+
+- **Scarlett Iteration Mode** — default; used for daily development work.
+- **Anaconda mode** — emulate the title running on XBOX Series X.
+- **Lockhart mode** — emulate the title running on XBOX Series S.
+
+See [system memory tooling](/gdk/memory) for details on configuring memory for your title and dev kit.
+
+## Packaging
+
+Follow the same instructions as usual for packaging your XBOX One title — no additional steps are required for backcompat-only distribution.
+
+## For ERA titles
+
+If you are working from an existing XBOX One XDK (ERA) title, see the GDK porting guide for XBOX One and the upgrade guidance for running XDK titles on XBOX Series devices.
+
+## See also
+
+- [Cross-generation gaming overview](/gdk/cross-gen/overview)
+- [Dual SKU cross-generation games](/gdk/cross-gen/dual-sku)
+- [Smart Delivery](/gdk/cross-gen/smart-delivery)
+- [System memory tooling](/gdk/memory)

@@ -1,0 +1,40 @@
+---
+title: "WASAPI"
+sidebarTitle: "WASAPI"
+description: "Use the Windows Audio Session API to manage audio flow between titles and audio endpoints."
+icon: "wave-square"
+tag: "NDA"
+---
+
+Client applications use the **Windows Audio Session API (WASAPI)** to manage the flow of audio data between the application and an audio endpoint device.
+
+<CardGroup cols={2}>
+   
+</CardGroup>
+
+## Device invalidations
+
+In the GDK, games are expected to handle audio client device invalidations. Invalidations can occur **at any time**, including while the device is being activated or initialized.
+
+An easy repro: switch to the audio settings page while your title runs and change the channel count on the HDMI device.
+
+### Errors WASAPI can return
+
+- `AUDCLNT_E_DEVICE_INVALIDATED`
+- `AUDCLNT_E_RESOURCES_INVALIDATED`
+- `AUDCLNT_E_UNSUPPORTED_FORMAT`
+- `AUDCLNT_E_ENDPOINT_CREATE_FAILED`
+
+When you receive one of these, re-create your audio streams by first obtaining a new `IMMDevice` through `IMMDeviceEnumerator`.
+
+<Warning>
+  An audio device invalidation can occur **any time** after the `IMMDevice` is obtained — including from `IMMDevice::Activate`. Handle these paths on every entry.
+</Warning>
+
+See [Recovering from an invalid device error](https://learn.microsoft.com/windows/win32/coreaudio/recovering-from-an-invalid-device-error) and the [XDK → GDK audio API comparison](/gdk/audio/xdk-gdk-comparison).
+
+## Related
+
+- [Audio overview](/gdk/audio/overview)
+- [Spatial sound](/gdk/audio/spatial-audio)
+- [Comparison of XDK and GDK audio API](/gdk/audio/xdk-gdk-comparison)

@@ -1,0 +1,220 @@
+---
+title: "Debugging custom HTTP stacks"
+sidebarTitle: "Debug custom HTTP"
+description: "Debug custom HTTP stack integrations on Xbox consoles — proxy settings, Fiddler workflows, and certificate handling."
+icon: "bug"
+tag: "NDA"
+---
+
+Use this article when your title uses a custom HTTP stack directly instead of xCurl and you need to debug traffic through a proxy such as Fiddler.
+
+## When to use this guidance
+
+Most useful when one or more apply:
+
+- Your title needs to inspect or apply proxy settings directly.
+- Your debugging workflow depends on Fiddler or another development proxy.
+- Your HTTP stack doesn't use Schannel as a security provider and must load proxy certificates explicitly.
+
+For general security guidance, see [Best Practices for Secure Web Requests and WebSockets for GDK Titles (NDA)](/gdk-dev/game-principles/security/communication-security/communication-security-impl/gc-secure-webrequest-impl).
+
+## Proxy settings on Xbox and PC
+
+On Xbox, prefer `WinHttpGetProxySettingsEx` with `WinHttpProxySettingsTypeXBox` when the path is available in your build. Starting with the **April 2026 GDK**, this is the forward-looking API for reading proxy settings on Xbox.
+
+On earlier GDKs, the Xbox-specific proxy path isn't available. Manually set the proxy address and port in your HTTP stack. The certificate-loading path below still applies.
+
+On PC, `WinHttpGetProxySettingsEx` is asynchronous — wait for the operation to complete before calling `WinHttpGetProxySettingsResultEx` and copying the returned proxy values into your HTTP stack.
+
+### Example: resolve Xbox proxy and hand it to libcurl
+
+Open the session with `WINHTTP_FLAG_ASYNC` and a status callback so the code handles both synchronous completion and an `ERROR_IO_PENDING` return.
+
+```cpp
+// WinHttpCreateProxyResolver is not declared in WinHttp.h when using the GDK.
+WINHTTPAPI DWORD WINAPI WinHttpCreateProxyResolver(HINTERNET hSession, HINTERNET* phResolver);
+
+std::string ResolveXboxProxy()
+{
+    HINTERNET session = WinHttpOpen(
+        L"CustomHttp/1.0",
+        WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY,
+        WINHTTP_NO_PROXY_NAME,
+        WINHTTP_NO_PROXY_BYPASS,
+        WINHTTP_FLAG_ASYNC);
+    if (!session)
+        return {};
+
+    struct ProxyContext
+    {
+        HANDLE event;
+        DWORD  error;
+    };
+
+    ProxyContext ctx{ CreateEventW(nullptr, TRUE, FALSE, nullptr), ERROR_SUCCESS };
+
+    WinHttpSetStatusCallback(session,
+        [](HINTERNET, DWORD_PTR context, DWORD status, LPVOID info, DWORD)
+        {
+            auto* c = reinterpret_cast<ProxyContext*>(context);
+            if (status == WINHTTP_CALLBACK_STATUS_GETPROXYFORURL_COMPLETE)
+            {
+                c->error = ERROR_SUCCESS;
+                SetEvent(c->event);
+            }
+            else if (status == WINHTTP_CALLBACK_STATUS_REQUEST_ERROR)
+            {
+                c->error = reinterpret_cast<WINHTTP_ASYNC_RESULT*>(info)->dwError;
+                SetEvent(c->event);
+            }
+        },
+        WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS,
+        0);
+
+    HINTERNET resolver = nullptr;
+    if (WinHttpCreateProxyResolver(session, &resolver) != ERROR_SUCCESS)
+    {
+        CloseHandle(ctx.event);
+        WinHttpCloseHandle(session);
+        return {};
+    }
+
+    DWORD result = WinHttpGetProxySettingsEx(
+        resolver,
+        WinHttpProxySettingsTypeXBox,
+        nullptr,
+        reinterpret_cast<DWORD_PTR>(&ctx));
+
+    if (result == ERROR_IO_PENDING)
+    {
+        // Wait for the async callback to fire (5-second timeout).
+        WaitForSingleObject(ctx.event, 5000);
+        result = ctx.error;
+    }
+
+    std::string proxyAddress;
+    if (result == ERROR_SUCCESS)
+    {
+        WINHTTP_PROXY_SETTINGS_EX proxySettings{};
+        if (WinHttpGetProxySettingsResultEx(resolver, &proxySettings) == ERROR_SUCCESS)
+        {
+            PCWSTR proxy =
+                proxySettings.pcwszSecureProxy != nullptr
+                    ? proxySettings.pcwszSecureProxy
+                    : proxySettings.pcwszProxy;
+
+            if (proxy != nullptr)
+            {
+                // Example function for conversion.
+                proxyAddress = Utf16ToUtf8(std::wstring(proxy));
+            }
+
+            WinHttpFreeProxySettingsEx(WinHttpProxySettingsTypeXBox, &proxySettings);
+        }
+    }
+
+    CloseHandle(ctx.event);
+    WinHttpCloseHandle(resolver);
+    WinHttpCloseHandle(session);
+    return proxyAddress;
+}
+
+std::string proxyAddress = ResolveXboxProxy();
+if (!proxyAddress.empty())
+{
+    curl_easy_setopt(curlHandle, CURLOPT_PROXY, proxyAddress.c_str());
+}
+```
+
+## TLS provider behavior
+
+<Tabs>
+  <Tab title="Schannel-based stacks">
+    The console automatically applies the proxy certificate you configure. Also applies to libcurl builds using Schannel as the TLS provider.
+  </Tab>
+  <Tab title="Non-Schannel stacks (OpenSSL, etc.)">
+    Your title is responsible for explicitly loading the certificate required by the active debugging tool. Keep this certificate-loading path in your **release** code. On console, keep the related proxy-debugging path available in `RETAIL` builds so you can still diagnose proxied traffic.
+
+    For trust, proxy, and secure-default guidance, see [Best Practices for Secure Web Requests and WebSockets for GDK Titles (NDA)](/gdk-dev/game-principles/security/communication-security/communication-security-impl/gc-secure-webrequest-impl).
+  </Tab>
+</Tabs>
+
+## Finding the proxy root certificate
+
+For non-Schannel stacks, explicitly load the certificate that corresponds to the debugging tool. The certificate location and subject depend on the tool. For example, the [Xbox Multiplayer Analysis Tool (XMAT)](https://aka.ms/XMAT) uses `Xbox Multiplayer Analysis Tool Root Cert Authority` in `CurrentUser\Root`.
+
+The example below looks up that certificate and copies the DER-encoded bytes into a title-owned buffer.
+
+```cpp
+#include <wincrypt.h>
+#include <vector>
+
+HRESULT ExtractXmatRootCertificateDer(_Out_ std::vector<uint8_t>& encodedCertificate)
+{
+    encodedCertificate.clear();
+
+    constexpr DWORD certificateStoreLocation = CERT_SYSTEM_STORE_CURRENT_USER;
+    constexpr wchar_t certificateStoreName[] = L"Root";
+    constexpr wchar_t certificateSubjectName[] =
+        L"Xbox Multiplayer Analysis Tool Root Cert Authority";
+
+    HCERTSTORE certificateStore = CertOpenStore(
+        CERT_STORE_PROV_SYSTEM_W,
+        0,
+        0,
+        certificateStoreLocation |
+            CERT_STORE_OPEN_EXISTING_FLAG |
+            CERT_STORE_READONLY_FLAG,
+        certificateStoreName);
+    if (certificateStore == nullptr)
+    {
+        return HRESULT_FROM_WIN32(GetLastError());
+    }
+
+    PCCERT_CONTEXT certificate = CertFindCertificateInStore(
+        certificateStore,
+        X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
+        0,
+        CERT_FIND_SUBJECT_STR_W,
+        certificateSubjectName,
+        nullptr);
+    if (certificate == nullptr)
+    {
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        CertCloseStore(certificateStore, 0);
+        return hr;
+    }
+
+    encodedCertificate.assign(
+        certificate->pbCertEncoded,
+        certificate->pbCertEncoded + certificate->cbCertEncoded);
+
+    CertFreeCertificateContext(certificate);
+    CertCloseStore(certificateStore, 0);
+    return S_OK;
+}
+```
+
+Pass `encodedCertificate` into whatever certificate-loading path your TLS provider uses.
+
+## Suggested debugging workflow
+
+<Steps>
+  <Step title="Configure console proxy in Xbox Device Portal">
+    Follow [Fiddler on Xbox devkits](/gdk/networking/tools/fiddler-setup).
+  </Step>
+  <Step title="Read proxy settings via WinHTTP if your title needs them">
+    On Xbox with the April 2026 GDK or later, use `WinHttpGetProxySettingsEx` with `WinHttpProxySettingsTypeXBox`. On PC, wait for the async result before calling `WinHttpGetProxySettingsResultEx`.
+  </Step>
+  <Step title="Fall back for earlier GDKs">
+    If you target an earlier GDK on Xbox, or use a stack that doesn't consume the Xbox-specific path, set the proxy address and port manually.
+  </Step>
+  <Step title="Handle certificates per TLS provider">
+    Schannel: rely on the console-applied certificate. OpenSSL / non-Schannel: retrieve the debugging tool's certificate from the certificate store and load it explicitly.
+  </Step>
+</Steps>
+
+## Related pages
+
+- [Fiddler on Xbox devkits](/gdk/networking/tools/fiddler-setup)
+- [Best Practices for Secure Web Requests and WebSockets for GDK Titles (NDA)](/gdk-dev/game-principles/security/communication-security/communication-security-impl/gc-secure-webrequest-impl)

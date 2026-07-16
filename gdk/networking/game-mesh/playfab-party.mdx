@@ -1,0 +1,128 @@
+---
+title: "Azure PlayFab Party"
+sidebarTitle: "PlayFab Party"
+description: "Use Azure PlayFab Party with the GDK for low-latency chat, voice, data, and cross-network multiplayer."
+icon: "user-group"
+---
+
+[PlayFab Party](/gaming/playfab/features/multiplayer/networking/) simplifies adding low-latency chat and data communication to your game in a flexible, inclusive, and secure way. It's ideal for multiplayer implementations that don't need a cloud-hosted dedicated server (peer-to-peer games), and it powers voice and text for social experiences like in-game squads or post-game lobbies even when a cloud server hosts gameplay.
+
+Party is the GDK successor to the Xbox One ERA Secure Sockets API.
+
+Party uses Azure Cognitive Services to transcribe voice chat and synthesize text to speech, primarily as an accessibility aid. Voice chat is billed per minute, and up to 10% of those minutes can use transcription and synthesis for free. Tie activation to an ease-of-access user setting.
+
+<Note>
+  Party also translates chat in real time. Combined with transcription and synthesis, it makes anonymous matchmaking and international competitive play more engaging.
+</Note>
+
+A key goal of Party is interoperable multiplayer infrastructure and cross-network play. Verify that your multiplayer experiences comply with platform policies for multiplayer and cross-network user activity.
+
+## Features
+
+| Feature | Description |
+| --- | --- |
+| **Encryption and authentication** | Authenticates users via PlayFab identity; encrypts data with a DTLS-like protocol. |
+| **Device-to-device datagram networking** | Relays hosted globally on Azure carry game data between devices. Supports configurable transport features like retries on packet loss. |
+| **Voice and text chat** | Bind audio devices for real-time voice chat; send text chat messages between users. |
+| **Speech-to-text and voice synthesis** | Transcribe voice chat and synthesize text messages — designed as an accessibility aid. |
+| **Real-time translation** | Understand and synthesize real-time translations of voice and text chat. |
+
+## GDK considerations
+
+### Xbox services requirements
+
+User communication for Xbox services titles must meet several safety requirements. Using PlayFab Party with the PlayFab Party Xbox services Plug-in ensures your title meets all applicable Xbox services communication and security requirements.
+
+<Note>
+  An _Xbox Requirement_ (XR) is a requirement a game must meet before it can be published on Xbox platforms.
+</Note>
+
+| XR | Coverage |
+| --- | --- |
+| **XR-015** | Managing player communication |
+| **XR-045** | Xbox services and account privileges (plug-in enforces the `XPRIVILEGE_COMMUNICATIONS` portion only) |
+| **XR-072** | Supporting voice |
+| **XR-007** | Cross-network play, data usage, and companion app interactions (plug-in enforces the cross-network gameplay portion only) |
+| **XR-064** | Joinable game sessions and online play |
+| **XR-067** | Maintaining multiplayer session state |
+| **XR-124** | Game invitations |
+
+## Network initialization
+
+PlayFab Party does **not** automatically handle [network initialization](/gdk/networking/initialization) for GDK titles. Wait for the network to become initialized before calling into Party. Party APIs fail until the network is initialized.
+
+## Suspend and resume
+
+Register for suspend and resume events with `RegisterAppStateChangeNotification`.
+
+<Steps>
+  <Step title="On suspend">
+    Clean up Party with `PartyManager::Cleanup()`.
+  </Step>
+  <Step title="On resume">
+    Wait for network initialization, then call `PartyManager::Initialize()`.
+  </Step>
+</Steps>
+
+<Warning>
+  Party APIs fail if you try to use them across a suspend/resume cycle without cleanup and reinitialization.
+</Warning>
+
+`PartyManager::Cleanup()` can take a couple hundred milliseconds. Clean up Party in parallel with your other suspend operations to avoid suspend timeouts. If you call `Cleanup()` asynchronously, block the suspend notification until Party's cleanup returns.
+
+## Pricing
+
+PlayFab Party is free for the GDK when using Xbox services identities. See [Xbox services Free Program FAQ](/gaming/playfab/multiplayer/networking/xbl-discount) for pricing and billing.
+
+## Configuring your title in the PlayFab portal
+
+<Steps>
+  <Step title="Create a PlayFab account">
+    Go to [developer.playfab.com](https://developer.playfab.com/) and create an account.
+  </Step>
+  <Step title="Create a studio and title ID">
+    Create a PlayFab studio and title ID using your new account.
+  </Step>
+  <Step title="Enable Party">
+    Open your title, go to the **Multiplayer** section, select the **Party (Preview)** tab, click **Enable**, and enter the access code **Xbox Live**. Party is enabled after a few moments.
+  </Step>
+  <Step title="Retrieve your credentials">
+    On the **API Features** tab, copy your PlayFab title ID and entity ICD.
+  </Step>
+  <Step title="Wire them into your title">
+    Add the title ID and entity ICD to your client PlayFab Party API initialization function.
+  </Step>
+</Steps>
+
+For more, see [Quickstart: Game Manager](/gaming/playfab/gamemanager/quickstart).
+
+## Add the PlayFab Party library in Visual Studio
+
+<Steps>
+  <Step title="Open project properties">
+    Right-click your project in Solution Explorer and select **Properties**.
+  </Step>
+  <Step title="Go to Xbox One configuration">
+    In **Configuration Properties**, open the **Xbox One** section.
+  </Step>
+  <Step title="Add extension libraries">
+    In **Gaming Extension Libraries**, add references to PlayFab Party and the Xbox Live Helper.
+  </Step>
+</Steps>
+
+<Note>
+  The libraries live under:
+
+  - `Program Files (x86)\Microsoft GDK\[Version]\GRDK\ExtensionLibraries\PlayFab.Party.Cpp\Redist\x64` (October 2024 or later)
+  - `Program Files (x86)\Microsoft GDK\[Version]\GRDK\ExtensionLibraries\PlayFab.Party.Cpp\Redist\CommonConfiguration\neutral` (June 2024 or earlier)
+</Note>
+
+## PlayFab Party and sandboxes
+
+Sandbox configuration isn't required. All network sessions are allocated in a retail environment regardless of the deployed sandbox. To separate users for testing, create a separate PlayFab title ID for test vs. retail — the PlayFab title ID is independent of your Xbox services title ID, and one Xbox services title ID can use multiple PlayFab title IDs.
+
+## See also
+
+- [PlayFab Party Overview](/gaming/playfab/features/multiplayer/networking/)
+- [PlayFab Party OSS for Unreal](/gdk/networking/game-mesh/party-unreal)
+- [PlayFab Party SDK for Unity](/gdk/networking/game-mesh/party-unity)

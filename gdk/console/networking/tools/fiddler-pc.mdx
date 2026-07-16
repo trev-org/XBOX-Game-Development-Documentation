@@ -1,0 +1,49 @@
+---
+title: "Fiddler on PC"
+sidebarTitle: "Fiddler on PC"
+description: "Use Fiddler Classic to inspect HTTP/HTTPS traffic from GDK PC titles."
+icon: "filter"
+---
+
+[Fiddler Classic](https://www.telerik.com/fiddler/fiddler-classic) intercepts HTTP and HTTPS traffic from your PC. It is the recommended tool for inspecting web traffic issued by GDK PC titles.
+
+## Install and configure
+
+<Steps>
+  <Step title="Install Fiddler Classic">
+    Download and install Fiddler Classic from the Telerik site.
+  </Step>
+  <Step title="Enable HTTPS decryption">
+    In **Tools → Options → HTTPS**, enable **Capture HTTPS CONNECTs** and **Decrypt HTTPS traffic**. Trust the Fiddler root certificate when prompted.
+  </Step>
+  <Step title="Exempt AppContainer processes">
+    Windows Store / MSIX packaged titles run in AppContainers and are isolated from the loopback proxy by default. Grant loopback access to each package using **WinConfig** (Win8 Loopback Exemptions) in Fiddler, or run:
+
+    ```cmd
+    CheckNetIsolation.exe LoopbackExempt -a -n=<PackageFamilyName>
+    ```
+  </Step>
+  <Step title="Route WinHTTP through Fiddler">
+    Some processes (services, background tasks) use WinHTTP rather than WinINET and do not pick up the Fiddler proxy automatically. Point WinHTTP at Fiddler:
+
+    ```cmd
+    netsh winhttp set proxy 127.0.0.1:8888
+    ```
+
+    Reset when finished:
+
+    ```cmd
+    netsh winhttp reset proxy
+    ```
+  </Step>
+</Steps>
+
+<Note>
+  For inspecting traffic from Xbox consoles rather than PC, use [Fiddler on Xbox](/gdk/console/networking/tools/fiddler-setup) instead.
+</Note>
+
+## Troubleshooting
+
+- **No traffic appears**: confirm the title is not using a custom HTTP stack that ignores system proxy settings. See [Debugging custom HTTP stacks](/gdk/console/networking/web-requests/debugging-custom-http-stacks).
+- **TLS handshake failures**: ensure the Fiddler root certificate is installed in the machine's Trusted Root store.
+- **Only some requests captured**: check whether WinHTTP-based processes need the `netsh winhttp set proxy` step above.

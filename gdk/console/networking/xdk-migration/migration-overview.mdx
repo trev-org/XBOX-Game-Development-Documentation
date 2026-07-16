@@ -1,0 +1,41 @@
+---
+title: "Networking migration overview"
+sidebarTitle: "Migration overview"
+description: "API-by-API comparison between XDK and GDK networking."
+icon: "list-check"
+tag: "NDA"
+---
+
+<Note tag="NDA">
+  This page contains confidential Xbox information and is available to partners under NDA.
+</Note>
+
+The table below summarizes the recommended GDK replacements for common XDK networking APIs.
+
+| XDK API / Concept | GDK replacement | Notes |
+| --- | --- | --- |
+| `Windows.Xbox.Networking.SecureDeviceAssociation` | [PlayFab Party](/gdk/console/networking/game-mesh/playfab-party) or [MsQuic](/gdk/console/networking/game-mesh/msquic) | Preferred: PlayFab Party for voice \| chat and gameplay traffic. |
+| `Windows.Xbox.Networking.SecureDeviceSocket` | Winsock (`socket`, `bind`, `sendto`, `recvfrom`) on an approved port | See [Winsock](/gdk/console/networking/game-mesh/winsock). |
+| Xbox Live Multiplayer Session Directory (MPSD) integration for connectivity | PlayFab Party session or GameChat 2 \+ your own matchmaking | MPSD remains available but is no longer the primary path. |
+| `IXMLHTTPRequest2` / WinRT `HttpClient` | [xCurl](/gdk/console/networking/web-requests/xcurl) or [WinHTTP](/gdk/console/networking/web-requests/winhttp) | xCurl is preferred for cross-platform code. |
+| `Windows.Web.Http.HttpClient` in a WinRT project | Standard Win32 HTTP stack (xCurl or WinHTTP) | GDK titles are Win32; WinRT HTTP APIs are not available. |
+| `Windows.Networking.Sockets.StreamSocket` | Winsock TCP |  |
+| `Windows.Networking.Sockets.DatagramSocket` | Winsock UDP on an approved port | See [Reserved ports](/gdk/console/networking/reserved-ports). |
+| QoS via `Windows.Xbox.Networking` measurement APIs | GDK QoS APIs | See [QoS](/gdk/console/networking/game-mesh/qos). |
+| Automatic Multiplayer session traffic tagging | Manual [QoS traffic tagging](/gdk/console/networking/qos-tagging) via `SO_QOSTRAFFICTYPE` | Titles must tag their own traffic. |
+
+## Ports and firewall
+
+GDK titles must explicitly declare UDP ports they use. Consult:
+
+- [Reserved ports](/gdk/console/networking/reserved-ports)
+- [Preferred UDP port](/gdk/console/networking/game-mesh/preferred-udp-port)
+- [Xbox console port behavior](/gdk/console/networking/game-mesh/xbox-console-port-behavior)
+- [PC port behavior](/gdk/console/networking/game-mesh/pc-port-behavior)
+
+## Recommended porting order
+
+1. Replace XDK web-request calls first — they are the most mechanical change and unblock Xbox Live / PlayFab integration.
+2. Replace `SecureDeviceAssociation` with PlayFab Party (or MsQuic if you need a custom transport).
+3. Move any remaining custom UDP/TCP code to Winsock and confirm port declarations.
+4. Re-validate QoS tagging and network stress profiles — see [NetStress](/gdk/console/networking/tools/netstress).

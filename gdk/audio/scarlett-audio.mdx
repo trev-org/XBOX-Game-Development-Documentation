@@ -1,0 +1,51 @@
+---
+title: "Xbox Series X|S audio hardware"
+sidebarTitle: "Series X|S audio hardware"
+description: "Overview of the Xbox Series X|S audio co-processor: Opus hardware decoding, HSRC, and acoustics."
+icon: "microchip"
+tag: "NDA"
+---
+
+Xbox Series X|S audio design principles cover four hardware-accelerated components. This page introduces the audio decoder, high-quality sample rate converter (HSRC), and future acoustics work.
+
+## Decoding audio
+
+Audio decoding on Series X|S improves pitch, quality, and sampling for your title's audio. For general Xbox audio guidance, see the [Audio overview](/gdk/audio/overview).
+
+## Opus codec
+
+The Xbox One family used XMA for hardware-offload decoding. Xbox Series X|S uses **Opus** hardware-offload decoding via the Xbox Audio Processing Unit (XAPU) API. See [XAPU overview](/gdk/audio/xapu).
+
+Opus is a royalty-free audio compression codec designed to efficiently code speech and general audio into a single low-latency format. Internal evaluations show Opus surpasses XMA in quality and file-size compression ratio. Opus combines Skype's SILK codec and [Xilph.Org's CELT codec](https://wiki.xiph.org/CELT_LCA).
+
+<Note>
+  Opus is computationally expensive on CPU when running many simultaneous streams. Series X|S offloads this to a dedicated co-processor — you get premium codec quality without spending CPU cycles.
+</Note>
+
+Compared to Xbox One, Series X|S eliminates one memory hop between the audio decoder output and the HSRC — delivering audio to users with minimal latency.
+
+### Opus vs XMA noise reduction
+
+At 64-bit, XMA quality and noise degrade noticeably. Opus at 64-bit matches XMA at 128-bit.
+
+<Tip>
+  To match Opus 64-bit noise reduction quality with XMA, set XMA to 128-bit.
+</Tip>
+
+## High-Quality Sample Rate Convertor (HSRC)
+
+The HSRC works with Opus hardware decoding to change pitch. Output quality is improved compared to SHAPE.
+
+<Note>
+  SHAPE is still supported on Series X|S for backward-compatibility titles.
+</Note>
+
+## Acoustics
+
+Future releases will add features to further enhance sound encoding and decoding quality on Series X|S consoles.
+
+## Related
+
+- [Audio overview](/gdk/audio/overview)
+- [XAPU overview](/gdk/audio/xapu)
+- [Opus codec (opus-codec.org)](https://opus-codec.org/)

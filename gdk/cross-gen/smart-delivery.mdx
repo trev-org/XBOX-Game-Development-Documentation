@@ -1,0 +1,68 @@
+---
+title: "Smart Delivery"
+sidebarTitle: "Smart Delivery"
+description: "Package your title so players buy once and receive the best available version on either XBOX One family consoles or XBOX Series X|S."
+icon: "truck-fast"
+tag: "NDA"
+---
+
+Smart Delivery is a user-facing feature that lets players purchase a game once and receive the "best" version available on XBOX One family consoles and XBOX Series consoles. Smart Delivery requires no additional action or spend from the user.
+
+A Smart Delivery game is configured as a base game product that contains both an XBOX One base package and an XBOX Series X|S base package. The XBOX One package can be built on the GDK (Microsoft Game Development Kit) or XBOX One ERA (XBOX One Software Development Kit). Use the GDK if possible — it is newer and has more features than the XDK.
+
+<Note>
+  For access to Smart Delivery configuring and publishing documentation, contact your Microsoft representative.
+</Note>
+
+## Enable Smart Delivery for new games
+
+You can support a new game that has not shipped on XBOX One family consoles and XBOX Series consoles by using Smart Delivery. Building a Smart Delivery title is like building a single-generation title: create an XBOX One base package **and** an XBOX Series X|S base package.
+
+The GDK is required for XBOX Series X|S; we also recommend it for XBOX One.
+
+### Best practices
+
+- Use **Intelligent Delivery** to define which portions of your title's content can be selectively installed based on console generation, language, or custom tags such as game modes and maps. This reduces the size of downloads and installs, saves user time and storage, and gets players into the game faster.
+- Use device specifiers to target portions of your title to specific console generations.
+- Build cross-generation test discs to validate Smart Delivery scenarios before manufacturing.
+
+## Enable Smart Delivery for released XBOX One games
+
+You can support an existing, already-released XBOX One game by using Smart Delivery. Enabling Smart Delivery on an existing XBOX One game requires adding an XBOX Series X|S package onto the existing game product. Users then see the game as one purchasable title. After purchase, the XBOX console intuitively downloads and installs the appropriate content to the user's device.
+
+<Warning>
+  Smart Delivery **cannot** be used for a released XBOX One title under either of these conditions:
+
+  - An XBOX Series X|S version of the game has already been released.
+  - A cross-generation bundle has already been released that contains XBOX One and XBOX Series X|S versions of the game.
+</Warning>
+
+XBOX One games that are currently only playable on XBOX Series X|S via backward compatibility are eligible for Smart Delivery support. The GDK Game OS is required for XBOX Series X|S. We recommend enabling Smart Delivery for XBOX One titles built with ERA and then porting the ERA to the GDK.
+
+## Create discs for Smart Delivery games
+
+Smart Delivery supports publishing discs for your title for single- and [dual SKU](/gdk/cross-gen/dual-sku) cross-generation compatibility.
+
+### Best practices
+
+Use the following best practices to properly package an XBOX One and an XBOX Series X|S title that are both available.
+
+- **Include both packages on the disc.** This provides the best possible offline install-and-play experience on either console generation.
+- **Specify a subset** of each package to include on the disc to reduce network installs. Consider which parts of your game are most critical to getting users playing quickly — the rest can be downloaded later or in the background (see Intelligent Delivery).
+- **Don't create separate XBOX One and XBOX Series X|S discs for the same Amaray case.** Use the multi-disc solution to include additional downloadable content (DLC) discs while gating access to both games through one licensed disc. This constrains the user to a single license even when purchasing a physical game bundle.
+
+If your title only exists on XBOX One, include the XBOX One package on the disc. When staggering the game's release (publishing on XBOX One first, then publishing the XBOX Series X|S binary later), you can create discs that only include the XBOX One package for the initial release. When the XBOX Series X|S package is released later, users can download, install, and play the optimized game on XBOX Series X|S using the same disc.
+
+<Warning>
+  Smart Delivery game discs that contain only XBOX Series X|S content are **not** a supported scenario. If a disc contains only XBOX Series X|S content, it is treated as an XBOX Series X|S-exclusive title.
+</Warning>
+
+### Validation
+
+As part of end-to-end validation of your Smart Delivery title, validate the disc experience that users will encounter using cross-generation test discs.
+
+## See also
+
+- [Cross-generation gaming overview](/gdk/cross-gen/overview)
+- [Dual SKU cross-generation games](/gdk/cross-gen/dual-sku)
+- [Backcompat only titles](/gdk/cross-gen/backcompat-only)

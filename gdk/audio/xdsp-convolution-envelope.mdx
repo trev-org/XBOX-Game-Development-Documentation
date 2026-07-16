@@ -1,0 +1,38 @@
+---
+title: "XDSP convolution with envelope walkthrough"
+sidebarTitle: "XDSP convolution + envelope"
+description: "Single-stream convolution followed by envelope shaping on XDSP."
+icon: "wave-square"
+tag: "NDA"
+---
+
+Run a convolution against an impulse response and immediately apply a dynamic amplitude envelope in a single [XDSP](/gdk/audio/xdsp) command chain. Useful when the convolution wet signal needs shaping over time — e.g. ducked reverb tails, gated impulse effects, or ambience triggered by gameplay events.
+
+## Pipeline
+
+<Steps>
+  <Step title="Prepare envelope signal">
+    Build the envelope control signal for the duration of the output. This can be:
+
+    - A precomputed envelope buffer, or
+    - A parametric envelope description (attack/sustain/release) evaluated by the pipeline.
+  </Step>
+  <Step title="Submit convolution + envelope">
+    Queue the combined command with source, IR, envelope description, destinations, and frame count. This runs both stages inside XDSP — saving a CPU round trip vs. running convolution and enveloping separately.
+  </Step>
+</Steps>
+
+## Best practices
+
+- Use the combined command instead of two separate commands whenever the envelope is known before the convolution completes — it avoids intermediate memory traffic.
+- Cap output frame count at **1024**; larger frames perform better.
+- Reuse the same XDSP client across voices convolving against the same IR.
+- Guarantee 16-byte alignment on **all** hardware buffers (input, IR, envelope, output, processing).
+- Wait for the completion response before freeing any referenced buffer — hardware may still be reading/writing.
+
+## Related
+
+- [XDSP overview](/gdk/audio/xdsp)
+- [XDSP convolution walkthrough](/gdk/audio/xdsp-convolution)
+- [XDSP enveloping walkthrough](/gdk/audio/xdsp-enveloping)
+- [XDSP IR reduction walkthrough](/gdk/audio/xdsp-ir-reduction)

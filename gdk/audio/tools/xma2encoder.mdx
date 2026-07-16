@@ -1,0 +1,111 @@
+---
+title: "XMA2 encoder tool"
+sidebarTitle: "XMA2 encoder"
+description: "XMA2Encode command-line tool."
+icon: "file-music"
+tag: "NDA"
+---
+
+The **XMA2 command-line encoder** (`XMA2Encode`) converts a set of PCM files to XMA2, or decodes an XMA2 file back to PCM.
+
+Usable for both Xbox 360 and Xbox One / Series X|S. For Xbox 360 the output is used as-is. For Xbox One / Series X|S the `seek` table may need to be byte-swapped — see [XMA2 overview](/gdk/audio/xma2#xma2-encoding) for the swap code.
+
+## Usage
+
+```bash
+XMA2Encode file [/TargetFile xmafile] [/PCMOutputFile pcmfile]
+           [/DecodeToPCM pcmfile] [/BlockSize N] [/Quality value]
+           [/FilterHighFrequencies] [/LoopWholeFile] [/UseLoopPoints]
+           [/Speaker pos] [/MeasureTime] [/Verbose] [/Help]
+```
+
+All options can be abbreviated to their first letters.
+
+### Multiple files
+
+```bash
+XMA2Encode pcmfile [/Speaker pos ...] [pcmfile [/Speaker pos ...] ...] [options]
+```
+
+When encoding multiple files, inputs must be either all single-channel, or all stereo with the last stream being mono or stereo depending on the number of channels being encoded.
+
+<Note>
+  `XMA2Encode` supports audio files in PCM format, or the XMA2 format (with `/DecodeToPCM`) only.
+</Note>
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `file` | Input file to convert. Multiple `file /Speaker pos` pairs allowed. |
+| `/TargetFile xmafile` | Encode to `xmafile` (only one target file allowed). |
+| `/PCMOutputFile pcmfile` | After encoding, decode the generated XMA2 back to `pcmfile`. Produces both an XMA2 file and a PCM preview file. |
+| `/DecodeToPCM pcmfile` | Decode an existing XMA2 file to `pcmfile`. |
+| `/BlockSize N` | XMA2 compression block size (2 KB – 8190 KB). Default: 64 KB. |
+| `/Quality value` | Compression quality level, 1 – 100. Default: 60. |
+| `/FilterHighFrequencies` | Filter out high frequencies in the source. |
+| `/LoopWholeFile` | Loop the entire file even if loop points are present. Mutually exclusive with `/UseLoopPoints`. |
+| `/UseLoopPoints` | Use existing loop points if present. Mutually exclusive with `/LoopWholeFile`. If neither is specified, the file doesn't loop. |
+| `/Speaker pos` | Speaker assignment for the immediately preceding source file. `pos` ∈ `L`, `R`, `C`, `LFE`, `LS`, `RS`, `LB`, `RB`. |
+| `/MeasureTime` | Show encoding time. |
+| `/Verbose` | Verbose output. |
+| `/Help` | Show usage. |
+
+<Note>
+  If an input file has no channel mask, or a mismatched channel mask, and no `/Speaker` assignments are supplied, the resulting XMA has a channel mask of `0`.
+</Note>
+
+## Error codes
+
+| Code | Meaning |
+| --- | --- |
+| `0x88890001` | Specified loop points are invalid. |
+| `0x88890002` | Specified format is invalid. |
+| `0x88890003` | Parameter out of range. |
+| `0x88890004` | Read operation failed. |
+| `0x88890005` | Invalid XMA frame. |
+| `0x88890006` | Incomplete XMA frame. |
+| `0x88890007` | Stuffing bit was zero. |
+| `0x88890008` | Data fetch failed. |
+
+## Custom encoders
+
+Write your own encoder tool using `xmaencoder.h` and `xmaencoder.lib`, located under the GDK toolkit include and lib directories. The single supported entry point is `XAudio2XMAEncoder`.
+
+<Warning>
+  Do **not** use the legacy `XMA2InMemoryEncoder` or `XMAInMemoryEncoder` methods declared in the header.
+</Warning>
+
+### `XAudio2XMAEncoder` signature
+
+```cpp
+HRESULT XAudio2XMAEncoder(
+    DWORD                    InputStreamCount,
+    const XMAENCODERSTREAM*  pStreams,
+    DWORD                    Compression,
+    DWORD                    Flags,
+    DWORD                    BlockSizeInKbytes,
+    VOID**                   ppEncodedBuffer,
+    DWORD*                   pEncodedBufferSize,
+    XMA2WAVEFORMATEX**       ppEncodedBufferFormat,
+    DWORD*                   pEncodedBufferFormatSize,
+    DWORD**                  ppSeekTable,
+    DWORD*                   pSeekTableSize
+);
+```
+
+| Flag | Value | Description |
+| --- | --- | --- |
+| `XMAENCODER_LOOP` | `0x00000001` | Use loop points if present; otherwise loop start→end. Resamples so the loop-end aligns to a 128-sample boundary. |
+| `XMAENCODER_NOFILTER` | `0x00000002` | Disable filtering. |
+| `XMAENCODER_DECODEFROMXMA` | `0x00000004` | Not supported for in-memory encoder. |
+| `XMAENCODER_VERBOSE` | `0x00000008` | Enable debug output. |
+| `XMAENCODER_PACKSTREAMS` | `0x00000010` | Pack channels into the fewest streams possible. |
+
+**Header:** `xmaencoder.h` – **Library:** `xmaencoder.lib`
+
+## See also
+
+- [XMA2 overview](/gdk/audio/xma2)
+- [xWMA encoder tool](/gdk/audio/tools/xwmaencoder)
+- [ADPCM command-line encoder](/gdk/audio/tools/adpcmencoder)

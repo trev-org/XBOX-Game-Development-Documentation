@@ -549,22 +549,147 @@
           {
             "group": "Console Features",
             "pages": [
-              {
-                "group": "Overview",
-                "icon": "compass",
-                "pages": [
-                  "gdk/console-overview"
-                ]
-              },
+              "gdk/console-overview",
               {
                 "group": "System & I/O",
                 "icon": "microchip",
                 "pages": [
-                  "gdk/audio",
-                  "gdk/storage",
-                  "gdk/networking",
-                  "gdk/directstorage",
-                  "gdk/memory"
+                  {
+                    "group": "Audio",
+                    "icon": "volume-high",
+                    "pages": [
+                      "gdk/audio/overview",
+                      "gdk/audio/wasapi",
+                      "gdk/audio/spatial-audio",
+                      "gdk/audio/xbox-one-architecture",
+                      "gdk/audio/xdk-gdk-comparison",
+                      "gdk/audio/scarlett-audio",
+                      "gdk/audio/shape",
+                      "gdk/audio/acp",
+                      "gdk/audio/xaudio2",
+                      "gdk/audio/best-practices-flowgraph",
+                      "gdk/audio/xma2",
+                      "gdk/audio/xaudio2-play-sound",
+                      "gdk/audio/xwma",
+                      "gdk/audio/adpcm",
+                      "gdk/audio/xapu",
+                      "gdk/audio/xdsp",
+                      "gdk/audio/xdsp-enveloping",
+                      "gdk/audio/xdsp-ir-reduction",
+                      "gdk/audio/xdsp-fft-ifft",
+                      "gdk/audio/xdsp-convolution",
+                      "gdk/audio/xdsp-convolution-envelope",
+                      "gdk/audio/xapu-single-stream-decode",
+                      {
+                        "group": "Audio tools",
+                        "icon": "wrench",
+                        "pages": [
+                          "gdk/audio/tools/xma2encoder",
+                          "gdk/audio/tools/xwmaencoder",
+                          "gdk/audio/tools/adpcmencoder"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Storage",
+                    "icon": "hard-drive",
+                    "pages": [
+                      "gdk/storage/local-storage",
+                      {
+                        "group": "DirectStorage",
+                        "icon": "bolt",
+                        "pages": [
+                          "gdk/storage/directstorage/overview",
+                          "gdk/storage/directstorage/usage-and-internals",
+                          "gdk/storage/directstorage/compression-xbtc",
+                          "gdk/storage/directstorage/drop-in-decompression",
+                          "gdk/storage/directstorage/shuffle-formats"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Networking",
+                    "icon": "wifi",
+                    "pages": [
+                      "gdk/networking/overview",
+                      "gdk/networking/initialization",
+                      "gdk/networking/qos-tagging",
+                      "gdk/networking/reserved-ports",
+                      {
+                        "group": "Game Mesh",
+                        "icon": "network-wired",
+                        "pages": [
+                          "gdk/networking/game-mesh/overview",
+                          "gdk/networking/game-mesh/playfab-party",
+                          "gdk/networking/game-mesh/party-unreal",
+                          "gdk/networking/game-mesh/party-unity",
+                          "gdk/networking/game-mesh/msquic",
+                          "gdk/networking/game-mesh/preferred-udp-port",
+                          "gdk/networking/game-mesh/winsock",
+                          "gdk/networking/game-mesh/qos",
+                          "gdk/networking/game-mesh/pc-port-behavior",
+                          "gdk/networking/game-mesh/xbox-console-port-behavior"
+                        ]
+                      },
+                      {
+                        "group": "Web requests",
+                        "icon": "globe",
+                        "pages": [
+                          "gdk/networking/web-requests/overview",
+                          "gdk/networking/web-requests/xcurl",
+                          "gdk/networking/web-requests/winhttp",
+                          "gdk/networking/web-requests/debugging-custom-http-stacks"
+                        ]
+                      },
+                      {
+                        "group": "Tools",
+                        "icon": "wrench",
+                        "pages": [
+                          "gdk/networking/tools/overview",
+                          "gdk/networking/tools/fiddler-setup"
+                        ]
+                      },
+                      {
+                        "group": "Networking tools",
+                        "icon": "toolbox",
+                        "pages": [
+                          "gdk/console/networking/tools/overview",
+                          "gdk/console/networking/tools/netcap",
+                          "gdk/console/networking/tools/fiddler-pc",
+                          "gdk/console/networking/tools/fiddler-setup",
+                          "gdk/console/networking/tools/netstress"
+                        ]
+                      },
+                      {
+                        "group": "XDK migration",
+                        "icon": "arrow-right-arrow-left",
+                        "pages": [
+                          "gdk/console/networking/xdk-migration/overview",
+                          "gdk/console/networking/xdk-migration/migration-overview",
+                          "gdk/console/networking/xdk-migration/web-requests",
+                          "gdk/console/networking/xdk-migration/game-mesh"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Memory",
+                    "icon": "memory",
+                    "pages": [
+                      "gdk/memory/overview",
+                      "gdk/memory/details",
+                      "gdk/memory/working",
+                      "gdk/memory/port",
+                      "gdk/memory/diagnostics",
+                      "gdk/memory/tooling",
+                      "gdk/memory/kernel",
+                      "gdk/memory/virtual-allocator",
+                      "gdk/memory/writeable-file-mappings",
+                      "gdk/memory/cross-core-costs"
+                    ]
+                  }
                 ]
               },
               {
@@ -585,15 +710,23 @@
                 "pages": [
                   "gdk/cloud-aware-api",
                   "gdk/game-dvr",
-                  "gdk/game-streaming-overview",
-                  "gdk/atg-engagement"
+                  "gdk/game-streaming-overview"
                 ]
               },
               {
                 "group": "Platform",
                 "icon": "right-left",
                 "pages": [
-                  "gdk/cross-gen",
+                  {
+                    "group": "Cross-gen",
+                    "icon": "right-left",
+                    "pages": [
+                      "gdk/cross-gen/overview",
+                      "gdk/cross-gen/smart-delivery",
+                      "gdk/cross-gen/dual-sku",
+                      "gdk/cross-gen/backcompat-only"
+                    ]
+                  },
                   "gdk/quick-resume",
                   "gdk/text-to-speech"
                 ]
@@ -703,7 +836,8 @@
                 ]
               }
             ]
-          }
+          },
+          "gdk/atg-engagement"
         ]
       },
       {

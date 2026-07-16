@@ -1,0 +1,157 @@
+---
+title: "Audio overview"
+sidebarTitle: "Overview"
+description: "Capabilities of Xbox audio: categories, voice chat, endpoint compatibility, and client limits."
+icon: "circle-info"
+tag: "NDA"
+---
+
+Well-designed audio helps tell stories and evoke emotions. The Xbox platform provides general capabilities (surround sound, hardware acceleration) and specific features (downmixing, category ducking) so your game sounds its best.
+
+<CardGroup cols={2}>
+     
+</CardGroup>
+
+## Audio categories
+
+By designating an audio category for a sound (or group of sounds), you invoke system-level priority rules so the platform can duck (attenuate) your mix appropriately.
+
+**Examples**
+
+- Users can pick their own background music — the in-game score should become inaudible.
+- System notifications (e.g. Achievement toasts) duck your master mix.
+- Live voice (Game Chat / Party Chat) should always be audible over prerecorded dialog.
+
+```cpp
+typedef enum _AUDIO_STREAM_CATEGORY {
+    AudioCategory_Other = 0,
+    AudioCategory_Communications,
+    AudioCategory_Alerts,
+    AudioCategory_SoundEffects,
+    AudioCategory_GameEffects,
+    AudioCategory_GameMedia,
+    AudioCategory_GameChat,
+    AudioCategory_Speech,
+    AudioCategory_Movie,
+    AudioCategory_Media
+} AUDIO_STREAM_CATEGORY;
+```
+
+Set the category via WASAPI [`IAudioClient2::SetClientProperties`](https://learn.microsoft.com/windows/win32/api/audioclient/nf-audioclient-iaudioclient2-setclientproperties) or XAudio2 [`CreateMasteringVoice`](https://learn.microsoft.com/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createmasteringvoice). See [AUDIO\_STREAM\_CATEGORY](https://learn.microsoft.com/windows/desktop/api/audiosessiontypes/ne-audiosessiontypes-audio_stream_category) on Microsoft Learn.
+
+## Voice chat
+
+To enhance multiplayer:
+
+- Never mix Game Chat voices with Party Chat voices.
+- User voices must always be heard over the in-game mix.
+
+Use `AudioCategory_GameChat` for your **capture** stream to guarantee mic priority for users already in a communication channel. Game Chat 2 and PlayFab Party tag the capture stream automatically.
+
+<Tip>
+  To detect when to create a Game Chat capture stream, use `CreateCaptureAudioStateMonitor`.
+</Tip>
+
+### Game DVR and broadcasting
+
+Voice chat is user-generated content that may contain PII. A user's rendered voice must never be included in recorded clips. Tag the **render** stream carrying user voice with `AudioCategory_GameChat` so the system excludes it from Game DVR captures.
+
+### Game Chat 2
+
+Use Game Chat 2 to add voice and text chat while respecting privacy settings and meeting GDK title requirements. See [Using the Game Chat 2 C\+\+ API](/services/multiplayer/chat/game-chat2/using-game-chat-2).
+
+## Endpoint compatibility
+
+Users have varied setups — headphones, 2.0, 5.1, 7.1, spatial. Your game must support stereo, surround, and spatial sound.
+
+<Note>
+  The Xbox platform processes all audio at **48 kHz**. For best quality and performance, feed the core audio APIs at 48 kHz.
+</Note>
+
+### Handling different channel counts
+
+The platform tells you exactly what the user's endpoint expects:
+
+- 5.1 room → platform requests 5.1 from your game
+- 2.0 / 7.1 speakers → same, native channel count
+- Spatial via stereo headphones → platform requests 7.1
+
+The game must handle format changes while running. Plugging in headphones or turning on a soundbar triggers an **invalid device error** in [WASAPI](https://learn.microsoft.com/windows/win32/coreaudio/recovering-from-an-invalid-device-error) and [ISACAPI](https://learn.microsoft.com/windows/win32/coreaudio/recovering-from-an-invalid-device-error-spatial-sound). See [XDK → GDK audio API comparison](/gdk/audio/xdk-gdk-comparison).
+
+If you don't want to author three channel-count sources, set `AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM` on `IAudioClient::Initialize` and always feed 7.1 — the OS up/downmixes internally. You still must handle invalidations. See [AUDCLNT\_STREAMFLAGS\_XXX](https://learn.microsoft.com/windows/win32/coreaudio/audclnt-streamflags-xxx-constants).
+
+### Downmix coefficients (AC-3 based)
+
+<Tabs>
+  <Tab title="7.1 → Stereo">
+    | Source | Left | Right |
+    | --- | --- | --- |
+    | Front Left | 0 dB | -∞ dB |
+    | Front Right | -∞ dB | 0 dB |
+    | Center | -3 dB | -3 dB |
+    | LFE | -∞ dB | -∞ dB |
+    | Surround Left | -3 dB | -∞ dB |
+    | Surround Right | -∞ dB | -3 dB |
+    | Rear Left | -3 dB | -∞ dB |
+    | Rear Right | -∞ dB | -3 dB |
+  </Tab>
+  <Tab title="5.1 → Stereo">
+    | Source | Left | Right |
+    | --- | --- | --- |
+    | Front Left | 0 dB | -∞ dB |
+    | Front Right | -∞ dB | 0 dB |
+    | Center | -3 dB | -3 dB |
+    | LFE | -∞ dB | -∞ dB |
+    | Surround Left | -3 dB | -∞ dB |
+    | Surround Right | -∞ dB | -3 dB |
+  </Tab>
+  <Tab title="7.1 → 5.1">
+    <Note>
+      Differs from the AC-3 standard.
+    </Note>
+
+    | Source | L | R | C | LFE | SL | SR |
+    | --- | --- | --- | --- | --- | --- | --- |
+    | Front Left | 0 | -∞ | -∞ | -∞ | -8.35 | -∞ |
+    | Front Right | -∞ | 0 | -∞ | -∞ | -∞ | -8.35 |
+    | Center | -∞ | -∞ | 0 | -∞ | -∞ | -∞ |
+    | LFE | -∞ | -∞ | -∞ | 0 | -∞ | -∞ |
+    | Surround Left | -∞ | -∞ | -∞ | -∞ | 0 | -∞ |
+    | Surround Right | -∞ | -∞ | -∞ | -∞ | -∞ | 0 |
+    | Rear Left | -∞ | -∞ | -∞ | -∞ | -0.9 | -7.25 |
+    | Rear Right | -∞ | -∞ | -∞ | -∞ | -7.25 | -0.9 |
+
+    All values in dB.
+  </Tab>
+</Tabs>
+
+### Rendering paths
+
+<CardGroup cols={2}>
+   
+</CardGroup>
+
+You can mix WASAPI and ISACAPI within a single title. The end user selects the spatial format from **Audio Settings**:
+
+- **Windows Sonic** — headphone HRTF
+- **Dolby Atmos** — headphone HRTF, built-in speakers, HDMI AVRs
+- **DTS Headphone:X / DTS:X** — headphones, home theater
+
+**Typically spatialized:** environmental sounds, location-based SFX, diegetic music sources.<br />**Typically not spatialized:** UI/HUD 2D sounds, musical score.
+
+## Audio client limits
+
+<Warning>
+  Xbox platforms have a hard limit of **30 total active event-based audio or spatial audio clients**. Clients created past this limit fail initialization with `E_OUTOFMEMORY`. There is also a **1 MB total buffer** cap across all clients.
+</Warning>
+
+## Audio and "Run From PC"
+
+On Xbox One, **Run From PC** typically causes extensive audio glitching — don't measure audio performance on Xbox One under Run From PC. On Xbox Series X|S, glitching is less likely but still possible.
+
+## Related
+
+- [WASAPI](/gdk/audio/wasapi)
+- [Spatial sound overview](/gdk/audio/spatial-audio)
+- [Comparison of XDK and GDK audio API](/gdk/audio/xdk-gdk-comparison)
+- [Chat](/services/multiplayer/chat/gc-chat-toc)

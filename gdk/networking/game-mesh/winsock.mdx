@@ -1,0 +1,124 @@
+---
+title: "Windows Sockets overview"
+sidebarTitle: "Winsock"
+description: "Use sockets and the Winsock API in GDK titles, including memory management, MTU sizing, and suspend/resume handling."
+icon: "plug"
+---
+
+The GDK supports [Windows Sockets 2 (Winsock)](/windows/desktop/WinSock/windows-sockets-start-page-2), which enables advanced Internet, intranet, and other network-capable applications independent of the network protocol.
+
+GDK titles interact with Winsock the same way Win32 programs do. This topic covers the minor differences and best practices specific to GDK.
+
+## Setup
+
+- Add `#include <winsock2.h>` in your source files.
+- **PC titles:** link against `Ws2_32.lib`.
+- **Xbox console titles:** link against `XGamePlatform.lib` instead of `Ws2_32.lib` directly.
+
+Only APIs under the `WINAPI_PARTITION_GAMES` API family work in GDK titles.
+
+## Network initialization
+
+Before calling [`WSAStartup`](/windows/desktop/api/winsock/nf-winsock-wsastartup), ensure the networking stack is ready. Calling too early causes `WSAStartup` or subsequent Winsock calls to fail. See [Network initialization and connectivity](/gdk/networking/initialization).
+
+## Suspend and resume
+
+Register for suspend/resume via `RegisterAppStateChangeNotification`.
+
+<Steps>
+  <Step title="On suspend">
+    Close all socket handles and call [`WSACleanup`](/windows/desktop/api/winsock/nf-winsock-wsacleanup).
+  </Step>
+  <Step title="On resume">
+    Wait for [network initialization](/gdk/networking/initialization), then call `WSAStartup` and create new sockets.
+  </Step>
+</Steps>
+
+## Preferred UDP multiplayer port
+
+The GDK [preferred local UDP multiplayer port](/gdk/networking/game-mesh/preferred-udp-port) API returns an optimal, dynamically-selected port to [bind](/windows/desktop/api/winsock/nf-winsock-bind) for in-game UDP communication. The platform ensures this port is the most likely to work for each user's network environment. Using it maximizes customer support and diagnostic flows, standardized NAT compatibility, UPnP™ device functionality, and QoS packet identification.
+
+The UDP port is especially important for peer-to-peer titles — it's the only port that allows inbound UDP through the firewall without punching. P2P titles are still expected to provide their own public IP/port discovery and NAT punching for moderate/strict NAT clients.
+
+Client/server titles also benefit for the same troubleshooting, UPnP™, and packet-identification reasons.
+
+<Tip>
+  Use the preferred UDP multiplayer port for your main multiplayer and chat network traffic.
+</Tip>
+
+## Security of sockets
+
+GDK titles are responsible for security and encryption of all data transferred over the network with Winsock. Use [BCrypt](/windows/desktop/api/bcrypt/), [WinCrypt](/windows/desktop/api/wincrypt/), [schannel](/windows/desktop/api/schannel/), and other Windows crypto APIs to implement DTLS and other standard security protocols.
+
+If you don't want to implement your own security model, [PlayFab Party](/gdk/networking/game-mesh/playfab-party) provides a complete integrated socket security story.
+
+## Socket memory considerations
+
+<Warning>
+  GDK titles have approximately **16 MB** available to the network stack for all Winsock and WinHTTP usage. Exceeding this budget can destabilize the system.
+</Warning>
+
+One of the largest sources of memory usage is the Winsock kernel-mode send and receive pools, where packets are stored until they're sent on the wire or copied into your title's user-mode memory via `recv` variants.
+
+For high-bandwidth workloads, transfer data into your own user-mode buffers with low latency, at a rate equal to what the remote peer or server sends. The goal for all techniques below: always have a user-mode buffer pending for immediate transfer, so the kernel doesn't need to allocate more memory. This moves memory usage from the small kernel pool to your title's much larger memory pool.
+
+Higher-level APIs that consume Winsock generally provide their own knobs. [WinHTTP](/gdk/networking/web-requests/winhttp) and [xCurl](/gdk/networking/web-requests/xcurl) both allow control via their read-notification mechanisms; [XSAPI](/windows/uwp/xbox-live/xsapi-flat-c) and [PlayFab Party](/gdk/networking/game-mesh/playfab-party) minimize kernel memory usage internally.
+
+### Berkeley (BSD) sockets
+
+If you use blocking Berkeley socket APIs, increase `recv` frequency. Use a dedicated thread with a tight loop that queues received data for processing elsewhere. Ideally, the thread is always blocked inside `recv` — any time outside `recv` risks kernel memory growth. Processing before the next `recv` often falls behind at high rates. Use buffer sizes of at least 8 KB to align with kernel buffer boundaries and handle bursty send patterns.
+
+### Winsock Overlapped I/O
+
+[Winsock's overlapped I/O](/windows/win32/winsock/overlapped-i-o-and-event-objects-2) lets you asynchronously keep a user-mode receive buffer pended. The kernel can use your buffer directly (avoiding a copy), and if a buffer is always pended, it won't allocate for received data. You can also set `SO_RCVBUF` and `SO_SNDBUF` to `0` to avoid nearly all send/receive kernel memory allocation.
+
+<Tip>
+  Overlapped I/O is the best socket-memory management approach in almost all scenarios.
+</Tip>
+
+### Registered I/O
+
+[Registered I/O](/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh997032\(v=ws.11\)) is a complex API that gives the lowest latency and guarantees no kernel memory is used for send/receive. It lets you set up multiple receive/send buffers used directly by the kernel so buffers are always ready for incoming data.
+
+## Maximum UDP transmission unit size
+
+Actual MTU varies by network connection type and can change while your title is running. Rather than tracking real MTU, design your networking code to assume a maximum UDP payload of **1,384 bytes** per packet. This value is safe on all networking configurations for both IPv4 and IPv6.
+
+<Warning>
+  Payloads larger than 1,384 bytes often require IP-level fragmentation. ISPs and home routers don't reliably support fragmentation. Instead of Winsock errors, the fragmentation manifests as packet loss.
+</Warning>
+
+Apply the `IP_DONTFRAGMENT` and `IP_USER_MTU` socket options to every socket you open. These flags are only available when `XGameRuntimeIsFeatureAvailable(XGameRuntimeFeature::XNetworking)` returns `true`. If `XNetworking` isn't available, `setsockopt` fails.
+
+```cpp
+HRESULT
+ApplyFragmentationSocketOptions(
+    SOCKET s
+)
+{
+    int value = 1;
+    int error = setsockopt(s, IPPROTO_IP, IP_DONTFRAGMENT, (char *)&value, sizeof(value));
+    if (error == SOCKET_ERROR)
+    {
+        return HRESULT_FROM_WIN32(WSAGetLastError());
+    }
+
+    value = 1384;
+    error = setsockopt(s, IPPROTO_IP, IP_USER_MTU, (char *)&value, sizeof(value));
+    if (error == SOCKET_ERROR)
+    {
+        return HRESULT_FROM_WIN32(WSAGetLastError());
+    }
+
+    return S_OK;
+}
+```
+
+## See also
+
+- [Windows Sockets 2 (Winsock)](/windows/desktop/WinSock/windows-sockets-start-page-2)
+- [Network initialization and connectivity](/gdk/networking/initialization)
+- [Preferred UDP multiplayer port](/gdk/networking/game-mesh/preferred-udp-port)
+- [PlayFab Party](/gdk/networking/game-mesh/playfab-party)
+- [PC port behavior](/gdk/networking/game-mesh/pc-port-behavior)
+- [Xbox console port behavior](/gdk/networking/game-mesh/xbox-console-port-behavior)

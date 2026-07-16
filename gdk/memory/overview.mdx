@@ -1,0 +1,108 @@
+---
+title: "Introduction to memory"
+sidebarTitle: "Overview"
+description: "Deterministic, partition-based memory model that isolates title memory from platform memory on the Microsoft GDK Game OS."
+icon: "memory"
+tag: "NDA"
+---
+
+Unlike most computing applications, where multiple applications must run simultaneously on the hardware, game consoles try to guarantee the game exclusive access to the resources of the device. While consoles have lower specifications than high-end gaming PCs, this lets console games be optimized explicitly for their target platform and deliver ultra-high-quality experiences beyond what raw hardware statistics would suggest.
+
+Today, gamers expect social and online features that require some relaxation of the resource guarantee. The GDK memory system reflects that: it provides high-performance, deterministic, and predictable access to physical memory while allowing service and platform providers to implement shared features consistently.
+
+The GDK memory manager was rebuilt on top of the Xbox One ERA foundation. It keeps the aspects developers were successful with, and reorganizes accounting so game and platform costs are cleanly separated.
+
+## Key features
+
+- Substantial similarity to the Xbox One ERA system so existing developer knowledge carries over.
+- Optimizations for allocating 64 KB / 2 MB pages as uninitialized memory.
+- The `XMemAlloc` API family.
+- Physical page allocation and mapping at 64 KB granularity.
+- **Hard isolation** of memory consumption between game components and non-game (platform) components.
+- Runtime tracking of all memory consumption in the title partition.
+- All Win32 heaps use 2 MB pages for performance.
+
+<Note>
+  Source code for the default implementation of `XMemAlloc` and `XMemFree` ships with the GDK at `\GXDK\gameKit\Source\amd64\heap.c`.
+</Note>
+
+## Memory partitions
+
+The GDK memory architecture continues the **"three pool" model** from the Xbox One ERA OS. Each pool has explicit ownership over specific categories of memory usage.
+
+<CardGroup cols={3}>
+  <Card title="System partition" icon="server">
+    System processes, platform allocations, and platform executable pages.
+  </Card>
+
+  <Card title="Title partition" icon="gamepad">
+    All memory consumption driven by the game process and the game's executable pages.
+  </Card>
+
+  <Card title="Tools partition" icon="wrench">
+    Optional pool that isolates extended / debug memory from retail memory. Only available on Development Kits.
+  </Card>
+</CardGroup>
+
+Partitions are unique instances of the OS memory manager, each with dedicated physical quotas and independent policies (for example, paging behavior and zero-initialization). The title partition is tuned for game performance: Windows normally zero-fills allocated pages as a security measure, but that step is disabled in the title partition, returning that performance to the title.
+
+For details about kernel memory usage, see [Kernel memory usage](/gdk/memory/kernel).
+
+## Separation of title and system allocations
+
+The GDK Game OS enforces isolation of system and game memory usage via memory partitions. All processes are assigned a partition at launch. System processes live in the system partition and cannot allocate memory from the title partition.
+
+Several customizations run at title-process launch to ensure clean separation:
+
+- A file-system mini-filter driver classifies every file mapping as a system file (for example, `kernelbase.dll`) or a game file. System files are charged to the system partition; game files are charged to the title partition.
+- Separate Win32 heaps exist in both partitions (the title heap is created on first use).
+- Allocation-related APIs called through the import address table of each module are **redirected at load time** to implementations that service the request from the correct partition, depending on the source DLL.
+
+The system partition absorbs the cost of loading OS/platform binaries and their persistent or transient allocations.
+
+## Memory costs charged to the title
+
+The title partition covers:
+
+- Code and data/content specific to the game process.
+- All modified data sections (copy-on-write) of modules loaded by the game process.
+- Thread stack space.
+- Page table entries needed for virtual-to-physical translation by the game process.
+- Buffers passed into System API calls.
+- Buffers that capture results of System API calls, async operations, and notifications.
+- Metadata required by features — for example, the heap's own tracking metadata for allocations it performs.
+
+## Monitoring memory utilization
+
+The GDK memory system has extensive support for runtime monitoring and tracking:
+
+| API / macro | What it does |
+| --- | --- |
+| `XMEM_SET_ALLOCATION_HOOKS` | Track memory returned through `XMemAlloc`. |
+| `XMemSetWin32HeapTrackingHooks` | Callback on every `HeapAlloc` / `HeapReAlloc` / `HeapFree` from game code — catches `malloc`, `new`, etc. |
+| `XMemGetWorkingSetStatistics` | Snapshot of physical and virtual memory utilization. |
+| `XMemVirtualQuery` | Like `VirtualQuery`, with extra fields (page size, partition ownership). |
+
+For the full list of APIs, see [Diagnostics and memory tracking](/gdk/memory/diagnostics) and [Porting your title](/gdk/memory/porting).
+
+## Partition sizes and profiling mode
+
+The console is configured to provide the same memory configuration your title will experience in the **retail consumer** environment. On dev kits, the **tools partition** can hold extended/debug memory.
+
+**Profiling mode** diverts some system OS resources to the game and is required for full-capacity PIX. When profiling mode is on, some features (Hub Apps, Game DVR, Microsoft Edge) may be degraded. Toggle it via Xbox Manager, `xbconfig.exe`, `wdconfig.exe`, or Developer Home. See [Configuring memory](/gdk/memory/tooling) for the full table of title / tools memory per console mode.
+
+```text
+xbconfig ExtraTitleMemory=<value>
+```
+
+## See also
+
+- [Kernel memory usage](/gdk/memory/kernel)
+- [Diagnostics and memory tracking](/gdk/memory/diagnostics)
+- [Working with the memory manager](/gdk/memory/working)
+- [Virtual Memory Allocator](/gdk/memory/virtual-allocator)
+- [Porting from Xbox One ERA](/gdk/memory/port)
+- [Configuring memory for your title and dev kit](/gdk/memory/tooling)
+- [Memory manager technical details](/gdk/memory/details)
+- [Cross-core memory costs](/gdk/memory/cross-core-costs)
+- [Writeable memory mapped files](/gdk/memory/writeable-file-mappings)

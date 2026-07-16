@@ -1,0 +1,293 @@
+---
+title: "DirectStorage usage and internal details"
+sidebarTitle: "Usage and internals"
+description: "How DirectStorage works internally on XBOX Series X|S: pipeline stages, staging buffer, queue entry state, real-time queues, physical vs virtual memory, and Do's and Don'ts."
+icon: "microchip"
+tag: "NDA"
+---
+
+<Note>
+  This article covers **XBOX Series X|S consoles only**. Numbers use industry-standard notation: **MB** is base-10 (1 MB = 1,000,000 bytes), **MiB** is base-2 (1 MiB = 1,048,576 bytes).
+</Note>
+
+DirectStorage improves performance and reduces CPU usage when loading data from the NVMe SSD in XBOX Series consoles. Reading from an NVMe SSD has very different characteristics than a rotational drive. Bandwidth is almost **33× higher** than the XBOX One family (from 60 MB/s to 2 GB/s), which shifts the bottleneck from the drive to the CPU. The existing Win32 API set has significant overhead — for many read patterns it is impossible to feed the SSD fast enough with Win32 to hit maximum throughput.
+
+## Architecture
+
+DirectStorage targets **50,000 IOPS at less than 10% of a single CPU core**. Equivalent Win32 work takes approximately an entire CPU core — before decompression. At block sizes ≤ 40 KiB (common for Sampler Feedback Streaming, or SFS), a single Win32 CPU core cannot feed the drive fast enough to reach maximum bandwidth.
+
+### Queued pipeline model
+
+DirectStorage uses a multi-stage pipeline. Requests move between stages **as a batch**, driven by a heartbeat, rather than one interrupt per request. This is one of the primary sources of the CPU savings.
+
+<Warning>
+  **The primary rule for performance: don't create bubbles in the pipeline.** If a stage doesn't have enough work while waiting for the next batch, throughput drops.
+</Warning>
+
+Enqueue with `EnqueueRequest`, `EnqueueStatus`, `EnqueueSignal`, and `EnqueueSetEvent`. Push to the first stage with `Submit`. At the heartbeat, submitted requests are added to the SSD queue; SSD-complete requests move to the Memory Decompression Unit (MDU) queue; MDU-complete requests fire notifications.
+
+The heartbeat cadence means a single request can take up to **~8 ms** end-to-end. Submitting one request, waiting, then submitting the next is the worst possible pattern — avoid dependency chains where the result of one read decides the next read.
+
+### Notification
+
+Completion notifications signal **first-in, first-out** at the queue level. A notification is signaled when all preceding queue entries have completed. The hardware may still reorder reads internally for throughput.
+
+Three signalling mechanisms:
+
+| Mechanism | Model | Use when |
+| --- | --- | --- |
+| **`IDStorageStatusArrayX`** | CPU polling | Existing code polls `OVERLAPPED` (for example `HasOverlappedIoCompleted`). |
+| **`ID3D12Fence`** | CPU/GPU polling | GPU can consume data with **no CPU intervention**. |
+| **`EnqueueSetEvent`** | Interrupt via Windows `Event` | Existing code waits on an `Event` in an `OVERLAPPED` structure. |
+
+<Warning>
+  Do **not** use `ID3D12Fence::SetEventOnCompletion` to fake an interrupt — on console this method spins on the fence value before calling `SetEvent`. The equivalent CPU polling behaviour is available directly through `IDStorageStatusArrayX` with title-controlled polling frequency. `EnqueueSetEvent` is the correct way to sleep a thread until DirectStorage completion.
+</Warning>
+
+### Staging
+
+Internally, DirectStorage uses a **32 MiB staging buffer** allocated from title memory when the `IDStorageFactoryX` object is created. It can be resized (or freed to 0) via `SetStagingBufferSize`, but **only** while DirectStorage is idle — no open files, no allocated queues.
+
+All disk reads land in the staging buffer, then pass through decryption hardware and (if requested) the MDU for decompression. The CPU is never involved in decryption or decompression.
+
+<Note>
+  Mixing compressed and decompressed reads will **not** increase bandwidth. The SSD can't read fast enough to saturate the decryption or decompression hardware.
+</Note>
+
+Benefits of the staging buffer:
+
+- The title has **no alignment restriction** for uncompressed data. Compressed data must start on a 16-byte boundary.
+- The staging buffer size limits maximum read size. Requests are broken into sub-blocks, each allocated from the staging buffer; a sub-block waits until enough free space is available.
+- For very large reads with high staging-buffer contention, DirectStorage may lose the throughput advantage — in those cases use Win32 (which can be used against the same file at the same time as DirectStorage).
+
+Unlike Win32, DirectStorage does not spend CPU on the copy from the staging buffer to the destination. The MDU and DMA hardware write into the title-supplied buffer directly.
+
+## Concepts
+
+A line-for-line port from Win32 will almost always perform poorly. DirectStorage is a different execution model.
+
+### Bandwidth guarantee
+
+XBOX Series consoles guarantee **2 GB/s averaged over a 250 ms window** for raw data from the SSD. This is both a lower and upper bound if you follow the guidelines. The reservation covers OS overhead and natural SSD wear — you see the same guarantee on a brand-new console, a full drive, a console running a background OS update, and a console that's been in use for years.
+
+Expandable Storage (dynamic user-installable NVMe drives) is subject to the same guarantee. **You don't need to adjust load code for internal vs. expansion drives.**
+
+<Note>
+  **Unaligned reads.** DirectStorage supports unaligned reads by adjusting the request to 4 KiB alignment and returning the requested subsection. An unaligned read can consume up to an extra 8 KiB (4 KiB before \+ 4 KiB after) of the 2 GB/s guarantee — an unaligned 8 KiB read can count as 16 KiB.
+</Note>
+
+### Requests in flight
+
+To hit maximum bandwidth, keep many requests in flight so the drive can reorder them for best throughput. The old rotational advice (12–16 in flight) is wrong for NVMe.
+
+- Submit **all** outstanding requests — do not hold any back.
+- Holding requests back hurts bandwidth and stalls the hardware waiting for new work.
+
+### Queue
+
+Requests are managed by an `IDStorageQueueX` (or `IDStorageQueueX1`, which adds `EnqueueSetEvent`). Titles push to the tail, hardware reads from the head.
+
+<Warning>
+  DirectStorage queues do **not** behave like DirectX queues. Do not reuse those patterns.
+</Warning>
+
+A queue is a circular buffer that stays active for the life of the title. Titles push while hardware processes concurrently. Do not create and destroy queues per batch — that overhead alone can starve the SSD. Allocate queues at startup and keep them active.
+
+### Queue entry state
+
+A queue entry is **free**, **enqueued**, or **submitted**, in that order. Because completion is FIFO, the queue splits into three consecutive blocks.
+
+- `EnqueueRequest` / `EnqueueStatus` / `EnqueueSignal` / `EnqueueSetEvent` place data at the enqueue-head pointer, which then moves one slot.
+- `Submit` advances the enqueue-tail (submit-head) pointer to the enqueue-head pointer.
+- As requests complete, the read-position pointer moves and slots become free again. Status arrays, fences, and events are signaled as this pointer passes them.
+
+### Notification
+
+Win32 notifications are per-request: wait on an event handle, poll an `OVERLAPPED`, or block synchronously. All expensive.
+
+DirectStorage notification is **not** per-request. A notification entry sits inside the queue and is signaled when all previous entries in that queue have completed. FIFO means you only need to check the last relevant notification — all earlier requests are guaranteed complete. Notifications are bound to their **position in the queue**, not to submissions.
+
+### Batch
+
+With FIFO notifications, treat groups of read requests as a **batch** — for example, all reads needed to spawn one game entity. One notification per batch. When it fires, every asset in the batch is loaded.
+
+Recommendations by consumer:
+
+- Existing polled `OVERLAPPED` code → `IDStorageStatusArrayX`.
+- Existing `Event` in `OVERLAPPED` code → `EnqueueSetEvent`.
+- GPU consumes data with **no** CPU intervention → `ID3D12Fence`.
+
+### Priority
+
+Four levels: **low**, **normal**, **high**, **real-time**.
+
+**Low / normal / high** use weighted round-robin on processed bytes with roughly one order of magnitude between adjacent levels (100:10:1). If a class has no outstanding work, its share flows to the other classes, but the ratio between classes stays the same. Win32 reads use normal priority.
+
+**Real-time** is treated as high priority in the round-robin, but bypasses the heartbeat. Submission is sent immediately to the hardware. This trades CPU overhead for latency — up to matching Win32 latency, and in some cases better.
+
+### Cancellation
+
+Each request has a 64-bit title-defined tag used as a mask for cancellation — `CancelRequestsWithTag` cancels requests where `tag & mask == value`.
+
+Cancellation is best effort. Requests already being processed by hardware cannot be cancelled. The call returns immediately — wait for a later notification to complete before freeing associated resources. New requests enqueued after `CancelRequestsWithTag` returns will not be cancelled even if the tag matches.
+
+<Warning>
+  DirectStorage is normally thread-safe. **Cancellation is the exception.** Behaviour is undefined if a title enqueues new requests on another thread while `CancelRequestsWithTag` is executing.
+</Warning>
+
+## API in depth
+
+### `IDStorageFactoryX`
+
+Creates queues, status arrays, opens files, and manages global settings.
+
+- When created, allocates a 32 MiB staging buffer from the title partition. Can be resized via `SetStagingBufferSize` — only when DirectStorage is idle.
+- Default thread affinity is locked to the last two cores (shared with other system threads). Change with `SetCPUAffinity`.
+- Where possible, work runs inside the title's calling thread.
+- **Debug layer** — `SetDebugFlags` enables parameter validation, debugger breaks on errors, and PIX-visible object names via ETW events. The debug layer validates **function parameters** — for example reads outside a file. It does **not** validate raw buffer contents (for example malformed compressed streams). All errors continue to flow through the normal DirectStorage error system.
+
+### `IDStorageFileX`
+
+All files must be opened via `IDStorageFactoryX::OpenFile` — equivalent to Win32 `CreateFile`.
+
+- Opened with `GENERIC_READ` and `FILE_SHARE_READ`.
+- Titles can open a file with both Win32 and DirectStorage simultaneously **if** permissions match. You **cannot** open a file for Win32 writing while DirectStorage has it open.
+- `GetHandle` returns a reference-counted Win32 `HANDLE` — pass it to `GetFileSize` etc., then release it with `CloseHandle`. Releasing the Win32 handle does **not** close the underlying file.
+- `Close` (or the last reference drop) closes the file **only with respect to DirectStorage**. Both paths block until all outstanding I/O completes.
+
+### `IDStorageQueueX` / `IDStorageQueueX1`
+
+Read requests are queued but not sent to the SSD until `Submit`. Enqueue is a user-mode-only push to a circular buffer.
+
+#### Properties
+
+- **`SourceType`** — disk-sourced or memory-to-memory. Memory-to-memory queues **must** be real-time.
+- **`Priority`** — low / normal / high (weighted round-robin) or real-time (immediate stage transitions; ~2× CPU cost of other priorities; still up to ~6× cheaper than Win32).
+- **`Capacity`** — fixed-size circular buffer. **Recommendation:** ~2× the expected max in-flight requests, so enqueue never blocks and there is headroom for drift across the 250 ms averaging window. Capacity drives DirectStorage's memory footprint (`capacity × sizeof(DSTORAGE_REQUEST)`), allocated once at queue creation.
+
+#### Interfaces
+
+**`EnqueueRequest`** — same shape as `ReadFile`. Enqueue is user-mode only. Two cases where it does extra work:
+
+1. Number of unsubmitted requests exceeds free slots — triggers auto-submission.
+2. The queue is full — the thread suspends until a slot frees. `EnqueueRequest` has no error return; auto-submission guarantees the hardware is working, so there is no deadlock. Call `Query` to inspect empty slots and how many enqueues remain before auto-submit.
+
+**`EnqueueStatus` / `EnqueueSignal` / `EnqueueSetEvent`** — notification entries. Signaled when all preceding requests complete. Same auto-submission and suspension rules as `EnqueueRequest`. All three markers can be reused. `EnqueueStatus` resets its `IDStorageStatusArrayX` entry to "not completed"; `EnqueueSignal` does not change the `ID3D12Fence` current value.
+
+**`Submit`** — the one kernel transition in the loading cycle. Advances the submit-head pointer to the enqueue-head pointer and notifies the driver. Costs about the same as a single `ReadFile` (~30 µs). Call `Submit` at natural pauses in your load pipeline — for example, after enqueuing 100 requests when the next batch won't be ready for 500 µs. Get the hardware started as soon as possible.
+
+**`CancelRequestsWithTag`** — see [Cancellation](#cancellation) above. Best-effort. Not thread-safe against concurrent enqueue.
+
+**`RetrieveErrorRecord`** — DirectStorage does **not** return errors on the main path (deliberately, to support performance-critical retail code). Two failure modes exist outside developer control:
+
+1. Corruption in source data — malicious tampering or drive failure. Usually terminal for the title.
+2. External drive removal while the title is reading from it.
+
+Two error-retrieval options:
+
+- **From an `IDStorageStatusArrayX` entry** — `GetHResult` returns `E_PENDING` while requests are outstanding, then either `S_OK` or the `HRESULT` of the first failed request since the last notification.
+- **From the queue** — `GetErrorEvent` returns an `Event` signaled on error. `RetrieveErrorRecord` returns the total error count and the details of the first failed request since the last call. The event is reset on each call; **do not** poll `RetrieveErrorRecord` continuously.
+
+<Note>
+  There is **no** equivalent to `IDStorageStatusArrayX::GetHResult` when notifying via `ID3D12Fence`.
+</Note>
+
+<Tip>
+  For per-request `HRESULT`s in a debug build, enqueue a status entry after every request. This has a real cost: for reads \< 32 KiB, the extra queue slots and CPU hurt bandwidth. Batch size ≥ 4 (one status entry per four requests) removes the impact.
+</Tip>
+
+## Best practices
+
+The core rule: **don't stall the pipeline.**
+
+### Read sizes
+
+| Rotational HDD | XBOX Series NVMe |
+| --- | --- |
+| ≥ 128 KiB, ideally 512 KiB | Ramps up quickly to ~16 KiB, tops out at ~32 KiB |
+
+Reads larger than 32 KiB provide no throughput gain and can actually drop performance slightly — the request is split across the 32 MiB staging buffer into sub-reads, and larger requests contend more heavily for staging space.
+
+DirectStorage wins hardest for **small reads** and **CPU-limited titles**. Titles using **SFS** should use DirectStorage — most SFS reads are 32–64 KiB.
+
+### Order
+
+No seek time on NVMe — there is no benefit to sorting reads by drive location. Keeping the drive saturated matters far more. Sequential vs. random access is identical in bandwidth once you're at 16 KiB reads.
+
+### Memory
+
+The cost of `IDStorageQueueX::Submit` depends on the title-supplied buffers:
+
+- **Virtual vs physical addresses.** Physical pages come from `XMemAllocatePhysicalPages`; everything else is virtual. The hardware only takes physical addresses, so `Submit` walks the page table for every virtual buffer.
+- **Total destination-buffer size.** Larger buffers = more pages to convert.
+- **Page size.** 4 KB / 64 KB / 2 MB pages. Fewer, larger pages = fewer conversions.
+
+<Note>
+  The CPU only actually uses 4 KB and 2 MB pages. 64 KB pages are internally represented as 16 contiguous 4 KB blocks.
+</Note>
+
+**Using physical pages as title-supplied buffers skips the virtual→physical conversion entirely** and speeds up `Submit`.
+
+### Queue size and requests in flight
+
+- Old advice: 12–16 requests in flight (rotational \+ Win32).
+- NVMe spec supports queues up to 65,536 entries — XBOX Series SSD supports the full spec.
+- SSD reads at ~2 MB/ms. Aim to enqueue at least 2 MB of work per millisecond. Keep at least 16 MB of data in flight to survive the heartbeat.
+- Titles that update once per frame (60 FPS = 16.6 ms) should enqueue at least 33.2 MB of requests per frame to keep the drive saturated. **Do not batch requests title-side and enqueue once per frame** — enqueue immediately so processing can begin.
+- Reuse queues for the lifetime of the title. Do not create and destroy per batch.
+- Queue capacity ≥ 2× max expected in-flight requests — leaves headroom for drift within the 250 ms averaging window and avoids enqueue stalls.
+
+### Real-time queues
+
+DirectStorage's heartbeat introduces higher latency than Win32 for a single read. `DSTORAGE_PRIORITY_REALTIME` immediately moves requests between stages, matching Win32 latency — at ~2× the CPU cost of other DirectStorage priorities (still up to ~6× cheaper than Win32).
+
+<Warning>
+  **Do not use synchronous IO.** Even with real-time queues, synchronous 32 KiB reads deliver ~108 MB/s vs. 2 GB/s asynchronous. Synchronous IO makes the NVMe drive behave like a rotational drive.
+</Warning>
+
+The correct use case for real-time queues is **breaking asset dependency chains you can't remove** — for example, read a _dictionary_ file on a real-time queue, then enqueue the assets the dictionary references on lower-priority queues. Maximum bandwidth with minimum CPU overhead.
+
+### Notification management
+
+- Bind notifications to batches — one per related group of assets.
+- **Use `ID3D12Fence` when the GPU can consume the data with no CPU intervention.**
+- **Use `IDStorageStatusArrayX` or a Windows Event when the CPU must process the data first.**
+- 1:1 notification-to-read mapping is possible but expensive: for reads \< 32 KiB, it hurts bandwidth. Batch size ≥ 4 hides the cost. Every notification also consumes a queue slot — a 1:1 mapping needs 2× the queue capacity.
+
+### CPU cost vs. Win32
+
+DirectStorage kernel time is roughly **one-tenth** of Win32 for reads under 128 KiB. At larger read sizes the numbers converge simply because there are fewer requests.
+
+Additional savings come from FIFO completion — one notification check per batch instead of per read.
+
+### Secondary considerations
+
+With thousands of requests in flight, code around the request can dominate cost:
+
+- Locks on managers create contention. **Go lockless where possible.**
+- Speculative loading eats memory and creates cancellable requests. **Set hard limits on speculation.**
+
+## Do's and Don'ts
+
+### Do's
+
+- **Submit as many requests as you can at once.** The drive reads at 2 MB/ms — keep at least 16 MB in flight. The only cap is queue capacity.
+- **Batch requests.** Enqueue all reads for an in-game asset, then one `IDStorageStatusArrayX` or `ID3D12Fence` at the end. When it signals, the whole asset is loaded.
+- **Read in ≥ 32 KiB blocks.** Smaller reads hurt bandwidth.
+- **Size queues to ~2× the max in-flight count.** A full queue makes `EnqueueRequest`/`EnqueueStatus`/`EnqueueSignal`/`EnqueueSetEvent` spin — easily milliseconds of stall.
+
+### Don'ts
+
+- **Don't use DirectStorage for dependency-chain assets.** With an ~8 ms per-read latency, a single 512 KB dependent read gives ~64 MB/s — XBOX One X speed. Read a dictionary on a real-time queue and issue dependent reads on other queues instead.
+- **Don't fear automatic submissions.** Auto-submit fires when unsubmitted requests exceed free slots — that's the pipeline avoiding a bubble. Cost is ~50 µs, same as a manual `Submit`. It does not affect notification.
+- **Don't create `IDStorageQueueX` objects per batch.** Allocation overhead can starve the drive. Create queues at startup and reuse them.
+- **Don't use `ID3D12Fence` for CPU-processed assets.** Use `IDStorageStatusArrayX` when the CPU must touch the data first. `ID3D12Fence::SetEventOnCompletion` is a spin loop — it does not suspend the calling thread.
+- **Don't enqueue notification per read.** Batch them. During development you can still add extra status entries to locate a specific failing read.
+- **Don't worry about 4 KB alignment.** Win32 requires it for async reads; DirectStorage does not. The only alignment rule is that **compressed data must be 16-byte aligned within the file.**
+
+## Related
+
+- **DirectStorage overview** (public)
+- **Optimizing compressed content using DirectStorage and XBTC** (NDA)
+- **Analyzing DirectStorage performance in PIX** (NDA)
+- Xfest 2019 talks: _DirectStorage_ and _Deeper into the XBOX Series X|S File System_
