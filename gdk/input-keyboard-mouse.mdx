@@ -1,0 +1,73 @@
+---
+title: "Keyboard and mouse"
+sidebarTitle: "Keyboard & mouse"
+description: "Read per-key state and high-precision mouse deltas through GameInput."
+icon: "keyboard"
+---
+
+GameInput reads keyboard and mouse without any `WM_INPUT` plumbing. The same reading / callback model you use for gamepads applies to keys and mouse motion.
+
+## Keyboard
+
+<Steps>
+  <Step title="Get the current reading">
+    Fetch a reading of kind `GameInputKindKeyboard`. It carries an array of key states, each with a scancode and a virtual key.
+  </Step>
+  <Step title="Diff against last frame">
+    Compare against the previous frame's reading to detect edges (key-down, key-up).
+  </Step>
+  <Step title="Handle repeat separately">
+    Repeat-rate awareness lives on the reading itself — do not simulate it from Windows repeat behavior.
+  </Step>
+</Steps>
+
+```cpp
+Microsoft::WRL::ComPtr<IGameInputReading> reading;
+if (SUCCEEDED(gameInput->GetCurrentReading(GameInputKindKeyboard, nullptr, &reading)))
+{
+    GameInputKeyState keys[16]{};
+    uint32_t count = reading->GetKeyState(std::size(keys), keys);
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        // keys[i].scanCode, keys[i].virtualKey
+    }
+}
+```
+
+## Mouse
+
+Mouse readings carry:
+
+- **High-precision motion deltas** in device units — use these for aim.
+- **Per-button state** for left, middle, right, X1, X2.
+- **Wheel deltas** on horizontal and vertical axes.
+
+```cpp
+Microsoft::WRL::ComPtr<IGameInputReading> mouseReading;
+if (SUCCEEDED(gameInput->GetCurrentReading(GameInputKindMouse, nullptr, &mouseReading)))
+{
+    GameInputMouseState state{};
+    if (mouseReading->GetMouseState(&state))
+    {
+        // state.positionX, state.positionY are cumulative counters
+        // Diff against the last frame's values to get the frame delta
+    }
+}
+```
+
+## Guidance
+
+- Never map gameplay to physical scancodes. Give the player a rebind path and store bindings as engine actions.
+- Provide separate mouse sensitivity for hip and ADS aim.
+- Uncap mouse polling when your engine supports it — GameInput does not throttle.
+- When keyboard and mouse are both in use, disable stick-based aim smoothing to avoid double-input feel.
+
+## Focus
+
+A backgrounded title receives no keyboard input. Fetch a fresh reading on focus restore rather than assuming keys are still down from before you lost focus.
+
+## Related
+
+- [Fundamentals](/gdk/input-fundamentals)
+- [Virtual keyboard](/gdk/input-virtual-keyboard)
+- [GameInput API reference](/reference/gameinput)

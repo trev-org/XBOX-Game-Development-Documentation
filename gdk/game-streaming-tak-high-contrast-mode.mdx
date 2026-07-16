@@ -1,0 +1,47 @@
+---
+title: "High contrast mode for touch controls"
+sidebarTitle: "High contrast"
+description: "Ship a high-contrast variant of your touch overlay for players who need increased legibility."
+icon: "circle-half-stroke"
+---
+
+When a streamed client requests high-contrast mode, the touch adaptation runtime prefers the high-contrast variant of every asset. Ship this variant whenever you ship [custom assets](/gdk/game-streaming-tak-custom-assets), and rely on the default high-contrast art otherwise.
+
+## What high contrast changes
+
+- Higher luminance separation between controls and background.
+- Simplified silhouettes with fewer intermediate values.
+- Removed decorative detail that reduces legibility at high compression.
+- Strong outlines on interactive elements so their bounds are unambiguous.
+
+## Providing high-contrast assets
+
+<Steps>
+  <Step title="Author high-contrast art">
+    Produce a paired PNG for every custom asset with high luminance contrast, strong outlines, and reduced intermediate values.
+  </Step>
+  <Step title="Store under an hc/ subfolder">
+    Place high-contrast art alongside the default under `assets/hc/`. Match the filename of the default asset so the runtime picks the paired variant.
+  </Step>
+  <Step title="Verify in the editor">
+    Preview the layout with high contrast enabled in the [TAK Editor](/gdk/game-streaming-tak-editor).
+  </Step>
+  <Step title="Verify on device">
+    Enable the client OS's high-contrast setting on a real device and confirm the runtime swaps to the paired variant during a streaming session.
+  </Step>
+</Steps>
+
+## What good looks like
+
+- Each control still reads as itself at a glance — do not simply invert the default art.
+- Interactive vs. decorative elements are visually distinct.
+- The layout remains usable without color — verify by desaturating a screenshot.
+
+<Warning>
+  Do not skip high-contrast art when you ship custom assets. The runtime cannot generate a high-contrast variant from a stylized custom asset, and the fallback experience is worse than either the custom art or the default high-contrast art in isolation.
+</Warning>
+
+## Related
+
+- [Custom assets](/gdk/game-streaming-tak-custom-assets)
+- [TAB structure](/gdk/game-streaming-touch-touch-adaptation-bundle)

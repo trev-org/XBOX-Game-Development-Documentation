@@ -1,0 +1,55 @@
+---
+title: "Preview layouts against gameplay"
+sidebarTitle: "Preview layouts"
+description: "Overlay a touch layout on a gameplay recording in the TAK Editor to sanity-check reach, occlusion, and visibility."
+icon: "video"
+---
+
+One of the strongest features of the TAK Editor is previewing a layout against real gameplay video. Do this before every packing pass — it catches occlusion, unreachable controls, and cluttered composition that are invisible on an empty canvas.
+
+## Set up the preview
+
+<Steps>
+  <Step title="Record a gameplay clip">
+    Capture a short clip that covers the gameplay states each layout targets. Use the client resolution your target audience will play at.
+  </Step>
+  <Step title="Load the clip">
+    In the editor, open the preview panel and pick your video file.
+  </Step>
+  <Step title="Select the layout to preview">
+    Choose the layout whose overlay you want to inspect on top of the video.
+  </Step>
+  <Step title="Scrub through gameplay">
+    Step through the video and check that every control remains reachable, visible, and non-conflicting with the underlying HUD.
+  </Step>
+</Steps>
+
+## What to check
+
+<AccordionGroup>
+  <Accordion title="Reach" icon="hand">
+    Every high-frequency control should sit under a thumb that is already there. Rarely-used controls can sit slightly further out.
+  </Accordion>
+
+  <Accordion title="Occlusion of HUD" icon="eye-slash">
+    Confirm the layout does not hide critical HUD elements — health bars, minimap, timer.
+  </Accordion>
+
+  <Accordion title="Visibility over the scene" icon="circle-half-stroke">
+    Check contrast against dark and light frames. Turn on the [high contrast preview](/gdk/game-streaming-tak-high-contrast-mode) to verify accessibility.
+  </Accordion>
+
+  <Accordion title="Localization overflow" icon="language">
+    Switch the preview language to your longest-string language and confirm labels still fit.
+  </Accordion>
+</AccordionGroup>
+
+## Iterating
+
+Make changes to the layout without closing the preview — the overlay updates as you edit. Use short clips per gameplay state so you can compare a layout against exactly the state it targets.
+
+## Related
+
+- [Customize the preview](/gdk/game-streaming-tak-editor-customize-preview)
+- [Designers guide](/gdk/game-streaming-tak-designers-guide)
+- [Pack bundles](/gdk/game-streaming-tak-editor-pack-bundles)

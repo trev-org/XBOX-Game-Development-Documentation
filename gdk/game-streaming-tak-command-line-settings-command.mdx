@@ -1,0 +1,39 @@
+---
+title: "takx settings command"
+sidebarTitle: "settings"
+description: "View or change global takx CLI settings."
+icon: "gear"
+---
+
+`takx settings` reads and writes global CLI settings that apply across bundles — default output paths, preferred serve port, telemetry preferences, and similar.
+
+## Synopsis
+
+```powershell
+takx settings [<key> [<value>]]
+```
+
+## Usage patterns
+
+| Invocation | Effect |
+| --- | --- |
+| `takx settings` | Print every setting and its current value |
+| `takx settings <key>` | Print the current value of a single setting |
+| `takx settings <key> <value>` | Write a new value for a setting |
+
+## Common settings
+
+- Default serve port for [`takx serve`](/gdk/game-streaming-tak-command-line-serve-command).
+- Default output path for [`takx pack`](/gdk/game-streaming-tak-command-line-pack-command).
+- Verbosity / logging level for CLI output.
+- Telemetry preference.
+
+<Note>
+  Settings are per-user. Machines shared across developers store settings under the current user's profile.
+</Note>
+
+## Related
+
+- [takx-version](/gdk/game-streaming-tak-command-line-takx-version-command)
+- [serve](/gdk/game-streaming-tak-command-line-serve-command)
+- [pack](/gdk/game-streaming-tak-command-line-pack-command)

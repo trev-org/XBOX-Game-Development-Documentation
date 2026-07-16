@@ -1,0 +1,48 @@
+---
+title: "Latency compensation overview"
+sidebarTitle: "Latency compensation"
+description: "Techniques for keeping a streamed title feeling responsive despite the irreducible round-trip between the player's controller and the server."
+icon: "clock"
+---
+
+Cloud streaming adds a round-trip between the player's controller and your game logic that you cannot eliminate. Latency compensation is about making that round-trip feel invisible.
+
+## The four levers
+
+<CardGroup cols={2}>
+  <Card title="Predictive input" icon="arrow-right">
+    Sample input on the server frame the client _will_ see, not the frame the server is rendering.
+  </Card>
+
+  <Card title="Visual cues" icon="crosshairs">
+    Slightly enlarge hit windows or extend reticle assist on streamed sessions so player intent maps better through the latency.
+  </Card>
+
+  <Card title="Tunable HUD response" icon="sliders">
+    Reduce HUD animation durations so the UI feels reactive even when total latency is higher than local play.
+  </Card>
+
+  <Card title="Frame pacing" icon="stopwatch">
+    Keep frame times tight and stable. A jittery 60 fps streams worse than a steady 50 fps.
+  </Card>
+</CardGroup>
+
+## How to think about the budget
+
+- Set a target end-to-end latency budget for each client class you care about.
+- Measure real latency with the [Latency measurement](/gdk/game-streaming-latency-measurement) approach and see where your title lands vs. the budget.
+- Apply compensation levers proportionally to the gap between measured latency and the budget — do not over-correct on already-fast clients.
+
+## When to design differently
+
+Some gameplay ideas simply do not survive streaming. If your design requires sub-frame reaction times or precisely-timed input windows shorter than a few frames, provide a streaming-aware variant — a slightly longer input window, an assist mode, or an alternative control scheme.
+
+<Note>
+  Never gate features on the mode (xCloud vs. Remote Play). Read latency from client properties and drive behavior from the measured value.
+</Note>
+
+## Related
+
+- [Latency compensation deep dive](/gdk/game-streaming-latency-compensation-deep-dive) — the mechanics of frame-associated input and predictive display
+- [Simulate latency while testing](/gdk/game-streaming-simulate-latency-while-testing)
+- [Latency measurement](/gdk/game-streaming-latency-measurement)

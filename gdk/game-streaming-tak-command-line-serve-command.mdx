@@ -1,0 +1,60 @@
+---
+title: "takx serve command"
+sidebarTitle: "serve"
+description: "Serve a .tab file over your local network so a Content Test Application can sideload it."
+icon: "tower-broadcast"
+---
+
+`takx serve` hosts a `.tab` file over your local network so a Content Test Application can fetch it. Use it during layout iteration so you can test real touch sessions without a publish round-trip.
+
+## Synopsis
+
+```powershell
+takx serve <input.tab> [--port <port>]
+```
+
+## Arguments
+
+| Argument | Purpose |
+| --- | --- |
+| `<input.tab>` | Packed bundle to serve |
+| `--port <port>` | Optional port (default chosen automatically) |
+
+## Example
+
+```powershell
+takx serve my-title.tab
+```
+
+The command prints a URL. In the [Web CTA](/gdk/game-streaming-web-content-test-application), point the touch adaptation setting at that URL.
+
+## Iteration loop
+
+<Steps>
+  <Step title="Start serving">
+    Run `takx serve my-title.tab` and leave it running.
+  </Step>
+  <Step title="Test in the CTA">
+    Point the CTA at the printed URL and stream your title.
+  </Step>
+  <Step title="Edit">
+    Adjust the layout in the [TAK Editor](/gdk/game-streaming-tak-editor).
+  </Step>
+  <Step title="Re-pack">
+    Run [`takx pack`](/gdk/game-streaming-tak-command-line-pack-command) to overwrite the `.tab` file.
+  </Step>
+  <Step title="Refresh">
+    Refresh the CTA — no need to restart `takx serve`.
+  </Step>
+</Steps>
+
+## Networking
+
+- The serving PC and the CTA client must be able to reach each other. Use the same subnet or a routed dev network.
+- If a firewall blocks the port, add an inbound rule for the port `takx serve` uses.
+
+## Related
+
+- [Deploy for testing](/gdk/game-streaming-touch-deploying-touch-layout)
+- [Web CTA](/gdk/game-streaming-web-content-test-application)
+- [pack](/gdk/game-streaming-tak-command-line-pack-command)

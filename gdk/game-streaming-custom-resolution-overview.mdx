@@ -1,0 +1,49 @@
+---
+title: "Custom resolution overview"
+sidebarTitle: "Custom resolution"
+description: "How the streaming pipeline negotiates a non-native resolution to fit different client targets, and what your title must do to support it."
+icon: "expand"
+---
+
+The streaming pipeline can run your title at a non-native resolution to fit different client targets. Custom resolution support is required for the smallest-bandwidth streaming tiers and is recommended for handheld clients.
+
+## Why custom resolution exists
+
+- Not all streaming clients can display 1080p; some are targeted at 720p to reduce bandwidth.
+- Different aspect ratios (portrait phones, ultrawide displays) benefit from a render target that already matches the client shape.
+- Encoding at the client's native resolution avoids a rescale on the client side, which typically improves perceived quality.
+
+## What your title must do
+
+<Steps>
+  <Step title="Read the negotiated resolution">
+    Query [`XGameStreamingGetClientDimensions`](/gdk/game-streaming-am-i-streaming) at session start. Do not assume 1080p.
+  </Step>
+  <Step title="Re-allocate render targets on change">
+    A client can reconnect at a different resolution. Re-allocate render targets and post-process buffers when the reported dimensions change.
+  </Step>
+  <Step title="Scale UI">
+    Adjust HUD, menu, and text scale so they remain legible at each supported client dimension.
+  </Step>
+  <Step title="Avoid hard-coded resolutions">
+    Remove hard-coded resolutions from shaders, post-process kernels, and texture mip selection. Derive them from the current render target.
+  </Step>
+</Steps>
+
+## What is supported
+
+| Client family | Common negotiated resolution |
+| --- | --- |
+| Web / Windows CTA on a PC | 1080p |
+| Smart TVs | 1080p |
+| Higher-tier phones and tablets | 1080p |
+| Lower-tier or low-bandwidth phones | 720p |
+| Portrait touch clients | Adjusted aspect |
+
+Specific values are negotiated per client and per session; treat them as data, not constants.
+
+## Related
+
+- [Custom resolution best practices](/gdk/game-streaming-custom-resolution-best-practices)
+- [Optimize for streaming](/gdk/game-streaming-optimizing-your-game)
+- [DirectCapture](/gdk/game-streaming-directcapture-overview)

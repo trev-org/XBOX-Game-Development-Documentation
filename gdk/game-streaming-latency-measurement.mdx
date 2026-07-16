@@ -1,0 +1,53 @@
+---
+title: "Latency measurement"
+sidebarTitle: "Latency measurement"
+description: "How to measure end-to-end glass-to-glass latency of a streamed session so you can track regressions and validate compensation strategies."
+icon: "stopwatch"
+---
+
+Latency is the primary quality signal for a streamed session. Measure it end to end — controller input to on-screen response on the client display — so you have an objective baseline for tuning and regression tracking.
+
+## What to measure
+
+| Metric | Definition |
+| --- | --- |
+| Glass-to-glass latency | Time from the controller input event to the corresponding pixel change on the client display |
+| Server render time | Time from input on the server to the presented server frame |
+| Encode \+ network \+ decode | Time from server present to client display |
+| Frame pacing jitter | Standard deviation of per-frame latency across a fixed-length capture |
+
+## Measurement approaches
+
+<CardGroup cols={2}>
+  <Card title="External high-speed camera" icon="video">
+    The reference approach: record a high-frame-rate video of a physical input event alongside the client display and count frames.
+  </Card>
+
+  <Card title="Instrumented CTA" icon="code">
+    The [Web CTA](/gdk/game-streaming-web-content-test-application) surfaces on-screen HUDs for server frame numbers and last frame displayed. Instrument your title to display the current frame counter so you can compare.
+  </Card>
+
+  <Card title="Automated regression" icon="chart-line">
+    Add a periodic latency probe to your build pipeline. Even a rough electronic loopback gives you a regression signal.
+  </Card>
+
+  <Card title="Simulated conditions" icon="clock" href="/gdk/game-streaming-simulate-latency-while-testing">
+    Repeat every measurement across the range of latencies you expect players to experience.
+  </Card>
+</CardGroup>
+
+## What good looks like
+
+- Median glass-to-glass latency stays inside your target budget across your representative client set.
+- Jitter is low: the 95th percentile is close to the median.
+- Simulated worst-case latencies degrade gracefully — gameplay is still playable, not just measurable.
+
+<Warning>
+  `XGameStreamingGetAssociatedFrame` and `XGameStreamingGetLastFrameDisplayed` are deprecated as of the June 2026 (2604) GDK. Use the current frame-association APIs from the SDK header when instrumenting your title. See [Latency compensation deep dive](/gdk/game-streaming-latency-compensation-deep-dive).
+</Warning>
+
+## Related
+
+- [Latency compensation overview](/gdk/game-streaming-latency-compensation-overview)
+- [Latency compensation deep dive](/gdk/game-streaming-latency-compensation-deep-dive)
+- [Simulate latency while testing](/gdk/game-streaming-simulate-latency-while-testing)

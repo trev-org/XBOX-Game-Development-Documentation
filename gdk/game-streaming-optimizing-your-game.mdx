@@ -1,0 +1,67 @@
+---
+title: "Optimize your game for streaming — best practices"
+sidebarTitle: "Optimize for streaming"
+description: "Best practices for adapting a GDK title so it performs well when streamed from xCloud or Remote Play."
+icon: "gauge-high"
+---
+
+Your title works with streaming out of the box, but a few targeted changes make a large difference to how it feels on a streamed client. Adopt these best practices before you enable your title on a Private Offering.
+
+## The short list
+
+<CardGroup cols={2}>
+  <Card title="Adopt Cloud Aware APIs" icon="signal" href="/gdk/game-streaming-am-i-streaming">
+    Detect streaming, react to connect/disconnect, and query per-client display and input properties.
+  </Card>
+
+  <Card title="Ship a touch layout" icon="hand-pointer" href="/gdk/game-streaming-touch-touch-adaptation-kit-overview">
+    Every title expected to reach a touch client should ship a Touch Adaptation Bundle.
+  </Card>
+
+  <Card title="Keep frame pacing tight" icon="stopwatch">
+    A steady 50 fps streams better than a jittery 60 fps. Fix hitching before you fix peak framerate.
+  </Card>
+
+  <Card title="Design for latency" icon="clock" href="/gdk/game-streaming-latency-compensation-overview">
+    Give hit windows, reticle assist, and HUD response an adjustable budget so streaming players are not penalized.
+  </Card>
+</CardGroup>
+
+## Framerate and pacing
+
+- Aim for a stable framerate you can hit every frame under worst-case load. A jittery high framerate encodes badly and looks worse than a steady lower framerate.
+- Avoid long GPU hitches on level transitions and cinematics. Pre-load textures for commonly visited areas.
+- Cap variable-rate effects (particle bursts, screen-space post) so a single scripted event does not spike frame time above your budget.
+
+## Resolution and rendering
+
+- Query the negotiated stream resolution via [`XGameStreamingGetClientDimensions`](/gdk/game-streaming-am-i-streaming); do not assume 1080p.
+- Re-allocate render targets and UI scale when the resolution changes mid-session. See [Custom resolution overview](/gdk/game-streaming-custom-resolution-overview).
+- Avoid hard-coded resolutions in shaders, post-process kernels, and texture mip selection.
+
+## Input and latency
+
+- Query [gamepad physicality](/gdk/game-streaming-am-i-streaming#detect-touch-versus-gamepad) so you show touch-appropriate prompts and hints.
+- Provide a latency-friendly control option — slightly enlarged hit windows, reticle assist, or a reduced HUD input threshold.
+- Sample input on the server frame the client will see, not the frame the server is rendering. See [Latency compensation deep dive](/gdk/game-streaming-latency-compensation-deep-dive).
+
+<Warning>
+  `XGameStreamingGetClientIPAddress` is deprecated as of the June 2026 (2604) GDK. Do not use client IP for behavior gating — use the current client identity APIs and server-side signals.
+</Warning>
+
+## UI and readability
+
+- Streaming clients often have smaller screens than a TV. Test all HUD text and menu text on a phone-class client.
+- Keep interactive UI elements large enough to hit with a fingertip when playing via touch adaptation.
+- Provide a high-contrast rendering path where practical — dark backgrounds against dark HUD elements suffer under encoding.
+
+## Audio
+
+- Streaming compresses audio; loud transients get less headroom. Master with lossy encoding in mind.
+- Prefer positional audio hints via HUD or subtitles for cues that matter to gameplay.
+
+## Testing
+
+- Run through the on-device [test loop](/gdk/game-streaming-stream-your-game) with the [Web CTA](/gdk/game-streaming-web-content-test-application) before you request a Private Offering.
+- Use [simulated latency](/gdk/game-streaming-simulate-latency-while-testing) to validate behavior across a range of network conditions.
+- Measure end-to-end latency with the [Latency measurement test](/gdk/game-streaming-latency-measurement) so you have a regression signal.

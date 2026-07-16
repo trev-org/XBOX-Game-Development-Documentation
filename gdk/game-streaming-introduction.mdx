@@ -1,0 +1,70 @@
+---
+title: "XBOX Game Streaming and Remote Play — an introduction"
+sidebarTitle: "Introduction"
+description: "Learn how XBOX Game Streaming and XBOX Remote Play let players run your GDK title from an Azure datacenter or their own console."
+icon: "satellite-dish"
+---
+
+XBOX Game Streaming and XBOX Remote Play let players experience your game on devices that could not otherwise run it — phones, tablets, PCs, and smart TVs. Your title works with streaming out of the box, but the GDK exposes APIs, testing tools, and touch adaptation authoring so you can tailor the streaming experience to each client.
+
+## Two streaming modes
+
+<CardGroup cols={2}>
+  <Card title="XBOX Cloud Gaming (xCloud)" icon="cloud" href="/gdk/game-streaming-project-xcloud-vs-console-streaming">
+    Your game runs on an XBOX server in a Microsoft Azure datacenter. Players stream from the closest datacenter — no console required.
+  </Card>
+
+  <Card title="XBOX Remote Play" icon="house" href="/gdk/game-streaming-project-xcloud-vs-console-streaming">
+    Your game runs on the player's own console at home and streams to their Windows PC or mobile device.
+  </Card>
+</CardGroup>
+
+Both modes are transparent to your game at the rendering and logic level. The GDK `XGameStreaming` APIs let you discover which mode is active and adapt accordingly.
+
+## What you can do from a GDK title
+
+<CardGroup cols={2}>
+  <Card title="Detect streaming" icon="signal" href="/gdk/game-streaming-am-i-streaming">
+    Use Cloud Aware API calls to check whether a session is being streamed and to react to connect / disconnect events.
+  </Card>
+
+  <Card title="Adapt for touch clients" icon="hand-pointer" href="/gdk/game-streaming-touch-touch-adaptation-kit-overview">
+    Ship touch adaptation bundles so gamepad-less clients see a purpose-built control overlay.
+  </Card>
+
+  <Card title="Optimize for the network" icon="gauge-high" href="/gdk/game-streaming-optimizing-your-game">
+    Follow the streaming best practices for latency, framerate, custom resolution, and DirectCapture.
+  </Card>
+
+  <Card title="Test end-to-end" icon="flask" href="/gdk/game-streaming-stream-your-game">
+    Stream from a dev kit through the Content Test Applications to validate your title on a real streaming client.
+  </Card>
+</CardGroup>
+
+## Supported client platforms
+
+XBOX Game Streaming supports players connecting from:
+
+- Windows PCs via the XBOX app
+- iOS and Android phones and tablets via the XBOX app / Game Pass app
+- Smart TVs with the XBOX app built in
+- Web browsers via [xbox.com/play](https://www.xbox.com/play)
+
+Your game runs identically on the server regardless of client. Client-specific adaptations — touch layouts, display scaling, input remapping — are surfaced through the Cloud Aware APIs.
+
+## Where to go next
+
+<Steps>
+  <Step title="Compare the two streaming modes">
+    Read [xCloud vs Console Streaming](/gdk/game-streaming-project-xcloud-vs-console-streaming) to understand the differences that matter for your title.
+  </Step>
+  <Step title="Set up a streaming dev kit">
+    Follow [Set up an XBOX Developer Kit for streaming](/gdk/game-streaming-setup-xbox-developer-kit) to enable streaming from your dev kit.
+  </Step>
+  <Step title="Stream your game to a test client">
+    Complete the [Streaming test prerequisites](/gdk/game-streaming-stream-your-game) and pick a Content Test Application.
+  </Step>
+  <Step title="Adopt Cloud Aware APIs">
+    Add [`XGameStreamingIsStreaming` and client property queries](/gdk/game-streaming-am-i-streaming) so your title can react to streaming sessions.
+  </Step>
+</Steps>

@@ -1,0 +1,45 @@
+---
+title: "Customize the TAK Editor preview"
+sidebarTitle: "Customize preview"
+description: "Tune the TAK Editor preview to match target client resolutions, aspect ratios, safe areas, and accessibility modes."
+icon: "sliders"
+---
+
+The preview panel supports overrides so you can validate a layout under the exact conditions a real client will experience.
+
+## What you can customize
+
+| Setting | What it does |
+| --- | --- |
+| Target resolution | Renders the preview at a specific client resolution (720p, 1080p, portrait) |
+| Aspect ratio | Constrains the canvas to a specific aspect (16:9, 16:10, portrait) |
+| Safe area | Draws the on-screen safe area for target clients so you avoid the edges |
+| Language | Swaps the localization strings to the selected language |
+| High contrast | Toggles the high-contrast asset variant |
+| Show HUD outlines | Overlays HUD-safe zones you have defined for your title |
+
+## Recommended sweeps
+
+<Steps>
+  <Step title="Design at 1080p">
+    Start with 1080p landscape for the design phase.
+  </Step>
+  <Step title="Verify at 720p">
+    Switch to 720p and confirm text remains legible and controls do not become disproportionate.
+  </Step>
+  <Step title="Verify portrait">
+    Switch to a portrait aspect and confirm your layout still works or you have a purpose-built portrait layout.
+  </Step>
+  <Step title="Verify longest-string language">
+    Switch the preview to the language with the longest translations (typically German or Finnish) and confirm labels do not overflow.
+  </Step>
+  <Step title="Verify high contrast">
+    Toggle high contrast and confirm the paired assets look right — see [High contrast mode](/gdk/game-streaming-tak-high-contrast-mode).
+  </Step>
+</Steps>
+
+## Related
+
+- [Preview layouts](/gdk/game-streaming-tak-editor-preview-layouts)
+- [Custom assets](/gdk/game-streaming-tak-custom-assets)
+- [Custom resolution best practices](/gdk/game-streaming-custom-resolution-best-practices)

@@ -1,0 +1,61 @@
+---
+title: "Virtual keyboard"
+sidebarTitle: "Virtual keyboard"
+description: "Show the on-screen text-entry keyboard on XBOX and streaming clients via XGameUiShowTextEntryAsync."
+icon: "keyboard"
+---
+
+On console and streaming clients — where players do not always have a physical keyboard — use the system on-screen keyboard for any text entry.
+
+## Show the on-screen keyboard
+
+Call `XGameUiShowTextEntryAsync` and await the result:
+
+```cpp
+XAsyncBlock async{};
+async.queue = taskQueue;
+async.callback = [](XAsyncBlock* ab)
+{
+    uint32_t size = 0;
+    if (SUCCEEDED(XGameUiShowTextEntryResultSize(ab, &size)))
+    {
+        std::wstring text(size, L'\0');
+        XGameUiShowTextEntryResult(ab, size, text.data(), nullptr);
+        // Consume the text
+    }
+};
+
+XGameUiShowTextEntryAsync(
+    &async,
+    XGameUiTextEntryInputScope::Default,
+    L"Enter a name",
+    L"Player name",
+    L"",
+    /* maxLength */ 32);
+```
+
+## Input scopes
+
+Pass the input scope that matches the field. The runtime picks the right layout (URL, email, numeric, gamertag) and enforces sensible max lengths and character sets.
+
+| Scope | Use for |
+| --- | --- |
+| `Default` | Free-form text |
+| `Url` | URLs |
+| `EmailSmtpAddress` | Email addresses |
+| `Number` | Numeric entry |
+| `Password` | Masked entry |
+| `Alphanumeric*` | Names, tags, codes with restricted character sets |
+
+## Guidance
+
+- Always provide a placeholder and a title — the on-screen keyboard shows both.
+- Preserve any existing text as the initial value so backspacing does not wipe the user's work.
+- Do not run gameplay behind the keyboard — pause your simulation while it is up.
+- Streaming touch clients get the client-native on-screen keyboard, not a rendered one. Do not try to build your own.
+
+## Related
+
+- [Keyboard and mouse](/gdk/input-keyboard-mouse)
+- [Native touch with IGameInput](/gdk/game-streaming-native-touch-igameinput)
+- [User model](/gdk/user-model)

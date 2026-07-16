@@ -1,0 +1,58 @@
+---
+title: "Custom resolution best practices"
+sidebarTitle: "Custom resolution best practices"
+description: "Design and engineering guidance for titles that support custom streaming resolutions."
+icon: "list-check"
+---
+
+Custom resolution unlocks streaming to a wider set of clients but pushes new requirements onto the rendering, UI, and asset pipelines. Use these best practices when adopting it.
+
+## Rendering
+
+<AccordionGroup>
+  <Accordion title="Derive everything from the current render target" icon="ruler">
+    Never hard-code 1920 or 1080. Read the current render target dimensions and derive every dependent value (aspect, tile counts, post-process kernel sizes) from them.
+  </Accordion>
+
+  <Accordion title="Support fractional scaling for post-process" icon="square-poll-vertical">
+    Blur and bloom kernels sized in pixels look different at 720p than at 1080p. Size them in normalized units or scale the kernel by the current resolution.
+  </Accordion>
+
+  <Accordion title="Re-allocate on resize" icon="arrows-rotate">
+    Register a callback for resolution changes and rebuild render targets, depth buffers, and any resolution-tied caches. Do not rebuild every frame.
+  </Accordion>
+
+  <Accordion title="Watch for texture mip selection" icon="image">
+    LOD selection depends on projected pixel size. Verify that at 720p your title still selects appropriate mips — undersampling can create shimmering.
+  </Accordion>
+</AccordionGroup>
+
+## UI
+
+- Design HUD and menu elements using a virtual coordinate space that scales to the render target.
+- Test text legibility on the smallest supported resolution. Font sizes that read fine at 1080p can be unusable at 720p.
+- Reserve safe-area padding for touch adaptation overlays even when a physical gamepad is in use.
+
+## Assets
+
+- Provide texture mips down to the resolution you expect to render at. Do not rely on GPU-side minification of oversized textures.
+- Prefer scalable UI assets (vector or high-res 9-slice) over fixed-res sprites.
+
+## Testing
+
+<Steps>
+  <Step title="Force a low resolution in the Web CTA">
+    Override the client resolution to 720p or a portrait aspect from the [Web CTA stream configuration](/gdk/game-streaming-content-test-application-stream-config) and validate rendering, UI, and text legibility.
+  </Step>
+  <Step title="Force a resolution change mid-session">
+    Disconnect and reconnect at a different resolution to confirm your title re-allocates render targets cleanly.
+  </Step>
+  <Step title="Automate a regression check">
+    Add a smoke test that runs your title at each supported resolution and captures a reference screenshot.
+  </Step>
+</Steps>
+
+## Related
+
+- [Custom resolution overview](/gdk/game-streaming-custom-resolution-overview)
+- [Optimize for streaming](/gdk/game-streaming-optimizing-your-game)

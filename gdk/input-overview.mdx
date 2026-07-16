@@ -1,0 +1,67 @@
+---
+title: "Input overview"
+sidebarTitle: "Overview"
+description: "Read gamepad, keyboard, mouse, wheel, and touch input via the GameInput API on XBOX and PC."
+icon: "gamepad"
+---
+
+GDK titles read input through **GameInput**, the modern device-agnostic input API shared between XBOX and Windows. GameInput replaces XInput and Windows.Gaming.Input for GDK titles and covers every input device a player can plug in.
+
+## What GameInput covers
+
+<CardGroup cols={2}>
+  <Card title="Gamepads" icon="gamepad" href="/gdk/input-devices">
+    XBOX Wireless, Elite Series 2, Adaptive Controller — buttons, sticks, triggers, and haptics.
+  </Card>
+
+  <Card title="Wheels, sticks, arcade" icon="steering-wheel" href="/gdk/input-devices">
+    Racing wheels with force feedback, arcade sticks, flight sticks with throttle and rudder.
+  </Card>
+
+  <Card title="Keyboard and mouse" icon="keyboard" href="/gdk/input-keyboard-mouse">
+    Full per-key state and high-precision motion deltas without `WM_INPUT` plumbing.
+  </Card>
+
+  <Card title="Touch and sensors" icon="hand-pointer" href="/gdk/input-sensors">
+    Touch via streaming clients and Windows devices; gyroscope, accelerometer, light sensor.
+  </Card>
+</CardGroup>
+
+## Read next
+
+<Steps>
+  <Step title="Understand the model">
+    Read [GameInput fundamentals](/gdk/input-fundamentals) — readings, versioning, ownership.
+  </Step>
+  <Step title="Pick your devices">
+    Review [Devices and hardware](/gdk/input-devices) for the full device matrix and capability queries.
+  </Step>
+  <Step title="Wire up callbacks">
+    Use [Callbacks and work queues](/gdk/input-callbacks) to react to hot-plug and state changes without polling.
+  </Step>
+  <Step title="Handle users">
+    Read [Association timing](/gdk/user-controller-association-timing) and [Controller loss](/gdk/controller-loss) before you ship multi-user support.
+  </Step>
+  <Step title="Port legacy code">
+    If you have existing XInput or WGI code, see [XInput / WGI porting](/gdk/input-xinput-wgi-porting).
+  </Step>
+</Steps>
+
+## Best practices at a glance
+
+- Always handle device hot-plug and re-query on Quick Resume — the active gamepad may have changed.
+- Support the XBOX Adaptive Controller for accessibility.
+- Poll or use callbacks on a consistent cadence; do not mix polled and event-driven reads in the same frame.
+- Version your interfaces — always ask for the highest `IGameInputReadingN` your code understands and fall back gracefully.
+- Never bind gameplay to physical scan codes — abstract into engine actions and let the user rebind.
+
+## API reference
+
+- [GameInput API reference](/reference/gameinput) — `GameInputCreate`, `GameInputDeviceInfo`, `GameInputKeyState`, `GameInputMouseState`, `GameInputHapticInfo`, `GameInputSensorsInfo`, `GameInputSensorsState`, force feedback interfaces.
+- [GameInput extended API reference](/reference/gameinput-extended) — XInput-on-GameInput shim and deprecated surface.
+
+## Related
+
+- [User model](/gdk/user-model)
+- [Touch Adaptation Kit overview](/gdk/game-streaming-touch-touch-adaptation-kit-overview)
+- [Native touch with IGameInput](/gdk/game-streaming-native-touch-igameinput)

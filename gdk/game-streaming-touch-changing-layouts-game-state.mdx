@@ -1,0 +1,72 @@
+---
+title: "Changing layouts by game state"
+sidebarTitle: "Layouts by state"
+description: "Swap between touch layouts as the player enters different gameplay states — exploration, combat, inventory, cutscenes."
+icon: "arrows-rotate"
+---
+
+One layout rarely covers every gameplay state. Ship distinct layouts for each state — exploration, combat, inventory, dialog, driving — and swap between them from your title.
+
+## When to swap
+
+<CardGroup cols={2}>
+  <Card title="Explicit game states" icon="map">
+    Exploration, combat, driving, vehicle, air, water — each with its own control priorities.
+  </Card>
+
+  <Card title="Modal UI" icon="square-list">
+    Inventory, map, dialog, pause — layouts that emphasize menu navigation, not action.
+  </Card>
+
+  <Card title="Cutscenes" icon="film">
+    Hide most controls; leave a skip / advance affordance if the design supports it.
+  </Card>
+
+  <Card title="Text input" icon="keyboard">
+    Hand off to the client's soft keyboard rather than showing a bespoke touch keypad.
+  </Card>
+</CardGroup>
+
+## How the swap works
+
+Every layout in your bundle has a stable identifier. From your title, call the touch-adaptation runtime API to activate a layout by identifier. The streaming client re-renders the overlay with the new layout on the next frame.
+
+```cpp
+#include <XGameStreaming.h>
+
+// Activate a layout defined in the bundle
+XGameStreamingShowTouchControlLayout("gameplay-combat");
+
+// Hide all touch controls (e.g. during a cutscene)
+XGameStreamingHideTouchControls();
+```
+
+<Note>
+  These calls are advisory. If the player is on a gamepad the streaming client ignores the layout change. Design your title's state machine to call them unconditionally; the runtime handles the case where the client has no touch overlay.
+</Note>
+
+## Transitions
+
+- Swaps are not instantaneous. Design transitions so a brief overlap does not cause mis-input.
+- Do not swap layouts more than a few times per second. Rapid oscillation between two layouts confuses players.
+- On state changes that come from a network event (multiplayer combat begins), apply the layout swap on the same tick as the state change so it feels tied to gameplay.
+
+## Testing
+
+<Steps>
+  <Step title="Enumerate your states">
+    List every gameplay state that should have its own layout. Ship a layout even if it is just a stripped-down variant.
+  </Step>
+  <Step title="Exercise every transition">
+    Walk every state-to-state transition on a real touch session. Note any transitions that produce mis-input.
+  </Step>
+  <Step title="Confirm the hide path">
+    Confirm cutscenes and non-interactive moments hide controls cleanly, and restore them when interactive gameplay resumes.
+  </Step>
+</Steps>
+
+## Related
+
+- [Cloud Aware APIs — detect touch versus gamepad](/gdk/game-streaming-am-i-streaming#detect-touch-versus-gamepad)
+- [Designers guide](/gdk/game-streaming-tak-designers-guide)
+- [Building a touch layout](/gdk/game-streaming-touch-building-touch-layout)

@@ -1,0 +1,68 @@
+---
+title: "Touch Adaptation Kit (TAK) overview"
+sidebarTitle: "TAK overview"
+description: "The Touch Adaptation Kit authors, packs, and delivers Touch Adaptation Bundles that let a GDK title expose touch controls on streaming clients."
+icon: "wand-magic-sparkles"
+---
+
+The **Touch Adaptation Kit (TAK)** is the authoring and packaging toolchain for touch controls on streamed titles. It lets you design, preview, pack, and serve a **Touch Adaptation Bundle (TAB)** that the streaming pipeline delivers to gamepad-less clients so they can play your game with touch.
+
+<CardGroup cols={2}>
+  <Card title="Touch Adaptation Bundle" icon="box" href="/gdk/game-streaming-touch-touch-adaptation-bundle">
+    The `.tab` file the streaming service ships to clients — layouts, per-state overrides, custom art, localization.
+  </Card>
+
+  <Card title="TAK Editor" icon="pen-ruler" href="/gdk/game-streaming-tak-editor">
+    A Windows application for building and previewing layouts against recorded gameplay.
+  </Card>
+
+  <Card title="TAK command line tool" icon="terminal" href="/gdk/game-streaming-tak-command-line">
+    A `takx` CLI for creating templates, converting sources, packing bundles, and serving them to test clients.
+  </Card>
+
+  <Card title="Sample layouts" icon="layer-group" href="/gdk/game-streaming-touch-getting-started-with-sample-layouts">
+    Genre-specific starting points — driving, first-person, platformer, fighter, standard controller.
+  </Card>
+</CardGroup>
+
+## When your title needs a TAB
+
+- Any title expected to be reachable by a touch client (phone, tablet, touch-only Web CTA session).
+- Any title where the streamed audience is broader than gamepad-only.
+- Any title where you want to author touch-specific UX rather than accepting a generic default overlay.
+
+## The end-to-end flow
+
+<Steps>
+  <Step title="Author">
+    Design your layouts in the [TAK Editor](/gdk/game-streaming-tak-editor) or start from a [template layout](/gdk/game-streaming-tak-command-line-templates).
+  </Step>
+  <Step title="Preview">
+    Preview layouts against a recorded gameplay video in the editor before you pack.
+  </Step>
+  <Step title="Pack">
+    Pack a `.tab` file with the [TAK CLI `pack` command](/gdk/game-streaming-tak-command-line-pack-command) or the editor.
+  </Step>
+  <Step title="Serve during testing">
+    Sideload the bundle to a CTA using the [TAK CLI `serve` command](/gdk/game-streaming-tak-command-line-serve-command).
+  </Step>
+  <Step title="Publish">
+    [Publish the layout](/gdk/game-streaming-touch-publishing-layouts) so the streaming service ships it to real clients.
+  </Step>
+</Steps>
+
+## Key concepts
+
+| Concept | What it is |
+| --- | --- |
+| [Touch Adaptation Bundle (TAB)](/gdk/game-streaming-touch-touch-adaptation-bundle) | Packed `.tab` file containing all layouts and assets for one title |
+| Layout | One touch overlay tuned for a specific game state |
+| Layout state | Which layout is currently active — the title triggers state changes at runtime |
+| Template | Genre-based starting layout that the [`create`](/gdk/game-streaming-tak-command-line-create-command) command emits |
+| Custom assets | Optional bitmaps replacing the default controls — see [Custom assets](/gdk/game-streaming-tak-custom-assets) |
+
+## Where to go next
+
+- New to touch? Start with [Getting started with touch](/gdk/game-streaming-getting-started-with-touch).
+- Designing your first layout? Read the [Designers guide](/gdk/game-streaming-tak-designers-guide).
+- Ready to build? Jump to [Building a touch layout](/gdk/game-streaming-touch-building-touch-layout).

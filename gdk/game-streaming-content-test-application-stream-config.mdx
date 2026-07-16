@@ -1,0 +1,50 @@
+---
+title: "Stream configuration in the Content Test Application"
+sidebarTitle: "Stream config"
+description: "Override bitrate, codec, resolution, and network parameters in a Content Test Application to stress test your title."
+icon: "sliders"
+---
+
+The Content Test Applications let you override the parameters that the streaming pipeline would normally negotiate. Use these overrides to validate your title against the full range of conditions real clients may experience without waiting for a bad network.
+
+## What you can override
+
+| Parameter | Purpose |
+| --- | --- |
+| Target bitrate | Simulate low-bandwidth clients — typically 3, 5, 10 Mbps |
+| Codec (H.264 / HEVC / AV1) | Verify each supported codec renders as expected |
+| Resolution | Force 720p, 1080p, or a portrait aspect for touch clients |
+| Frame rate cap | Simulate a lower-refresh client |
+| Added round-trip latency | Add fixed latency in ms |
+| Jitter | Add bounded random variance on top of the fixed latency |
+| Packet loss | Simulate a lossy connection |
+
+## Recommended sweeps
+
+<CardGroup cols={2}>
+  <Card title="Low bandwidth" icon="tower-broadcast">
+    Drop bitrate to 3 Mbps. Verify the title remains legible; adjust HUD contrast and text size if not.
+  </Card>
+
+  <Card title="Custom resolution" icon="expand" href="/gdk/game-streaming-custom-resolution-overview">
+    Force 720p or a portrait aspect and confirm your render targets re-allocate cleanly.
+  </Card>
+
+  <Card title="Latency + jitter" icon="clock" href="/gdk/game-streaming-simulate-latency-while-testing">
+    Add \+80 ms with ±20 ms jitter. Verify your compensation levers kick in proportionally.
+  </Card>
+
+  <Card title="Packet loss" icon="wifi-slash">
+    Introduce 1–2% loss and confirm the stream recovers gracefully. Investigate if the title stalls.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Save recorded profiles per scenario in the CTA so QA can replay them in regression passes.
+</Tip>
+
+## Related
+
+- [Web CTA](/gdk/game-streaming-web-content-test-application)
+- [Custom resolution overview](/gdk/game-streaming-custom-resolution-overview)
+- [Simulate latency](/gdk/game-streaming-simulate-latency-while-testing)

@@ -1,0 +1,64 @@
+---
+title: "Localizing touch adaptation bundles"
+sidebarTitle: "TAK localization"
+description: "Ship translated labels for touch controls so streamed players see the touch overlay in their own language."
+icon: "language"
+---
+
+Any text on a touch control — button label, tooltip, group heading — should be localized alongside the rest of your title. The Touch Adaptation Bundle ships with per-language string tables that the streaming client picks based on the player's language preference.
+
+## What to localize
+
+- Button labels visible on any touch control.
+- Group headings and section titles inside the touch overlay.
+- Tooltip and help strings surfaced by the touch adaptation runtime.
+- Any custom text baked into a [custom asset](/gdk/game-streaming-tak-custom-assets) — provide per-language bitmaps if the text is inside the image.
+
+## Where the strings live
+
+A TAB source directory contains a `loc/` folder with one JSON file per supported language. Each file maps a stable string ID to the translated string.
+
+```text
+my-title-bundle/
+└── loc/
+    ├── en-us.json
+    ├── fr-fr.json
+    ├── de-de.json
+    └── ja-jp.json
+```
+
+Controls in your layouts reference string IDs, not literal text.
+
+## Adding a language
+
+<Steps>
+  <Step title="Add the language file">
+    Copy `en-us.json` to `<lang>.json` and translate every value. Keep the keys identical.
+  </Step>
+  <Step title="Verify the language code">
+    Use standard language tags (BCP-47) matching the tags your title uses elsewhere. The streaming service picks a bundle language based on the player's system language.
+  </Step>
+  <Step title="Preview in the TAK Editor">
+    Switch the preview language in the [TAK Editor](/gdk/game-streaming-tak-editor) to confirm strings render as expected within the layout's control sizes.
+  </Step>
+  <Step title="Re-pack the bundle">
+    Run [`takx pack`](/gdk/game-streaming-tak-command-line-pack-command) to produce a new `.tab` that includes the new language.
+  </Step>
+</Steps>
+
+## What to test
+
+- Text still fits inside its control at the longest translation (German and Finnish tend to be the worst offenders).
+- Right-to-left languages render controls in the intended reading order.
+- The player's system language selects the correct string table when the client connects.
+- Fallback to the default language works cleanly if a key is missing.
+
+<Warning>
+  If your custom assets include baked-in text, ship per-language art variants. The runtime does not translate images.
+</Warning>
+
+## Related
+
+- [TAB structure](/gdk/game-streaming-touch-touch-adaptation-bundle)
+- [Custom assets](/gdk/game-streaming-tak-custom-assets)
+- [Localize your GDK title](/gdk/localization)

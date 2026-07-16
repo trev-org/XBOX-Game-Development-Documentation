@@ -1,0 +1,58 @@
+---
+title: "xCloud vs Console Streaming (Remote Play)"
+sidebarTitle: "xCloud vs Remote Play"
+description: "How XBOX Cloud Gaming (xCloud) and XBOX Remote Play differ, and what that means for building and testing your GDK title."
+icon: "code-compare"
+---
+
+XBOX supports two streaming modes. Both use the same client applications and the same `XGameStreaming` APIs, but they differ in where the game runs and how a title reaches its audience.
+
+## Side-by-side
+
+| Aspect | XBOX Cloud Gaming (xCloud) | XBOX Remote Play |
+| --- | --- | --- |
+| Where the game runs | XBOX server in an Azure datacenter | Player's own XBOX console |
+| Console required for the player | No | Yes |
+| Audience | Anyone entitled to the title through Game Pass or a supported offering | The owner of the console (and users signed in on it) |
+| Titles opted-in | Only titles published for xCloud | Any installed XBOX title on the console |
+| Network path | Client → Azure datacenter | Client → home network → console |
+| Testing environment | Private Offerings in Azure | Any dev kit or retail console the developer can reach |
+| Touch adaptation bundles | Delivered by the streaming service | Delivered by the streaming service |
+| Server-side customization (bitrate, codec, custom stream metadata) | Configurable per title in a Private Offering | Not applicable — uses the console's local streaming stack |
+
+## When each mode matters for your title
+
+<CardGroup cols={2}>
+  <Card title="Optimize for both" icon="circle-check">
+    Both modes stream at similar bitrates and latencies for most clients. Best practices for [latency compensation](/gdk/game-streaming-latency-compensation-overview), [custom resolution](/gdk/game-streaming-custom-resolution-overview), and touch input apply to both.
+  </Card>
+
+  <Card title="Test on both" icon="flask">
+    Console Streaming can be tested from any dev kit today. xCloud validation requires a [Private Offering](/gdk/game-streaming-referencing-xcloud-servers-in-xsts-claims) coordinated with your Microsoft Program Representative.
+  </Card>
+
+  <Card title="Server identity differs" icon="id-card">
+    When your title runs in xCloud, it can be flagged as running on an xCloud server so backend services can distinguish streamed sessions. See [Referencing xCloud servers in XSTS claims](/gdk/game-streaming-referencing-xcloud-servers-in-xsts-claims).
+  </Card>
+
+  <Card title="Same API surface" icon="code">
+    `XGameStreamingIsStreaming` returns `true` in either mode. Use [client properties](/gdk/game-streaming-am-i-streaming) to distinguish behavior when needed — do not gate on the mode itself.
+  </Card>
+</CardGroup>
+
+## What is the same
+
+- The `XGameStreaming` API surface — detection, client property retrieval, touch layout activation, connection state callbacks.
+- The Touch Adaptation Kit format — you author one touch adaptation bundle for both modes.
+- The Content Test Applications used for validation.
+- Every rendering, audio, and gameplay guideline in this section.
+
+## What is different
+
+- xCloud runs your title on a shared cluster of servers with dedicated networking and shaping. Remote Play runs on a specific player's home console over their consumer network.
+- xCloud lets you flight per-offering metadata (touch layouts, keyboard/mouse support, custom packages) through a Private Offering. Remote Play uses whatever is installed on the console.
+- xCloud may negotiate custom resolutions (e.g. 720p) for low-bandwidth clients. Remote Play typically streams at the console's rendered output resolution.
+
+<Note>
+  For anything that must behave differently in xCloud vs Remote Play, read a signal from client properties or a server-side flag — do not hard-code branches by mode.
+</Note>

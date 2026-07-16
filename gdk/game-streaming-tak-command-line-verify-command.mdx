@@ -1,0 +1,62 @@
+---
+title: "takx verify command"
+sidebarTitle: "verify"
+description: "Validate a Touch Adaptation Bundle source directory or .tab against the current schema."
+icon: "circle-check"
+---
+
+`takx verify` validates a bundle against the current schema. Run it before packing and before submission — the streaming service rejects bundles that fail schema, asset, or localization checks.
+
+## Synopsis
+
+```powershell
+takx verify <path>
+```
+
+## Arguments
+
+| Argument | Purpose |
+| --- | --- |
+| `<path>` | Source directory or `.tab` file to validate |
+
+## Examples
+
+Verify a source directory:
+
+```powershell
+takx verify my-title-bundle
+```
+
+Verify a packed bundle:
+
+```powershell
+takx verify my-title.tab
+```
+
+## What it checks
+
+- `manifest.json` is well-formed and includes required fields.
+- Every layout in `layouts/` matches the current schema.
+- Every asset referenced from a layout exists in `assets/`.
+- Every localization key referenced from a layout exists in every language file in `loc/`.
+- Version conforms to the format expected by the streaming service.
+- Notice and license configuration is complete for submission.
+
+## Fix workflow
+
+<Steps>
+  <Step title="Read the error location">
+    `verify` prints the file and field for each error. Open the file at that location.
+  </Step>
+  <Step title="Fix in the editor">
+    Use the [TAK Editor](/gdk/game-streaming-tak-editor) to correct schema issues visually where possible.
+  </Step>
+  <Step title="Re-run verify">
+    Repeat until `verify` reports no errors. Address warnings before submission where you can.
+  </Step>
+</Steps>
+
+## Related
+
+- [pack](/gdk/game-streaming-tak-command-line-pack-command)
+- [Publish layouts](/gdk/game-streaming-touch-publishing-layouts)

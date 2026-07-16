@@ -1,0 +1,69 @@
+---
+title: "Callbacks and work queues"
+sidebarTitle: "Callbacks"
+description: "Register for GameInput device and reading callbacks and route them through your own XTaskQueue."
+icon: "bell"
+---
+
+GameInput supports both polled reads and callback-driven notifications. Callbacks are the right choice for hot-plug, chatter-free state changes, and any input that must not miss an edge between frames.
+
+## Device callbacks
+
+`RegisterDeviceCallback` fires when a device appears, disappears, or changes capabilities:
+
+```cpp
+GameInputCallbackToken token = 0;
+gameInput->RegisterDeviceCallback(
+    /* device */ nullptr,
+    GameInputKindGamepad,
+    GameInputDeviceConnected,
+    GameInputBlockingEnumeration,
+    /* context */ this,
+    &OnDevice,
+    &token);
+```
+
+Use device callbacks to update your controller-picker UI, re-run controller-user association, and prompt the player when their device dies.
+
+## Reading callbacks
+
+`RegisterReadingCallback` fires when a device's state changes:
+
+```cpp
+gameInput->RegisterReadingCallback(
+    device,
+    GameInputKindGamepad,
+    /* analog threshold */ 0.05f,
+    /* context */ this,
+    &OnReading,
+    &token);
+```
+
+Reading callbacks are useful for menu code (no need to poll) and for input that should not miss an edge between simulation ticks.
+
+## Route callbacks onto your own task queue
+
+By default GameInput dispatches callbacks on the system thread pool. On a busy title that shares one process-wide thread pool with everything else, this can starve input. Give GameInput its own `XTaskQueue` so input has a predictable scheduling contract:
+
+```cpp
+XTaskQueueHandle inputQueue = nullptr;
+XTaskQueueCreate(
+    XTaskQueueDispatchMode::ThreadPool,
+    XTaskQueueDispatchMode::Manual,
+    &inputQueue);
+
+gameInput->SetTaskQueue(inputQueue);
+```
+
+Pump the manual side of the queue on your main input thread so callbacks arrive at deterministic points in your frame.
+
+## Unregister on shutdown
+
+- Always call `UnregisterCallback` before releasing the `IGameInput` instance.
+- Cancel outstanding callbacks before tearing down the task queue, or you will race a pending dispatch.
+
+## Related
+
+- [Fundamentals](/gdk/input-fundamentals)
+- [Devices and hardware](/gdk/input-devices)
+- [Async task queues](/gdk/task-queues)

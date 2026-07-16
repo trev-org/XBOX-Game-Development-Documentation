@@ -1,0 +1,61 @@
+---
+title: "takx convert command"
+sidebarTitle: "convert"
+description: "Convert an older bundle source or .tab format to the current schema."
+icon: "arrow-right-arrow-left"
+---
+
+`takx convert` upgrades a bundle authored against an older schema to the current one. Use it once, then commit the converted source to source control and continue with the current CLI.
+
+## Synopsis
+
+```powershell
+takx convert <input> -o <output>
+```
+
+## Arguments
+
+| Argument | Purpose |
+| --- | --- |
+| `<input>` | Older bundle source directory or `.tab` file |
+| `-o <output>` | Destination for the converted source or `.tab` |
+
+## Example
+
+```powershell
+takx convert legacy-bundle -o current-bundle
+```
+
+## What it does
+
+- Rewrites `manifest.json` fields that have moved or renamed.
+- Migrates each layout in `layouts/` to the current schema.
+- Preserves your assets and localization files unchanged.
+- Flags entries that require manual review (for example, deprecated control types).
+
+<Warning>
+  Always keep a backup of the input before converting. `takx convert` writes to a new destination but manual review may still be needed for deprecated features.
+</Warning>
+
+## After converting
+
+<Steps>
+  <Step title="Verify">
+    Run [`takx verify`](/gdk/game-streaming-tak-command-line-verify-command) on the converted source.
+  </Step>
+  <Step title="Review flagged entries">
+    Address any conversion warnings — typically deprecated control types or renamed fields.
+  </Step>
+  <Step title="Re-pack">
+    Produce a fresh `.tab` with [`takx pack`](/gdk/game-streaming-tak-command-line-pack-command).
+  </Step>
+  <Step title="Re-test">
+    Sideload the new bundle to the CTA and re-run your touch validation.
+  </Step>
+</Steps>
+
+## Related
+
+- [verify](/gdk/game-streaming-tak-command-line-verify-command)
+- [pack](/gdk/game-streaming-tak-command-line-pack-command)
+- [takx-version](/gdk/game-streaming-tak-command-line-takx-version-command)

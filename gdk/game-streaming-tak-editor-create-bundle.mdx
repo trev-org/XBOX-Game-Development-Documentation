@@ -1,0 +1,48 @@
+---
+title: "Create a bundle in the TAK Editor"
+sidebarTitle: "Create a bundle"
+description: "Author a new Touch Adaptation Bundle from a template using the TAK Editor."
+icon: "plus"
+---
+
+Create a new bundle from a genre-appropriate template, then adjust the emitted layout to fit your title.
+
+## Create the bundle
+
+<Steps>
+  <Step title="Open the editor">
+    Launch the TAK Editor and choose **New bundle**.
+  </Step>
+  <Step title="Pick a template">
+    Select the [template](/gdk/game-streaming-tak-command-line-templates) closest to your title's genre (for example `first-person`, `platformer`, `driving`).
+  </Step>
+  <Step title="Name and locate">
+    Give the bundle a title-specific name and pick your workspace folder as the destination. The editor emits a source directory with `manifest.json`, a `layouts/` folder, an `assets/` folder, and (optionally) a `loc/` folder.
+  </Step>
+  <Step title="Add per-state layouts">
+    Duplicate the template layout for each gameplay state you plan to ship (exploration, combat, inventory, cutscene). See [Layouts by state](/gdk/game-streaming-touch-changing-layouts-game-state).
+  </Step>
+  <Step title="Position controls">
+    Drag controls into the ergonomic locations recommended by the [Designers guide](/gdk/game-streaming-tak-designers-guide).
+  </Step>
+</Steps>
+
+## Editing controls
+
+- Select a control to edit its size, mapping, label, and localization key.
+- Grouping controls (for example a wheel or an action cluster) keeps them positioned relative to a shared anchor.
+- Snap controls to the safe area edges to keep them clear of client browser chrome and system gestures.
+
+## Localization keys
+
+Assign a stable localization key to every text-bearing control. See [TAK localization](/gdk/game-streaming-tak-localization) for the string-table structure.
+
+## Custom assets
+
+Once ergonomics feel right, replace default art with your own PNGs — see [Custom assets](/gdk/game-streaming-tak-custom-assets).
+
+## Related
+
+- [Preview layouts](/gdk/game-streaming-tak-editor-preview-layouts)
+- [Pack bundles](/gdk/game-streaming-tak-editor-pack-bundles)
+- [Templates](/gdk/game-streaming-tak-command-line-templates)

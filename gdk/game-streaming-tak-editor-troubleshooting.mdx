@@ -1,0 +1,74 @@
+---
+title: "TAK Editor troubleshooting"
+sidebarTitle: "Troubleshooting"
+description: "Common issues with the TAK Editor and how to resolve them."
+icon: "bug"
+---
+
+A short list of the most common issues developers hit with the TAK Editor and the fix for each.
+
+## Installation
+
+<AccordionGroup>
+  <Accordion title="Installer fails to complete" icon="triangle-exclamation">
+    Confirm the required .NET runtime is installed. Re-run the installer as an administrator.
+  </Accordion>
+
+  <Accordion title="`takx` not on PATH after install" icon="terminal">
+    Open a new terminal window — the PATH update does not propagate to an already-open shell. If still missing, install the [TAK CLI](/gdk/game-streaming-tak-command-line) separately.
+  </Accordion>
+</AccordionGroup>
+
+## Editing
+
+<AccordionGroup>
+  <Accordion title="Layout will not save" icon="floppy-disk">
+    Check file permissions on the bundle source folder. Ensure no other process (a synced cloud drive, an editor) is holding the file open.
+  </Accordion>
+
+  <Accordion title="Control positions look off" icon="ruler">
+    Verify the canvas aspect matches the client aspect you are designing for — see [Customize the preview](/gdk/game-streaming-tak-editor-customize-preview).
+  </Accordion>
+
+  <Accordion title="Custom asset does not appear" icon="image">
+    Confirm the file is in `assets/` inside the bundle source and the layout references it by the correct relative path. Reload the bundle in the editor.
+  </Accordion>
+</AccordionGroup>
+
+## Preview
+
+<AccordionGroup>
+  <Accordion title="Video does not load" icon="video-slash">
+    Use a common format (MP4/H.264) at a resolution close to your target client resolution. Very large clips can fail to load.
+  </Accordion>
+
+  <Accordion title="Preview looks nothing like the CTA" icon="eye">
+    Verify the target resolution, aspect, and safe area match your target client. See [Customize the preview](/gdk/game-streaming-tak-editor-customize-preview).
+  </Accordion>
+</AccordionGroup>
+
+## Packing
+
+<AccordionGroup>
+  <Accordion title="Pack fails with a schema error" icon="circle-xmark">
+    Run [`takx verify`](/gdk/game-streaming-tak-command-line-verify-command) against the source directory to see exactly which file and field fails validation.
+  </Accordion>
+
+  <Accordion title="Serve returns 404" icon="wifi-slash">
+    Confirm the `takx serve` URL and port. Confirm the PC and the CTA client are on the same network.
+  </Accordion>
+</AccordionGroup>
+
+## Still stuck?
+
+Contact your Microsoft Program Representative with:
+
+- The editor version (Help → About).
+- The exact error text or a screenshot.
+- The `takx --version` output if the CLI is involved.
+- A reduced repro bundle if possible.
+
+## Related
+
+- [TAK CLI](/gdk/game-streaming-tak-command-line)
+- [Setup](/gdk/game-streaming-tak-editor-setup)

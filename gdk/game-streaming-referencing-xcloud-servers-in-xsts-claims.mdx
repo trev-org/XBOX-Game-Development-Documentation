@@ -1,0 +1,39 @@
+---
+title: "Referencing xCloud servers in XSTS claims"
+sidebarTitle: "xCloud XSTS claims"
+description: "How xCloud servers appear in XSTS token claims so backend services can distinguish streamed sessions."
+icon: "key"
+---
+
+Backend services that authenticate title traffic through XSTS may want to distinguish sessions running on an xCloud server from those running on a player-owned console. xCloud servers surface a specific device identity in the XSTS claims payload.
+
+## Where the claim shows up
+
+When your title is running on an xCloud server, the XSTS token issued for the session contains a device identity that resolves to the xCloud server pool rather than a personal console device ID. Backend services can inspect this claim to:
+
+- Log or group xCloud traffic separately from console traffic.
+- Apply different rate limiting or capacity policies to a shared xCloud server pool.
+- Route matchmaking to appropriate regions based on where the xCloud datacenter is located.
+
+<Warning>
+  Do not use the presence or absence of the xCloud claim to gate gameplay features. Use [Cloud Aware API calls](/gdk/game-streaming-am-i-streaming) on the client instead — the client is the authoritative source for whether a session is being streamed.
+</Warning>
+
+## Working with the claim
+
+<Steps>
+  <Step title="Contact your Microsoft Program Representative">
+    The exact claim key and expected values are shared under NDA. Request the current schema so your service can parse the token correctly.
+  </Step>
+  <Step title="Update your XSTS validation code">
+    Add handling for the xCloud device identity alongside your existing personal-device claim handling. Fall back gracefully when the claim is absent.
+  </Step>
+  <Step title="Test with a Private Offering">
+    Verify claim parsing against real xCloud tokens issued in your Private Offering test environment.
+  </Step>
+</Steps>
+
+## See also
+
+- [xCloud vs Remote Play](/gdk/game-streaming-project-xcloud-vs-console-streaming)
+- [Stream your game](/gdk/game-streaming-stream-your-game)

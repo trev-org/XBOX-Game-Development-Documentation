@@ -1,0 +1,75 @@
+---
+title: "Getting started with sample touch layouts"
+sidebarTitle: "Sample layouts overview"
+description: "Where to get sample touch bundle layouts, and how to use them as a starting point for your own."
+icon: "layer-group"
+---
+
+The easiest way to create a [Touch Adaptation Bundle](/gdk/game-streaming-touch-touch-adaptation-bundle) is to start from a genre-appropriate sample. The [`takx create`](/gdk/game-streaming-tak-command-line-create-command) command emits ready-to-pack layouts based on a small set of templates.
+
+## Where the samples come from
+
+<CardGroup cols={2}>
+  <Card title="TAK create templates" icon="terminal" href="/gdk/game-streaming-tak-command-line-templates">
+    Genre-specific templates emitted by `takx create` — the fastest way to start.
+  </Card>
+
+  <Card title="xbox-game-streaming-tools sample layouts" icon="github" href="https://github.com/microsoft/xbox-game-streaming-tools/tree/main/touch-adaptation-kit/samples/sample-layouts">
+    The full set of sample layouts on GitHub with the source assets and metadata.
+  </Card>
+</CardGroup>
+
+## Available layouts
+
+<CardGroup cols={2}>
+  <Card title="First person shooter" icon="crosshairs" href="/gdk/game-streaming-touch-tak-sample-first-person">
+    Left joystick, right touchpad for camera, action buttons around a right-hand wheel.
+  </Card>
+
+  <Card title="2D platformer" icon="person-running" href="/gdk/game-streaming-touch-tak-sample-platformer">
+    Simple and advanced variants for movement plus a small arc of action buttons.
+  </Card>
+
+  <Card title="Fighting game" icon="hand-fist" href="/gdk/game-streaming-touch-tak-sample-fighter">
+    Arcade-style directional pad and punch/kick buttons.
+  </Card>
+
+  <Card title="Driving" icon="car" href="/gdk/game-streaming-touch-tak-sample-driving">
+    Single-axis steering, right-hand pedals, and camera controls.
+  </Card>
+
+  <Card title="Standard controller" icon="gamepad" href="/gdk/game-streaming-touch-tak-sample-full-layout">
+    Reference layout that mirrors the physical controller — useful as a fallback.
+  </Card>
+</CardGroup>
+
+## Using a sample as a starting point
+
+<Steps>
+  <Step title="Emit a template">
+    Run:
+
+    ```powershell
+    takx create my-title-bundle --template first-person
+    ```
+  </Step>
+  <Step title="Preview against your gameplay">
+    Open the layout in the [TAK Editor](/gdk/game-streaming-tak-editor) and preview against a video of your title. Reposition controls to match your ergonomics.
+  </Step>
+  <Step title="Split into per-state layouts">
+    Duplicate the layout for each gameplay state — [changing layouts by game state](/gdk/game-streaming-touch-changing-layouts-game-state) covers the runtime side.
+  </Step>
+  <Step title="Customize the look">
+    Once ergonomics are right, replace default art with [custom assets](/gdk/game-streaming-tak-custom-assets).
+  </Step>
+</Steps>
+
+<Note>
+  The sample layouts are illustrative starting points. Every shipping title should adapt the layout to its own controls, priorities, and visual style rather than shipping a sample verbatim.
+</Note>
+
+## Related
+
+- [TAK create templates](/gdk/game-streaming-tak-command-line-templates)
+- [Building a touch layout](/gdk/game-streaming-touch-building-touch-layout)
+- [Designers guide](/gdk/game-streaming-tak-designers-guide)

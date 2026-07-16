@@ -1,0 +1,55 @@
+---
+title: "takx pack command"
+sidebarTitle: "pack"
+description: "Produce a .tab Touch Adaptation Bundle from a source directory."
+icon: "box"
+---
+
+`takx pack` packages a bundle source directory into a distributable `.tab` file. Run it before serving to a CTA or submitting for publication.
+
+## Synopsis
+
+```powershell
+takx pack <source-dir> -o <output.tab>
+```
+
+## Arguments
+
+| Argument | Purpose |
+| --- | --- |
+| `<source-dir>` | Path to a bundle source directory containing `manifest.json` |
+| `-o <output.tab>` | Output `.tab` file path |
+
+## Example
+
+```powershell
+takx pack my-title-bundle -o my-title.tab
+```
+
+## Recommended pre-pack steps
+
+<Steps>
+  <Step title="Bump the version">
+    Update the version in `manifest.json` — the streaming service caches by version.
+  </Step>
+  <Step title="Verify">
+    Run [`takx verify`](/gdk/game-streaming-tak-command-line-verify-command) on the source directory first to catch schema and asset issues.
+  </Step>
+  <Step title="Preview">
+    Open the source in the [TAK Editor](/gdk/game-streaming-tak-editor) and preview against gameplay before packing.
+  </Step>
+</Steps>
+
+## What is packed
+
+- Every layout in `layouts/`.
+- Every asset in `assets/` (including `assets/hc/` high-contrast variants).
+- Every localization file in `loc/`.
+- `manifest.json`.
+- Any [notice](/gdk/game-streaming-tak-command-line-notice-command) files attached to the bundle.
+
+## Related
+
+- [verify](/gdk/game-streaming-tak-command-line-verify-command)
+- [serve](/gdk/game-streaming-tak-command-line-serve-command)
+- [unpack](/gdk/game-streaming-tak-command-line-unpack-command)

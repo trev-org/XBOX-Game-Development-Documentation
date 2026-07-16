@@ -1,0 +1,81 @@
+---
+title: "Native touch input with IGameInput"
+sidebarTitle: "Native touch (IGameInput)"
+description: "Consume raw touch events on the server via IGameInput when a touch layout is not the right abstraction."
+icon: "fingerprint"
+---
+
+Most streamed titles should ship a **Touch Adaptation Bundle** and treat touch input the same way they treat a gamepad. For scenarios where a touch layout is not the right abstraction — drawing, gesture-heavy UI, high-fidelity multi-touch — use `IGameInput` to read raw touch events on the server.
+
+## When to use native touch
+
+<CardGroup cols={2}>
+  <Card title="Drawing / painting" icon="paintbrush">
+    Free-form gesture and stroke input that cannot be modeled as buttons and joysticks.
+  </Card>
+
+  <Card title="Multi-touch UI" icon="hand-pointer">
+    Pinch-zoom, rotate, custom multi-finger gestures where a touch layout would get in the way.
+  </Card>
+
+  <Card title="High-fidelity strategy" icon="chess-board">
+    Precise pointer placement on a large playfield with pan-and-zoom.
+  </Card>
+
+  <Card title="Fallback for special modes" icon="puzzle-piece">
+    Alongside a normal touch layout for gameplay states that need raw touch briefly.
+  </Card>
+</CardGroup>
+
+<Note>
+  Native touch and touch adaptation are not mutually exclusive. You can ship a normal touch layout for most gameplay states and opt in to native touch only for a specific state that needs it.
+</Note>
+
+## API surface
+
+Native touch on streaming uses the standard `IGameInput` touch reading path. Register a callback for `GameInputKindTouch` readings and treat every reading as a per-finger contact with position, radius, and pressure.
+
+```cpp
+#include <GameInput.h>
+
+Microsoft::WRL::ComPtr<IGameInput> gameInput;
+CHECK(GameInputCreate(&gameInput));
+
+gameInput->RegisterReadingCallback(
+    nullptr,
+    GameInputKindTouch,
+    /*analogThreshold*/ 0.0f,
+    /*context*/ this,
+    [](GameInputCallbackToken, void* context, IGameInputReading* reading, uint64_t)
+    {
+        auto* game = static_cast<Game*>(context);
+
+        uint32_t count = reading->GetTouchCount();
+        for (uint32_t i = 0; i < count; ++i)
+        {
+            GameInputTouchState touch{};
+            reading->GetTouchState(1, &touch);
+            game->OnTouchContact(touch);
+        }
+    },
+    /*callbackToken*/ nullptr);
+```
+
+## Enabling native touch on a streaming session
+
+1. Ensure your title reads `GameInputKindTouch`.
+2. In the layout that should route touch to your title (rather than to the touch adaptation runtime), declare a native-touch region. See the [Designers guide](/gdk/game-streaming-tak-designers-guide) for pattern guidance.
+3. When the native-touch region is active, contacts inside it flow to `IGameInput` on the server. Contacts outside remain owned by the touch layout.
+
+## What to test
+
+- Multi-finger contacts arrive with distinct IDs and positions.
+- Pointer position maps correctly to the server render target across all supported client resolutions.
+- Client disconnect cleanly ends all in-flight contacts.
+- The touch region toggles cleanly when a game state change swaps to a normal touch layout.
+
+## Related
+
+- [Building a touch layout](/gdk/game-streaming-touch-building-touch-layout)
+- [Changing layouts by game state](/gdk/game-streaming-touch-changing-layouts-game-state)
+- [Designers guide](/gdk/game-streaming-tak-designers-guide)

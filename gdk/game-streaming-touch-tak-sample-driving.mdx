@@ -1,0 +1,41 @@
+---
+title: "Driving touch control layout"
+sidebarTitle: "Driving"
+description: "A sample touch control layout for a driving game."
+icon: "car"
+---
+
+Sample layout for a driving game.
+
+## Design at a glance
+
+| Element | Placement |
+| --- | --- |
+| Steering | Left thumb, single-axis joystick |
+| Gas pedal | Right thumb, most accessible location |
+| Braking (regular \+ handbrake) | Right thumb, secondary accessible locations |
+| Interact / close | Left and right for occasional actions |
+| Switch camera | Lower center |
+
+## Remarks
+
+The driving layout shows how a game can provide a simple optimized experience that lets the player focus on gameplay.
+
+Key elements include:
+
+- Steering via the left hand using a single-axis joystick.
+- Gas pedal placed in the most easily accessible control location for the right hand.
+- Two braking options (regular brake and handbrake) placed in the next most accessible locations.
+- Two basic interaction buttons (interact and close) available for when needed.
+- A switch-camera option available in the lower center to let the player change view.
+
+## Availability
+
+1. Part of the TAK [sample-layouts](https://github.com/microsoft/xbox-game-streaming-tools/tree/main/touch-adaptation-kit/samples/sample-layouts) on GitHub.
+2. Emitted by the [`takx create` command](/gdk/game-streaming-tak-command-line-create-command) via the `driving` template.
+
+## Related
+
+- [Sample layouts overview](/gdk/game-streaming-touch-getting-started-with-sample-layouts)
+- [Templates](/gdk/game-streaming-tak-command-line-templates)
+- [Designers guide](/gdk/game-streaming-tak-designers-guide)

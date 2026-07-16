@@ -1,0 +1,45 @@
+---
+title: "Pack bundles from the TAK Editor"
+sidebarTitle: "Pack bundles"
+description: "Produce a .tab file from the TAK Editor or from the TAK CLI."
+icon: "box"
+---
+
+When your bundle is ready to test on a client, pack it into a `.tab` file. You can do this from the editor UI or from the [TAK CLI](/gdk/game-streaming-tak-command-line-pack-command).
+
+## Pack from the editor
+
+<Steps>
+  <Step title="Save all layouts">
+    Save every open layout so the on-disk source is current.
+  </Step>
+  <Step title="Choose Pack bundle">
+    From the editor menu, choose **Pack bundle** and pick an output location and filename for the `.tab`.
+  </Step>
+  <Step title="Verify">
+    Run [`takx verify`](/gdk/game-streaming-tak-command-line-verify-command) against the produced `.tab` and fix any warnings.
+  </Step>
+  <Step title="Serve to a CTA">
+    Sideload with [`takx serve`](/gdk/game-streaming-tak-command-line-serve-command) and test on a real streaming session.
+  </Step>
+</Steps>
+
+## Pack from the CLI
+
+Use `takx pack` when you want to automate packing in CI or a build pipeline:
+
+```powershell
+takx pack my-title-bundle -o my-title.tab
+```
+
+See [`takx pack`](/gdk/game-streaming-tak-command-line-pack-command) for full syntax.
+
+## Versioning
+
+Bump the version in `manifest.json` for every publish. The streaming service treats version as the identity of the bundle for caching and rollback — do not reuse a version.
+
+## Related
+
+- [Deploy for testing](/gdk/game-streaming-touch-deploying-touch-layout)
+- [Publish layouts](/gdk/game-streaming-touch-publishing-layouts)
+- [Verify command](/gdk/game-streaming-tak-command-line-verify-command)

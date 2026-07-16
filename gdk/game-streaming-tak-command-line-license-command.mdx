@@ -1,0 +1,36 @@
+---
+title: "takx license command"
+sidebarTitle: "license"
+description: "Print or accept the Touch Adaptation Kit license."
+icon: "file-signature"
+---
+
+`takx license` prints the TAK license and, on first use, records acceptance. CI runners typically accept the license once during provisioning.
+
+## Synopsis
+
+```powershell
+takx license [--accept]
+```
+
+## Arguments
+
+| Argument | Purpose |
+| --- | --- |
+| `--accept` | Record acceptance of the license so subsequent commands do not prompt |
+
+## Example
+
+```powershell
+takx license --accept
+```
+
+## CI
+
+Add `takx license --accept` to your CI provisioning step so build agents do not stall waiting for interactive acceptance.
+
+## Related
+
+- [notice](/gdk/game-streaming-tak-command-line-notice-command)
+- [settings](/gdk/game-streaming-tak-command-line-settings-command)
+- [Publish layouts](/gdk/game-streaming-touch-publishing-layouts)

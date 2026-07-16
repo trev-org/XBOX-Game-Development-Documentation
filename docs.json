@@ -341,15 +341,6 @@
             "group": "Core Features",
             "pages": [
               {
-                "group": "Game Configuration",
-                "icon": "file-code",
-                "pages": [
-                  "gdk/game-config",
-                  "gdk/microsoftgameconfig-editor",
-                  "gdk/microsoftgameconfig-localization"
-                ]
-              },
-              {
                 "group": "Users & Identity",
                 "icon": "user",
                 "pages": [
@@ -362,8 +353,6 @@
                   "gdk/establishing-default-user",
                   "gdk/changing-default-user",
                   "gdk/users-input-devices",
-                  "gdk/controller-loss",
-                  "gdk/user-controller-association-timing",
                   "gdk/headless-automation",
                   "gdk/xuser-crossplatform"
                 ]
@@ -380,6 +369,15 @@
                   "gdk/async-task-queue-design",
                   "gdk/async-whitepaper",
                   "gdk/error-handling"
+                ]
+              },
+              {
+                "group": "Game Configuration",
+                "icon": "file-code",
+                "pages": [
+                  "gdk/game-config",
+                  "gdk/microsoftgameconfig-editor",
+                  "gdk/microsoftgameconfig-localization"
                 ]
               },
               {
@@ -400,6 +398,23 @@
                 ]
               },
               {
+                "group": "Input",
+                "icon": "gamepad",
+                "pages": [
+                  "gdk/input-overview",
+                  "gdk/input-fundamentals",
+                  "gdk/input-devices",
+                  "gdk/input-haptics",
+                  "gdk/input-sensors",
+                  "gdk/input-callbacks",
+                  "gdk/input-keyboard-mouse",
+                  "gdk/input-virtual-keyboard",
+                  "gdk/input-xinput-wgi-porting",
+                  "gdk/user-controller-association-timing",
+                  "gdk/controller-loss"
+                ]
+              },
+              {
                 "group": "Game Save",
                 "icon": "floppy-disk",
                 "pages": [
@@ -416,15 +431,119 @@
                 ]
               },
               {
-                "group": "Platform Features",
-                "icon": "plug",
+                "group": "Game streaming",
+                "icon": "satellite-dish",
                 "pages": [
-                  "gdk/localization",
-                  "gdk/text-to-speech",
-                  "gdk/platform-integration",
-                  "gdk/game-streaming"
+                  {
+                    "group": "Overview",
+                    "icon": "book-open",
+                    "pages": [
+                      "gdk/game-streaming-introduction",
+                      "gdk/game-streaming-project-xcloud-vs-console-streaming",
+                      "gdk/game-streaming-am-i-streaming",
+                      "gdk/game-streaming-stream-your-game",
+                      "gdk/game-streaming-setup-xbox-developer-kit",
+                      "gdk/game-streaming-referencing-xcloud-servers-in-xsts-claims"
+                    ]
+                  },
+                  {
+                    "group": "Optimization",
+                    "icon": "gauge-high",
+                    "pages": [
+                      "gdk/game-streaming-optimizing-your-game",
+                      "gdk/game-streaming-directcapture-overview",
+                      "gdk/game-streaming-custom-resolution-overview",
+                      "gdk/game-streaming-custom-resolution-best-practices",
+                      "gdk/game-streaming-latency-measurement",
+                      "gdk/game-streaming-latency-compensation-overview",
+                      "gdk/game-streaming-latency-compensation-deep-dive",
+                      "gdk/game-streaming-simulate-latency-while-testing"
+                    ]
+                  },
+                  {
+                    "group": "Content Test Apps",
+                    "icon": "flask",
+                    "pages": [
+                      "gdk/game-streaming-web-content-test-application",
+                      "gdk/game-streaming-content-test-application-stream-config",
+                      "gdk/game-streaming-windows-pc-content-test-application",
+                      "gdk/game-streaming-android-content-test-application"
+                    ]
+                  },
+                  {
+                    "group": "Touch overview",
+                    "icon": "hand-pointer",
+                    "pages": [
+                      "gdk/game-streaming-touch-touch-adaptation-kit-overview",
+                      "gdk/game-streaming-touch-touch-adaptation-bundle",
+                      "gdk/game-streaming-getting-started-with-touch",
+                      "gdk/game-streaming-native-touch-igameinput",
+                      "gdk/game-streaming-tak-localization",
+                      "gdk/game-streaming-tak-designers-guide"
+                    ]
+                  },
+                  {
+                    "group": "Building touch layouts",
+                    "icon": "hammer",
+                    "pages": [
+                      "gdk/game-streaming-touch-building-touch-layout",
+                      "gdk/game-streaming-touch-deploying-touch-layout",
+                      "gdk/game-streaming-touch-publishing-layouts",
+                      "gdk/game-streaming-touch-changing-layouts-game-state",
+                      "gdk/game-streaming-tak-custom-assets",
+                      "gdk/game-streaming-tak-high-contrast-mode",
+                      "gdk/game-streaming-build-touch-layout-github-copilot"
+                    ]
+                  },
+                  {
+                    "group": "Sample layouts",
+                    "icon": "layer-group",
+                    "pages": [
+                      "gdk/game-streaming-touch-getting-started-with-sample-layouts",
+                      "gdk/game-streaming-touch-tak-sample-first-person",
+                      "gdk/game-streaming-touch-tak-sample-platformer",
+                      "gdk/game-streaming-touch-tak-sample-fighter",
+                      "gdk/game-streaming-touch-tak-sample-driving",
+                      "gdk/game-streaming-touch-tak-sample-full-layout"
+                    ]
+                  },
+                  {
+                    "group": "TAK Editor",
+                    "icon": "pen-ruler",
+                    "pages": [
+                      "gdk/game-streaming-tak-editor",
+                      "gdk/game-streaming-tak-editor-setup",
+                      "gdk/game-streaming-tak-editor-create-bundle",
+                      "gdk/game-streaming-tak-editor-preview-layouts",
+                      "gdk/game-streaming-tak-editor-customize-preview",
+                      "gdk/game-streaming-tak-editor-pack-bundles",
+                      "gdk/game-streaming-tak-editor-troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "TAK CLI",
+                    "icon": "terminal",
+                    "pages": [
+                      "gdk/game-streaming-tak-command-line",
+                      "gdk/game-streaming-tak-command-line-create-command",
+                      "gdk/game-streaming-tak-command-line-templates",
+                      "gdk/game-streaming-tak-command-line-pack-command",
+                      "gdk/game-streaming-tak-command-line-unpack-command",
+                      "gdk/game-streaming-tak-command-line-verify-command",
+                      "gdk/game-streaming-tak-command-line-serve-command",
+                      "gdk/game-streaming-tak-command-line-convert-command",
+                      "gdk/game-streaming-tak-command-line-version-command",
+                      "gdk/game-streaming-tak-command-line-takx-version-command",
+                      "gdk/game-streaming-tak-command-line-settings-command",
+                      "gdk/game-streaming-tak-command-line-license-command",
+                      "gdk/game-streaming-tak-command-line-notice-command"
+                    ]
+                  }
                 ]
-              }
+              },
+              "gdk/dynamic-lighting",
+              "gdk/localization",
+              "gdk/platform-integration"
             ]
           },
           {
@@ -445,7 +564,6 @@
                   "gdk/storage",
                   "gdk/networking",
                   "gdk/directstorage",
-                  "gdk/input",
                   "gdk/memory"
                 ]
               },
@@ -477,7 +595,7 @@
                 "pages": [
                   "gdk/cross-gen",
                   "gdk/quick-resume",
-                  "gdk/dynamic-lighting"
+                  "gdk/text-to-speech"
                 ]
               }
             ]

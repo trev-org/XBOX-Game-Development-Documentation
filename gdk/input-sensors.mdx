@@ -1,0 +1,56 @@
+---
+title: "Sensors"
+sidebarTitle: "Sensors"
+description: "Accelerometer, gyroscope, and light sensor readings from controllers that expose them."
+icon: "compass"
+---
+
+Some controllers expose motion and environmental sensors alongside the button and stick readings. GameInput surfaces them through `GameInputKindSensors`.
+
+## Sensor types
+
+| Sensor | Typical use |
+| --- | --- |
+| Accelerometer | Motion aim, tilt steering, shake gestures |
+| Gyroscope | Precision aim, camera control, spin gestures |
+| Light sensor | Ambient-light dependent effects; rare in practice |
+
+## Reading sensors alongside gamepad state
+
+Pair the sensor reading with the gamepad reading on the same timestamp so motion and stick input stay aligned:
+
+```cpp
+Microsoft::WRL::ComPtr<IGameInputReading> gamepadReading;
+gameInput->GetCurrentReading(GameInputKindGamepad, device, &gamepadReading);
+
+Microsoft::WRL::ComPtr<IGameInputReading> sensorReading;
+gameInput->GetCurrentReading(GameInputKindSensors, device, &sensorReading);
+
+// Use the smaller of the two timestamps as the input time
+```
+
+## Motion aim guidance
+
+- Read gyroscope deltas, not absolute angles — deltas are drift-free.
+- Provide a sensitivity slider and a per-axis invert toggle.
+- Offer a re-center gesture (double-tap a button, hold a trigger) so drift over long sessions is recoverable.
+- Fall back to stick-only aim when sensors are unavailable; do not gate gameplay on motion.
+
+## Capability probe
+
+Not every device exposes every sensor. Always probe:
+
+```cpp
+GameInputSensorsInfo info{};
+if (SUCCEEDED(device->GetSensorsInfo(&info)))
+{
+    if (info.hasGyroscope) { /* enable motion aim UI */ }
+    if (info.hasAccelerometer) { /* enable tilt steering UI */ }
+}
+```
+
+## Related
+
+- [Devices and hardware](/gdk/input-devices)
+- [Fundamentals](/gdk/input-fundamentals)
+- [GameInput API reference](/reference/gameinput)

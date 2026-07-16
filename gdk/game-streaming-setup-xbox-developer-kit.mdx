@@ -1,0 +1,38 @@
+---
+title: "Set up an XBOX developer kit for streaming"
+sidebarTitle: "Dev kit setup"
+description: "Configure an XBOX developer kit so it exposes a streaming endpoint that the Content Test Applications can connect to."
+icon: "gears"
+---
+
+Before a Content Test Application (CTA) can stream your title, the dev kit itself must be configured to host a streaming session on your local network.
+
+## Steps
+
+<Steps>
+  <Step title="Enable streaming on the dev kit">
+    From the dev home menu, open **Settings** → **Developer settings** and enable the streaming host role. This exposes a streaming endpoint the CTAs can discover.
+  </Step>
+  <Step title="Confirm the network configuration">
+    The dev kit and the CTA client must be on the same subnet. Wired network is strongly recommended for stable results.
+  </Step>
+  <Step title="Note the dev kit's IP or host name">
+    The CTA prompts for a target dev kit. Retrieve the IP or host name from the dev kit dashboard.
+  </Step>
+  <Step title="Deploy the title to the dev kit">
+    Use the standard GDK deploy flow. No separate build configuration is required for streaming.
+  </Step>
+  <Step title="Launch a CTA and connect">
+    Open the [Web CTA](/gdk/game-streaming-web-content-test-application) (recommended) or another CTA and target the dev kit.
+  </Step>
+</Steps>
+
+<Note>
+  Only certain dev kit SKUs support hosting a stream. If the streaming host option does not appear, confirm your dev kit SKU with your Microsoft Program Representative.
+</Note>
+
+## Next steps
+
+- [Stream your game](/gdk/game-streaming-stream-your-game)
+- [Web Content Test Application](/gdk/game-streaming-web-content-test-application)
+- [Simulate latency while testing](/gdk/game-streaming-simulate-latency-while-testing)

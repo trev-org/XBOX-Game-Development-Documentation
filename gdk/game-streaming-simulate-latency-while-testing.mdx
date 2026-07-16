@@ -1,0 +1,66 @@
+---
+title: "Simulate latency while testing"
+sidebarTitle: "Simulate latency"
+description: "Inject artificial latency and jitter on a dev kit to validate a streamed title across the full range of network conditions."
+icon: "gauge"
+---
+
+Most of your local streaming testing happens on a fast wired network with near-zero latency. Real players will not always have that. The dev kit can inject artificial input latency and frame jitter so you can validate your title across the full range of conditions.
+
+## What can be simulated
+
+| Simulation | Effect |
+| --- | --- |
+| Fixed added round-trip | Adds a constant latency in ms to every input round-trip |
+| Variable jitter | Adds bounded random variance on top of the fixed latency |
+| Server frame stalls | Inserts occasional long frames to test hitching behavior |
+| Client stalls | Delays client acknowledgment to test the server's recovery path |
+
+## How to enable simulation
+
+<Steps>
+  <Step title="Open the dev kit streaming settings">
+    From the dev home menu, open **Settings** → **Developer settings** → streaming host section.
+  </Step>
+  <Step title="Enable simulated latency">
+    Toggle the latency simulation option and enter the desired added round-trip.
+  </Step>
+  <Step title="Optionally enable jitter">
+    Add a variance range on top of the fixed value.
+  </Step>
+  <Step title="Restart the stream">
+    Reconnect from your CTA. Simulation applies to new sessions only.
+  </Step>
+</Steps>
+
+## Recommended sweeps
+
+Repeat every gameplay validation across these representative conditions:
+
+- **Zero added latency** — baseline; catches regressions in your compensation code.
+- **\+30 ms** — typical for a good-quality client on the same continent.
+- **\+80 ms** — phone or tablet client on cellular.
+- **\+150 ms** — stressed cross-region client.
+- **\+30 ms with ±20 ms jitter** — real-world variability rather than a fixed offset.
+
+## What to look for
+
+<AccordionGroup>
+  <Accordion title="Playability at the top of the sweep" icon="gamepad">
+    The title must remain playable at your worst target latency. If a specific mechanic breaks, look at whether it should be gated by a latency threshold.
+  </Accordion>
+
+  <Accordion title="Latency-aware behavior does not over-correct" icon="balance-scale">
+    Compensation should scale with measured latency. On the zero-added run, verify that compensation is at its minimum so the title does not feel floaty.
+  </Accordion>
+
+  <Accordion title="UI stays responsive" icon="sliders">
+    Menus and HUD updates should still feel snappy even when in-game latency is high. Predict and pre-render menu transitions.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+- [Latency compensation overview](/gdk/game-streaming-latency-compensation-overview)
+- [Latency measurement](/gdk/game-streaming-latency-measurement)
+- [Stream your game](/gdk/game-streaming-stream-your-game)

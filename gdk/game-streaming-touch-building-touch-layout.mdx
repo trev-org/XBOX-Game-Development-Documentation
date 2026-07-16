@@ -1,0 +1,48 @@
+---
+title: "Building a touch layout"
+sidebarTitle: "Build a touch layout"
+description: "An overview of what goes into a touch layout — controls, states, custom art, localization, and publishing."
+icon: "hammer"
+---
+
+A touch layout is a JSON document that describes a single touch overlay: which controls exist, where they sit on screen, and what game input each one produces. This page is a map of the topics in this section and the order to work through them.
+
+## Read in order
+
+<Steps>
+  <Step title="Start with a template">
+    Use [`takx create`](/gdk/game-streaming-tak-command-line-create-command) with a [template layout](/gdk/game-streaming-tak-command-line-templates) that matches your genre. Sample results are in [Sample layouts](/gdk/game-streaming-touch-getting-started-with-sample-layouts).
+  </Step>
+  <Step title="Read the designers guide">
+    The [Designers guide](/gdk/game-streaming-tak-designers-guide) covers layout patterns, sizing, feedback, and common pitfalls.
+  </Step>
+  <Step title="Add per-state layouts">
+    See [Changing layouts by game state](/gdk/game-streaming-touch-changing-layouts-game-state) to ship different overlays for exploration, combat, inventory, and menus.
+  </Step>
+  <Step title="Customize the look">
+    Use [Custom assets](/gdk/game-streaming-tak-custom-assets) to replace default control art, and add a [high-contrast variant](/gdk/game-streaming-tak-high-contrast-mode).
+  </Step>
+  <Step title="Deploy and test">
+    [Deploy the layout](/gdk/game-streaming-touch-deploying-touch-layout) via the CTA and iterate on real device sessions.
+  </Step>
+  <Step title="Publish">
+    Follow [Publishing layouts](/gdk/game-streaming-touch-publishing-layouts) to ship the bundle to real clients.
+  </Step>
+</Steps>
+
+## Control types you can place
+
+| Control | Purpose |
+| --- | --- |
+| Button | Discrete press — mapped to a gamepad button |
+| Joystick | Two-axis analog stick |
+| Single-axis joystick | Left-right or up-down only (steering, throttle) |
+| Touchpad | Relative pointer input (camera, mouse look) |
+| Wheel | Radial multi-action selection |
+| Toggle | On/off state — mapped to a hold or a modifier |
+
+## Where to go next
+
+- Get real hands-on time first via [Getting started with touch](/gdk/game-streaming-getting-started-with-touch).
+- When you are ready to iterate on the design, open the [TAK Editor](/gdk/game-streaming-tak-editor) so you can preview against video.
+- Try the [GitHub Copilot workflow](/gdk/game-streaming-build-touch-layout-github-copilot) if you use Copilot in VS Code and want AI assistance for layout authoring.

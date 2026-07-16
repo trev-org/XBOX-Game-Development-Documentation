@@ -1,0 +1,56 @@
+---
+title: "Porting from XInput or WGI"
+sidebarTitle: "XInput / WGI porting"
+description: "Migrate legacy XInput and Windows.Gaming.Input code to GameInput."
+icon: "arrow-right-arrow-left"
+---
+
+GameInput replaces XInput and Windows.Gaming.Input (WGI) for GDK titles. Both can be migrated incrementally — you do not need to convert every subsystem in one drop.
+
+## Start with the compatibility shim
+
+Link the GDK's **XInput-on-GameInput** shim first. Legacy `XInputGetState`, `XInputSetState`, and `XInputGetCapabilities` calls keep working while the rest of your engine is unchanged. This gets you onto the GameInput device pool immediately — hot-plug, ownership, and thread-pool semantics all become GameInput's.
+
+<Warning>
+  The shim is a migration aid, not a shipping target. It exposes only the XInput feature set — no trigger haptics, no wheel force feedback, no sensors. Do the port.
+</Warning>
+
+## Recommended porting order
+
+<Steps>
+  <Step title="Device enumeration and hot-plug">
+    Replace XInput's fixed four-slot model with `IGameInputDevice` enumeration and device callbacks. This is the biggest wins-per-line change.
+  </Step>
+  <Step title="State polling">
+    Replace `XInputGetState` with `IGameInput::GetCurrentReading` and diff readings frame-to-frame.
+  </Step>
+  <Step title="Haptics">
+    Replace `XInputSetState` rumble writes with `IGameInputDevice::SetRumbleState` and gate on the [haptics capability](/gdk/input-haptics) query.
+  </Step>
+  <Step title="Keyboard, mouse, and wheels">
+    Move [keyboard and mouse](/gdk/input-keyboard-mouse) off `WM_INPUT`, and racing wheels off DirectInput / WGI, once the gamepad path is solid.
+  </Step>
+</Steps>
+
+## Direct WGI → GameInput mapping
+
+| WGI concept | GameInput equivalent |
+| --- | --- |
+| `Gamepad` | `IGameInputDevice` \+ reading of kind `GameInputKindGamepad` |
+| `RawGameController` | `IGameInputDevice` \+ reading of kind `GameInputKindController` |
+| `GamepadAdded` / `GamepadRemoved` | `RegisterDeviceCallback` |
+| `Gamepad.Vibration` | `IGameInputDevice::SetRumbleState` |
+| `RawGameController.GetCurrentReading` | `IGameInput::GetCurrentReading` |
+| `Gaming.Input.ForceFeedback` | GameInput force-feedback effect graph on wheels / flight sticks |
+
+## What to check before you ship
+
+- Kill the XInput shim link when the port is done — do not ship both paths in parallel.
+- Re-run controller-loss and Quick Resume tests — GameInput's ownership model is stricter than XInput's.
+- Verify Adaptive Controller behavior. XInput hides some capabilities that GameInput surfaces.
+
+## Related
+
+- [Fundamentals](/gdk/input-fundamentals)
+- [Callbacks](/gdk/input-callbacks)
+- [GameInput extended API reference](/reference/gameinput-extended)

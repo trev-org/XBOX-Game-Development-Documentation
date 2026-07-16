@@ -1,0 +1,47 @@
+---
+title: "takx version command"
+sidebarTitle: "version"
+description: "Print or update the bundle version recorded in manifest.json."
+icon: "tag"
+---
+
+`takx version` reads or writes the bundle version stored in `manifest.json`. The streaming service uses this version to cache and roll back bundles — bump it for every publish.
+
+## Synopsis
+
+```powershell
+takx version <bundle-source> [--set <new-version>]
+```
+
+## Arguments
+
+| Argument | Purpose |
+| --- | --- |
+| `<bundle-source>` | Path to the bundle source directory |
+| `--set <new-version>` | Optional — write a new version to `manifest.json` |
+
+## Examples
+
+Print the current version:
+
+```powershell
+takx version my-title-bundle
+```
+
+Bump to a new version:
+
+```powershell
+takx version my-title-bundle --set 1.4.0
+```
+
+## Versioning guidance
+
+- Use a scheme you already use elsewhere (SemVer works well).
+- Bump for every publish, even for minor art or localization changes.
+- Do not reuse a version — the streaming service caches by version.
+
+## Related
+
+- [pack](/gdk/game-streaming-tak-command-line-pack-command)
+- [Publish layouts](/gdk/game-streaming-touch-publishing-layouts)
+- [takx-version](/gdk/game-streaming-tak-command-line-takx-version-command)

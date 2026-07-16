@@ -1,0 +1,75 @@
+---
+title: "Touch Adaptation Bundle (TAB) structure"
+sidebarTitle: "TAB structure"
+description: "How a Touch Adaptation Bundle is laid out on disk — layouts, states, localization, and custom assets."
+icon: "box"
+---
+
+A **Touch Adaptation Bundle (TAB)** is the packed unit the streaming service ships to touch clients. A single TAB contains every touch layout your title needs, plus any custom art and localization strings.
+
+## What is in a bundle
+
+| Item | Purpose |
+| --- | --- |
+| Layouts | JSON documents describing one touch overlay each |
+| State bindings | Which layout is active for each game state |
+| Custom assets | Optional bitmaps to override the default controls |
+| Localization strings | Optional translations for labels used inside controls |
+| Manifest | Metadata (title, version, publisher) consumed by the streaming service |
+
+## On-disk source layout
+
+Before packing, a TAB is a directory tree. The [`takx create`](/gdk/game-streaming-tak-command-line-create-command) command generates the exact structure you need. A typical bundle source looks like:
+
+```text
+my-title-bundle/
+├── manifest.json
+├── layouts/
+│   ├── gameplay-default.json
+│   ├── gameplay-inventory.json
+│   └── menus.json
+├── assets/
+│   ├── fire-button.png
+│   └── jump-button.png
+└── loc/
+    ├── en-us.json
+    └── fr-fr.json
+```
+
+<Note>
+  The exact schema is fixed. Use the [TAK Editor](/gdk/game-streaming-tak-editor) or the [`takx create` templates](/gdk/game-streaming-tak-command-line-templates) as the starting point rather than authoring `manifest.json` by hand.
+</Note>
+
+## Layout files
+
+A layout file is a JSON document that lists touch controls (buttons, joysticks, touchpads, wheels), their positions in a normalized coordinate space, and their game input mappings. Layout authoring is covered in [Building a touch layout](/gdk/game-streaming-touch-building-touch-layout).
+
+## State bindings
+
+A title can be in multiple gameplay states — exploration, combat, inventory, cutscene. Each state can bind a different layout. The title triggers a state change from code, and the streaming client swaps the active layout. See [Changing layouts by game state](/gdk/game-streaming-touch-changing-layouts-game-state).
+
+## Custom assets and localization
+
+- Replace default control art with your own bitmaps — see [Custom assets](/gdk/game-streaming-tak-custom-assets).
+- Ship translated labels for any text-bearing control — see [TAK localization](/gdk/game-streaming-tak-localization).
+- Provide a [high-contrast mode](/gdk/game-streaming-tak-high-contrast-mode) art variant for accessibility.
+
+## Packing and shipping
+
+<Steps>
+  <Step title="Pack the bundle">
+    Run [`takx pack`](/gdk/game-streaming-tak-command-line-pack-command) to produce a `.tab` file from the source directory.
+  </Step>
+  <Step title="Serve for testing">
+    Sideload the packed `.tab` to a CTA using [`takx serve`](/gdk/game-streaming-tak-command-line-serve-command).
+  </Step>
+  <Step title="Publish">
+    Submit the bundle for distribution via the streaming service — see [Publishing layouts](/gdk/game-streaming-touch-publishing-layouts).
+  </Step>
+</Steps>
+
+## Related
+
+- [TAK overview](/gdk/game-streaming-touch-touch-adaptation-kit-overview)
+- [Building a touch layout](/gdk/game-streaming-touch-building-touch-layout)
+- [Deploying a touch layout for testing](/gdk/game-streaming-touch-deploying-touch-layout)

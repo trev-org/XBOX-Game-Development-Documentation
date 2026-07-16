@@ -1,0 +1,68 @@
+---
+title: "Getting started with touch"
+sidebarTitle: "Getting started with touch"
+description: "A hands-on path from zero to a working touch layout streamed to a browser client."
+icon: "rocket"
+---
+
+This is the fastest path from zero to a working touch layout streamed to a browser. Follow it once end-to-end before you customize.
+
+## Prerequisites
+
+<CardGroup cols={2}>
+  <Card title="A streaming dev kit" icon="gears" href="/gdk/game-streaming-setup-xbox-developer-kit">
+    Configured to expose a streaming endpoint on your network.
+  </Card>
+
+  <Card title="The Web CTA" icon="globe" href="/gdk/game-streaming-web-content-test-application">
+    Provisioned for your account.
+  </Card>
+
+  <Card title="TAK CLI" icon="terminal" href="/gdk/game-streaming-tak-command-line">
+    Installed on a Windows PC on the same network.
+  </Card>
+
+  <Card title="Your GDK title" icon="gamepad">
+    Deployed to the dev kit through the standard GDK flow.
+  </Card>
+</CardGroup>
+
+## First layout in five steps
+
+<Steps>
+  <Step title="Create a bundle from a template">
+    Run `takx create` and pick the [template](/gdk/game-streaming-tak-command-line-templates) closest to your title's genre — for example `first-person`, `platformer`, or `driving`.
+
+    ```powershell
+    takx create my-title-bundle --template first-person
+    ```
+  </Step>
+  <Step title="Preview the layout">
+    Open the source folder in the [TAK Editor](/gdk/game-streaming-tak-editor) and preview the layout against a placeholder gameplay video.
+  </Step>
+  <Step title="Pack the bundle">
+    Produce a `.tab` file:
+
+    ```powershell
+    takx pack my-title-bundle -o my-title.tab
+    ```
+  </Step>
+  <Step title="Serve it to the CTA">
+    Start a local server and point the CTA at it:
+
+    ```powershell
+    takx serve my-title.tab
+    ```
+
+    Follow the [deploying a touch layout](/gdk/game-streaming-touch-deploying-touch-layout) instructions to sideload from the Web CTA.
+  </Step>
+  <Step title="Iterate">
+    Tweak the layout in the editor, pack, and re-serve until the touch experience feels right in a real stream.
+  </Step>
+</Steps>
+
+## What to read next
+
+- [Designers guide](/gdk/game-streaming-tak-designers-guide) — best practices for building touch layouts that players enjoy.
+- [Changing layouts by game state](/gdk/game-streaming-touch-changing-layouts-game-state) — switch overlays when the player enters inventory, cutscenes, or menus.
+- [Sample layouts](/gdk/game-streaming-touch-getting-started-with-sample-layouts) — reference layouts to compare against your own.

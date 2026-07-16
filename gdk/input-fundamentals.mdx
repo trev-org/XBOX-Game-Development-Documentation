@@ -1,0 +1,58 @@
+---
+title: "GameInput fundamentals"
+sidebarTitle: "Fundamentals"
+description: "The mental model behind GameInput — readings, versioning, ownership, and process scope."
+icon: "cube"
+---
+
+GameInput is a small API surface built around a few consistent primitives. Understand them once and every other GameInput topic slots in cleanly.
+
+## Readings, not events
+
+GameInput is built around immutable **readings** you fetch on demand. Each `IGameInputReading` captures a device's state at a precise timestamp.
+
+- Fetch a fresh reading per frame (or per input tick) and diff it against the previous one to detect edges.
+- Readings are cheap to construct — do not cache and reuse them across frames.
+- Every reading carries a monotonic timestamp you can align to your simulation and render frames.
+
+## Interface versioning
+
+Interfaces are versioned (`IGameInputReading`, `IGameInputReading2`, …). Always ask for the highest version your code understands and fall back gracefully.
+
+```cpp
+Microsoft::WRL::ComPtr<IGameInputReading> reading;
+CHECK(gameInput->GetCurrentReading(GameInputKindGamepad, nullptr, &reading));
+
+// Query for a newer interface where available
+Microsoft::WRL::ComPtr<IGameInputReading2> reading2;
+if (SUCCEEDED(reading.As(&reading2)))
+{
+    // Use newer fields
+}
+```
+
+## Process scope, no global state
+
+The GameInput device collection is process-scoped. Multiple subsystems in the same process can each create their own `IGameInput` instance safely — there is no hidden global you can trip over.
+
+## NuGet packaging on PC
+
+On PC GDK, GameInput ships through a NuGet package independent of the GDK itself. Stay on a published version your engine has been validated against — rolling forward is a deliberate act, not something that happens invisibly with a GDK update.
+
+## Ownership and focus
+
+GameInput respects application focus:
+
+- Foreground titles read every device.
+- Backgrounded titles receive limited input for accessibility features but do not see gameplay input.
+- Streaming clients on XBOX Cloud Gaming inherit focus from the streaming session; the touch adaptation runtime feeds gamepad-shaped readings when the client is touch.
+
+## Task queues
+
+Drive GameInput callbacks onto your own `XTaskQueue` so input does not block on the system thread pool. See [Callbacks and work queues](/gdk/input-callbacks).
+
+## Related
+
+- [Devices and hardware](/gdk/input-devices)
+- [Callbacks and work queues](/gdk/input-callbacks)
+- [XInput / WGI porting](/gdk/input-xinput-wgi-porting)

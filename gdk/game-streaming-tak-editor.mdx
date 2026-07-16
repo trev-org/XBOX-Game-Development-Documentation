@@ -1,0 +1,63 @@
+---
+title: "TAK Editor overview"
+sidebarTitle: "TAK Editor"
+description: "The Windows authoring tool for building, previewing, and packing Touch Adaptation Bundles."
+icon: "pen-ruler"
+---
+
+The **TAK Editor** is the Windows application for authoring [Touch Adaptation Bundles](/gdk/game-streaming-touch-touch-adaptation-bundle). It lets you place controls visually, preview a layout against recorded gameplay video, and pack a ready-to-serve `.tab` file.
+
+## What the TAK Editor is for
+
+<CardGroup cols={2}>
+  <Card title="Visual layout authoring" icon="pen-nib">
+    Drag controls into position on a canvas that matches your title's target aspect and safe area.
+  </Card>
+
+  <Card title="Preview against video" icon="video">
+    Load a recorded gameplay clip and overlay your layout to sanity-check reach, occlusion, and visibility.
+  </Card>
+
+  <Card title="Multi-layout projects" icon="layer-group">
+    Manage every layout in one bundle side-by-side — exploration, combat, inventory, cutscenes.
+  </Card>
+
+  <Card title="Pack directly" icon="box">
+    Produce a `.tab` file from inside the editor, or drive packing from the [TAK CLI](/gdk/game-streaming-tak-command-line).
+  </Card>
+</CardGroup>
+
+## When to use the editor vs. the CLI
+
+| Task | Editor | CLI |
+| --- | --- | --- |
+| Position and tune controls visually | ✅ | – |
+| Preview a layout against video | ✅ | – |
+| Bulk template generation | – | ✅ (`takx create`) |
+| CI packing and verification | – | ✅ (`takx pack`, `takx verify`) |
+| Sideload a bundle to the CTA | – | ✅ (`takx serve`) |
+
+Most teams use the editor for design iteration and the CLI for automation.
+
+## Read next
+
+<Steps>
+  <Step title="Set up the editor">
+    Install the editor — see [TAK Editor setup](/gdk/game-streaming-tak-editor-setup).
+  </Step>
+  <Step title="Create a bundle">
+    Start from a template inside the editor — see [Create a bundle](/gdk/game-streaming-tak-editor-create-bundle).
+  </Step>
+  <Step title="Preview against gameplay">
+    Load a recording and preview — see [Preview layouts](/gdk/game-streaming-tak-editor-preview-layouts).
+  </Step>
+  <Step title="Pack the bundle">
+    Produce a `.tab` — see [Pack bundles](/gdk/game-streaming-tak-editor-pack-bundles).
+  </Step>
+</Steps>
+
+## Related
+
+- [Touch Adaptation Kit overview](/gdk/game-streaming-touch-touch-adaptation-kit-overview)
+- [TAK CLI](/gdk/game-streaming-tak-command-line)
+- [Designers guide](/gdk/game-streaming-tak-designers-guide)

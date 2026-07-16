@@ -1,0 +1,70 @@
+---
+title: "Force feedback and haptics"
+sidebarTitle: "Haptics"
+description: "Rumble motors, trigger haptics, and full force-feedback effects on gamepads, wheels, and flight sticks."
+icon: "wave-square"
+---
+
+GameInput exposes three haptic models. Which ones apply depends on the device class.
+
+## The three models
+
+<CardGroup cols={2}>
+  <Card title="Rumble motors" icon="gamepad">
+    Classic low- and high-frequency motors on standard gamepads.
+  </Card>
+
+  <Card title="Trigger haptics" icon="hand">
+    XBOX Wireless Controller trigger rumble for tactile feedback on shoulder pulls.
+  </Card>
+
+  <Card title="Force feedback" icon="steering-wheel">
+    Full effect-graph model on wheels and flight sticks — constant, ramp, periodic, spring, damper, friction, inertia.
+  </Card>
+
+  <Card title="Ambient / lighting" icon="lightbulb" href="/gdk/dynamic-lighting">
+    Not haptic, but often authored together. See Dynamic lighting for RGB peripherals.
+  </Card>
+</CardGroup>
+
+## Always check capabilities first
+
+Not every controller supports every effect type. Query the haptic capabilities of the device before authoring an effect:
+
+```cpp
+GameInputHapticInfo hapticInfo{};
+if (SUCCEEDED(device->GetHapticInfo(&hapticInfo)))
+{
+    if (hapticInfo.motorCount >= 2)
+    {
+        // Both low- and high-frequency motors available
+    }
+    if (hapticInfo.hasTriggerRumble)
+    {
+        // Trigger haptics available
+    }
+}
+```
+
+For force feedback:
+
+```cpp
+GameInputForceFeedbackMotorInfo motorInfo{};
+if (SUCCEEDED(device->GetForceFeedbackMotorInfo(motorIndex, &motorInfo)))
+{
+    // Author effect only if motorInfo confirms the effect type is supported
+}
+```
+
+## Guidelines
+
+- Keep gameplay-critical feedback subtle — heavy rumble masks other feedback.
+- Provide a rumble intensity slider in accessibility settings and honor a zero setting exactly.
+- Trigger haptics work best for discrete events (a shot fired, a hit landed). Do not use them for continuous state.
+- Force feedback on wheels needs continuous updates — keep the effect running and update parameters, do not restart the effect every frame.
+
+## Related
+
+- [Devices and hardware](/gdk/input-devices)
+- [GameInput API reference](/reference/gameinput)
+- [Dynamic lighting](/gdk/dynamic-lighting)

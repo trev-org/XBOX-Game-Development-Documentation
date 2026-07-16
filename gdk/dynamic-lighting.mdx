@@ -5,37 +5,45 @@ description: "Drive RGB lighting on compatible peripherals from your GDK title."
 icon: "lightbulb"
 ---
 
-Drive RGB lighting on compatible peripherals (controllers, keyboards, mice, headsets) from your title via the GDK [Lighting API](/reference/lighting).
+Drive RGB lighting on compatible peripherals from your title via the GDK [Lighting API](/reference/lighting). Dynamic lighting on the GDK is built on `Windows.Devices.Lights.LampArray` and works across controllers, keyboards, mice, and headsets that expose addressable LEDs.
 
 ## What you can do
 
-- Enumerate compatible peripherals.
-- Push per-LED color buffers in sync with gameplay (damage flashes, health, team color).
-- Respect platform-wide lighting preferences — stop pushing colors when the user opts out.
+<CardGroup cols={2}>
+  <Card title="Enumerate peripherals" icon="microchip">
+    Discover every compatible `LampArray` device and its per-lamp positional metadata.
+  </Card>
 
-## Best practices
+  <Card title="Push per-LED colors" icon="palette">
+    Drive per-LED color buffers in sync with gameplay — damage flashes, health, team color.
+  </Card>
 
-- Keep an idle ambient pattern so devices don't go dark when nothing is happening.
-- Throttle updates to 60–90 Hz — anything higher is wasted bandwidth.
-- Always fall back gracefully when the API isn't available (older OS / non-RGB device).
+  <Card title="Queue effect playlists" icon="wave-square">
+    Let the system interpolate between color states on its own thread; you push keyframes, not per-frame updates.
+  </Card>
 
-## Lighting basics
+  <Card title="Respect user preference" icon="user-shield">
+    Honor the platform-wide dynamic-lighting opt-out. When disabled, your writes are silently dropped.
+  </Card>
+</CardGroup>
 
-Dynamic lighting on the GDK is built on `Windows.Devices.Lights.LampArray`:
+## The model
 
-- **LampArray** — a per-device collection of addressable LEDs with positional metadata
-- **Lamp** — a single addressable light. Each lamp exposes its purpose (indicator, accent, key) and 3D position
-- **Effect playlist** — queue colour changes and have the system interpolate between them on its own thread
-- **Ownership** — your title takes foreground ownership of a `LampArray` while focused; the OS restores ambient state when you lose focus
+- **LampArray** — a per-device collection of addressable LEDs with positional metadata.
+- **Lamp** — a single addressable light. Each lamp exposes its purpose (indicator, accent, key) and 3D position on the device.
+- **Effect playlist** — queue color changes and have the system interpolate between them.
+- **Ownership** — your title takes foreground ownership of a `LampArray` while focused; the OS restores ambient state when you lose focus.
 
-The platform also enforces global user preference — if the player has disabled dynamic lighting in Settings, your title's writes are silently dropped. Always check `IsAvailable` before authoring elaborate effects.
+<Note>
+  The platform enforces global user preference. If the player has disabled dynamic lighting in Settings, your writes are dropped. Always check `IsAvailable` before authoring elaborate effects.
+</Note>
 
 ## Working with colors
 
-- Author lighting in **linear sRGB**, then let the runtime apply the device's per-LED gamma curve
-- Provide a per-lamp purpose mask (indicator vs accent) — players can opt out of any one class
-- Respect the per-lamp **brightness ceiling** the device reports; many keyboards cap brightness in firmware
-- Use the lamp position metadata to drive directional effects (impact flashes from the hit direction)
+- Author lighting in **linear sRGB**, then let the runtime apply the device's per-LED gamma curve.
+- Provide a per-lamp purpose mask (indicator vs accent) — players can opt out of any one class.
+- Respect the per-lamp **brightness ceiling** the device reports; many keyboards cap brightness in firmware.
+- Use the lamp position metadata to drive directional effects (impact flashes from the hit direction).
 
 ## Effects
 
@@ -51,7 +59,25 @@ Typical effects ship as composable presets:
 
 Author effects as data, not code — store effect templates in your title data so designers can tune timing and palette without engine rebuilds.
 
+## Best practices
+
+<Steps>
+  <Step title="Have an idle pattern">
+    Keep an ambient pattern running so devices do not go dark when nothing is happening.
+  </Step>
+  <Step title="Throttle updates">
+    60–90 Hz is plenty. Anything higher is wasted bandwidth and can be dropped by the driver.
+  </Step>
+  <Step title="Fall back gracefully">
+    Older OS versions, non-RGB devices, and opted-out users all end up in the same silent-drop path. Do not gate gameplay on lighting output.
+  </Step>
+  <Step title="Author effects as data">
+    Effect timing and palette should live in title data. Designers should not need an engine rebuild to tune a pulse.
+  </Step>
+</Steps>
+
 ## Related
 
 - [Lighting API reference](/reference/lighting)
+- [Force feedback and haptics](/gdk/input-haptics)
 - [Platform integration](/gdk/platform-integration)

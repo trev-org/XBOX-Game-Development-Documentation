@@ -1,0 +1,66 @@
+---
+title: "Web Content Test Application (CTA)"
+sidebarTitle: "Web CTA"
+description: "The recommended browser-based Content Test Application for streaming your GDK title from a dev kit."
+icon: "globe"
+---
+
+The Web Content Test Application (Web CTA) is the recommended way to stream your GDK title from a dev kit during development. It runs in a modern browser, requires no install, and includes controls for stream configuration, touch adaptation, and diagnostics.
+
+## When to use the Web CTA
+
+<CardGroup cols={2}>
+  <Card title="Everyday validation" icon="circle-check">
+    First-pass streaming validation for any GDK title — rendering, input, UI scale, latency behavior.
+  </Card>
+
+  <Card title="Touch layout testing" icon="hand-pointer">
+    Sideload a Touch Adaptation Bundle and validate touch controls on desktop or mobile browsers.
+  </Card>
+
+  <Card title="Stream configuration" icon="sliders" href="/gdk/game-streaming-content-test-application-stream-config">
+    Override bitrate, codec, resolution, and other stream parameters to stress test your title.
+  </Card>
+
+  <Card title="Cross-platform coverage" icon="laptop-mobile">
+    Test the same session on a desktop browser and a mobile browser without installing two apps.
+  </Card>
+</CardGroup>
+
+## What it can do
+
+- Discover and connect to a streaming-enabled dev kit on the same network.
+- Override the negotiated stream configuration (see [Stream configuration](/gdk/game-streaming-content-test-application-stream-config)).
+- Sideload a Touch Adaptation Bundle served from a Windows PC running the [TAK CLI serve command](/gdk/game-streaming-tak-command-line-serve-command).
+- Display frame counters and diagnostics for latency instrumentation.
+- Emulate a range of client device classes (phone, tablet, TV) with different resolutions and input methods.
+
+## Getting started
+
+<Steps>
+  <Step title="Complete dev kit setup">
+    Follow [Set up an XBOX developer kit](/gdk/game-streaming-setup-xbox-developer-kit) to enable streaming host on your dev kit.
+  </Step>
+  <Step title="Open the Web CTA">
+    Open the Web CTA URL provided by your Microsoft Program Representative in a supported browser.
+  </Step>
+  <Step title="Point it at your dev kit">
+    Enter the IP or host name of your dev kit and start a session.
+  </Step>
+  <Step title="Validate the basics">
+    Confirm the title renders at the expected resolution, inputs route correctly, and Cloud Aware detection returns `true`.
+  </Step>
+  <Step title="Add stress tests">
+    Adjust stream config parameters, simulate latency, or sideload a touch bundle.
+  </Step>
+</Steps>
+
+<Note>
+  Access to the Web CTA is provisioned per developer account. Contact your Microsoft Program Representative if you cannot reach the URL.
+</Note>
+
+## Related
+
+- [Stream configuration](/gdk/game-streaming-content-test-application-stream-config)
+- [Stream your game](/gdk/game-streaming-stream-your-game)
+- [Touch Adaptation Kit overview](/gdk/game-streaming-touch-touch-adaptation-kit-overview)

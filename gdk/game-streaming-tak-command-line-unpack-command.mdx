@@ -1,0 +1,42 @@
+---
+title: "takx unpack command"
+sidebarTitle: "unpack"
+description: "Extract a .tab Touch Adaptation Bundle back into a source directory."
+icon: "box-open"
+---
+
+`takx unpack` extracts a `.tab` file back into an editable source directory. Use it to inspect a shipped bundle, recover a source layout, or migrate between machines.
+
+## Synopsis
+
+```powershell
+takx unpack <input.tab> -o <destination>
+```
+
+## Arguments
+
+| Argument | Purpose |
+| --- | --- |
+| `<input.tab>` | Packed bundle to extract |
+| `-o <destination>` | Destination directory (created if it does not exist) |
+
+## Example
+
+```powershell
+takx unpack my-title.tab -o my-title-source
+```
+
+## When to use
+
+- Inspect the contents of a published `.tab` for a support investigation.
+- Recover the source when you have the packed bundle but not the source directory.
+- Round-trip through `unpack` → edit → [`pack`](/gdk/game-streaming-tak-command-line-pack-command) as a last resort.
+
+<Note>
+  Prefer keeping the source directory in source control. `unpack` is a recovery tool, not a normal step in the authoring workflow.
+</Note>
+
+## Related
+
+- [pack](/gdk/game-streaming-tak-command-line-pack-command)
+- [verify](/gdk/game-streaming-tak-command-line-verify-command)

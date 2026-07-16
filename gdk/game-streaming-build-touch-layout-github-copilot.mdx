@@ -1,0 +1,52 @@
+---
+title: "Build a touch layout with GitHub Copilot"
+sidebarTitle: "Copilot workflow"
+description: "Use GitHub Copilot in VS Code to draft, refine, and iterate on touch adaptation layouts."
+icon: "robot"
+tag: "New"
+---
+
+If you use GitHub Copilot in VS Code, you can use it to accelerate touch layout authoring. Copilot understands the touch layout JSON schema well enough to draft a starting layout from a plain-language description of your game, add or move controls on request, and explain what an existing layout does.
+
+## Setup
+
+<Steps>
+  <Step title="Install GitHub Copilot">
+    Install GitHub Copilot and Copilot Chat extensions in VS Code with an active Copilot subscription.
+  </Step>
+  <Step title="Open your bundle source folder">
+    Open the folder containing your `layouts/`, `assets/`, and `manifest.json`.
+  </Step>
+  <Step title="Provide context">
+    Include a short README describing your game's genre, gameplay states, and priority actions. Copilot uses this file as context.
+  </Step>
+  <Step title="Start with a template">
+    Copy a [template layout](/gdk/game-streaming-tak-command-line-templates) into `layouts/` as a starting point. Copilot works better editing an existing file than authoring one from scratch.
+  </Step>
+</Steps>
+
+## Effective prompts
+
+| You want | Prompt shape |
+| --- | --- |
+| Add a control | "Add a jump button to the right side of the layout below the fire button." |
+| Reshape the wheel | "Split the right-hand action wheel into a 6-slice wheel with these actions: fire, reload, melee, grenade, interact, sprint." |
+| Adapt to a new state | "Duplicate this layout as `gameplay-inventory.json` and remove all controls except movement and cancel." |
+| Explain | "Explain what the joystick on the left does in this layout." |
+| Add localization keys | "Add localization keys for every button label in this layout and update `en-us.json`." |
+
+## Guardrails
+
+<Warning>
+  Copilot will invent controls, positions, or schema fields that do not exist. Always preview generated layouts in the [TAK Editor](/gdk/game-streaming-tak-editor) and run [`takx verify`](/gdk/game-streaming-tak-command-line-verify-command) on the packed `.tab` before shipping.
+</Warning>
+
+- Verify every AI-authored layout against the schema before packing.
+- Preview against real gameplay footage in the TAK Editor — Copilot cannot judge ergonomics.
+- Do not paste NDA-covered gameplay descriptions into Copilot Chat. Keep prompts to public information.
+
+## Related
+
+- [Building a touch layout](/gdk/game-streaming-touch-building-touch-layout)
+- [Designers guide](/gdk/game-streaming-tak-designers-guide)
+- [TAK CLI](/gdk/game-streaming-tak-command-line)

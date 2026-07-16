@@ -1,0 +1,30 @@
+---
+title: "Android Content Test Application (deprecated)"
+sidebarTitle: "Android CTA (deprecated)"
+description: "The Android Content Test Application is deprecated in favor of the Web CTA. Reference documentation only."
+icon: "android"
+tag: "Deprecated"
+---
+
+<Warning>
+  The Android CTA is deprecated. Use the [Web CTA](/gdk/game-streaming-web-content-test-application) on a mobile browser for touch testing on Android devices. This page is kept only for reference.
+</Warning>
+
+The Android Content Test Application was a sideloaded Android APK that let developers stream a GDK title from a dev kit to a phone or tablet for validation. It is superseded by the Web CTA running in a mobile browser, which offers the same stream configuration, touch adaptation sideload, and diagnostics without the sideload workflow.
+
+## Should you use it?
+
+No. Point a supported mobile browser at the [Web CTA](/gdk/game-streaming-web-content-test-application). All existing test cases — touch layouts, custom resolution, latency behavior — can be exercised through the Web CTA.
+
+## Migration
+
+| Android CTA capability | Equivalent |
+| --- | --- |
+| Native touch input | [Web CTA touch input](/gdk/game-streaming-web-content-test-application) or [native touch via `IGameInput`](/gdk/game-streaming-native-touch-igameinput) |
+| Sideload touch adaptation bundles | [TAK CLI `serve` command](/gdk/game-streaming-tak-command-line-serve-command) picked up by the Web CTA |
+| Stream configuration overrides | [Stream configuration](/gdk/game-streaming-content-test-application-stream-config) in the Web CTA |
+
+## Related
+
+- [Web CTA](/gdk/game-streaming-web-content-test-application)
+- [Native touch with `IGameInput`](/gdk/game-streaming-native-touch-igameinput)

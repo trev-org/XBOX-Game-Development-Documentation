@@ -1,0 +1,65 @@
+---
+title: "Devices and hardware"
+sidebarTitle: "Devices"
+description: "The device classes GameInput surfaces, per-class capabilities, and how to query them at runtime."
+icon: "microchip"
+---
+
+GameInput exposes a single interface across every device class. Each class has its own capabilities and readings; query capabilities before you author elaborate behavior.
+
+## Device matrix
+
+| Device class | Notes |
+| --- | --- |
+| Gamepads | XBOX Wireless, Elite Series 2, Adaptive Controller — full feature set including trigger haptics |
+| Racing wheels | Force feedback, paddle shifters, H-pattern shifters, handbrake, clutch |
+| Arcade sticks | Treated as digital gamepads; button-mapping helpers available |
+| Flight sticks | Throttle, rudder, hat switches, twist axis |
+| Keyboard | Per-key state, repeat-rate awareness |
+| Mouse | High-precision motion deltas, per-button state |
+| Touch | Surfaced through GameInput on streaming clients and Windows touch devices |
+| Sensors | Accelerometer, gyroscope, light sensor where present |
+
+## Physical vs. logical device
+
+<CardGroup cols={2}>
+  <Card title="IGameInputDevice" icon="microchip">
+    The physical device — capabilities, HID IDs, display name, battery state. Use this to query what a device supports.
+  </Card>
+
+  <Card title="Logical mapping" icon="code">
+    Abstract a gamepad's buttons into engine actions. Never bind gameplay to physical scan codes; give the player a rebind path.
+  </Card>
+</CardGroup>
+
+## Querying capabilities
+
+Every non-trivial feature has a capability probe. Check before authoring the effect or reading the field:
+
+```cpp
+GameInputHapticInfo hapticInfo{};
+if (SUCCEEDED(device->GetHapticInfo(&hapticInfo)))
+{
+    if (hapticInfo.motorCount > 0)
+    {
+        // Author rumble
+    }
+}
+```
+
+This pattern applies to force feedback, sensors, haptics, and any capability that varies by device class.
+
+## HID pass-through
+
+For niche peripherals GameInput does not model natively, read raw HID reports while still benefiting from device hot-plug and ownership. Prefer the modelled path when it exists — HID pass-through gets you a device but you own the parsing and semantics.
+
+## Battery and power
+
+- `IGameInputDevice` exposes battery state — use it to prompt players before a device dies mid-session.
+- On Quick Resume, a device's battery may have been swapped or the device replaced. Re-query battery state and capabilities on resume.
+
+## Related
+
+- [Force feedback and haptics](/gdk/input-haptics)
+- [Sensors](/gdk/input-sensors)
+- [Fundamentals](/gdk/input-fundamentals)

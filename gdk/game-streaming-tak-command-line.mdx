@@ -1,0 +1,71 @@
+---
+title: "TAK command line (takx) overview"
+sidebarTitle: "TAK CLI"
+description: "The takx command line tool creates, packs, verifies, and serves Touch Adaptation Bundles from a terminal or CI pipeline."
+icon: "terminal"
+---
+
+The **TAK command line tool** (`takx`) is the automation surface for Touch Adaptation Bundles. It lets you create bundles from templates, pack `.tab` files, verify them, serve them to test clients, and inspect versions and licensing — all scriptable from a terminal or CI pipeline.
+
+## When to use the CLI
+
+<CardGroup cols={2}>
+  <Card title="Bootstrap a bundle" icon="plus" href="/gdk/game-streaming-tak-command-line-create-command">
+    Emit a template-based bundle in one command.
+  </Card>
+
+  <Card title="Pack in CI" icon="box" href="/gdk/game-streaming-tak-command-line-pack-command">
+    Produce a `.tab` from a source directory as part of your build pipeline.
+  </Card>
+
+  <Card title="Verify before shipping" icon="circle-check" href="/gdk/game-streaming-tak-command-line-verify-command">
+    Catch schema, asset, and localization issues before submission.
+  </Card>
+
+  <Card title="Serve to a CTA" icon="tower-broadcast" href="/gdk/game-streaming-tak-command-line-serve-command">
+    Sideload a bundle to a Content Test Application over your local network.
+  </Card>
+</CardGroup>
+
+## Commands
+
+| Command | Purpose |
+| --- | --- |
+| [`create`](/gdk/game-streaming-tak-command-line-create-command) | Bootstrap a bundle or a single layout from a template |
+| [`convert`](/gdk/game-streaming-tak-command-line-convert-command) | Convert older bundle formats to the current schema |
+| [`pack`](/gdk/game-streaming-tak-command-line-pack-command) | Produce a `.tab` from a source directory |
+| [`unpack`](/gdk/game-streaming-tak-command-line-unpack-command) | Extract a `.tab` back into a source directory |
+| [`serve`](/gdk/game-streaming-tak-command-line-serve-command) | Serve a `.tab` to a Content Test Application |
+| [`verify`](/gdk/game-streaming-tak-command-line-verify-command) | Validate a bundle or `.tab` against the schema |
+| [`license`](/gdk/game-streaming-tak-command-line-license-command) | Print or accept the TAK license |
+| [`notice`](/gdk/game-streaming-tak-command-line-notice-command) | Print third-party notice text |
+| [`settings`](/gdk/game-streaming-tak-command-line-settings-command) | View or change global CLI settings |
+| [`templates`](/gdk/game-streaming-tak-command-line-templates) | List the templates available to `create` |
+| [`takx-version`](/gdk/game-streaming-tak-command-line-takx-version-command) | Print the CLI version |
+| [`version`](/gdk/game-streaming-tak-command-line-version-command) | Print or set the bundle version in a source directory |
+
+## Typical workflow
+
+<Steps>
+  <Step title="Create a bundle">
+    `takx create my-title-bundle --template first-person`
+  </Step>
+  <Step title="Iterate in the editor">
+    Open the source directory in the [TAK Editor](/gdk/game-streaming-tak-editor).
+  </Step>
+  <Step title="Pack">
+    `takx pack my-title-bundle -o my-title.tab`
+  </Step>
+  <Step title="Verify">
+    `takx verify my-title.tab`
+  </Step>
+  <Step title="Serve">
+    `takx serve my-title.tab`, then sideload from the [Web CTA](/gdk/game-streaming-web-content-test-application).
+  </Step>
+</Steps>
+
+## Related
+
+- [TAK Editor](/gdk/game-streaming-tak-editor)
+- [Touch Adaptation Kit overview](/gdk/game-streaming-touch-touch-adaptation-kit-overview)
+- [Publish layouts](/gdk/game-streaming-touch-publishing-layouts)

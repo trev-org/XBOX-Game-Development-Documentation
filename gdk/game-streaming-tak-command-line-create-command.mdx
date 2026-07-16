@@ -1,0 +1,49 @@
+---
+title: "takx create command"
+sidebarTitle: "create"
+description: "Bootstrap a Touch Adaptation Bundle or a single layout from a template."
+icon: "plus"
+---
+
+`takx create` is the fastest way to start a bundle. It emits a fully-formed source directory with `manifest.json`, one or more layouts, an `assets/` folder, and (optionally) a `loc/` folder.
+
+## Synopsis
+
+```powershell
+takx create <destination> [--template <template>] [--layout-only]
+```
+
+## Arguments
+
+| Argument | Purpose |
+| --- | --- |
+| `<destination>` | Output directory (bundle folder) or output layout file when `--layout-only` |
+| `--template <template>` | Template to use — see [`templates`](/gdk/game-streaming-tak-command-line-templates) for the full list |
+| `--layout-only` | Emit only a single layout JSON file instead of a full bundle |
+
+## Examples
+
+Create a full bundle from the first-person template:
+
+```powershell
+takx create my-fps-bundle --template first-person
+```
+
+Create a single platformer layout file:
+
+```powershell
+takx create combat.json --template platformer --layout-only
+```
+
+## What is emitted
+
+- `manifest.json` — bundle metadata (title, version, publisher).
+- `layouts/` — one JSON file per gameplay state seeded from the template.
+- `assets/` — empty folder ready for [custom assets](/gdk/game-streaming-tak-custom-assets).
+- `loc/` — default-language string table; add more languages as needed — see [TAK localization](/gdk/game-streaming-tak-localization).
+
+## Related
+
+- [Templates](/gdk/game-streaming-tak-command-line-templates)
+- [pack](/gdk/game-streaming-tak-command-line-pack-command)
+- [TAK Editor — Create a bundle](/gdk/game-streaming-tak-editor-create-bundle)

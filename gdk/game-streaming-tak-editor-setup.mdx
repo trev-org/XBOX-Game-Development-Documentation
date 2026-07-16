@@ -1,0 +1,49 @@
+---
+title: "Set up the TAK Editor"
+sidebarTitle: "Setup"
+description: "Install prerequisites and configure the TAK Editor on Windows before you author your first bundle."
+icon: "gears"
+---
+
+The TAK Editor is a Windows desktop application. Set it up once per authoring PC and it works alongside the [TAK CLI](/gdk/game-streaming-tak-command-line) for packing and serving.
+
+## Prerequisites
+
+| Requirement | Notes |
+| --- | --- |
+| Windows 10 or later | Windows 11 recommended |
+| .NET runtime | As specified in the installer prerequisites |
+| Access to the xbox-game-streaming-tools distribution | Contact your Microsoft Program Representative if you cannot reach the downloads |
+| A local folder for bundle sources | One folder per title is common; sub-folders per layout |
+
+## Install
+
+<Steps>
+  <Step title="Get the installer">
+    Download the TAK Editor installer from the xbox-game-streaming-tools distribution provided by your Microsoft Program Representative.
+  </Step>
+  <Step title="Run the installer">
+    Accept the license and install to the default location.
+  </Step>
+  <Step title="Install the TAK CLI on the same PC">
+    The [TAK CLI](/gdk/game-streaming-tak-command-line) shares tooling with the editor. Install it on the same PC so you can pack and serve without switching machines.
+  </Step>
+  <Step title="Verify">
+    Launch the editor and confirm it opens to a project picker. Run `takx --version` from a terminal to confirm the CLI is on PATH.
+  </Step>
+</Steps>
+
+## First-run configuration
+
+- Pick a workspace folder that will hold every bundle you author. Keep bundles as sibling folders inside that workspace.
+- Wire a gameplay video source — the editor previews layouts against a video clip you provide. See [Customize the preview](/gdk/game-streaming-tak-editor-customize-preview).
+- Optionally set your default target aspect and safe area in preferences so new layouts start in the shape you plan to ship.
+
+## Troubleshooting
+
+See [Troubleshooting](/gdk/game-streaming-tak-editor-troubleshooting) for common setup issues.
+
+## Related
+
+- [Create a bundle](/gdk/game-streaming-tak-editor-create-bundle)
+- [TAK CLI](/gdk/game-streaming-tak-command-line)

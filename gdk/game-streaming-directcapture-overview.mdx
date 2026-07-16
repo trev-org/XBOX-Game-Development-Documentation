@@ -1,0 +1,50 @@
+---
+title: "DirectCapture overview"
+sidebarTitle: "DirectCapture"
+description: "How the streaming pipeline captures your title's swap chain without an extra copy, and what to watch for in HDR / SDR modes."
+icon: "camera"
+---
+
+DirectCapture is the path the streaming pipeline uses to grab the encoded video frame directly from your swap chain on the server, with no intermediate copy. Most titles get DirectCapture automatically, but there are a few configurations that disable it or degrade its output.
+
+## What DirectCapture gives you
+
+- The encoded frame is captured from your title's final swap chain buffer with the format and color space you present.
+- No CPU or GPU copy is inserted between your title and the video encoder.
+- HDR titles get an HDR capture path when the client supports HDR playback.
+
+## Configuration matrix
+
+| Swap chain configuration | DirectCapture |
+| --- | --- |
+| Standard windowed / borderless SDR swap chain | Enabled |
+| Standard HDR swap chain with a supported HDR client | Enabled |
+| HDR swap chain with an SDR-only client | Enabled with server-side tone mapping |
+| Exclusive fullscreen swap chain (PC GDK) | Disabled |
+| Unsupported custom present configurations | Disabled |
+
+<Note>
+  HDR and SDR paths each require their own DirectCapture configuration. If your title toggles between HDR and SDR at runtime, expect a brief capture reconfiguration when the mode changes.
+</Note>
+
+## What to validate
+
+<Steps>
+  <Step title="Present configuration">
+    Use standard windowed or borderless present modes. Avoid exclusive fullscreen for GDK PC builds intended for streaming.
+  </Step>
+  <Step title="HDR clamp">
+    Clamp HDR values inside the standard HDR range so tone-mapped output is not blown out on SDR clients.
+  </Step>
+  <Step title="SDR clamp">
+    Keep SDR output inside 0–1 to avoid unexpected clipping when encoded to the streamed video format.
+  </Step>
+  <Step title="Mode switch">
+    If your title toggles HDR at runtime, verify the transition on a streamed client. Expect a short capture reconfiguration.
+  </Step>
+</Steps>
+
+## Related
+
+- [Optimize for streaming](/gdk/game-streaming-optimizing-your-game)
+- [Custom resolution overview](/gdk/game-streaming-custom-resolution-overview)

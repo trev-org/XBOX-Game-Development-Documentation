@@ -1,0 +1,49 @@
+---
+title: "Stream your game — test prerequisites"
+sidebarTitle: "Stream your game"
+description: "Prerequisites and options for streaming your GDK title from a dev kit to a test client."
+icon: "tower-broadcast"
+---
+
+To test your title on a real streaming client you need a dev kit that can host a stream and a client that can connect to it. Every part of the streaming stack — latency compensation, touch adaptation, custom resolution, DirectCapture — should be validated on this loop before you enable the title in a Private Offering.
+
+## Prerequisites
+
+<Steps>
+  <Step title="An XBOX developer kit configured for streaming">
+    Follow [Set up an XBOX developer kit](/gdk/game-streaming-setup-xbox-developer-kit) so the kit exposes a streaming endpoint on your local network.
+  </Step>
+  <Step title="A test client on the same network">
+    Pick one of the [Content Test Applications](/gdk/game-streaming-web-content-test-application) and install it. The web CTA is the recommended default; Android and Windows CTAs remain available but are deprecated.
+  </Step>
+  <Step title="A build of your title deployed to the dev kit">
+    Use the same GDK pipeline you use for any other on-device testing. Streaming does not require a separate build configuration.
+  </Step>
+  <Step title="(Optional) A touch adaptation bundle">
+    If you plan to test touch input, [serve a bundle](/gdk/game-streaming-touch-deploying-touch-layout) from a Windows PC that has the [TAK CLI](/gdk/game-streaming-tak-command-line) installed and configure sideload on the client.
+  </Step>
+</Steps>
+
+## Recommended validation loop
+
+<CardGroup cols={2}>
+  <Card title="Web CTA" icon="globe" href="/gdk/game-streaming-web-content-test-application">
+    Test streaming to a browser, including touch layouts and stream configuration overrides.
+  </Card>
+
+  <Card title="Native touch" icon="hand-pointer" href="/gdk/game-streaming-native-touch-igameinput">
+    Once basic streaming works, opt in to native touch input via `IGameInput` for scenarios that benefit from raw touch.
+  </Card>
+
+  <Card title="Latency simulation" icon="clock" href="/gdk/game-streaming-simulate-latency-while-testing">
+    Inject artificial latency and jitter to validate your game across the full range of network conditions.
+  </Card>
+
+  <Card title="Custom resolution" icon="expand" href="/gdk/game-streaming-custom-resolution-overview">
+    Confirm that your title renders and scales UI correctly at the resolutions negotiated for low-bitrate clients.
+  </Card>
+</CardGroup>
+
+## When you are ready for Azure testing
+
+Once the on-device loop is stable, coordinate with your Microsoft Program Representative to configure a Private Offering. That path validates the title on real xCloud servers before it becomes available externally.

@@ -1,0 +1,65 @@
+---
+title: "Latency compensation deep dive"
+sidebarTitle: "Latency deep dive"
+description: "Frame-association APIs, predictive input, and the mechanics of keeping a streamed title responsive under real latency."
+icon: "microscope"
+---
+
+The [latency compensation overview](/gdk/game-streaming-latency-compensation-overview) covers the four levers. This deep dive covers the mechanics of applying them.
+
+<Warning>
+  `XGameStreamingGetAssociatedFrame` and `XGameStreamingGetLastFrameDisplayed` are deprecated as of the June 2026 (2604) GDK. Use the current frame-association APIs from `XGameStreaming.h` in your GDK edition. The concepts below still apply.
+</Warning>
+
+## Frame association
+
+On every frame, three quantities exist:
+
+- The server frame currently being simulated (`serverFrame`).
+- The client frame the player last saw when they produced input (`inputFrame`).
+- The delta between them, which is the number of frames of round-trip latency the streaming pipeline is currently reporting.
+
+When you sample input in the same frame the client saw — as opposed to the frame the server is rendering — you get an input reading that maps back to the world state the player was reacting to. That is predictive input.
+
+## Applying compensation levers
+
+<AccordionGroup>
+  <Accordion title="Predictive input" icon="arrow-right">
+    1. Retrieve the current round-trip in frames via the streaming client properties.
+    2. When you sample input, apply it to game state as if it had arrived N frames earlier.
+    3. Roll authoritative state forward from that earlier point on the next authoritative tick.
+
+    This works best for input types where a small mis-prediction is invisible (movement direction, camera pan). It works worst for one-shot events (fire, jump). For one-shot events, prefer a tolerance-widening lever.
+  </Accordion>
+
+  <Accordion title="Tolerance widening" icon="crosshairs">
+    - Expand hit windows on streamed sessions proportional to the measured latency.
+    - Extend reticle assist range and stickiness on streamed sessions.
+    - Prefer generous timing windows for quick-time-event style inputs.
+  </Accordion>
+
+  <Accordion title="HUD responsiveness" icon="sliders">
+    - Reduce HUD animation lengths so a button press feels acknowledged even if the world response is delayed.
+    - Provide immediate audio feedback for critical inputs (fire, jump, interact).
+    - Cache and pre-render menu transitions so the first frame of a menu opens immediately.
+  </Accordion>
+
+  <Accordion title="Frame pacing" icon="stopwatch">
+    - Enforce a hard frame time budget and drop peripheral work when it approaches the budget.
+    - Prefer a steady 50 fps to a jittery 60 fps.
+    - Investigate every spike — spikes turn into encoder rebuffers and visible stalls.
+  </Accordion>
+</AccordionGroup>
+
+## Anti-patterns
+
+- Sampling input against the server frame and pretending the delay does not exist.
+- Applying compensation only when the mode is xCloud. Remote Play sessions have similar latency profiles.
+- Applying maximum compensation regardless of measured latency. On a low-latency session this over-corrects and feels floaty.
+- Assuming latency is stable within a session. It fluctuates — sample continuously.
+
+## Related
+
+- [Latency compensation overview](/gdk/game-streaming-latency-compensation-overview)
+- [Latency measurement](/gdk/game-streaming-latency-measurement)
+- [Optimize for streaming](/gdk/game-streaming-optimizing-your-game)

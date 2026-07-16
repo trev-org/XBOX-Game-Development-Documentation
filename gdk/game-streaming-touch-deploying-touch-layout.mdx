@@ -1,0 +1,54 @@
+---
+title: "Deploying a touch layout for testing"
+sidebarTitle: "Deploy for testing"
+description: "Sideload a Touch Adaptation Bundle to a Content Test Application so you can test it against a live streaming session."
+icon: "rocket"
+---
+
+Before you publish a touch layout, you sideload it to a Content Test Application so real touch sessions pick it up. This works with the [Web CTA](/gdk/game-streaming-web-content-test-application) using the [`takx serve`](/gdk/game-streaming-tak-command-line-serve-command) command running on a Windows PC.
+
+## Prerequisites
+
+- A packed `.tab` file, produced with [`takx pack`](/gdk/game-streaming-tak-command-line-pack-command).
+- [TAK CLI](/gdk/game-streaming-tak-command-line) installed on a Windows PC on the same network as the CTA client.
+- A streaming-configured [dev kit](/gdk/game-streaming-setup-xbox-developer-kit) hosting your title.
+- The [Web CTA](/gdk/game-streaming-web-content-test-application) provisioned for your account.
+
+## Deploy in four steps
+
+<Steps>
+  <Step title="Serve the bundle">
+    On your Windows PC, run:
+
+    ```powershell
+    takx serve my-title.tab
+    ```
+
+    Note the URL and port that `serve` prints — the CTA will connect to it.
+  </Step>
+  <Step title="Open the CTA">
+    Launch the [Web CTA](/gdk/game-streaming-web-content-test-application) and connect it to your dev kit.
+  </Step>
+  <Step title="Point the CTA at your served bundle">
+    In the CTA's touch adaptation settings, enter the URL that `takx serve` printed. The CTA fetches the bundle over the network.
+  </Step>
+  <Step title="Test">
+    Start the streaming session and interact with the layout. Iterate by re-packing and refreshing the CTA — `takx serve` keeps serving from the same URL.
+  </Step>
+</Steps>
+
+## Iterating quickly
+
+<Tip>
+  Keep `takx serve` running while you iterate. Re-pack the bundle with `takx pack` and the next CTA session pulls the new version. No need to restart the server.
+</Tip>
+
+## When you are ready to publish
+
+Once the layout works in the CTA across your target device set, follow [Publishing layouts](/gdk/game-streaming-touch-publishing-layouts) to distribute it through the streaming service.
+
+## Related
+
+- [`takx serve` command](/gdk/game-streaming-tak-command-line-serve-command)
+- [`takx pack` command](/gdk/game-streaming-tak-command-line-pack-command)
+- [Web CTA](/gdk/game-streaming-web-content-test-application)

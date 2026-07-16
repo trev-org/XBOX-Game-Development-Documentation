@@ -1,0 +1,47 @@
+---
+title: "Publishing touch layouts"
+sidebarTitle: "Publish layouts"
+description: "How to submit a Touch Adaptation Bundle so the streaming service distributes it to real clients."
+icon: "upload"
+---
+
+Once a Touch Adaptation Bundle passes CTA testing, publish it so the streaming service ships it to real clients on xCloud and Remote Play.
+
+## Publishing checklist
+
+<Steps>
+  <Step title="Verify the bundle">
+    Run [`takx verify`](/gdk/game-streaming-tak-command-line-verify-command) against the packed `.tab`. Fix any warnings before submission.
+  </Step>
+  <Step title="Version the bundle">
+    Bump the version in `manifest.json` for every publish. The streaming service treats the version as the identity of the bundle for caching and rollback.
+  </Step>
+  <Step title="Include notices">
+    Attach any required third-party notices with [`takx notice`](/gdk/game-streaming-tak-command-line-notice-command).
+  </Step>
+  <Step title="Confirm license">
+    Confirm the license configuration with [`takx license`](/gdk/game-streaming-tak-command-line-license-command).
+  </Step>
+  <Step title="Submit through Partner Center">
+    Submit the bundle through the Partner Center touch adaptation submission surface for your title.
+  </Step>
+  <Step title="Validate in a Private Offering">
+    Confirm the layout on real xCloud servers before you make it available to a broader audience.
+  </Step>
+</Steps>
+
+<Note>
+  The submission path is coordinated with your Microsoft Program Representative. Contact them for the current Partner Center flow and any account provisioning required for touch adaptation submissions.
+</Note>
+
+## After publishing
+
+- The streaming service ships the new bundle to touch clients on their next session.
+- xCloud caches bundles per version. Bumping the version forces a fresh download.
+- Rollback is by re-publishing the previous version.
+
+## Related
+
+- [Verify command](/gdk/game-streaming-tak-command-line-verify-command)
+- [Notice command](/gdk/game-streaming-tak-command-line-notice-command)
+- [License command](/gdk/game-streaming-tak-command-line-license-command)

@@ -1,0 +1,30 @@
+---
+title: "Windows PC Content Test Application (deprecated)"
+sidebarTitle: "Windows CTA (deprecated)"
+description: "The Windows PC Content Test Application is deprecated in favor of the Web CTA. Reference documentation only."
+icon: "windows"
+tag: "Deprecated"
+---
+
+<Warning>
+  The Windows PC CTA is deprecated. Use the [Web CTA](/gdk/game-streaming-web-content-test-application) for new work. This page is kept only for reference.
+</Warning>
+
+The Windows PC Content Test Application was an installable Windows client that let developers stream a GDK title from a dev kit for validation. It is superseded by the Web CTA, which runs in a browser, requires no install, and offers the same stream configuration, touch adaptation sideload, and diagnostics with less friction.
+
+## Should you use it?
+
+No. Adopt the [Web CTA](/gdk/game-streaming-web-content-test-application) for all new streaming validation. Migrate any existing regression profiles to the Web CTA before your next milestone.
+
+## Migration
+
+| Windows CTA capability | Equivalent |
+| --- | --- |
+| Connect to a dev kit by IP | Same, via the [Web CTA](/gdk/game-streaming-web-content-test-application) |
+| Override stream configuration | [Stream configuration](/gdk/game-streaming-content-test-application-stream-config) in the Web CTA |
+| Sideload touch adaptation bundles | Same flow via the [TAK CLI `serve` command](/gdk/game-streaming-tak-command-line-serve-command) |
+
+## Related
+
+- [Web CTA](/gdk/game-streaming-web-content-test-application)
+- [Stream your game](/gdk/game-streaming-stream-your-game)

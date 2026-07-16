@@ -1,0 +1,91 @@
+---
+title: "Touch adaptation designers guide"
+sidebarTitle: "Designers guide"
+description: "Best practices for designing touch layouts that feel good to play on real streaming clients."
+icon: "pen-nib"
+---
+
+A touch layout is a UI, not a keymap. The best layouts are designed for the ergonomics of the client device, the priorities of the gameplay state, and the constraints of streamed latency — not merely a translation of the gamepad.
+
+## Design principles
+
+<CardGroup cols={2}>
+  <Card title="Hand ergonomics first" icon="hand">
+    Anchor controls where the player's thumbs actually rest. Do not spread controls across the whole screen just because the screen is large.
+  </Card>
+
+  <Card title="State-specific layouts" icon="layer-group">
+    Ship a distinct layout per gameplay state (exploration, combat, inventory, menus). Every irrelevant control is a source of confusion and mis-touch.
+  </Card>
+
+  <Card title="Prioritize by frequency" icon="ranking-star">
+    The most frequently used actions get the most reachable positions. Rarely used actions can be smaller and further out.
+  </Card>
+
+  <Card title="Design for latency" icon="clock">
+    Give hit windows and reticle assist a bit more room. Streamed touch pays both the streaming latency and the client's own touch latency.
+  </Card>
+</CardGroup>
+
+## Layout patterns that work
+
+<AccordionGroup>
+  <Accordion title="Left joystick + right action wheel" icon="gamepad">
+    Movement on the left, action buttons arranged in an arc around a right-thumb anchor. Works well for first-person, third-person, and adventure games.
+  </Accordion>
+
+  <Accordion title="Directional pad + arcade buttons" icon="square">
+    Larger d-pad on the left, four arcade-style buttons on the right in a 2x2 or diagonal arrangement. Works well for fighting and 2D platformers.
+  </Accordion>
+
+  <Accordion title="Single-axis joystick + pedal buttons" icon="car">
+    Steering on the left as a horizontal-only joystick; gas and brake buttons on the right in easy reach. Works well for driving games.
+  </Accordion>
+
+  <Accordion title="Full physical layout" icon="grid-2">
+    Mimic the exact physical controller layout. Useful as a fallback and for players who prefer the familiar shape — but always ship a purpose-built layout too.
+  </Accordion>
+</AccordionGroup>
+
+## Sizing and spacing
+
+- Every interactive control needs a minimum touch target size a fingertip can reliably hit — err larger than you think.
+- Leave spacing between controls so an ambiguous contact resolves to the intended control.
+- Provide safe-area padding around every edge of the layout so system gestures and browser chrome do not intercept touches.
+
+## Feedback
+
+- Every control needs an immediate visual response on touch down. Do not wait for the server to acknowledge the input.
+- Prefer subtle, high-contrast visual feedback — low-contrast overlays disappear under video compression.
+- Add short haptic feedback where the client supports it.
+
+## Change in-game UI, hints, and control remapping for touch controls
+
+Use [gamepad physicality](/gdk/game-streaming-am-i-streaming#detect-touch-versus-gamepad) to swap in-game prompts from gamepad glyphs to touch-appropriate icons when the player's active input is a touch layout. If your title supports control remapping, provide touch-specific remap presets — the gamepad remap set is rarely appropriate for touch.
+
+## Check for common issues for touch controls and Xbox Game Streaming
+
+<AccordionGroup>
+  <Accordion title="Missing pause on disconnect" icon="pause">
+    Mobile clients disconnect whenever the player checks a notification. Pause the title when the only client disconnects.
+  </Accordion>
+
+  <Accordion title="Layout swap latency" icon="arrows-rotate">
+    Swapping layouts on a game state change is not instantaneous. Design the transition so a brief overlap does not cause mis-input.
+  </Accordion>
+
+  <Accordion title="Ghost inputs from system gestures" icon="ghost">
+    Edge swipes trigger browser or OS gestures that can look like button presses. Keep interactive controls away from screen edges.
+  </Accordion>
+
+  <Accordion title="Text input" icon="keyboard">
+    When a menu needs a keyboard, show the client keyboard rather than a bespoke touch keypad. Return to the touch layout when input completes.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+- [Building a touch layout](/gdk/game-streaming-touch-building-touch-layout)
+- [Changing layouts by game state](/gdk/game-streaming-touch-changing-layouts-game-state)
+- [Custom assets](/gdk/game-streaming-tak-custom-assets)
+- [High contrast mode](/gdk/game-streaming-tak-high-contrast-mode)
