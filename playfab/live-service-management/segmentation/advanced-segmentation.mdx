@@ -1,0 +1,30 @@
+---
+title: "Advanced segmentation with custom properties"
+sidebarTitle: "Advanced segmentation"
+description: "Use player custom properties to define dynamic segments."
+---
+
+Advanced Segmentation with [Custom Properties](/playfab/live-service-management/segmentation/player-custom-properties) lets you build dynamic segments from your own commerce, engagement, and custom data.
+
+## Create a segment with custom properties
+
+**Via API**
+
+- Create the segment: `CreateSegment`.
+- Add custom property predicates: `UpdateSegment`.
+
+**Via Game Manager**
+
+1. Sign in to Game Manager.
+2. Go to **Players → Segments**.
+3. Create or update a segment; select **Add filter** under **Player**.
+4. Save.
+
+## Export players in a custom-property segment
+
+1. Create a segment that references custom property predicates.
+2. Use [ExportPlayersInSegment](/playfab/live-service-management/segmentation/export-players).
+
+## Scheduled tasks
+
+Run scheduled tasks on a segment using custom property predicates.

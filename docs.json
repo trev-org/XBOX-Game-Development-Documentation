@@ -1096,6 +1096,13 @@
                       {
                         "group": "Segmentation",
                         "icon": "users-viewfinder",
+                        "pages": [
+                          "playfab/live-service-management/segmentation/advanced-segmentation"
+                        ]
+                      },
+                      {
+                        "group": "Experiments",
+                        "icon": "flask",
                         "pages": []
                       }
                     ]
