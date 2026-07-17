@@ -1721,11 +1721,173 @@
                     "group": "Game data",
                     "icon": "magnifying-glass-chart",
                     "pages": [
-                      "playfab/analytics",
-                      "playfab/telemetry-keys",
-                      "playfab/data-connections",
-                      "playfab/actions-rules",
-                      "playfab/insights-analytics"
+                      "playfab/data-analytics/overview",
+                      {
+                        "group": "Ingesting data",
+                        "icon": "arrow-down-to-line",
+                        "pages": [
+                          "playfab/data-analytics/ingest-data/telemetry-overview",
+                          "playfab/data-analytics/ingest-data/telemetry-keys-overview",
+                          "playfab/data-analytics/ingest-data/telemetry-keys-qs",
+                          "playfab/data-analytics/ingest-data/ht-activate-deactivate-keys",
+                          "playfab/data-analytics/ingest-data/ht-telemetry-keys-delete",
+                          "playfab/data-analytics/ingest-data/playstream-overview",
+                          "playfab/data-analytics/ingest-data/playstream-events",
+                          "playfab/data-analytics/ingest-data/playstream-event-capabilities",
+                          "playfab/data-analytics/ingest-data/playstream-with-entity-events",
+                          "playfab/data-analytics/ingest-data/playstream-custom-tags",
+                          "playfab/data-analytics/ingest-data/opt-in-events",
+                          "playfab/data-analytics/ingest-data/sessions",
+                          "playfab/data-analytics/ingest-data/real-time-analytics-core-concepts"
+                        ]
+                      },
+                      {
+                        "group": "Exporting data",
+                        "icon": "arrow-up-from-line",
+                        "pages": [
+                          "playfab/data-analytics/export-data/data-connection-overview",
+                          "playfab/data-analytics/export-data/data-connection-quickstart",
+                          "playfab/data-analytics/export-data/data-connection-adx",
+                          "playfab/data-analytics/export-data/data-connection-azure-blob",
+                          "playfab/data-analytics/export-data/event-partitioning-overview",
+                          "playfab/data-analytics/export-data/event-partitioning-quickstart",
+                          "playfab/data-analytics/export-data/event-sampling-overview",
+                          "playfab/data-analytics/export-data/event-sampling-quickstart"
+                        ]
+                      },
+                      {
+                        "group": "Learning with data",
+                        "icon": "brain",
+                        "pages": [
+                          "playfab/data-analytics/learn-data/overview",
+                          {
+                            "group": "Data Explorer",
+                            "icon": "magnifying-glass-chart",
+                            "pages": [
+                              "playfab/data-analytics/learn-data/data-explorer/overview",
+                              "playfab/data-analytics/learn-data/data-explorer/quickstart",
+                              "playfab/data-analytics/learn-data/data-explorer/basic",
+                              "playfab/data-analytics/learn-data/data-explorer/advanced"
+                            ]
+                          },
+                          {
+                            "group": "Reports",
+                            "icon": "chart-line",
+                            "pages": [
+                              "playfab/data-analytics/learn-data/reports/overview",
+                              "playfab/data-analytics/learn-data/reports/quickstart",
+                              "playfab/data-analytics/learn-data/reports/metrics-terminology",
+                              "playfab/data-analytics/learn-data/reports/title-overview",
+                              "playfab/data-analytics/learn-data/reports/ab-test-kpi",
+                              "playfab/data-analytics/learn-data/reports/abuse-reports",
+                              "playfab/data-analytics/learn-data/reports/cdn-usage",
+                              "playfab/data-analytics/learn-data/reports/top-items",
+                              "playfab/data-analytics/learn-data/reports/top-spender",
+                              "playfab/data-analytics/learn-data/reports/api-usage",
+                              "playfab/data-analytics/learn-data/reports/email-report",
+                              "playfab/data-analytics/learn-data/reports/overview-totals",
+                              "playfab/data-analytics/learn-data/reports/new-user-conversion",
+                              "playfab/data-analytics/learn-data/reports/new-user-retention",
+                              "playfab/data-analytics/learn-data/reports/retention",
+                              "playfab/data-analytics/learn-data/reports/real-time-analytics-tutorial"
+                            ]
+                          },
+                          {
+                            "group": "Trends",
+                            "icon": "chart-line-up",
+                            "pages": [
+                              "playfab/data-analytics/learn-data/trends/overview",
+                              "playfab/data-analytics/learn-data/trends/quickstart",
+                              "playfab/data-analytics/learn-data/trends/segments-dimension-overview",
+                              "playfab/data-analytics/learn-data/trends/segments-dimension-qs"
+                            ]
+                          },
+                          {
+                            "group": "Churn prediction",
+                            "icon": "user-slash",
+                            "pages": [
+                              "playfab/data-analytics/learn-data/churn-prediction/overview",
+                              "playfab/data-analytics/learn-data/churn-prediction/quickstart",
+                              "playfab/data-analytics/learn-data/churn-prediction/pricing"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Acting on data",
+                        "icon": "bolt",
+                        "pages": [
+                          "playfab/data-analytics/acting-data/action-rules-overview",
+                          "playfab/data-analytics/acting-data/action-rules-quickstart",
+                          "playfab/data-analytics/acting-data/bulk-actions-for-segment",
+                          "playfab/data-analytics/acting-data/cloudscript-with-playstream",
+                          "playfab/data-analytics/acting-data/schemas-overview",
+                          "playfab/data-analytics/acting-data/schemas-quickstart",
+                          "playfab/data-analytics/acting-data/schemas-events-all",
+                          "playfab/data-analytics/acting-data/webhooks-overview",
+                          {
+                            "group": "Scheduled tasks",
+                            "icon": "clock",
+                            "pages": [
+                              "playfab/data-analytics/acting-data/scheduled-tasks/overview",
+                              "playfab/data-analytics/acting-data/scheduled-tasks/quickstart"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Privacy & compliance",
+                        "icon": "shield-halved",
+                        "pages": [
+                          "playfab/data-analytics/privacy-compliance/gdpr-overview",
+                          "playfab/data-analytics/privacy-compliance/gdpr-exporting",
+                          "playfab/data-analytics/privacy-compliance/gdpr-deleting"
+                        ]
+                      },
+                      {
+                        "group": "Legacy",
+                        "icon": "boxes-stacked",
+                        "pages": [
+                          "playfab/data-analytics/legacy/configure-s3-bucket",
+                          "playfab/data-analytics/legacy/s3-event-archiving",
+                          {
+                            "group": "Insights (legacy)",
+                            "icon": "chart-mixed",
+                            "pages": [
+                              "playfab/data-analytics/legacy/insights/overview",
+                              "playfab/data-analytics/legacy/insights/best-practices",
+                              "playfab/data-analytics/legacy/insights/export",
+                              "playfab/data-analytics/legacy/insights/management-commands",
+                              "playfab/data-analytics/legacy/insights/performance-retention",
+                              "playfab/data-analytics/legacy/insights/pricing",
+                              "playfab/data-analytics/legacy/insights/scheduled-scaling"
+                            ]
+                          },
+                          {
+                            "group": "Connectivity (legacy)",
+                            "icon": "plug",
+                            "pages": [
+                              "playfab/data-analytics/legacy/connectivity/overview",
+                              "playfab/data-analytics/legacy/connectivity/aad-app",
+                              "playfab/data-analytics/legacy/connectivity/azure-data-explorer",
+                              "playfab/data-analytics/legacy/connectivity/azure-data-factory",
+                              "playfab/data-analytics/legacy/connectivity/grafana",
+                              "playfab/data-analytics/legacy/connectivity/kusto-csharp",
+                              "playfab/data-analytics/legacy/connectivity/kusto-explorer",
+                              "playfab/data-analytics/legacy/connectivity/power-bi",
+                              "playfab/data-analytics/legacy/connectivity/python"
+                            ]
+                          },
+                          {
+                            "group": "Content delivery network (legacy)",
+                            "icon": "cloud-arrow-up",
+                            "pages": [
+                              "playfab/data-analytics/legacy/cdn/overview",
+                              "playfab/data-analytics/legacy/cdn/quickstart"
+                            ]
+                          }
+                        ]
+                      }
                     ]
                   }
                 ]
