@@ -1092,6 +1092,11 @@
                             ]
                           }
                         ]
+                      },
+                      {
+                        "group": "Segmentation",
+                        "icon": "users-viewfinder",
+                        "pages": []
                       }
                     ]
                   },
