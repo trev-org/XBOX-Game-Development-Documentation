@@ -1650,8 +1650,71 @@
                     "icon": "chart-line",
                     "pages": [
                       "playfab/player-progression",
-                      "playfab/leaderboards-stats",
-                      "playfab/game-saves"
+                      {
+                        "group": "Player data",
+                        "icon": "user-gear",
+                        "pages": [
+                          "playfab/player-progression/player-data/overview",
+                          "playfab/player-progression/player-data/quickstart",
+                          "playfab/player-progression/player-data/profiles",
+                          "playfab/player-progression/player-data/details",
+                          "playfab/player-progression/player-data/logins",
+                          "playfab/player-progression/player-data/inventory",
+                          "playfab/player-progression/player-data/bans",
+                          "playfab/player-progression/player-data/segments",
+                          "playfab/player-progression/player-data/segment-configuration",
+                          "playfab/player-progression/player-data/publisher-data",
+                          "playfab/player-progression/player-data/players-page",
+                          {
+                            "group": "How-to: read & write data",
+                            "icon": "code",
+                            "pages": [
+                              "playfab/player-progression/player-data/how-to/get-internal",
+                              "playfab/player-progression/player-data/how-to/set-internal",
+                              "playfab/player-progression/player-data/how-to/get-read-only",
+                              "playfab/player-progression/player-data/how-to/set-read-only",
+                              "playfab/player-progression/player-data/how-to/modify-read-only-internal"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Statistics",
+                        "icon": "chart-simple",
+                        "pages": [
+                          "playfab/player-progression/statistics/overview",
+                          "playfab/player-progression/statistics/quickstart",
+                          "playfab/player-progression/statistics/create-basic",
+                          "playfab/player-progression/statistics/doing-more",
+                          "playfab/player-progression/statistics/community",
+                          "playfab/player-progression/statistics/seasonal",
+                          "playfab/player-progression/statistics/metadata",
+                          "playfab/player-progression/statistics/transactional-writes",
+                          "playfab/player-progression/statistics/playstream-telemetry",
+                          "playfab/player-progression/statistics/limits",
+                          "playfab/player-progression/statistics/quota",
+                          "playfab/player-progression/statistics/api-reference"
+                        ]
+                      },
+                      {
+                        "group": "Game Saves",
+                        "icon": "floppy-disk",
+                        "pages": [
+                          "playfab/player-progression/game-saves/overview",
+                          "playfab/player-progression/game-saves/quickstart",
+                          "playfab/player-progression/game-saves/onboarding",
+                          "playfab/player-progression/game-saves/october-2025-gdk-changes",
+                          "playfab/player-progression/game-saves/steam-deck",
+                          "playfab/player-progression/game-saves/linking",
+                          "playfab/player-progression/game-saves/conflicts",
+                          "playfab/player-progression/game-saves/rollback",
+                          "playfab/player-progression/game-saves/offline",
+                          "playfab/player-progression/game-saves/active-device-changes",
+                          "playfab/player-progression/game-saves/ui-callbacks",
+                          "playfab/player-progression/game-saves/playstream-events",
+                          "playfab/player-progression/game-saves/limits"
+                        ]
+                      }
                     ]
                   },
                   {
