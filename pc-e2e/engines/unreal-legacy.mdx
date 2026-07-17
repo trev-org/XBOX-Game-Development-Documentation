@@ -1,0 +1,95 @@
+---
+title: "Integrate the GDK with a pre-4.26 Unreal Engine project"
+sidebarTitle: "Unreal Engine — legacy (pre-4.26)"
+description: "Wire the Microsoft GDK into Unreal Engine builds older than 4.26 by editing Build.cs, adding include and library paths manually, and launching with wdapp."
+icon: "unreal-engine"
+---
+
+This page is for teams that must keep shipping on an **Unreal Engine version older than 4.26**, before the Microsoft GDK plug-ins existed. Modern projects should use the [main Unreal Engine guide](/pc-e2e/engines/unreal) (5.7 with GDK Platform Extensions) or the [XBOX PC guide](/pc-e2e/engines/unreal-xbox-pc) (5.8\+ public plug-ins) instead.
+
+<Warning>
+  Pre-4.26 integration is unsupported for new titles. Only use it to keep an in-flight legacy build working while you plan an engine upgrade.
+</Warning>
+
+## Prerequisites
+
+- Unreal Engine 4.24 or 4.25 source (the workflow also works on 4.20–4.23 with minor adjustments).
+- **Microsoft GDK**, October 2024 release (**241000**) or newer installed via `winget install Microsoft.GDK` or the standalone installer.
+- **Visual Studio 2019** 16.11 or newer with the _Game development with C\+\+_ workload.
+
+## 1. Declare the `_GAMING_DESKTOP` define
+
+In your game module's `*.Build.cs`, add the desktop gaming define so GDK headers compile against the Win32 desktop surface rather than the Xbox console surface:
+
+```csharp
+public class YourGame : ModuleRules
+{
+    public YourGame(ReadOnlyTargetRules Target) : base(Target)
+    {
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+        PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine" });
+
+        if (Target.Platform == UnrealTargetPlatform.Win64)
+        {
+            PublicDefinitions.Add("_GAMING_DESKTOP=1");
+        }
+    }
+}
+```
+
+## 2. Point the module at GDK headers and libs
+
+Still in `Build.cs`, add the GDK include and library paths. Adjust the version segment (`241000`) to match the GDK you installed.
+
+```csharp
+string GdkRoot = @"C:\Program Files (x86)\Microsoft GDK\241000";
+
+PublicIncludePaths.Add(Path.Combine(GdkRoot, @"GRDK\gameKit\Include"));
+PublicSystemLibraryPaths.Add(Path.Combine(GdkRoot, @"GRDK\gameKit\Lib\amd64"));
+
+PublicAdditionalLibraries.AddRange(new[]
+{
+    "xgameruntime.lib",
+    "Microsoft.Xbox.Services.141.GDK.C.Thunks.lib"
+});
+```
+
+<Note>
+  On GDK releases from **June 2024 and earlier**, the header directory is `DesignTime\CommonConfiguration\Neutral\Include` instead of `GRDK\gameKit\Include`. Point `PublicIncludePaths` at whichever folder your installer produced.
+</Note>
+
+## 3. Wrap GDK headers with `THIRD_PARTY_INCLUDES_START`
+
+Unreal's default warnings-as-errors will trip on GDK headers. Wrap every GDK include in your `.cpp` and `.h` files:
+
+```cpp
+THIRD_PARTY_INCLUDES_START
+#include <XGameRuntime.h>
+#include <XUser.h>
+#include <XblAchievements.h>
+THIRD_PARTY_INCLUDES_END
+```
+
+## 4. Initialize the runtime
+
+Call `XGameRuntimeInitialize()` early in your `GameInstance::Init` (or equivalent) and `XGameRuntimeUninitialize()` from your shutdown path. Pump `XTaskQueueDispatch()` on the game thread once per frame so async callbacks fire.
+
+## 5. Install and launch the packaged build
+
+Because pre-4.26 UE doesn't know how to launch MSIXVC packages, drive `wdapp.exe` from the GDK command prompt:
+
+```powershell
+:: Register the loose layout while iterating
+wdapp register .\Staging\YourGame\MicrosoftGame.config
+
+:: Or install a packaged MSIXVC
+wdapp install .\YourGame_1.0.0.0_x64__abcdef.msixvc
+
+:: Launch the installed app
+wdapp launch YourPublisher.YourGame_abcdef!App
+```
+
+## Next steps
+
+- Migrate to **UE 5.7\+** and use the [GDK Platform Extensions integration](/pc-e2e/engines/unreal).
+- On **UE 5.8\+**, adopt the [public plug-ins and MSGameOSSSelector](/pc-e2e/engines/unreal-xbox-pc) so a single build ships to the Microsoft Store, Epic, and Steam.

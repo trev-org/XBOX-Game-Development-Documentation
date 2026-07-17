@@ -1,26 +1,225 @@
 ---
 title: "Use the GDK with Unity"
-sidebarTitle: "Unity"
+sidebarTitle: "Use the GDK with Unity"
 description: "Integrate the GDK and XBOX services into a Unity project for Windows PC and XBOX."
 icon: "cube"
 ---
 
-Integrate the GDK and XBOX services into a Unity project targeting Windows PC (and, with the appropriate platform extension, XBOX consoles).
+The Microsoft GDK packages for Unity, codeveloped by Microsoft and Unity, let you target **Windows x64, XBOX Series X|S, and XBOX One** from a single project and code base.
 
-## Integration paths
+<Info>
+  Unity provided an important security update advisory that affects specific versions of the Unity Engine. See [Unity Security Update Advisory](https://aka.ms/unity_security).
+</Info>
 
-- **Unity GDK plug-in** — Microsoft-maintained package that bridges XUser, XStore, achievements, and game saves into C#.
-- **Native plug-in** — wrap GDK C APIs in a custom managed wrapper for advanced scenarios.
+## Prerequisites
 
-## Setup
+- [Unity Editor 2021.3 or later](https://aka.ms/unity_gdk_engine)
+- Visual Studio 2019 (16.9) or later
+- Windows SDK 22000 or later
+- Windows 10 (1809\+) or Windows 11
+- [October 2023 GDK Update 4 or later](https://aka.ms/gdkdl)
+- [Valid Unity license](https://aka.ms/unity_gdk_license) if targeting XBOX consoles
 
-1. Install the GDK — see [Download and install](/gdk/download-install).
-2. Add the Unity GDK package to your project.
-3. Configure `MicrosoftGame.config` — see [Game config](/gdk/game-config).
-4. Build and package with the Unity GDK build pipeline or `makepkg`.
+See the Unity [requirements and installation document](https://aka.ms/unity_gdk_requirements) for package requirements.
+
+## GDK packages for Unity
+
+Unity distributes several GDK packages. Get them from the [Unity download portal](https://aka.ms/unity_gdk_downloads).
+
+<Note>
+  You must belong to an XBOX Developer program (e.g., ID@Xbox) and request access to the Unity XBOX Discussions site to access the console packages. **PC packages are publicly available** at [Microsoft GDK Package Releases](https://aka.ms/unity_gdk_packages).
+</Note>
+
+| Package | Scope |
+| --- | --- |
+| [Microsoft GDK API for Unity](https://aka.ms/unity_gdk_api) | C# wrappers for native APIs (PC \+ console) — achievements, cloud saves, leaderboards |
+| [Microsoft GDK Tools for Unity](https://aka.ms/unity_gdk_tools) | Unity Editor integration for `MicrosoftGame.config` and PC packaging |
+| Microsoft GDK Tools for XBOX for Unity | Console packaging workflow (XSX/XB1) |
+| GXDK Input System for Unity | Console-specific Unity Input System integration |
+| Game Core Render Pipeline for Unity | Console SRP support (URP/HDRP) on XSX/XB1 |
+
+## Unity Editor add-ons for console
+
+Install the Unity-provided **XBOX Series X|S and XBOX One Add-ons for Unity Editor** on each machine running the Editor to unlock console configure/build/deploy/launch. Add-ons are `.exe` installers.
+
+After installation, the Unity Hub's **Installs** tab shows the capabilities. Any project on that editor version can then enable XSX/XB1 GDK project settings and build profiles.
+
+## Package, add-on, and GDK compatibility
+
+- Get **GDK API and Tools packages for Unity** from the Unity Registry (Package Manager). Versions align with Unity 2021.3.47f1, 2022.3.55f1, 6000.0.31f1, or later.
+- See [Microsoft GDK Package Releases](https://aka.ms/unity_gdk_packages_1.30) for per-release GDK/engine compatibility. Compatible with both the [public GDK on GitHub](https://github.com/microsoft/GDK) and the [XBOX Developer Downloads portal](https://aka.ms/gdkdl) GDK.
+- Get **Tools for XBOX**, **GXDK Input System**, **Game Core Render Pipeline**, and **XBOX Add-ons** as direct downloads from the Unity XBOX Discussions site. Console packages are only supported with the GDKx from the XBOX Developer Downloads portal.
+
+Console packages only appear in the Unity Editor when the **XBOX Series X|S and XBOX One Add-ons for Unity Editor** are installed.
+
+## Integrate packages into your project
+
+For the public GDK API and Tools packages:
+
+<Steps>
+  <Step title="Open Package Manager">
+    **Start → Package Manager**, then select **Unity Registry**.
+  </Step>
+  <Step title="Search and install">
+    Search `gdk`. Install **Microsoft GDK API**, then **Microsoft GDK Tools**.
+  </Step>
+</Steps>
+
+For console-specific packages downloaded from Unity XBOX Discussions:
+
+<Steps>
+  <Step title="Add tarball">
+    **Package Manager → \+ → Add package from tarball**.
+  </Step>
+  <Step title="Point to the .tgz">
+    Select your downloaded package.
+  </Step>
+</Steps>
+
+<Note>
+  Unity packages are per-project. You must reacquire and install them for each new Unity project. Team members opening a project that already includes the packages don't need to re-download.
+</Note>
+
+## Configure your project to be GDK-aware
+
+### Create a GDK Settings Asset
+
+After installing the GDK API \+ Tools packages, use the added GDK menu options to generate a **GDK Settings Asset**. This adds GDK-specific settings to Project Settings.
+
+See [GDK Settings](https://aka.ms/unity_gdk_settings).
+
+If you also install the GDK Tools for XBOX package \+ XBOX add-ons, GDK Settings expose tabs per platform. A project can contain multiple GDK Settings Assets, but only one is active at a time.
+
+### Create a Microsoft Game Config Asset
+
+Add a **Microsoft Game Config Asset** to generate the config files that make your project GDK-aware. See [Microsoft Game Configuration file](https://aka.ms/unity_gdk_gameconfig).
+
+### Associate your Microsoft Game Config with your GDK Asset
+
+Open **GDK Project Settings** and associate the Game Config with the project so it's used during build and packaging.
+
+### Edit your Microsoft Game Config Asset
+
+Select the asset in the Project window — its configurable GDK settings appear in the Inspector.
+
+### Associate your GDK game with Partner Center
+
+Use the built-in **Store Association wizard** in the Microsoft Game Config Editor. Sign in with a Microsoft account that has permission on the Partner Center product. The wizard auto-maps values into your Microsoft Game Config Asset.
+
+<Note>
+  For permissions details, see [Associating with the Microsoft Store](https://aka.ms/unity_gdk_storewizard). Get the Publisher information from the **Package/Identity/Publisher** row in Partner Center and enter it in the **Publisher** field.
+</Note>
+
+## Use C# wrappers to access GDK APIs
+
+The GDK API package for Unity provides C# wrappers for native GDK APIs under the `XGamingRuntime` namespace. See [C# wrappers for GDK APIs in Unity](/pc-e2e/engines/unity-api-wrappers) for full details and API coverage.
+
+## Visual Studio and Unity
+
+Visual Studio provides a Gaming Workload with Unity integration. See [Configure Visual Studio for cross-platform Unity development](https://aka.ms/unity_visualstudio).
+
+## Samples
+
+Three sets of Unity samples are available.
+
+### Unity registry samples
+
+Included with the GDK API package — see the **Samples** tab in the Unity Registry entry for the Microsoft GDK API package. Covers Achievements, Cloud Saves, Game Saves, In-Game Store, Leaderboards, Sign-In, Speech Synthesizer, User. See [Samples overview](https://aka.ms/unity_gdk_samples).
+
+<Note>
+  Requires the Unity Input System package. See [Input System](https://aka.ms/unity_gdk_input).
+</Note>
+
+### Unity GDK samples
+
+Included in the GDK download. Public samples on the [XBOX GDK Samples GitHub](https://aka.ms/gdk_unity_samples):
+
+- **UnityAchievements** — `XblAchievement` APIs to query and update progress.
+- **UnityInGameStore** — full in-game store demo using most `XStore` APIs.
+- **UnityLeaderboardsTitleManaged** — title-managed leaderboards for social/global.
+- **UnitySimpleMPSD** — basic multiplayer using MPSD \+ SmartMatch.
+- **UnityRumble** _(private)_ — multiplayer using MPM \+ Azure PlayFab Party.
+- **UnityRumblePlayFabMultiplayer** _(private)_ — Rumble using Azure PlayFab Multiplayer.
+- **UnitySimpleHttpCall** — XBOX networking HTTP calls.
+- **UnitySimpleWebSockets** — HTTP Client Web Sockets.
+- **UnitySimplePLM** — process lifetime management events.
+- **UnityAssetWorkflow** _(XBOX only, private)_ — XBOX console resources and tooling APIs.
+
+The three private samples are on the [XBOX Developer Downloads portal](https://aka.ms/gdkdl).
+
+### Unity HandheldBestPractices sample
+
+The [Unity Handheld Best Practices Sample](https://aka.ms/hhexpsample_unity) shows managed C# examples for Windows handheld devices like ROG XBOX Ally.
+
+<Note>
+  This sample doesn't use the GDK. It shows how to use Windows APIs effectively for Windows handheld gaming.
+</Note>
+
+## Build and package your project
+
+### Localization and packaging settings
+
+Windows GDK Settings control shell visuals, localized assets, and whether Unity produces a package. You don't need special **Build Profiles** settings for Windows packaging. See [Package creation settings and encryption methods](https://aka.ms/unity_gdk_msixvc).
+
+For console (via the Tools for XBOX package), set **Shell Visuals Mode** to **Copy Only** so Microsoft Store images copy into the build folder pre-packaging.
+
+Set the console package encryption in **Project Settings → Player → Publisher Settings → Package Encryption**:
+
+- **Development** — for sideloading local test builds (via **Build and Deploy** or `xbapp install`).
+- **Submission** — for uploading to Partner Center; can't be sideloaded.
+
+Console builds are configured on the **Build Profiles** page. Set the target platform to **XBOX One** or **XBOX Series**, **Build Type** to **Development player** (sideloadable) or **Master player** (Partner Center), and **Deploy Method** to **Package**.
+
+### Build profiles
+
+Each target platform has its own build profile. Windows reads GDK Settings and generates an MSIXVC package in the `MSIXVC` folder. Console platforms produce an XVC in an `XVC` folder. See [Build an application with the GDK API package](https://aka.ms/unity_gdk_build).
+
+### Play Mode
+
+GDK projects need additional considerations to work in Play Mode. See [Test your project in Play mode](https://aka.ms/unity_gdk_pie).
+
+### Remote testing via XBOX PC Remote Tools
+
+**XBOX PC Remote Tools** let you deploy and launch your Windows build on a remote target from the Unity Editor, without generating a Visual Studio project. Install the **XBOX PC Toolbox** on both machines, pair them, then select **XBOX PC Remote Tools** in the **Build and Run on** dropdown of your Windows build profile.
+
+See [Deploy a Windows application with the XBOX PC Remote Tools](https://aka.ms/unity_remote_docs).
+
+## Additional info
+
+### PlayFab with Unity
+
+See the [Unity3D (C#) SDK for PlayFab](https://aka.ms/unity_playfab).
+
+### Windows handheld device detection
+
+Since **July 2025**, Unity supports Windows handheld device detection via `SystemInfo.deviceType`. Included in:
+
+- Unity 6000.2.0b10
+- Unity 6000.1.12f1
+- Unity 6000.0.54f1
+
+### Getting help
+
+- [Unity XBOX Discussions](https://aka.ms/unity_gdk_forums)
+- [Unity Windows Discussions](https://aka.ms/unity_windows_forums) (public packages only)
+- [XBOX GDK forums](https://aka.ms/gdk_xbox_forums) (non-Unity GDK topics)
+
+### Known issues
+
+- [GDK API package for Unity issues](https://aka.ms/unity_gdk_knownissues)
+- [Microsoft GDK Tools package issues](https://aka.ms/unity_gdk_tools_knownissues)
+
+### Earlier versions of Unity
+
+The GDK API \+ Tools packages support **Unity 2021.3 or later**. On earlier versions, you can still reference the C# wrappers from the API package and use the Editor to build packages manually — but you lose direct Editor integration. Contact your Microsoft representative if you can't upgrade.
+
+### Deprecated packages
+
+Microsoft no longer distributes the [GDK Unity Package (PC Only)](https://github.com/microsoft/gdk-unity-package). It's deprecated in favor of the GDK API \+ Tools packages. See the [Upgrade guide](https://aka.ms/unity_gdk_upgrade) to migrate.
 
 ## Related
 
-- [GDK and engines](/pc-e2e/gdk-and-engines)
+- [C# wrappers for GDK APIs in Unity](/pc-e2e/engines/unity-api-wrappers)
+- [GDK and game engines](/pc-e2e/gdk-and-engines)
 - [Unreal](/pc-e2e/engines/unreal)
 - [Custom engine](/pc-e2e/engines/custom-engine)

@@ -328,13 +328,28 @@
             "pages": [
               "pc-e2e/overview",
               "pc-e2e/gdk-and-engines",
-              "pc-e2e/engines/unreal",
+              {
+                "group": "Unreal Engine",
+                "icon": "u",
+                "pages": [
+                  "pc-e2e/engines/unreal",
+                  "pc-e2e/engines/unreal-xbox-pc",
+                  "pc-e2e/engines/unreal-legacy"
+                ]
+              },
+              {
+                "group": "Unity",
+                "icon": "cube",
+                "pages": [
+                  "pc-e2e/engines/unity",
+                  "pc-e2e/engines/unity-api-wrappers"
+                ]
+              },
+              "pc-e2e/engines/godot",
               "pc-e2e/engines/gamemaker",
               "pc-e2e/engines/custom-engine",
-              "pc-e2e/engines/godot",
               "pc-e2e/handheld",
-              "pc-e2e/optional-services",
-              "pc-e2e/engines/unity"
+              "pc-e2e/optional-services"
             ]
           },
           {

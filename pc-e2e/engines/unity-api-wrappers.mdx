@@ -1,0 +1,153 @@
+---
+title: "Unity C# API wrappers for the GDK"
+sidebarTitle: "Unity C# API wrappers"
+description: "Reference for the XGamingRuntime C# namespace shipped with the GDK for Unity package — conventions, HRESULTs, async patterns, and native-vs-managed examples."
+icon: "unity"
+---
+
+The **GDK for Unity** package ships C# wrappers around the native GDK C API so that Unity gameplay code can call XGameRuntime, XUser, XStore, XBL, and the Xbox Live Services APIs without writing P/Invoke by hand. This page documents the conventions the wrappers follow and shows equivalent native and managed call sites for a few common APIs.
+
+<Info>
+  All wrappers live in the `XGamingRuntime` namespace. Add `using XGamingRuntime;` at the top of any script that calls a GDK API.
+</Info>
+
+## Naming conventions
+
+| Native prefix | Managed equivalent | Example |
+| --- | --- | --- |
+| `XGameRuntime*`, `XUser*`, `XStore*` | `SDK.` | `SDK.XUserAddAsync(...)` |
+| `Xbl*` (Xbox Live Services) | `SDK.XBL.` | `SDK.XBL.XblAchievementsUpdateAchievementAsync(...)` |
+
+The wrapper surface is intentionally **flat** — there is no attempt to reshape the C API into an object-oriented hierarchy. If a function exists in `XGameRuntime.h`, it exists on `SDK` with the same name and (as closely as C# allows) the same parameters.
+
+## Return values and error handling
+
+Wrappers do **not** throw exceptions on GDK failures. Every wrapper returns an `Int32` **HRESULT**, matching the native ABI. Check `HR.SUCCEEDED(hr)` (or compare to `0`) before consuming out parameters.
+
+```csharp
+int hr = SDK.XUserAddAsync(XUserAddOptions.AddDefaultUserSilently, (result, user) =>
+{
+    if (HR.FAILED(result))
+    {
+        Debug.LogError($"XUserAddAsync failed: 0x{result:X8}");
+        return;
+    }
+
+    // user is an XUserHandle; use it, then dispose with SDK.XUserCloseHandle(user).
+});
+```
+
+## Out parameters
+
+Because the wrappers mirror the C API, values the native function returns via pointer are surfaced as C# `out` parameters:
+
+```csharp
+int hr = SDK.XUserGetId(user, out ulong xuid);
+int hr2 = SDK.XUserGetGamertag(user, XUserGamertagComponent.Modern, out string gamertag);
+```
+
+## Async APIs
+
+Async GDK APIs come in two flavors:
+
+1. **Callback overloads** — the wrapper allocates and manages an `XAsyncBlock` internally and invokes your delegate when the task completes. Use these unless you need custom cancellation or a custom task queue.
+2. **`XAsyncBlock` overloads** — you allocate an `XAsyncBlock`, choose the `XTaskQueueHandle` it runs on, and call `SDK.XAsyncGetStatus` / result functions yourself. Use these when you need to marshal completions onto a specific thread or share a queue across many calls.
+
+Both flavors ultimately require you to **pump the task queue** so completion callbacks fire on the Unity main thread. Call `SDK.XTaskQueueDispatch(XTaskQueuePort.Completion, 0)` once per frame from a `MonoBehaviour.Update`:
+
+```csharp
+void Update()
+{
+    while (SDK.XTaskQueueDispatch(XTaskQueuePort.Completion, 0)) { }
+}
+```
+
+## Native vs managed — side-by-side examples
+
+### XUserAddAsync
+
+```cpp
+// Native (C++)
+XAsyncBlock* async = new XAsyncBlock{};
+async->callback = [](XAsyncBlock* a)
+{
+    XUserHandle user = nullptr;
+    HRESULT hr = XUserAddResult(a, &user);
+    // ... use user ...
+    delete a;
+};
+XUserAddAsync(XUserAddOptions::AddDefaultUserSilently, async);
+```
+
+```csharp
+// Managed (C#)
+SDK.XUserAddAsync(XUserAddOptions.AddDefaultUserSilently, (hr, user) =>
+{
+    if (HR.SUCCEEDED(hr))
+    {
+        // ... use user ...
+    }
+});
+```
+
+### XblAchievementsUpdateAchievementAsync
+
+```cpp
+// Native (C++)
+XAsyncBlock* async = new XAsyncBlock{};
+async->callback = [](XAsyncBlock* a)
+{
+    HRESULT hr = XAsyncGetStatus(a, false);
+    delete a;
+};
+XblAchievementsUpdateAchievementAsync(xblContext, xuid, "1", 100, async);
+```
+
+```csharp
+// Managed (C#)
+SDK.XBL.XblAchievementsUpdateAchievementAsync(xblContext, xuid, "1", 100, hr =>
+{
+    if (HR.FAILED(hr))
+    {
+        Debug.LogError($"Achievement update failed: 0x{hr:X8}");
+    }
+});
+```
+
+### Managing your own `XAsyncBlock`
+
+When you need lower-level control (for example, to route completion to a background `XTaskQueue`), the wrappers accept an `XAsyncBlock` directly:
+
+```csharp
+var asyncBlock = new XAsyncBlock
+{
+    queue = myTaskQueue,
+    context = IntPtr.Zero,
+    callback = ptr =>
+    {
+        int hr = SDK.XUserAddResult(ptr, out XUserHandle user);
+        // ... hand user off to gameplay code ...
+    }
+};
+
+SDK.XUserAddAsync(XUserAddOptions.AddDefaultUserSilently, asyncBlock);
+```
+
+## API coverage
+
+The wrappers currently cover:
+
+- **XGameRuntime** — initialization, task queues, PLM, suspend/resume.
+- **XUser** — sign-in, gamertag, XUID, privilege and privacy checks.
+- **XStore** — product queries, purchase flow, entitlements, license enumeration.
+- **XGameSave** and **XPersistentLocalStorage** — title and per-user save containers.
+- **XGameInvite**, **XGameUI**, **XSpeechToText**, **XAccessibility**.
+- **XblAchievements**, **XblSocial**, **XblPresence**, **XblStatsManager**, **XblLeaderboards**, **XblMultiplayer**, **XblMultiplayerManager**, **XblProfile**, **XblPrivacy**.
+- **PlayFab Party / Multiplayer** helpers, when the corresponding sample packages are imported.
+
+If a native API isn't in the wrapper, you can still call it via P/Invoke against `Microsoft.Xbox.Services.141.GDK.C.Thunks.dll` — see the [Custom C/C\+\+ engine guide](/pc-e2e/engines/custom-engine) for how the Thunks DLL exposes the flat C surface.
+
+## Related
+
+- [Use the GDK with Unity](/pc-e2e/engines/unity)
+- [Integrate the GDK with a custom C/C\+\+ engine](/pc-e2e/engines/custom-engine)

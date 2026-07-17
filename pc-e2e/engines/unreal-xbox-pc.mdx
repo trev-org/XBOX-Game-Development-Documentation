@@ -1,0 +1,87 @@
+---
+title: "Ship an Unreal Engine title to XBOX PC (UE 5.8+)"
+sidebarTitle: "Unreal Engine — XBOX PC (5.8+)"
+description: "Publish a single Unreal Engine executable that runs on the Microsoft Store, Epic Games Store, and Steam using the public GDK plug-ins introduced in Unreal Engine 5.8."
+icon: "unreal-engine"
+---
+
+Starting in **Unreal Engine 5.8**, the Microsoft GDK plug-ins are shipped as **public, non-restricted plug-ins**. You no longer need access to the GDK Platform Extensions repository to ship an Unreal title to XBOX PC — the same executable can be published to the Microsoft Store, the Epic Games Store, and Steam, and it will light up the correct storefront runtime at launch.
+
+<Tip>
+  This page covers the modern **5.8\+ workflow** with public plug-ins and the **MSGameOSSSelector** module. If you are on **UE 5.7**, the plug-ins still ship via the GDK Platform Extensions private repo — follow the [main Unreal integration guide](/pc-e2e/engines/unreal) instead. For pre-4.26 projects, see [Unreal legacy integration](/pc-e2e/engines/unreal-legacy).
+</Tip>
+
+## What changed in 5.8
+
+| Area | UE 5.7 | UE 5.8\+ |
+| --- | --- | --- |
+| Plug-in distribution | GDK Platform Extensions (private, requires ID@Xbox / GDK access) | Public plug-ins shipped with the engine |
+| Plug-in location | `Engine\Platforms\GDK\Plugins\...` | `Engine\Plugins\Runtime\Windows\...` and `Engine\Plugins\Online\Microsoft\...` |
+| Storefront selection | Per-build configuration, one executable per store | `MSGameOSSSelector` picks the correct online subsystem at runtime |
+| GDK version manifest | `Engine\Platforms\GDK\Config\GDK_SDK.json` | `Engine\Config\Microsoft\GDK_SDK.json` |
+
+## Prerequisites
+
+- **Unreal Engine 5.8** or newer. Any of the following acquisition paths works:
+  - **GitHub source build** (recommended for shipping titles) — clone `EpicGames/UnrealEngine` at the `5.8` branch or later and build locally.
+  - **Epic Games Launcher** — install UE 5.8\+ from the Library tab. The Microsoft GDK plug-ins are included in the engine.
+  - **GDK Platform Extensions** — still supported for teams that need the private extensions repo (for example, if you also target Xbox Series X|S consoles). The 5.8\+ public plug-ins and the private console plug-ins coexist in the same engine install.
+- **Microsoft GDK**, April 2026 release (**260401**) or newer. Install with:
+  ```powershell
+  winget install Microsoft.GDK
+  ```
+- **Visual Studio 2022** 17.8 or newer with the _Game development with C\+\+_ workload and the **Windows 11 SDK (10.0.22621.0 or later)**.
+- An **ID@Xbox** or **Xbox Developer** account so you can create Microsoft Store product IDs and MSA sandboxes. Signup takes about 30 minutes at [aka.ms/idxbox](https://aka.ms/idxbox).
+
+## Enable the plug-ins
+
+Open your project's `.uproject` (or the plug-in browser) and enable:
+
+- **MSGameOSSSelector** — routes the Online Subsystem to Microsoft Store, Epic, or Steam based on how the game is launched.
+- **OnlineSubsystemGDK** — Microsoft Store / GDK identity, achievements, saves, and social.
+- **GDKCore** and **GDKInput** — GameInput, GameRuntime, and PLM.
+- **MicrosoftStoreServices** — in-game commerce against the Microsoft Store.
+- (Optional) **PlayFabPartyGDK**, **PlayFabMultiplayerGDK** — voice chat and matchmaking.
+
+All of these live under `Engine\Plugins\Runtime\Windows\` or `Engine\Plugins\Online\Microsoft\` in a 5.8\+ install.
+
+## Migrate an existing 5.7 project
+
+If you already have a 5.7 project that targets **WinGDK**, run the migration commandlet after opening the project in 5.8:
+
+```powershell
+RunUAT.bat MigrateWinGDK -project="C:\path\to\YourGame.uproject"
+```
+
+This moves your **GDK\_SDK.json**, `.wproj`/MicrosoftGame.config assets, and plug-in references from the platform-extension layout to the public layout, and adds the **MSGameOSSSelector** module to your `.uproject`.
+
+## Pin the GDK version
+
+Edit `Engine\Config\Microsoft\GDK_SDK.json` to pin the GDK versions your build supports:
+
+```json
+{
+  "MainGDKVersion": "260401",
+  "MinGDKVersion": "250404",
+  "MaxGDKVersion": "260499"
+}
+```
+
+UE will refuse to package if the installed GDK falls outside `[MinGDKVersion, MaxGDKVersion]`.
+
+## Build and package
+
+1. Set the target platform to **Windows** in the Unreal Editor's _Platforms_ menu — you no longer need a separate **WinGDK** target for the Microsoft Store build.
+2. Cook and stage as normal. `MSGameOSSSelector` produces a single `.exe` that inspects its launch context and binds the appropriate online subsystem.
+3. Sign and submit the resulting MSIX/MSIXVC through Partner Center for the Microsoft Store, and reuse the same build for Epic and Steam submissions.
+
+## Detect Windows handheld devices
+
+All of the surface-area described in the [main Unreal guide](/pc-e2e/engines/unreal#detect-windows-handheld-devices) applies — `FPlatformMisc::IsDeviceHandheld()` is available in **5.7\+** and continues to work in 5.8.
+
+## Further reading
+
+- [Press Start: Get Your PC Game Ready for XBOX in One Day (GDC 2026)](https://aka.ms/xbox-press-start) — the walkthrough Microsoft delivered at GDC 2026 using the 5.8 public plug-ins.
+- [Unreal Engine integration overview](/pc-e2e/engines/unreal)
+- [Unreal legacy integration (pre-4.26)](/pc-e2e/engines/unreal-legacy)
+- [Sign up for ID@Xbox](https://aka.ms/idxbox)

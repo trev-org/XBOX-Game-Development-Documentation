@@ -17,11 +17,11 @@ Download the GDK from [GitHub](https://github.com/microsoft/GDK).
 
 <CardGroup cols={2}>
   <Card title="Unity" icon="cube" href="/pc-e2e/engines/unity">
-    Microsoft GDK API \+ Tools packages for Unity. Targets Windows, XBOX Series X|S, and XBOX One from one project.
+    Microsoft GDK API \+ Tools packages for Unity. Targets Windows, XBOX Series X|S, and XBOX One from one project. See also the [C# API wrapper reference](/pc-e2e/engines/unity-api-wrappers).
   </Card>
 
   <Card title="Unreal Engine" icon="u" href="/pc-e2e/engines/unreal">
-    Microsoft GDK plug-ins (Win64) and GDK Platform Extensions (consoles), distributed by Epic.
+    Microsoft GDK plug-ins (Win64) and GDK Platform Extensions (consoles), distributed by Epic. Includes UE 5.7 (private extensions) and UE 5.8\+ ([public plug-ins with MSGameOSSSelector](/pc-e2e/engines/unreal-xbox-pc)).
   </Card>
 
   <Card title="GameMaker" icon="gamepad" href="/pc-e2e/engines/gamemaker">
@@ -56,7 +56,7 @@ See:
 
 Microsoft and engine partners have aligned on building GDK PC titles on the standard **Win64** platform — unifying the PC build path across storefronts, reducing cook time, and improving plug-in compatibility.
 
-- **Unreal**: Microsoft GDK plug-ins target Win64 in UE 5.7\+. WinGDK is legacy.
+- **Unreal**: Microsoft GDK plug-ins target Win64 in UE 5.7\+. In UE 5.8\+ the plug-ins ship publicly with the engine and a single `.exe` covers Microsoft Store, Epic, and Steam via `MSGameOSSSelector`. WinGDK is legacy; see the [pre-4.26 legacy guide](/pc-e2e/engines/unreal-legacy) if you can't upgrade.
 - **Unity**: GDK API and Tools packages target Windows from the standard Windows build profile.
 
 For custom engines, use the `WINAPI_FAMILY_DESKTOP_APP` API partition on PC — the full Win32 surface is available.

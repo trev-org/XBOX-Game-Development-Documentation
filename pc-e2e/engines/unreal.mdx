@@ -1,38 +1,53 @@
 ---
 title: "Use the GDK with Unreal Engine"
-sidebarTitle: "Unreal"
+sidebarTitle: "Use the GDK with Unreal Engine"
 description: "Integrate GDK plug-ins and platform extensions into Unreal Engine to target Win64, XBOX Series X|S, and XBOX One."
 icon: "u"
 ---
 
-Epic Games distributes the GDK platform extensions and plug-ins for Unreal Engine. With Unreal Engine 5.7, Microsoft GDK plug-ins build on the **Win64** platform — unifying PC builds, reducing cook time, enabling single-executable scenarios, and improving compatibility with other Win64 plug-ins.
+Epic Games distributes the GDK platform extensions and plug-ins for Unreal Engine. Microsoft GDK plug-ins build on the **Win64** platform — unifying PC builds, reducing cook time, enabling single-executable scenarios, and improving compatibility with other Win64 plug-ins.
+
+<Tip>
+  **New with Unreal Engine 5.8**: Microsoft GDK plug-ins are now publicly available directly through the Epic Games Launcher and GitHub source. See [Building XBOX games with Unreal Engine's new GDK plug-ins](/pc-e2e/engines/unreal-xbox-pc) for the 5.8-first workflow.
+</Tip>
 
 <Warning>
-  **WinGDK is legacy** and no longer receives feature updates. Use the Microsoft GDK plug-ins on Win64 for all new PC GDK projects. Epic provides a migration tool to port WinGDK projects to Win64.
+  **WinGDK is legacy** and no longer receives feature updates. Use the Microsoft GDK plug-ins on Win64 for all new PC GDK projects. Epic provides a migration tool to port WinGDK projects to Win64:
+
+  ```bat
+  RunUAT MigrateWinGDK -project=<path-to-project>
+  ```
 </Warning>
 
 ## Prerequisites
 
-- [Unreal Engine 4.27 or later](https://aka.ms/ue_download) (some plug-ins require newer versions)
+- [Unreal Engine 5.7 or later](https://aka.ms/ue_download) (5.8\+ recommended; some earlier plug-ins still work with 4.27\+)
 - Visual Studio 2019 (16.9) or later
 - Windows SDK 22000 or later
 - Windows 10 (1809\+) or Windows 11
-- April 2021 GDK Update 2 or later
+- The Microsoft GDK — install via `winget`:
+  ```bat
+  winget install Microsoft.GDK
+  ```
 
 ## Access
 
 Membership in an [XBOX Developer Program](https://aka.ms/gdk_id) (e.g., ID@Xbox) is required for PC, XBOX Series X|S, and XBOX One development. Request access to Unreal Engine's Developer Community GDK group via [the access request form](https://aka.ms/ue_gdk_access).
 
+In UE 5.7, the Microsoft GDK plug-ins ship inside the **GDK Platform Extensions** (gated). In UE 5.8\+, the plug-ins are publicly available via the [Epic Games Launcher](https://aka.ms/ue_download) and Epic's GitHub source, with no NDA gating.
+
 ## Key GDK plug-ins
 
-| Plug-in | Platforms | Min engine |
-| --- | --- | --- |
-| **Microsoft GDK Runtime** (`MSGamingRuntime`) | Win64 | UE 5.7\+ |
-| **Microsoft GDK Store** (`MSGameStore`) | Win64 | UE 5.7\+ |
-| **Online Subsystem GDK** (`OnlineSubsystemGDK`) | Win64, WinGDK, XB1, XSX | UE 4.27\+ |
+| Plug-in | Platforms | Min engine | 5.7 folder | 5.8\+ folder |
+| --- | --- | --- | --- | --- |
+| **Microsoft GDK Runtime** (`MSGamingRuntime`) | Win64 | UE 5.7\+ | `Engine\Platforms\GDK\...` | `Engine\Plugins\Runtime\Windows\...` |
+| **Microsoft GDK Store** (`MSGameStore`) | Win64 | UE 5.7\+ | `Engine\Platforms\GDK\...` | `Engine\Plugins\Runtime\Windows\...` |
+| **Microsoft Game OSS Selector** (`MSGameOSSSelector`) | Win64 | UE 5.8\+ | — | `Engine\Plugins\Online\Microsoft\...` |
+| **Online Subsystem GDK** (`OnlineSubsystemGDK`) | Win64, WinGDK, XB1, XSX | UE 4.27\+ | `Engine\Platforms\GDK\...` | `Engine\Plugins\Online\Microsoft\...` |
 
 - **GDK Runtime** — GDK runtime features (game saves, XBOX user selection).
 - **GDK Store** — auto-generates MSIXVC packages for XBOX PC App submission.
+- **Microsoft Game OSS Selector** _(new in 5.8)_ — lets a single executable target multiple PC storefronts (Microsoft Store \+ Epic \+ Steam) using a single OSS interface.
 - **Online Subsystem GDK** — engine abstraction over XSAPI for achievements, friends, matchmaking, sign-in, store purchases.
 
 ## Additional plug-ins
@@ -58,11 +73,9 @@ You need the **GDK with XBOX Extensions (GDKx)** regardless of target. The GitHu
 
 ## GDK & engine version compatibility
 
-Each engine release notes which GDK main version Epic validated. The config:
+Each engine release notes which GDK main version Epic validated. You can edit the max version to use a newer GDK, but compatibility outside Epic's validated range isn't guaranteed.
 
-```text
-Engine\Platforms\GDK\Config\GDK_SDK.json
-```
+**UE 5.7** — `Engine\Platforms\GDK\Config\GDK_SDK.json`:
 
 ```json
 {
@@ -72,7 +85,17 @@ Engine\Platforms\GDK\Config\GDK_SDK.json
 }
 ```
 
-You can edit `MaxVersion` to use a newer GDK, but compatibility outside Epic's validated range isn't guaranteed.
+**UE 5.8\+** — `Engine\Config\Microsoft\GDK_SDK.json` (schema renamed):
+
+```json
+{
+  "MainGDKVersion": "260401",
+  "MinGDKVersion":  "250404",
+  "MaxGDKVersion":  "260499"
+}
+```
+
+The example above uses the **April 2026 GDK** range (`250404`–`260499`).
 
 ## Setup
 
@@ -197,8 +220,20 @@ With Microsoft GDK plug-ins on Win64, [Play In Editor (PIE)](https://aka.ms/ue_p
 
 Install the **Visual Studio Tools for Unreal Engine** and **Visual Studio debugger tools for Unreal Engine** components from the Visual Studio Installer's _Game development with C\+\+_ workload for native `uplugin` support and Blueprint debugging.
 
+## Windows handheld device detection
+
+In UE 5.7\+, check whether the game is running on a Windows handheld device (e.g., ROG XBOX Ally) with:
+
+```cpp
+bool bHandheld = FPlatformMisc::IsDeviceHandheld();
+```
+
+Use this to adapt UI scale, input hints, and default graphics settings.
+
 ## Related
 
+- [Building XBOX games with Unreal Engine's new GDK plug-ins](/pc-e2e/engines/unreal-xbox-pc) — 5.8\+ workflow
+- [Legacy Unreal integration (pre-4.26)](/pc-e2e/engines/unreal-legacy) — older projects
 - [GDK and game engines](/pc-e2e/gdk-and-engines)
 - [Custom C/C\+\+ engine](/pc-e2e/engines/custom-engine)
 - [PlayFab Unreal Quick Start](https://aka.ms/pf_ue_quickstart)
