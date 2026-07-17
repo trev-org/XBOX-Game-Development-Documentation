@@ -1570,9 +1570,79 @@
                     "icon": "comments",
                     "pages": [
                       "playfab/community",
-                      "playfab/friends-groups",
-                      "playfab/community-leaderboards",
-                      "playfab/voice-chat"
+                      {
+                        "group": "Player associations",
+                        "icon": "users",
+                        "pages": [
+                          "playfab/community/associations/overview",
+                          {
+                            "group": "Friends",
+                            "icon": "user-plus",
+                            "pages": [
+                              "playfab/community/associations/friends/overview",
+                              "playfab/community/associations/friends/quickstart"
+                            ]
+                          },
+                          {
+                            "group": "Groups",
+                            "icon": "users-rectangle",
+                            "pages": [
+                              "playfab/community/associations/groups/overview",
+                              "playfab/community/associations/groups/quickstart",
+                              "playfab/community/associations/groups/shared-group-data"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Leaderboards",
+                        "icon": "trophy",
+                        "pages": [
+                          "playfab/community/leaderboards/overview",
+                          "playfab/community/leaderboards/quickstart",
+                          "playfab/community/leaderboards/create-basic",
+                          "playfab/community/leaderboards/doing-more",
+                          "playfab/community/leaderboards/seasonal",
+                          "playfab/community/leaderboards/manual-tiers",
+                          "playfab/community/leaderboards/group",
+                          "playfab/community/leaderboards/metadata",
+                          "playfab/community/leaderboards/linked-to-stats",
+                          "playfab/community/leaderboards/cloudscript",
+                          "playfab/community/leaderboards/playstream-telemetry",
+                          "playfab/community/leaderboards/limits",
+                          "playfab/community/leaderboards/quota",
+                          "playfab/community/leaderboards/api-reference",
+                          {
+                            "group": "Tournaments",
+                            "icon": "medal",
+                            "pages": [
+                              "playfab/community/leaderboards/tournaments/overview",
+                              "playfab/community/leaderboards/tournaments/quickstart",
+                              "playfab/community/leaderboards/tournaments/using-player-statistics",
+                              "playfab/community/leaderboards/tournaments/prize-tables",
+                              "playfab/community/leaderboards/tournaments/resettable-stats",
+                              "playfab/community/leaderboards/tournaments/profile-advanced",
+                              "playfab/community/leaderboards/tournaments/friends",
+                              "playfab/community/leaderboards/tournaments/archived-results"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Voice communications",
+                        "icon": "microphone",
+                        "pages": [
+                          "playfab/community/voice-communications/overview",
+                          "playfab/community/voice-communications/chat",
+                          "playfab/community/voice-communications/chat-permissions",
+                          "playfab/community/voice-communications/text-moderation",
+                          "playfab/community/voice-communications/noise-suppression",
+                          "playfab/community/voice-communications/realtime-audio",
+                          "playfab/community/voice-communications/tts-ux",
+                          "playfab/community/voice-communications/stt-ux",
+                          "playfab/community/voice-communications/troubleshooting"
+                        ]
+                      }
                     ]
                   },
                   {
