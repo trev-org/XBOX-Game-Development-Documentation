@@ -1,0 +1,15 @@
+---
+title: "Integrating experiments with other PlayFab services"
+sidebarTitle: "Integrations"
+description: "Combine Experiments with Player Profile, PlayStream, CloudScript, and Insights Explorer."
+---
+
+Experiments composes with Player Profile, PlayStream events, CloudScript, and Insights Explorer. Examples:
+
+- **Configuration changes with CloudScript.** Any game-code variation can be gated by combining CloudScript with `GetTreatmentAssignment`.
+- **Configuration changes from PlayStream events.** Call `GetTreatmentAssignment` inside PlayStream rule handlers to switch behavior per variant.
+- **Drill-down analysis in Insights Explorer.** A unique `VariantID` is stamped on all PlayStream v2 events and on `player_logged_in` and `player_realmoney_purchase` v1 events. Query these directly in Insights Explorer or pipe to your own analytics.
+
+<Warning>
+  On first login, a player only has attributes from the `player_logged_in` event. If you target new players with PlayStream event-based variations, only reference attributes present on `player_logged_in`.
+</Warning>

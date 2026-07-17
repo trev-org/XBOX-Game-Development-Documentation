@@ -1,0 +1,23 @@
+---
+title: "Billing for PlayFab Experiments"
+sidebarTitle: "Pricing"
+description: "How Experiments is metered and billed under the Insights credit system."
+---
+
+**Development Mode:** Experiments is free while your title has fewer than 1,000 player accounts.
+
+**Live titles (Standard/Premium/Enterprise, pay-as-you-go):** Experiments is billed under the Insights credit system, with no consumption limits. Insights credits are a virtual currency shared by all Insights services.
+
+View usage on the [billing summary page](https://developer.playfab.com/) — daily snapshot of month-to-date charges with an Experiments Insights-credit breakdown. Admin or billing permissions required.
+
+## What contributes to Insights consumption
+
+Metering begins when an experiment starts and stops when it ends. Three factors:
+
+1. **Target audience size** — larger audience → more resources for assignment and variant-ID stamping.
+2. **Metric computation** — job minutes scale with metric complexity and volume of the underlying events (`player_logged_in`, `player_realmoney_purchase`).
+3. **Experiment duration** — longer runs consume more.
+
+<Note>
+  Experiment APIs and their PlayStream events are billed outside Insights credits — API calls via the profile read/write meter, events via the events meter.
+</Note>

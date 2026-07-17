@@ -1103,7 +1103,15 @@
                       {
                         "group": "Experiments",
                         "icon": "flask",
-                        "pages": []
+                        "pages": [
+                          "playfab/live-service-management/experiments/exclusion-groups",
+                          "playfab/live-service-management/experiments/best-practices",
+                          "playfab/live-service-management/experiments/other-services",
+                          "playfab/live-service-management/experiments/scorecard-metrics",
+                          "playfab/live-service-management/experiments/manage-experiments",
+                          "playfab/live-service-management/experiments/analyze-experiments",
+                          "playfab/live-service-management/experiments/pricing"
+                        ]
                       }
                     ]
                   },

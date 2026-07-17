@@ -1,0 +1,26 @@
+---
+title: "Prevent interaction effects with exclusion groups"
+sidebarTitle: "Exclusion groups"
+description: "Make related experiments mutually exclusive so players see only one at a time."
+---
+
+For related concurrent experiments, players should see only one to avoid skewed results. **Exclusion groups** let you create mutually exclusive experiments — traffic is partitioned so no player is in more than one experiment in the group.
+
+## When to use
+
+Use exclusion groups when experiments are:
+
+- Variations of configurations on the same game flow.
+- Configurations affecting the same funnel with likely player overlap.
+
+Skip exclusion groups when experiments are unrelated — overlap is harmless there.
+
+## Setup
+
+1. Create an exclusion group in Game Manager under **Experiments → Exclusion Groups**.
+2. When creating or editing an experiment, select the exclusion group in the configuration.
+3. Traffic allocation is distributed randomly across the group, without player overlap.
+
+<Note>
+  An experiment can belong to at most one exclusion group.
+</Note>

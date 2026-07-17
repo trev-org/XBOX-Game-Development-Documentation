@@ -1,0 +1,35 @@
+---
+title: "Experiments best practices and recommendations"
+sidebarTitle: "Best practices"
+description: "Why experimentation matters and how to run trustworthy tests."
+---
+
+Experiments are the gold standard for measuring the effect of game-experience changes. Backing decisions with data lets you craft more effective design, gameplay, and marketing — and detect when a change's benefit fades over time.
+
+## Why experiment
+
+- Move from _we think_ to _we know_.
+- Protect the wider player base from bad experiences by exposing changes to a limited audience first.
+- Enable or disable features safely in a live game.
+- Focus resources on what demonstrably works.
+
+## Common goals
+
+- Increase engagement (session length, sessions per DAU).
+- Improve retention (Day N return).
+- Grow monetization (payer conversion, ARPU).
+- Boost acquisition (funnel completion).
+
+## Best practices
+
+- **Define your metric first.** Pick your primary success metric before designing variants.
+- **Ensure practical significance, not just statistical significance.** A 0.1% lift with a huge sample may pass a p-value test yet not be worth shipping.
+- **Run for full weekly cycles.** Weekday vs. weekend behavior differs.
+- **Guard against Sample Ratio Mismatch (SRM).** If actual traffic split deviates significantly from configured split, stop and investigate before trusting results.
+- **Use exclusion groups for overlapping funnels.**
+- **Don't peek and stop early.** Predefine duration.
+- **Document hypotheses.** Every experiment should have a hypothesis you can accept or reject.
+
+## Resolving SRM
+
+If the scorecard flags SRM, check: variant delivery bugs, differential opt-outs, filter differences between arms, or bot traffic hitting one variant more than another.

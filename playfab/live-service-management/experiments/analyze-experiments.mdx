@@ -1,0 +1,31 @@
+---
+title: "Analyze experiments"
+sidebarTitle: "Analyze experiments"
+description: "Read the experiment details and scorecard page, and take action based on results."
+---
+
+Experiment results appear on the **Experiment details and scorecard** page. Scorecards regenerate on a cadence — first at 12 hours, then every 24 hours until the experiment ends.
+
+The page lists:
+
+- Name, description, start/end date, intended duration.
+- Target audience and variant count.
+- Actions (Stop, Run, Clone as draft), depending on state.
+
+## During a run
+
+Open the running experiment to see the interim scorecard. Use it directionally, not as final proof.
+
+## After completion
+
+On the **Completed** tab, select the experiment name for the final scorecard.
+
+<Note>
+  If the scorecard flags **Sample Ratio Mismatch (SRM)**, see [Best practices](/playfab/live-service-management/experiments/best-practices) for how to resolve.
+</Note>
+
+## Deciding on a winner
+
+- Confirm the primary metric moved in the expected direction with statistical significance.
+- Check guardrail metrics (retention, revenue) didn't regress.
+- Consider practical significance and cost to implement.

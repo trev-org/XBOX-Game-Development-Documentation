@@ -1,0 +1,14 @@
+---
+title: "Scorecard metrics"
+sidebarTitle: "Scorecard metrics"
+description: "Preidentified metrics computed for every experiment scorecard."
+---
+
+PlayFab preidentifies a small, effective, actionable metric set covering acquisition, activation, retention, and revenue. Metrics are computed from `player_logged_in` and `player_realmoney_purchase` events and updated as the experiment runs.
+
+| Type | Metric | Description |
+| --- | --- | --- |
+| Acquisition | Average Login Per User | Average logins per user. |
+| Activation | Payer Conversion Rate | % of active users who made a purchase. |
+| Revenue | Average Revenue Per User | Average revenue per user (including non-payers). |
+| Retention | Day N Retention (N = 1, 2, 3, 5, 7, 14, 21) | % of users who logged in N days after seeing the experiment. |
