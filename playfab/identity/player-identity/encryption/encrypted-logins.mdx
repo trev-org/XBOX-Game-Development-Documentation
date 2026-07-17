@@ -1,0 +1,118 @@
+---
+title: "Encrypted logins"
+sidebarTitle: "Encrypted logins"
+description: "Enable payload encryption on a specific login API for your title."
+icon: "shield-halved"
+---
+
+Encrypted logins add per-API payload encryption on top of PlayFab's standard TLS. Any login API can be protected — this walk-through uses `LoginWithCustomID`.
+
+<Warning>
+  Encrypted login is all-or-nothing per title. Turn it on at title creation or don't turn it on at all. Encrypted and non-encrypted players can't co-exist.
+</Warning>
+
+Three steps:
+
+1. Create a player-shared secret.
+2. Add an API policy that requires encryption on the target method.
+3. Update the client to fetch the title public key and encrypt the payload.
+
+<Note>
+  PlayFab already encrypts every API call over TLS. This feature raises the effort required to spoof a legitimate client but doesn't add a lot of practical security for most titles.
+</Note>
+
+## 1. Create a player-shared secret
+
+<Note>
+  Creating a shared secret with an existing name overwrites the previous key.
+</Note>
+
+```csharp
+PlayFabSettings.staticSettings.DeveloperSecretKey = "__DEVELOPER_KEY__";
+PlayFabSettings.staticSettings.TitleId = "__TITLE_ID__";
+
+var response = await PlayFabAdminAPI.CreatePlayerSharedSecretAsync(
+    new CreatePlayerSharedSecretRequest { FriendlyName = "__KEY_NAME__" });
+
+if (response.Error != null) Console.WriteLine(response.Error.GenerateErrorReport());
+else Console.WriteLine(response.Result.SecretKey);
+```
+
+The developer secret key comes from Game Manager. See [Secret key management](/playfab/live-service-management/game-manager/secret-key-management).
+
+**Save the printed secret.** There's no API to fetch it later. Example: `QC953WQ3TU6ZJTZMAT1FNJQIKR92FPUQTISW4Q6WD8SY841MQQ`
+
+## 2. Add an API policy
+
+Run this to require encryption on `LoginWithCustomID` and leave everything else open:
+
+```csharp
+PlayFabSettings.DeveloperSecretKey = "__DEVELOPER_KEY__";
+PlayFabSettings.TitleId = "__TITLE_ID__";
+
+public static async Task SetApiPermission(bool restrictCustomId)
+{
+    var filterCustom = new PermissionStatement {
+        Action = "*",
+        ApiConditions = new ApiCondition { HasSignatureOrEncryption = Conditionals.False },
+        Comment = "Deny unencrypted LoginWithCustomID",
+        Resource = "pfrn:api--/Client/LoginWithCustomID",
+        Effect = EffectType.Deny,
+        Principal = "*"
+    };
+    var filterNothing = new PermissionStatement {
+        Action = "*",
+        Comment = "Allow everything else",
+        Resource = "pfrn:api--*",
+        Effect = EffectType.Allow,
+        Principal = "*"
+    };
+
+    var request = new UpdatePolicyRequest {
+        PolicyName = "ApiPolicy",
+        OverwritePolicy = true,
+        Statements = new List<PermissionStatement> { filterNothing }
+    };
+    if (restrictCustomId) request.Statements.Add(filterCustom);
+
+    await PlayFabAdminAPI.UpdatePolicyAsync(request);
+}
+```
+
+## 3. Update the client
+
+After the policy is live, a plain `LoginWithCustomID` returns `NotAuthorized`. The client has to fetch the title public key and encrypt the payload:
+
+```csharp
+public static async Task DoEncryptedLogin()
+{
+    var titleKeyResult = await PlayFabClientAPI.GetTitlePublicKeyAsync(
+        new GetTitlePublicKeyRequest {
+            TitleId = TITLE_ID,
+            TitleSharedSecret = CLIENT_SECRET_KEY
+        });
+
+    var cspBlob = Convert.FromBase64String(titleKeyResult.Result.RSAPublicKey);
+    var encryptionModel = JsonWrapper.SerializeObject(
+        new LoginWithCustomIDRequest { CustomId = "SOME_PLAYER_ID_ENCRYPTED" });
+
+    string encryptedPayload;
+    using (var rsa = new RSACryptoServiceProvider())
+    {
+        rsa.ImportCspBlob(cspBlob);
+        var bytesToEncrypt = Encoding.UTF8.GetBytes(encryptionModel);
+        var encryptedBytes = rsa.Encrypt(bytesToEncrypt, false);
+        encryptedPayload = Convert.ToBase64String(encryptedBytes);
+    }
+
+    var model = new LoginWithCustomIDRequest {
+        EncryptedRequest = encryptedPayload,
+        PlayerSecret = CLIENT_SECRET_KEY,
+        CreateAccount = true
+    };
+
+    var result = await PlayFabClientAPI.LoginWithCustomIDAsync(model);
+}
+```
+
+Bake the shared secret into your client build — there's no API to fetch it after the fact.

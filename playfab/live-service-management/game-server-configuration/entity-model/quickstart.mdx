@@ -1,0 +1,181 @@
+---
+title: "Entities quickstart"
+sidebarTitle: "Quickstart"
+description: "Get started with entity objects and entity files in PlayFab."
+---
+
+This quickstart shows how to work with entity objects and entity files. For information on moving from legacy account and data systems to entities, see [Entities migration information](/playfab/live-service-management/game-server-configuration/entity-model/migration-information).
+
+## Requirements
+
+- A [PlayFab developer account](https://developer.playfab.com).
+- An installed copy of the Unity Editor. See [Installing Unity](https://docs.unity3d.com/Manual/GettingStartedInstallingUnity.html). The PlayFab Unity3D SDK supports Unity Editor 5.3 and later.
+- A Unity Project. See the [Unity quickstart guide](https://docs.unity3d.com/Manual/Quickstart3D.html).
+- The PlayFab Unity3D SDK.
+
+The C# samples here are written for the Unity SDK, which uses event-driven callbacks for asynchronous work. To use the C# SDK instead, modify the code to use `async`/`await`. Methods that need modification have `Async` appended to the name in the signature. For example, `SetObject` in the Unity SDK becomes `SetObjectAsync` in the C# SDK.
+
+## Terminology
+
+Built-in entity types:
+
+- **`title`** — contains global information available to all players. Similar to `TitleData`. Identified by the game's `TitleId`.
+- **`master_player_account`** — shares information about a player across multiple games within a namespace. Identified by the player's `PlayFabId`.
+- **`title_player_account`** — identifies a player account within a title. Identified by the `EntityKey.Id` returned on login.
+- **`character`** — identifies a character the player owns. Identified by `CharacterId`.
+
+See [Available built-in entity types](/playfab/live-service-management/game-server-configuration/entity-model/available-built-in-entity-types).
+
+## Entity initialization
+
+To call any entity API you need the entity `Id` and `Type`. Both are on the `EntityKey` object.
+
+Sign in with any login method, such as `LoginWithCustomID`:
+
+```csharp
+void Login()
+{
+    var request = new PlayFab.ClientModels.LoginWithCustomIDRequest
+    {
+        CustomId = SystemInfo.deviceUniqueIdentifier,
+        CreateAccount = true,
+    };
+    PlayFabClientAPI.LoginWithCustomID(request, OnLogin, OnSharedFailure);
+}
+
+void OnLogin(PlayFab.ClientModels.LoginResult result)
+{
+    entityId = result.EntityToken.Entity.Id;
+    // The expected entity type is title_player_account.
+    entityType = result.EntityToken.Entity.Type;
+}
+```
+
+You can also get the values by calling `GetEntityToken`:
+
+```csharp
+PlayFabAuthenticationAPI.GetEntityToken(new GetEntityTokenRequest(),
+(entityResult) =>
+{
+    var entityId = entityResult.Entity.Id;
+    var entityType = entityResult.Entity.Type;
+}, OnPlayFabError);
+```
+
+Called from the client, this typically represents the signed-in player. Called from game servers, it represents your title.
+
+## Entity objects
+
+Entity objects let you read and write small JSON-serializable objects attached to an entity. All entity types support `GetObjects` and `SetObjects`.
+
+Set an object on a `title_player_account`:
+
+```csharp
+var data = new Dictionary<string, object>()
+{
+    {"Health", 100},
+    {"Mana", 10000}
+};
+var dataList = new List<SetObject>()
+{
+    new SetObject()
+    {
+        ObjectName = "PlayerData",
+        DataObject = data
+    },
+    // A free-tier customer may store up to 3 objects on each entity
+};
+
+PlayFabDataAPI.SetObjects(new SetObjectsRequest()
+{
+    Entity = new EntityKey {Id = entityId, Type = entityType},
+    Objects = dataList,
+}, (setResult) => {
+    Debug.Log(setResult.ProfileVersion);
+}, OnPlayFabError);
+```
+
+Read objects:
+
+```csharp
+var getRequest = new GetObjectsRequest {Entity = new EntityKey {Id = entityId, Type = entityType}};
+PlayFabDataAPI.GetObjects(getRequest,
+    result => { var objs = result.Objects; },
+    OnPlayFabError
+);
+```
+
+## Entity files
+
+Entity files let you read and write files of any format attached to an entity.
+
+**Get files:**
+
+```csharp
+void LoadAllFiles()
+{
+    var request = new PlayFab.DataModels.GetFilesRequest
+    {
+        Entity = new PlayFab.DataModels.EntityKey { Id = entityId, Type = entityType }
+    };
+    PlayFabDataAPI.GetFiles(request, OnGetFileMeta, OnSharedFailure);
+}
+```
+
+**Initiate upload:**
+
+```csharp
+void UploadFile(string fileName)
+{
+    ActiveUploadFileName = fileName;
+    var request = new PlayFab.DataModels.InitiateFileUploadsRequest
+    {
+        Entity = new PlayFab.DataModels.EntityKey { Id = entityId, Type = entityType },
+        FileNames = new List<string> { ActiveUploadFileName },
+    };
+    PlayFabDataAPI.InitiateFileUploads(request, OnInitFileUpload, OnInitFailed);
+}
+```
+
+**Abort a pending upload** (used when `InitiateFileUploads` returns `EntityFileOperationPending`):
+
+```csharp
+var request = new PlayFab.DataModels.AbortFileUploadsRequest
+{
+    Entity = new PlayFab.DataModels.EntityKey { Id = entityId, Type = entityType },
+    FileNames = new List<string> { ActiveUploadFileName },
+};
+PlayFabDataAPI.AbortFileUploads(request, OnAbortSuccess, OnSharedFailure);
+```
+
+**Finalize an upload:**
+
+```csharp
+var request = new PlayFab.DataModels.FinalizeFileUploadsRequest
+{
+    Entity = new PlayFab.DataModels.EntityKey { Id = entityId, Type = entityType },
+    FileNames = new List<string> { ActiveUploadFileName },
+};
+PlayFabDataAPI.FinalizeFileUploads(request, OnUploadSuccess, OnSharedFailure);
+```
+
+The entity system doesn't consider a file upload complete or reflect changes to other callers until the atomic upload operation is finalized.
+
+### Full example loop
+
+The full loop is:
+
+1. Sign in and get the entity `Id` and `Type`.
+2. Initiate the atomic upload operation.
+3. Upload all files.
+4. Finalize the atomic upload operation.
+
+<Note>
+  Each file action requires multiple steps and API calls. Don't access the same file in multiple ways simultaneously. Simple, independent actions don't require a lock; complex flows may need a more complex locking mechanism.
+</Note>
+
+A complete Unity example demonstrating login, list files, download each file, upload edits, and create new files can be found in the [Entity files](/playfab/live-service-management/game-server-configuration/entity-model/entity-files) reference.
+
+## Game Manager and entities
+
+Game Manager lets you inspect and edit objects and files for players. The player overview shows both the title player and master player account. The **Players** tab includes separate sections for files and objects.

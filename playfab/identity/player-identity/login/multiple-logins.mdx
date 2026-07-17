@@ -1,0 +1,128 @@
+---
+title: "Handling multiple PlayFab logins"
+sidebarTitle: "Multiple logins"
+description: "Support multiple concurrent players on a single client or server using instanced API classes."
+icon: "users"
+---
+
+Most PlayFab SDKs cache login state in a static class. That's fine for a single-player client, but breaks when you need multiple players or servers active at once. Use **instanced API classes** instead.
+
+## Static vs. instanced classes
+
+Static classes like `PlayFabClientAPI` write to static state. They can't hold two players' sessions at the same time.
+
+Instanced classes like `PlayFabClientInstanceAPI` take an authentication context (or API settings, if you haven't logged in yet). You manage the lifetime, and each instance holds one player's session.
+
+When you log in through an instanced class, that class caches the resulting authentication context. Use it to spin up more instanced classes for the same player.
+
+## Unity example
+
+Two players signed in from the same client, each with their own `PlayFabClientInstanceAPI` and `PlayFabDataInstanceAPI`:
+
+```csharp
+using PlayFab;
+using PlayFab.ClientModels;
+using PlayFab.DataModels;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayFabLogin : MonoBehaviour
+{
+    PlayFabPlayer player1 = new PlayFabPlayer();
+    PlayFabPlayer player2 = new PlayFabPlayer();
+
+    void Start()
+    {
+        if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
+        {
+            PlayFabSettings.staticSettings.TitleId = ""; // set to your title ID
+        }
+
+        player1.Login("testLogin1");
+        player2.Login("testLogin2");
+    }
+
+    void Update()
+    {
+        if (player1.loggedIn && !player1.dataLoaded && !player1.dataLoading) player1.LoadData();
+        if (player2.loggedIn && !player2.dataLoaded && !player2.dataLoading) player2.LoadData();
+    }
+}
+
+class PlayFabPlayer
+{
+    public bool loggedIn, dataLoading, dataLoaded;
+    public string PlayFabId;
+    public Dictionary<string, ObjectResult> playerData;
+
+    private PlayFabClientInstanceAPI clientApi;
+    private PlayFabDataInstanceAPI dataApi;
+
+    public void Login(string customId)
+    {
+        clientApi = new PlayFabClientInstanceAPI(PlayFabSettings.staticSettings);
+        var request = new LoginWithCustomIDRequest { CustomId = customId, CreateAccount = true };
+
+        clientApi.LoginWithCustomID(request,
+            result => {
+                PlayFabId = result.PlayFabId;
+                loggedIn = true;
+                dataApi = new PlayFabDataInstanceAPI(clientApi.authenticationContext);
+            },
+            error => Debug.LogError(error.GenerateErrorReport()));
+    }
+
+    public void LoadData()
+    {
+        dataLoading = true;
+        var request = new GetObjectsRequest {
+            Entity = new PlayFab.DataModels.EntityKey {
+                Id = clientApi.authenticationContext.EntityId,
+                Type = clientApi.authenticationContext.EntityType
+            }
+        };
+
+        dataApi.GetObjects(request,
+            result => { playerData = result.Objects; dataLoaded = true; dataLoading = false; },
+            error => Debug.LogError(error.GenerateErrorReport()));
+    }
+}
+```
+
+## Unreal example
+
+Unreal actors can hold their own instanced APIs. Add multiple `ALoginActor` instances to a map and each authenticates independently:
+
+```cpp
+// LoginActor.h
+#pragma once
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "PlayFab.h"
+#include "Core/PlayFabClientAPI.h"
+#include "Core/PlayFabDataAPI.h"
+#include "LoginActor.generated.h"
+
+UCLASS()
+class MINUE_PF_MARKET_API ALoginActor : public AActor
+{
+    GENERATED_BODY()
+
+public:
+    ALoginActor();
+    UPROPERTY(EditAnywhere, config, Category = Settings) FString TitleId;
+    UPROPERTY(EditAnywhere, config, Category = Settings) FString CustomId = TEXT("ExampleCustomId");
+    PlayFabClientPtr clientAPI = nullptr;
+    PlayFabDataPtr dataAPI = nullptr;
+
+protected:
+    virtual void BeginPlay() override;
+    void OnLoginSuccess(const PlayFab::ClientModels::FLoginResult& Result);
+    void OnGetObjectsSuccess(const PlayFab::DataModels::FGetObjectsResponse& Result);
+    void OnError(const PlayFab::FPlayFabCppError& Error) const;
+};
+```
+
+## Server authentication
+
+Servers use the same pattern. Create an instanced `PlayFabAuthenticationInstanceAPI` per title, call `GetEntityToken`, then use the cached authentication context to create more instanced APIs.

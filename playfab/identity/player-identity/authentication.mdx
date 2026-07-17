@@ -1,0 +1,32 @@
+---
+title: "What is PlayFab authentication?"
+sidebarTitle: "Authentication overview"
+description: "How PlayFab signs players in across providers and platforms."
+icon: "key"
+---
+
+PlayFab authenticates players using many providers. Give players multiple ways to sign in and let them link their favorite accounts for account recovery and cross-device play.
+
+PlayFab also supports Microsoft-backed sign-in for Game Manager — covered in [Developer identity](/playfab/identity/developer-identity/create-account).
+
+## Sign-in categories
+
+- **Anonymous logins** — zero player friction. Device IDs or custom IDs create an account without any input.
+- **Recoverable logins** — the player provides identity data (email, Facebook, Google, Steam, Xbox, and so on). The account can be recovered on a new device.
+- **Encrypted logins** — optional extra layer that protects login payloads with a title public key and shared secret.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Player login" icon="right-to-bracket" href="/playfab/identity/player-identity/login/overview">
+    Anonymous vs. recoverable sign-in and the quickstart for linking accounts.
+  </Card>
+
+  <Card title="Platform-specific authentication" icon="gamepad" href="/playfab/identity/player-identity/platform-specific-authentication/overview">
+    Provider-by-provider setup: Apple, Google, Steam, Xbox, and more.
+  </Card>
+
+  <Card title="Player encryption" icon="lock" href="/playfab/identity/player-identity/encryption/player-encryption-services">
+    Optional payload encryption using a title public key.
+  </Card>
+</CardGroup>

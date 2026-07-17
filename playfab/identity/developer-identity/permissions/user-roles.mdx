@@ -1,0 +1,54 @@
+---
+title: "PlayFab user roles"
+sidebarTitle: "User roles"
+description: "Manage teammate access with roles and per-title permissions."
+icon: "user-lock"
+---
+
+Roles are how you manage user access in PlayFab Game Manager. A role is a named collection of permissions that you assign to teammates on a per-title basis.
+
+Define a role once, assign it to as many people as you like, then update everyone's access at once by editing the role.
+
+## How roles work
+
+PlayFab uses a fine-grained model with hundreds of permissions. You can turn areas of Game Manager off entirely, make them read-only, or open them for editing.
+
+Examples:
+
+- Customer Service reps can edit player profiles but never see revenue data.
+- Product Managers can view revenue dashboards but can't upload multiplayer server builds.
+- Data Scientists can read every event and dashboard, with no write access anywhere.
+
+Since permissions live on the role (not on each user), changes propagate instantly. Edit the role, and everyone with it picks up the new access.
+
+### Per-title, multi-role
+
+Roles are assigned **per title**. A user can hold **multiple roles** on the same title — they get the combined permissions of all their roles.
+
+One person can be Title Admin on one title, Product Manager on another, and Customer Service on a third — all within the same studio.
+
+## Create a role
+
+1. Open your title in Game Manager.
+2. Go to **Settings → Users → Roles**.
+3. Select **New Role** and give it a name.
+4. Configure permissions across each section — leave off, set to read, or set to full access.
+5. Save.
+
+## Assign a role
+
+1. In **Settings → Users**, find the teammate.
+2. Select their name and pick the role(s) to add.
+3. Save.
+
+If the teammate isn't in the studio yet, invite them first via **Add User** and select **Microsoft** as the authentication provider.
+
+## Built-in roles
+
+Every studio has these by default:
+
+- **Admin** — full access to everything, including managing other users.
+- **Server** — access to Server APIs. Assign to trusted service accounts.
+- **Player** — view-only access to player-facing data.
+
+Start with these and create custom roles as your team specializes.

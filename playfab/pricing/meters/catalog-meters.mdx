@@ -1,0 +1,62 @@
+---
+title: "Catalog meters"
+sidebarTitle: "Catalog meters"
+description: "Meters used by Economy v2 Catalog."
+icon: "book-open"
+---
+
+Economy v2 Catalog bills on two meters: **Requests** and **Storage**. Storage bills the average size of catalog data over the month.
+
+## Meters
+
+| Meter | What it measures |
+| --- | --- |
+| Economy v2 Catalog — Requests | Total Catalog API calls per month. |
+| Economy v2 Catalog — Storage | Average catalog data size (bytes) over the month. |
+
+## Included amounts
+
+| Plan | Requests included | Storage included |
+| --- | --- | --- |
+| Standard | 1M | 1 GB |
+| Premium | 10M | 5 GB |
+| Enterprise | Custom | Custom |
+
+## Example bill
+
+A Standard-plan title using 2M requests and averaging 2 GB of catalog data in a month bills:
+
+- 1M requests over the included amount — charged at the Catalog Requests overage rate.
+- 1 GB storage over the included amount — charged at the Catalog Storage overage rate.
+
+For current overage rates, see the [PlayFab pricing page](https://www.playfab.com/pricing).
+
+## Catalog APIs that count as requests
+
+- `CreateDraftItem`
+- `DeleteEntityItemReviews`
+- `DeleteItem`
+- `GetCatalogConfig`
+- `GetDraftItem`
+- `GetDraftItems`
+- `GetEntityDraftItems`
+- `GetEntityItemReview`
+- `GetItem`
+- `GetItemContainers`
+- `GetItemModerationState`
+- `GetItemPublishStatus`
+- `GetItemReviews`
+- `GetItemReviewSummary`
+- `GetItems`
+- `PublishDraftItem`
+- `ReportItem`
+- `ReportItemReview`
+- `ReviewItem`
+- `SearchItems`
+- `SetItemModerationState`
+- `SubmitItemReviewVote`
+- `TakedownItemReviews`
+- `UpdateCatalogConfig`
+- `UpdateDraftItem`
+
+For the full up-to-date list, see the [Economy API reference](/playfab/economy-monetization/economy).

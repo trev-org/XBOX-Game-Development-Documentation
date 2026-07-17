@@ -1,0 +1,133 @@
+---
+title: "Microsoft Entra ID authentication for PlayFab APIs"
+sidebarTitle: "Entra ID for APIs"
+description: "Call Admin, Server, and title-entity APIs with an Entra ID access token instead of a developer secret key."
+icon: "microsoft"
+---
+
+Entra ID authentication lets your CLIs, build scripts, and internal dashboards call PlayFab with a short-lived, user-scoped access token instead of a shared developer secret key.
+
+<Note>
+  Entra ID is an **alternative** to developer secret keys for Admin, Server, and title-entity APIs. Player-facing Client APIs still use session tickets from player sign-in.
+</Note>
+
+## Why use Entra ID
+
+- **No shared secrets** — tokens are short-lived and scoped to the signed-in user.
+- **Individual accountability** — every call is tied to a real user identity.
+- **Conditional access** — apply Entra ID policies (MFA, device compliance, IP restrictions) at your org level.
+
+## How it works
+
+Three parties:
+
+- **The developer** — signs in with a personal Microsoft account or a work/school account.
+- **Your Entra ID app registration** — the tool that calls PlayFab. Registered as a public client.
+- **The PlayFab service** — registered in Entra ID under `448adbda-b8d8-4f33-a1b0-ac58cf44d4c1` with a delegated permission called `plugin`.
+
+A call looks like this:
+
+1. Your code uses MSAL to sign the user in (browser pop-up, device code, etc.).
+2. The user consents to your app calling PlayFab on their behalf.
+3. MSAL returns an access token (JWT) and caches a refresh token.
+4. Your code sends `Authorization: Bearer <token>` on each PlayFab request.
+5. PlayFab validates the token, matches it to the studio user, and authorizes based on their role.
+
+## Prerequisites
+
+- A Microsoft account (MSA or Entra ID work/school).
+- A PlayFab title. See [Create a PlayFab account](/playfab/identity/developer-identity/create-account).
+- Permissions to register apps in your Entra ID tenant.
+- The calling user must be a title admin in the PlayFab studio. See [PlayFab user roles](/playfab/identity/developer-identity/permissions/user-roles).
+
+## Register a public client app
+
+1. Sign in to the [Azure portal](https://portal.azure.com).
+2. Go to **App registrations** → **New registration**.
+3. Name your app (for example, `PlayFab API Client`).
+4. Under **Supported account types**, choose **Accounts in any organizational directory (Any Microsoft Entra ID tenant — Multitenant) and personal Microsoft accounts** for maximum flexibility.
+5. Set the **Redirect URI**:
+   - SPA: `http://localhost:3000` under **Single-page application (SPA)**.
+   - Native/console (device code): `http://localhost` under **Public client/native (mobile & desktop)**.
+6. Select **Register**. Copy the **Application (client) ID**.
+7. Add the PlayFab API permission:
+   - **API permissions** → **Add a permission** → **APIs my organization uses**.
+   - Search for `448adbda-b8d8-4f33-a1b0-ac58cf44d4c1` and select it.
+   - Choose **Delegated permissions**, check **plugin**, and add.
+
+<Note>
+  Confidential (web app) clients need a client secret under **Certificates & secrets**. This page covers public client flows only.
+</Note>
+
+## Grant PlayFab studio access
+
+The user calling APIs must exist in the PlayFab studio as a Microsoft-authenticated user with title admin (or higher) permissions on the target titles. See [Entra ID for Game Manager](/playfab/identity/developer-identity/authentication/entra-id-game-manager) to invite them.
+
+## Acquire an access token
+
+Use MSAL (or any Entra-compatible library) to sign the user in and get a delegated token scoped to `448adbda-b8d8-4f33-a1b0-ac58cf44d4c1/plugin`.
+
+### Interactive browser (desktop tools)
+
+```csharp
+using Microsoft.Identity.Client;
+
+var app = PublicClientApplicationBuilder.Create("your-client-id")
+    .WithAuthority("https://login.microsoftonline.com/common")
+    .WithDefaultRedirectUri()
+    .Build();
+
+string[] scopes = { "448adbda-b8d8-4f33-a1b0-ac58cf44d4c1/plugin" };
+
+AuthenticationResult result;
+try
+{
+    var accounts = await app.GetAccountsAsync();
+    result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
+}
+catch (MsalUiRequiredException)
+{
+    result = await app.AcquireTokenInteractive(scopes)
+        .WithUseEmbeddedWebView(false)
+        .ExecuteAsync();
+}
+
+string accessToken = result.AccessToken;
+```
+
+### Auth code \+ PKCE (single-page apps)
+
+```javascript
+import { PublicClientApplication } from "@azure/msal-browser";
+
+const msalInstance = new PublicClientApplication({
+    auth: {
+        clientId: "your-client-id",
+        authority: "https://login.microsoftonline.com/common",
+        redirectUri: "http://localhost:3000"
+    }
+});
+await msalInstance.initialize();
+
+const { accessToken } = await msalInstance.loginPopup({
+    scopes: ["448adbda-b8d8-4f33-a1b0-ac58cf44d4c1/plugin"]
+});
+```
+
+## Call a PlayFab API
+
+Attach the token as a bearer token:
+
+```http
+Authorization: Bearer <accessToken>
+```
+
+Remove any `X-SecretKey` header. PlayFab picks up the bearer token, validates it, and authorizes the call based on the signed-in user's studio role.
+
+## Glossary
+
+- **Access token** — short-lived JWT that PlayFab accepts as proof of identity.
+- **Delegated permission** — permission that acts on behalf of the signed-in user, not the app itself.
+- **MSAL** — Microsoft Authentication Library. Handles sign-in and token caching.
+- **Public client** — an app that can't safely store a secret (desktop, SPA, console tool). Uses interactive or device code flows.
+- **Tenant** — an Entra ID directory. Your org has one; personal Microsoft accounts live in a shared tenant.

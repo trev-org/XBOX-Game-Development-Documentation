@@ -1,0 +1,35 @@
+---
+title: "Leaderboard meters"
+sidebarTitle: "Leaderboard meters"
+description: "Meters used by the Leaderboards service."
+icon: "ranking-star"
+---
+
+Leaderboards bill on three meters: **Reads**, **Writes**, and **Storage**. Storage bills the average number of stored leaderboard rows over the month.
+
+## Meters
+
+| Meter | What it measures |
+| --- | --- |
+| Leaderboard Reads | Read API calls per month. |
+| Leaderboard Writes | Write API calls per month. |
+| Leaderboard Storage | Average rows stored across leaderboards for the month. |
+
+## Leaderboard read APIs
+
+- `GetFriendLeaderboardForEntity`
+- `GetLeaderboard`
+- `GetLeaderboardAroundEntity`
+- `GetLeaderboardForEntities`
+- `GetLeaderboardDefinition`
+- `ListLeaderboardDefinitions`
+
+## Leaderboard write APIs
+
+- `CreateLeaderboardDefinition`
+- `DeleteLeaderboardDefinition`
+- `DeleteLeaderboardEntries`
+- `IncrementLeaderboardVersion`
+- `UpdateLeaderboardEntries`
+
+For the full up-to-date list, see the [Leaderboards API reference](/playfab/community/leaderboards).

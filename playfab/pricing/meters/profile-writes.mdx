@@ -1,0 +1,75 @@
+---
+title: "Profile writes"
+sidebarTitle: "Profile writes"
+description: "APIs that count against the Profile writes meter."
+icon: "file-export"
+---
+
+Profile writes cover any write against player, character, entity, or group profiles. Writes bill per operation with a 1 KB minimum per key.
+
+## Client APIs
+
+- `AddFriend`
+- `AddGenericID`
+- `AddOrUpdateContactEmail`
+- `AddUsernamePassword`
+- `AttributeInstall`
+- `LinkAndroidDeviceID` / `LinkApple` / `LinkCustomID` / `LinkFacebookAccount` / `LinkGameCenterAccount` / `LinkGoogleAccount` / `LinkIOSDeviceID` / `LinkKongregate` / `LinkNintendoServiceAccount` / `LinkNintendoSwitchDeviceId` / `LinkOpenIdConnect` / `LinkPSNAccount` / `LinkSteamAccount` / `LinkTwitch` / `LinkXboxAccount`
+- `Unlink*` (mirrors of the Link APIs)
+- `RemoveContactEmail`
+- `RemoveFriend`
+- `RemoveGenericID`
+- `ReportPlayer`
+- `SetFriendTags`
+- `UpdateAvatarUrl`
+- `UpdateCharacterData`
+- `UpdateCharacterStatistics`
+- `UpdatePlayerStatistics`
+- `UpdateUserData`
+- `UpdateUserPublisherData`
+- `UpdateUserTitleDisplayName`
+
+## Server APIs
+
+- `AddCharacterVirtualCurrency`
+- `AddPlayerTag`
+- `AddUserVirtualCurrency`
+- `BanUsers` / `RevokeAllBansForUser` / `RevokeBans`
+- `DeleteCharacterFromUser`
+- `DeletePlayer`
+- `DeletePushNotificationTemplate`
+- `GrantCharacterToUser`
+- `LinkServerCustomId` / `LinkXboxAccount` / `LinkNintendoServiceAccount` / `LinkNintendoSwitchDeviceId` / `LinkPSNAccount`
+- `Unlink*` (mirrors)
+- `RemovePlayerTag`
+- `SendCustomAccountRecoveryEmail`
+- `SendEmailFromTemplate`
+- `SendPushNotification` / `SendPushNotificationFromTemplate`
+- `SetPlayerSecret`
+- `SubtractCharacterVirtualCurrency`
+- `SubtractUserVirtualCurrency`
+- `UpdateAvatarUrl`
+- `UpdateBans`
+- `UpdateCharacterData` / `UpdateCharacterInternalData` / `UpdateCharacterReadOnlyData` / `UpdateCharacterStatistics`
+- `UpdatePlayerStatistics`
+- `UpdateUserData` / `UpdateUserInternalData` / `UpdateUserPublisherData` / `UpdateUserPublisherInternalData` / `UpdateUserPublisherReadOnlyData` / `UpdateUserReadOnlyData`
+
+## Entity APIs
+
+- `SetProfileLanguage`
+- `SetProfilePolicy`
+- `SetGlobalPolicy`
+- `UpdateFiles` / `DeleteFiles` / `FinalizeFileUploads` / `AbortFileUploads` (Entity Files)
+- `SetObjects` (Entity Objects)
+- `AcceptGroupApplication` / `AcceptGroupInvitation` / `AddMembers` / `ApplyToGroup` / `BlockEntity` / `ChangeMemberRole` / `CreateGroup` / `CreateRole` / `DeleteGroup` / `DeleteRole` / `InviteToGroup` / `RemoveGroupApplication` / `RemoveGroupInvitation` / `RemoveMembers` / `UnblockEntity` / `UpdateGroup` / `UpdateRole` (Groups)
+
+## Admin APIs (excerpt)
+
+- `BanUsers` / `RevokeAllBansForUser` / `RevokeBans` / `UpdateBans`
+- `DeleteMasterPlayerAccount`
+- `DeletePlayer`
+- `ResetPassword` / `SendAccountRecoveryEmail`
+- `UpdatePlayerStatistics`
+- `UpdateUserData` / `UpdateUserInternalData` / `UpdateUserPublisherData` / `UpdateUserPublisherInternalData` / `UpdateUserPublisherReadOnlyData` / `UpdateUserReadOnlyData` / `UpdateUserTitleDisplayName`
+
+For the full up-to-date list, see the [API Reference](/playfab/api-reference).

@@ -1,0 +1,49 @@
+---
+title: "Meters overview"
+sidebarTitle: "Overview"
+description: "The meters PlayFab uses to bill your title."
+icon: "gauge"
+---
+
+PlayFab bills based on meters. Each service has its own set. Meters split into two groups:
+
+- **Core meters** — anything can consume these.
+- **Service-specific meters** — only used when a service is enabled.
+
+For overage rates and included bundles, see the [PlayFab pricing page](https://www.playfab.com/pricing).
+
+## Core meters
+
+| Meter | Description |
+| --- | --- |
+| **Events** — PlayStream | Events processed by the PlayStream pipeline. |
+| **Events** — Telemetry | Events sent directly to the data warehouse. |
+| **Profile reads** | Reads on player, character, entity, or group profiles. See [Profile reads](/playfab/pricing/meters/profile-reads). |
+| **Profile writes** | Writes on player, character, entity, or group profiles. See [Profile writes](/playfab/pricing/meters/profile-writes). |
+| **Profile storage** | Data stored across all profiles. |
+| **Content & Config reads** | Reads on title-level configuration and files. See [Content & Config reads](/playfab/pricing/meters/content-config-reads). |
+| **Content & Config writes** | Writes on title-level configuration and files. See [Content & Config writes](/playfab/pricing/meters/content-config-writes). |
+| **Content & Config storage** | Configuration and file data stored. |
+
+## Service-specific meters
+
+| Service | Meters |
+| --- | --- |
+| **CloudScript** | Execution time (GB-s), total executions. |
+| **Insights** | Performance level, retention, storage. |
+| **Multiplayer Servers** | VM hours, network egress. |
+| **Party** | Player-minutes, network egress. |
+| **Matchmaking / Lobby** | Ticket operations. |
+| **Economy v2** | [Catalog meters](/playfab/pricing/meters/catalog-meters), [Inventory reads](/playfab/pricing/meters/economy-inventory-reads), [Inventory writes](/playfab/pricing/meters/economy-inventory-writes). |
+| **Leaderboards** | [Leaderboard meters](/playfab/pricing/meters/leaderboard-meters). |
+| **Statistics** | [Statistics meters](/playfab/pricing/meters/statistics-meters). |
+
+## How to read a meter
+
+Most meters bill in **operations** or **1 KB blocks**:
+
+- Operation-based: one API call = one tick.
+- Size-based: response or storage is rounded up to the next 1 KB.
+- Storage: bills on **average** consumption for the month, not peak or total.
+
+See [Billing summary](/playfab/pricing/billing-summary) for how to view meter usage on your account.

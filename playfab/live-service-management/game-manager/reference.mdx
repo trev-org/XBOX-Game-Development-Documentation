@@ -1,0 +1,232 @@
+---
+title: "Game Manager reference"
+sidebarTitle: "Reference"
+description: "Tour of every area in Game Manager — Title Overview, Build, Engage, Analyze, plus audit history, billing, and title settings."
+---
+
+This reference familiarizes you with the high-level areas of Game Manager. Create your PlayFab account, sign in, and open a title (even an empty one) so you can follow along.
+
+## About Game Manager
+
+A title in Game Manager is split into four major sections:
+
+- **Title Overview** — recent and overall performance of your title.
+- **Build** — foundational elements and tools to configure your game.
+- **Engage** — tools to connect with players.
+- **Analyze** — monitor and act on player behavior.
+
+## Title Overview
+
+An overview of your title's recent performance.
+
+**Overview** shows your title's basic statistics and any key performance indicators (KPIs) you've assigned. Use the time-period toggles in the upper right:
+
+- **4h** — last 4 hours
+- **24h** — last 24 hours
+- **3d** — last 3 days
+- **7d** — last 7 days
+- **mtd** — current month to date
+
+<Note>
+  All times in Game Manager display in local time.
+</Note>
+
+The tables let you monitor PlayStream events in real time. Metrics include:
+
+- **Unique Users** — average unique players logging in per day.
+- **API Calls** — API calls executed in the selected period.
+- **CloudScript Processing Times** — average CloudScript execution time.
+- **LOGINS** — number of logins in the selected period.
+- **NEW USERS** — new users added in the period.
+- **PURCHASES** — USD value of real-money transactions.
+- **REPORTS** — consolidated critical categories, also available under **Analytics \> Reports**.
+
+## Build
+
+Foundational elements and tools to configure your game.
+
+### Players
+
+Contains settings and data for individual players, including segmentation. The list is sorted by most recent login. Select a record to open the player's overview. Search by **ID**, **Username**, **Display Name**, or **Email**.
+
+The player overview submenu includes:
+
+- **Overview** — basic details and linked-account status.
+- **CloudScript** — view and run CloudScript functions.
+- **Multiplayer** — match history.
+- **PlayStream** — player-generated events.
+- **Purchases** — real-money purchase history.
+- **Statistics** — view and edit player statistics.
+- **Logins** — login history.
+- **Bans** — ban history.
+- **Characters** — owned characters and basic details.
+- **Player Data** — view and edit player data records.
+- **Segments** — segments the player has entered.
+
+### Multiplayer
+
+Configure server hosting and matchmaking.
+
+- **Servers** — PlayFab Thunderhead servers for hosting multiplayer matches in a secure environment.
+- **Matchmaking** — configure queues, match sizes, and statistics.
+- **Party** — create and configure Parties for your title. Requires an Indie, Pro, or Enterprise subscription.
+- **Legacy Multiplayer** — active and archived games, server activity, builds, and game modes.
+
+See [CloudScript quickstart](/playfab/live-service-management/extensions/cloudscript/quickstart).
+
+### Groups
+
+Create and manage groups of players by entity type and ID.
+
+### Automation
+
+Run CloudScript, A/B tests, rules, and scheduled tasks that trigger from events your title generates.
+
+### Add-ons
+
+The control center for partner integrations. Setup instructions vary per add-on. Some require additional billing information. See [Add-ons](/playfab/live-service-management/extensions/add-ons).
+
+## Engage
+
+Tools to connect with your players.
+
+### Economy
+
+Manage the virtual economy of your game.
+
+- **Catalogs** — collections of items, stores, and drop tables.
+- **Items** — items in a catalog. Multiple types are supported.
+- **Stores** — subsets of catalog items with per-store pricing.
+- **Currency** — trackers for currencies that exchange for catalog items.
+
+Related:
+
+- [Catalogs](/playfab/economy/items/catalogs)
+- [Currencies tutorial](/playfab/economy/tutorials/currencies)
+
+### User-generated content
+
+The **UGC** tab displays all published content for your title. When enabled, players can create, discover, and consume content.
+
+- **UGC Items** — items in the public catalog, created by a player, by the title, or on behalf of a player.
+- **Settings** — supported metadata (content types, tags) and elevated permissions for moderators.
+- **Policies** — control client access to Economy APIs.
+
+Related:
+
+- [UGC overview](/playfab/economy/ugc/overview)
+- [UGC quickstart](/playfab/economy/ugc/quickstart)
+
+### Progression
+
+Stats and leaderboards for your title. Configure [Statistics](/playfab/player-progression/statistics) and [Leaderboards](/playfab/community/leaderboards). You can link a leaderboard to a stat so one call updates both.
+
+### Content
+
+Tools for engaging with players via news, remote configuration, and files.
+
+- **Title Data** — key/value store you can change after launch. Accessible from all API sets. Internal data is hidden from clients and only available to servers.
+- **Title News** — news posts for your title. Add languages as needed.
+- **File Management** — upload files served through the CDN. Handling delays vary by file type.
+- **Email Templates** — create and manage email templates.
+- **Push Notification Templates** — create and manage push templates.
+
+#### Add or edit title data keys
+
+1. Enter a **Key** (keys must be unique).
+2. Enter a **Value** (strings up to 10 KB).
+3. Select the orange **SAVE TITLE DATA** button under the table.
+
+#### Remove title data keys
+
+1. Check the row(s) you want to remove.
+2. Select **X Remove** above the table.
+3. Select **SAVE TITLE DATA**.
+
+## Analyze
+
+Monitor and act on player behavior.
+
+### Dashboards
+
+View trends, run reports, and perform diagnostics.
+
+### Data
+
+- **Trends** — statistics over 7 days to 26 months. The graph shows classic retention (new players who returned). The 30-day retention report includes both new and returning players.
+- **Event History** — search event history by event name, date range, or value.
+- **Reports** — downloadable reports based on player data and statistics. Request custom reports on the [community forums](https://community.playfab.com/spaces/24/index.html).
+- **Webhooks** — forward some or all PlayStream events to any web URL as JSON via POST.
+
+## Audit history and billing
+
+Every action in Game Manager is logged in the audit history. Open it from **Settings \> Title audit history**. Select an entry for full details, or use the **SEARCH** button to filter.
+
+- **Event time** — time and author of the change.
+- **Log type** — the kind of change.
+- **String change** and **Value** — short details.
+- **View** — full JSON description.
+
+**Billing** shows your contact information and the credit card PlayFab invoices reference. See [Audit logs](/playfab/live-service-management/game-manager/audit-logs) for details.
+
+## Title settings
+
+Open the settings from the Settings menu.
+
+- **General** — basic info such as player display names and the title's default language.
+- **API Features** — configure API behavior. See [API feature settings](/playfab/live-service-management/game-manager/api-features).
+- **Secret Keys** — create and manage secret keys. See [Secret key management](/playfab/live-service-management/game-manager/secret-keys).
+- **Email Preferences** — subscription and Reply-To addresses.
+- **Push Notifications** — configure notifications for Android and iOS.
+- **Limits** — set limits on PlayFab features for your title.
+- **Client Profile Options** — what clients can access and configure for the title.
+
+<Warning>
+  Never share your PlayFab secret key with anyone — doing so can compromise your title.
+</Warning>
+
+## Other basic actions
+
+### Edit profile settings
+
+1. From the drop-down in the upper-right corner, select **My Profile**.
+2. Set your name, password, phone number, and time zone. Enable **Two-Factor Authentication** if you want it.
+3. Select **Save Profile**.
+
+### View PlayFab news
+
+New notifications appear on the bell icon in the upper right. Select the icon to view news from the PlayFab team, sorted by most recent. News covers new features, API updates, and service outages.
+
+### Create and edit studios and titles
+
+**Add a new studio:**
+
+1. Select the PlayFab icon to open **My Studios and Titles**.
+2. Select **NEW STUDIO**.
+3. Enter a **Studio Name** and **Authentication provider**.
+4. Save.
+
+**Edit an existing studio:**
+
+1. Open the ellipsis menu next to the studio name and choose **Studio settings**.
+2. Make edits and select **Save Studio**.
+
+**Add a new title:**
+
+1. From the drop-down next to the studio name, select **New title**.
+2. Enter details and select **CREATE TITLE**.
+
+**Edit an existing title:**
+
+1. Select the gear icon on the title name and choose **Edit title info**.
+2. Make edits and save.
+
+### User accounts
+
+User accounts can be individual or Admin-level. Admin accounts have access to one or more sections across one or more titles in a studio, and can fully configure studio and title information.
+
+1. From the drop-down next to your studio name, select **Studio users**.
+2. Choose **ADD USER**. Check the box to grant Admin rights.
+3. Remove accounts from the **Users** page with **Remove**.
+
+If the invited user doesn't have a PlayFab Admin account, an email is sent to the address you provide. On confirmation, the account gains studio and title access.

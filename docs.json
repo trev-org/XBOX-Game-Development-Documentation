@@ -888,75 +888,271 @@
             "pages": [
               "playfab/overview",
               {
-                "group": "Identity",
-                "icon": "user-check",
+                "group": "PlayFab Fundamentals",
+                "icon": "book",
+                "pages": []
+              },
+              {
+                "group": "Get started",
+                "icon": "rocket",
                 "pages": [
-                  "playfab/identity",
-                  "playfab/sign-in-concepts",
-                  "playfab/player-sign-in",
-                  "playfab/developer-identity"
+                  "playfab/get-started/what-is-playfab",
+                  "playfab/get-started/concepts",
+                  "playfab/get-started/foundation-mode-overview",
+                  "playfab/get-started/foundation-mode-onboarding"
                 ]
               },
               {
-                "group": "Live service management",
-                "icon": "sliders",
+                "group": "PlayFab services",
+                "icon": "layer-group",
                 "pages": [
-                  "playfab/live-service-management",
-                  "playfab/game-manager",
-                  "playfab/experiments",
-                  "playfab/cloudscript"
+                  {
+                    "group": "Identity",
+                    "icon": "user-check",
+                    "pages": [
+                      "playfab/identity/overview",
+                      {
+                        "group": "Player identity",
+                        "icon": "user",
+                        "pages": [
+                          "playfab/identity/player-identity/authentication",
+                          {
+                            "group": "Player login",
+                            "icon": "right-to-bracket",
+                            "pages": [
+                              "playfab/identity/player-identity/login/overview",
+                              "playfab/identity/player-identity/login/best-practices",
+                              "playfab/identity/player-identity/login/multiple-logins",
+                              "playfab/identity/player-identity/login/quickstart"
+                            ]
+                          },
+                          {
+                            "group": "Platform-specific authentication",
+                            "icon": "gamepad",
+                            "pages": [
+                              "playfab/identity/player-identity/platform-specific-authentication/overview",
+                              "playfab/identity/player-identity/platform-specific-authentication/http-server-testing",
+                              "playfab/identity/player-identity/platform-specific-authentication/apple",
+                              "playfab/identity/player-identity/platform-specific-authentication/battlenet-html5",
+                              "playfab/identity/player-identity/platform-specific-authentication/facebook-html5",
+                              "playfab/identity/player-identity/platform-specific-authentication/facebook-unity",
+                              "playfab/identity/player-identity/platform-specific-authentication/google-html5",
+                              "playfab/identity/player-identity/platform-specific-authentication/google-play-games-unity",
+                              {
+                                "group": "Google Play Games migration",
+                                "icon": "arrow-right-arrow-left",
+                                "pages": [
+                                  "playfab/identity/player-identity/platform-specific-authentication/google-play-games-migration/overview",
+                                  "playfab/identity/player-identity/platform-specific-authentication/google-play-games-migration/steps",
+                                  "playfab/identity/player-identity/platform-specific-authentication/google-play-games-migration/fallback"
+                                ]
+                              },
+                              "playfab/identity/player-identity/platform-specific-authentication/kongregate-html5",
+                              "playfab/identity/player-identity/platform-specific-authentication/kongregate-unity",
+                              "playfab/identity/player-identity/platform-specific-authentication/steam-unity",
+                              "playfab/identity/player-identity/platform-specific-authentication/twitch-html5",
+                              "playfab/identity/player-identity/platform-specific-authentication/uwp",
+                              "playfab/identity/player-identity/platform-specific-authentication/uwp-integration",
+                              "playfab/identity/player-identity/platform-specific-authentication/xbox-live",
+                              "playfab/identity/player-identity/platform-specific-authentication/anonymous-login"
+                            ]
+                          },
+                          {
+                            "group": "Player encryption",
+                            "icon": "lock",
+                            "pages": [
+                              "playfab/identity/player-identity/encryption/player-encryption-services",
+                              "playfab/identity/player-identity/encryption/encrypted-logins"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Developer identity",
+                        "icon": "user-shield",
+                        "pages": [
+                          "playfab/identity/developer-identity/create-account",
+                          {
+                            "group": "Authentication",
+                            "icon": "shield-check",
+                            "pages": [
+                              "playfab/identity/developer-identity/authentication/entra-id-game-manager",
+                              "playfab/identity/developer-identity/authentication/entra-id-apis",
+                              "playfab/identity/developer-identity/authentication/two-factor"
+                            ]
+                          },
+                          {
+                            "group": "Permissions",
+                            "icon": "user-lock",
+                            "pages": [
+                              "playfab/identity/developer-identity/permissions/user-roles"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Live service management",
+                    "icon": "sliders",
+                    "pages": [
+                      "playfab/live-service-management",
+                      {
+                        "group": "Game Manager",
+                        "icon": "gauge",
+                        "pages": [
+                          "playfab/live-service-management/game-manager/overview",
+                          "playfab/live-service-management/game-manager/quickstart",
+                          "playfab/live-service-management/game-manager/sign-in",
+                          "playfab/live-service-management/game-manager/reference",
+                          "playfab/live-service-management/game-manager/api-features",
+                          "playfab/live-service-management/game-manager/audit-logs",
+                          "playfab/live-service-management/game-manager/api-access-policy",
+                          "playfab/live-service-management/game-manager/secret-keys"
+                        ]
+                      },
+                      {
+                        "group": "Game server configuration",
+                        "icon": "server",
+                        "pages": [
+                          "playfab/live-service-management/game-server-configuration/overview",
+                          {
+                            "group": "Entity model",
+                            "icon": "cubes",
+                            "pages": [
+                              "playfab/live-service-management/game-server-configuration/entity-model/overview",
+                              "playfab/live-service-management/game-server-configuration/entity-model/quickstart",
+                              {
+                                "group": "Concepts",
+                                "icon": "book",
+                                "pages": [
+                                  "playfab/live-service-management/game-server-configuration/entity-model/available-built-in-entity-types",
+                                  "playfab/live-service-management/game-server-configuration/entity-model/migration-information",
+                                  "playfab/live-service-management/game-server-configuration/entity-model/entity-files",
+                                  "playfab/live-service-management/game-server-configuration/entity-model/entity-objects"
+                                ]
+                              },
+                              {
+                                "group": "Tutorials",
+                                "icon": "graduation-cap",
+                                "pages": [
+                                  "playfab/live-service-management/game-server-configuration/entity-model/entity-groups",
+                                  "playfab/live-service-management/game-server-configuration/entity-model/api-restructure-upgrade"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Economy, Monetization, & UGC",
+                    "icon": "coins",
+                    "pages": [
+                      "playfab/economy",
+                      "playfab/microsoft-store",
+                      "playfab/ugc",
+                      "playfab/marketplace-integrations",
+                      "playfab/fraud-prevention"
+                    ]
+                  },
+                  {
+                    "group": "Multiplayer",
+                    "icon": "users",
+                    "pages": [
+                      "playfab/multiplayer-lobby",
+                      "playfab/multiplayer-servers",
+                      "playfab/party",
+                      "playfab/party-voice"
+                    ]
+                  },
+                  {
+                    "group": "Community",
+                    "icon": "comments",
+                    "pages": [
+                      "playfab/community",
+                      "playfab/friends-groups",
+                      "playfab/community-leaderboards",
+                      "playfab/voice-chat"
+                    ]
+                  },
+                  {
+                    "group": "Player progression",
+                    "icon": "chart-line",
+                    "pages": [
+                      "playfab/player-progression",
+                      "playfab/leaderboards-stats",
+                      "playfab/game-saves"
+                    ]
+                  },
+                  {
+                    "group": "Game data",
+                    "icon": "magnifying-glass-chart",
+                    "pages": [
+                      "playfab/analytics",
+                      "playfab/telemetry-keys",
+                      "playfab/data-connections",
+                      "playfab/actions-rules",
+                      "playfab/insights-analytics"
+                    ]
+                  }
                 ]
               },
               {
-                "group": "Economy, Monetization, & UGC",
-                "icon": "coins",
+                "group": "Recipes and samples",
+                "icon": "code",
                 "pages": [
-                  "playfab/economy",
-                  "playfab/microsoft-store",
-                  "playfab/ugc",
-                  "playfab/marketplace-integrations",
-                  "playfab/fraud-prevention"
+                  "playfab/recipes-samples/overview",
+                  "playfab/recipes-samples/recipes",
+                  "playfab/recipes-samples/playfab-samples",
+                  "playfab/recipes-samples/multiplayer-servers-samples",
+                  "playfab/recipes-samples/party-samples"
                 ]
               },
               {
-                "group": "Multiplayer",
-                "icon": "users",
+                "group": "Pricing",
+                "icon": "tag",
                 "pages": [
-                  "playfab/multiplayer-lobby",
-                  "playfab/multiplayer-servers",
-                  "playfab/party",
-                  "playfab/party-voice"
+                  "playfab/pricing/overview",
+                  "playfab/pricing/billing-summary",
+                  "playfab/pricing/development-mode",
+                  "playfab/pricing/account-upgrades",
+                  "playfab/pricing/title-launches",
+                  "playfab/pricing/support",
+                  "playfab/pricing/consumption-best-practices",
+                  {
+                    "group": "Meters",
+                    "icon": "gauge",
+                    "pages": [
+                      "playfab/pricing/meters/overview",
+                      "playfab/pricing/meters/profile-reads",
+                      "playfab/pricing/meters/profile-writes",
+                      "playfab/pricing/meters/content-config-reads",
+                      "playfab/pricing/meters/content-config-writes",
+                      "playfab/pricing/meters/economy-inventory-reads",
+                      "playfab/pricing/meters/economy-inventory-writes",
+                      "playfab/pricing/meters/catalog-meters",
+                      "playfab/pricing/meters/leaderboard-meters",
+                      "playfab/pricing/meters/statistics-meters"
+                    ]
+                  }
                 ]
               },
               {
-                "group": "Community",
-                "icon": "comments",
+                "group": "Demo game",
+                "icon": "gamepad",
                 "pages": [
-                  "playfab/community",
-                  "playfab/friends-groups",
-                  "playfab/community-leaderboards",
-                  "playfab/voice-chat"
+                  "playfab/demo-game/winter-starfall",
+                  "playfab/demo-game/source-code-and-best-practices",
+                  "playfab/demo-game/vanguard-outrider"
                 ]
               },
+              "playfab/whats-new",
               {
-                "group": "Player progression",
-                "icon": "chart-line",
-                "pages": [
-                  "playfab/player-progression",
-                  "playfab/leaderboards-stats",
-                  "playfab/game-saves"
-                ]
-              },
-              {
-                "group": "Game data",
-                "icon": "magnifying-glass-chart",
-                "pages": [
-                  "playfab/analytics",
-                  "playfab/telemetry-keys",
-                  "playfab/data-connections",
-                  "playfab/actions-rules",
-                  "playfab/insights-analytics"
-                ]
+                "group": "SDKs",
+                "icon": "cube",
+                "pages": []
               }
             ]
           }

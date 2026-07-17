@@ -1,0 +1,149 @@
+---
+title: "Source code and best practices"
+sidebarTitle: "Source code and best practices"
+description: "Download and run Winter Starfall locally, and walk through its login and purchase flows."
+icon: "code"
+keywords: ["PlayFab", "Winter Starfall", "source code", "login", "purchase", "CloudScript"]
+---
+
+This walkthrough shows how to run [Winter Starfall](https://github.com/PlayFab/winter-starfall) locally and how its login and purchase flows are built. Use it as a reference when wiring the same patterns into your own game.
+
+## Run it locally
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+
+### Setup
+
+1. Clone the source from [GitHub](https://github.com/PlayFab/winter-starfall).
+2. Open the `/website` folder in VS Code and install the recommended extensions when prompted.
+3. From `/website`, run `npm install`.
+4. Run `npm run dev` and open the URL it prints.
+
+### Azure credentials
+
+The CloudScript functions run on Azure Functions, so you'll need an Azure account. To refresh the `AZURE_CREDENTIALS` secret, run this in the Azure Portal shell:
+
+```bash
+az ad sp create-for-rbac \
+  --name "WinterStarfall" \
+  --role contributor \
+  --scopes /subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP_NAME \
+  --json-auth
+```
+
+<Note>
+  Don't have an Azure account yet? Grab a [free one](https://azure.microsoft.com/pricing/purchase-options/azure-account).
+</Note>
+
+## Login flow
+
+Signing a player in happens in two steps: authenticate, then load the player's state.
+
+### 1. Authenticate the player
+
+[`use-login.ts`](https://github.com/PlayFab/winter-starfall/blob/main/website/src/hooks/use-login.ts) wraps PlayFab's login APIs. Here's the email login callback:
+
+```typescript
+const onLogin = useCallback(() => {
+    setIsLoading(true);
+    setLoginMethodInProgress("email");
+
+    dispatch(siteSlice.actions.loginSteps(loginEventCount));
+
+    ClientLoginWithEmailAddress({ Email: data.email, Password: data.password })
+        .then(result => {
+            dispatch(siteSlice.actions.login(result));
+            dispatch(siteSlice.actions.loginStepsAdvance());
+            trackEvent({ name: "Returning User", properties: {} });
+        })
+        .then(() => postLoginFunctions())
+        .then(() => {
+            setIsLoading(false);
+            navigate(routes.Explore());
+        })
+        .catch(problem => {
+            dispatch(siteSlice.actions.loginStepsReset());
+            onError(problem);
+        })
+        .finally(() => dispatch(siteSlice.actions.loginStepsReset()));
+}, [/* deps */]);
+```
+
+Winter Starfall offers three **recoverable** sign-in methods — email, Google, and Facebook — so a player can always get back into their account. Recoverable sign-in is a best practice: avoid device-only IDs as the only login method.
+
+### 2. Load player state
+
+Once login succeeds, `postLoginFunctions` runs a chain of API calls to load everything the game needs:
+
+```typescript
+ClientGetTitleData({ Keys: TITLE_DATA_KEYS_ALL })
+    .then(result => { /* store title data */ })
+    .then(() => EconomySearchItems({
+        Count: SEARCH_ITEMS_MAX_COUNT,
+        Filter: "type eq 'currency' or type eq 'catalogItem'",
+    }))
+    .then(result => { /* store catalog */ })
+    .then(() => EconomyGetInventoryItems({ Count: SEARCH_ITEMS_MAX_COUNT }))
+    .then(result => { /* store inventory */ })
+    .then(() => ClientGetUserData({ Keys: USER_DATA_KEYS_PLAYER_ALL }))
+    .then(result => { /* store player data */ })
+    .then(() => ClientGetUserReadOnlyData({ Keys: USER_DATA_KEYS_READONLY_ALL }))
+    .then(result => { /* store read-only data */ });
+```
+
+What each call does:
+
+- `ClientGetTitleData` — pulls title-wide config (multipliers, story scripts, etc.).
+- `EconomySearchItems` — loads currencies and catalog items.
+- `EconomyGetInventoryItems` — loads the player's inventory.
+- `ClientGetUserData` — loads the player's saved state (story location, party).
+- `ClientGetUserReadOnlyData` — loads server-authored read-only data.
+
+## Purchase flow
+
+When a player enters a store, the game looks it up by friendly ID and populates the item list from the catalog. See [`use-store.ts`](https://github.com/PlayFab/winter-starfall/blob/main/website/src/hooks/use-store.ts):
+
+```typescript
+EconomyGetItem({
+    AlternateId: { Type: FRIENDLYID, Value: storeName },
+})
+    .then(results => {
+        dispatch(siteSlice.actions.storeAdd(results.Item));
+    });
+```
+
+When the player buys something, the client calls `PurchaseInventoryItems` (wrapped in [`use-playfab.ts`](https://github.com/PlayFab/winter-starfall/blob/main/website/src/hooks/use-playfab.ts)).
+
+### Selling with CloudScript
+
+Economy V2 doesn't include a built-in "sell at a discount" flow, so Winter Starfall uses CloudScript to handle it. That way the sell multiplier stays on the server — players can't tamper with the sale price.
+
+[`SellItem.cs`](https://github.com/PlayFab/winter-starfall/blob/main/azure-functions/SellItem.cs) reads the multiplier from title data and calculates the sale price:
+
+```csharp
+var titleData = await PlayFabFunctions.GetTitleDataAsync(
+    player, new List<string> { TitleDataKeys.Multipliers }, log);
+
+var sellMultiplier = JsonConvert
+    .DeserializeObject<Multipliers>(titleData[TitleDataKeys.Multipliers])?.sell ?? 1;
+```
+
+The client invokes it through `CloudScriptExecuteFunction`, then refreshes the inventory:
+
+```typescript
+CloudScriptExecuteFunction({
+    FunctionName: "SellItem",
+    FunctionParameter: { ItemId: itemId, Amount: amount },
+})
+    .then(() => EconomyGetInventoryItems({ Count: SEARCH_ITEMS_MAX_COUNT }))
+    .then(data => dispatch(siteSlice.actions.inventory(data.Items)));
+```
+
+## Next steps
+
+- Learn more about the [Winter Starfall demo](/playfab/demo-game/winter-starfall).
+- Try the [legacy Vanguard Outrider demo](/playfab/demo-game/vanguard-outrider).
+- Explore the full [Winter Starfall source on GitHub](https://github.com/PlayFab/winter-starfall).

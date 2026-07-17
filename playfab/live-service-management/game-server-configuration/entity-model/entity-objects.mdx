@@ -1,0 +1,60 @@
+---
+title: "Use entity objects to store player data"
+sidebarTitle: "Entity objects"
+description: "Read and write small JSON-serializable objects attached to an entity. GetObjects and SetObjects work on every entity type."
+---
+
+Entity objects let you read and write small JSON-serializable objects attached to an entity. All entity types support the same `GetObjects` and `SetObjects` methods.
+
+The following examples set and read an object on a `title_player_account`.
+
+**Set an object:**
+
+```csharp
+var data = new Dictionary<string, object>()
+{
+    {"Health", 100},
+    {"Mana", 10000}
+};
+var dataList = new List<SetObject>()
+{
+    new SetObject()
+    {
+        ObjectName = "PlayerData",
+        DataObject = data
+    },
+    // A free-tier customer may store up to 3 objects on each entity
+};
+PlayFabDataAPI.SetObjects(new SetObjectsRequest()
+{
+    Entity = new EntityKey {Id = entityId, Type = entityType},
+    Objects = dataList,
+}, (setResult) => {
+    Debug.Log(setResult.ProfileVersion);
+}, OnPlayFabError);
+```
+
+**Read objects:**
+
+```csharp
+var getRequest = new GetObjectsRequest {Entity = new EntityKey {Id = entityId, Type = entityType}};
+PlayFabDataAPI.GetObjects(getRequest,
+    result => { var objs = result.Objects; },
+    OnPlayFabError
+);
+```
+
+## Game Manager and entities
+
+Game Manager lets you inspect and edit objects and files for players. The player overview shows both the title player and master player account information. The **Players** tab has separate sections for files and objects.
+
+## Related features
+
+Entity objects and files are used across several PlayFab features, each scoped to a different entity type:
+
+| Feature | Entity types | Use case |
+| --- | --- | --- |
+| [Game Server Configuration](/playfab/live-service-management/game-server-configuration/overview) | `game_server` | Server-side settings and server-authoritative data |
+| [Title Data](/playfab/live-service-management/title-data/overview) | `namespace`, `title` | Global key/value configuration shared across all players |
+| [Player Data](/playfab/player-progression/player-data) | `title_player_account`, `master_player_account`, `character` | Per-player profile, progress, and preference storage |
+| [Groups](/playfab/community/associations/groups/overview) | `group` | Data shared within a player group or guild |

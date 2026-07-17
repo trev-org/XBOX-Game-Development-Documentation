@@ -1,0 +1,45 @@
+---
+title: "Entities migration information"
+sidebarTitle: "Migration information"
+description: "Move from the legacy account and data systems to PlayFab entities — what changes, what stays the same, and updated terminology."
+---
+
+The entity API introduces new access patterns designed to reduce pain points of the legacy account and data systems.
+
+This information is useful if you've been using these methods for title, player, or character data.
+
+**Title access:**
+
+- `client/GetTitleData`
+- `admin/GetTitleData`
+- `server/GetTitleData`
+
+**Player access:**
+
+- `client/GetUserReadOnlyData`
+- `client/UpdateUserData`
+- `client/UpdateUserPublisherData`
+
+**Character access:**
+
+- `client/GetCharacterData`
+- `client/UpdateCharacterData`
+
+With the entities API, a single method saves data values for title, player, and character entity types. The API provides access rules that replicate and expand the current system's behavior with a better interface.
+
+These changes aren't fully backward compatible. However, you can add entity API calls without changing the behavior of your existing APIs.
+
+## Terminology
+
+| Term | Description |
+| --- | --- |
+| **title** | Unchanged. Your title may contain global information available to all players (similar to `TitleData`). Identified by the game's `TitleId`. |
+| **master\_player\_account** | Lets you share player information across games within a studio (similar to `UserPublisherData`). Identified by the player's `PlayFabId`, returned on any login. |
+| **title\_player\_account** | Based on user/player in the existing APIs. Each player can contain title-specific information (similar to `GetUserData`). Identified by the `EntityKey.Id` returned on any login where `LoginTitlePlayerAccountEntity` is `True`. |
+| **character** | Unchanged. Your player may own characters that each contain some information (similar to `CharacterData`). Identified by `CharacterId`. |
+| **PlayFabId** | Formerly covered both `master_player_account` and `title_player_account`. Separating these concepts simplifies the functionality. A player can interact with multiple titles in the same studio — each title has its own `title_player_account`, but the studio identifies the same player as a single `master_player_account`. This enables cross-promotion of games and cross-game rewards. |
+
+## See also
+
+- [Introducing Entities, Objects and Files](https://blog.playfab.com/blog/introducing-entities-objects-and-files) on the PlayFab blog.
+- [Entities quickstart](/playfab/live-service-management/game-server-configuration/entity-model/quickstart)

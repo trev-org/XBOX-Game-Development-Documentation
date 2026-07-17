@@ -5,147 +5,59 @@ icon: "sliders"
 description: "Run a live game with PlayFab: player segments, Rules, scheduled tasks, A/B experiments, content groups, and remote configuration."
 ---
 
-A live game ships, but the work doesn't end — you tune economy, run events, A/B-test features, react to retention issues, and patch design without app updates. PlayFab's live-service tooling sits on top of the data and identity primitives.
+PlayFab's live service management features help you operate a live game after launch. Use them to update configuration remotely, segment your player base, run experiments, and communicate with your players.
+
+## Game Manager
+
+The [Game Manager](/playfab/live-service-management/game-manager) web portal is a centralized hub where studio members build, configure, and operate their games. It provides developer authentication with roles and access permissions to keep game operations secure.
+
+## Game configuration and title data
+
+PlayFab lets you manage game configuration and title data remotely. Update game settings without shipping a patch, so players get changes right away.
+
+- [Game server configuration](/playfab/live-service-management/game-server-configuration) — server-side configuration and the Entity Model.
+- [Title Data](/playfab/live-service-management/title-data) — key/value settings you can change without a client update.
+
+## Player segmentation and experimentation
+
+PlayFab provides tools for grouping your player base and targeting specific groups for configuration changes and A/B testing.
+
+- [Segments](/playfab/live-service-management/segments) — group players by behavior or attributes.
+- [Experiments](/playfab/live-service-management/experiments) — run split tests on player segments to determine the best outcomes.
+
+## Title communications
+
+Communicate with your players using push notifications, emails, and message-of-the-day pop-ups. See [Title communications](/playfab/live-service-management/title-communications).
+
+## Throttling and extensions
+
+- [Throttling](/playfab/live-service-management/throttling) — PlayFab's per-title rate limits and how to design around them.
+- [Extensions](/playfab/live-service-management/extensions) — add-ons, CloudScript, and Azure Functions.
 
 ## In this section
 
 <CardGroup cols={2}>
-  <Card title="Game Manager" icon="gauge" href="/playfab/game-manager">
-    The developer portal for configuring your title — API feature settings, API access policy, audit logs, and secret key management.
+  <Card title="Game Manager" icon="gauge" href="/playfab/live-service-management/game-manager">
   </Card>
 
-  <Card title="Experiments" icon="flask" href="/playfab/experiments">
-    A/B and multivariate testing with scorecard metrics, exclusion groups, and integration with segments and title data.
+  <Card title="Game server configuration" icon="server" href="/playfab/live-service-management/game-server-configuration">
   </Card>
 
-  <Card title="CloudScript & Azure Functions" icon="code" href="/playfab/cloudscript">
-    Server-authoritative logic — grant items, validate scores, chain APIs — via CloudScript (JS) or Azure Functions (any language).
+  <Card title="Title Data" icon="database" href="/playfab/live-service-management/title-data">
   </Card>
 
-  <Card title="Insights & analytics" icon="chart-pie" href="/playfab/analytics">
-    The data plane feeding your segments, experiments, and dashboards.
+  <Card title="Title communications" icon="envelope" href="/playfab/live-service-management/title-communications">
+  </Card>
+
+  <Card title="Segments" icon="users" href="/playfab/live-service-management/segments">
+  </Card>
+
+  <Card title="Experiments" icon="flask" href="/playfab/live-service-management/experiments">
+  </Card>
+
+  <Card title="Throttling" icon="gauge-high" href="/playfab/live-service-management/throttling">
+  </Card>
+
+  <Card title="Extensions" icon="puzzle-piece" href="/playfab/live-service-management/extensions">
   </Card>
 </CardGroup>
-
-## Player segments
-
-A **segment** is a saved query over the player population. Segments are computed continuously — a player moves in and out automatically as their state changes.
-
-Define segments by:
-
-- Player properties (country, language, account age, last-seen date).
-- Statistics (level, total-spent, days-active).
-- Linked accounts (has-XBOX, has-Steam).
-- Inventory (owns-DLC, has-currency-balance \> N).
-- Tags (custom labels you apply).
-- Membership in other segments.
-
-Use segments for:
-
-- Targeting messages and rewards.
-- Driving Rules (player-action triggers).
-- Scoping A/B experiments.
-- Reporting and dashboards.
-
-## Rules — event-triggered actions
-
-A **Rule** runs in response to a PlayStream event. When the matching event fires for a player, the rule's action runs server-side.
-
-Common actions:
-
-- Grant currency / items.
-- Execute a CloudScript handler.
-- Send a push notification or email.
-- Add or remove a tag.
-
-Example: when a player crosses level 50 (statistic\_updated event), grant a celebratory bundle.
-
-Rules can be scoped to a segment so they only fire for matching players.
-
-## Scheduled tasks
-
-**Scheduled tasks** run on a schedule — daily, weekly, or cron-style. Use them for:
-
-- Daily / weekly leaderboard resets (`IncrementLeaderboardVersion`).
-- Cohort-wide reward grants.
-- Maintenance jobs (cleanup, audit).
-- Scheduled CloudScript invocations.
-
-Tasks can target a segment to operate on filtered populations.
-
-## A/B experiments
-
-**Experiments** randomly assign players to variants and track outcomes. See [Experiments](/playfab/experiments) for the full workflow — scorecard metrics, exclusion groups, and how to integrate experiments with segments, title data, and CloudScript. In brief:
-
-1. Define an experiment with N variants.
-2. Choose the player segment to enroll.
-3. Players are assigned a variant at sign-in (deterministically, based on player ID).
-4. Query the variant client-side via `GetTreatmentAssignment` and branch behavior.
-5. Compare scorecard metrics in the Experiments dashboard to evaluate.
-
-## Remote configuration
-
-Use **Title Data** for tunable values that change without an app update:
-
-```cpp
-// Pseudo-code
-GetTitleData({ "daily_login_reward", "shop_rotation_seed", "event_id" });
-```
-
-Title Data is cached client-side. Refresh on launch and at strategic gameplay milestones.
-
-For segment-targeted Title Data (different values per cohort), use **Title Data Overrides**.
-
-## Content groups
-
-**Content groups** are versioned bundles of files served from PlayFab CDN. Use them to ship:
-
-- LiveOps event assets (banners, sound effects).
-- Patch-day content drops (without an app update).
-- Region-specific assets.
-
-Clients query the group, get URLs, and download assets directly from CDN.
-
-## Insights and analytics
-
-[PlayFab Insights](/playfab/analytics) is the data layer for live ops. From the same event stream that drives Rules, you can build dashboards measuring:
-
-- Retention (D1, D7, D30).
-- ARPU / ARPPU.
-- Conversion funnels.
-- A/B experiment results.
-- Cohort behavior over time.
-
-Insights uses Kusto Query Language (KQL); the data explorer in Game Manager has prebuilt templates.
-
-## Throttling and quotas
-
-Every PlayFab API is subject to per-title and per-player throttles. Under sustained load PlayFab may return `TooManyRequests` (HTTP 429). Design defensively:
-
-- Batch reads (`GetPlayerStatistics` returns many stats in one call).
-- Cache Title Data on the client between refresh points.
-- Move hot server-side logic into CloudScript / Azure Functions so it runs behind PlayFab's throttle boundary rather than as N client calls.
-
-Rate limits and quotas per API family are published in the Game Manager **Limits** page for your title tier.
-
-## Extensions: add-ons and automation
-
-- **Add-ons** — first-party integrations exposed as toggles in Game Manager (Xbox Live title association, Facebook, Steam, Twitch, Segment, Amplitude, PubNub, and more). Enable, paste credentials, done.
-- **CloudScript** — server-side JavaScript / TypeScript run inside PlayFab. Best for lightweight validation, item grants, and multi-API orchestration. See [CloudScript & Azure Functions](/playfab/cloudscript).
-- **Azure Functions** — for anything CloudScript can't do (long-running work, arbitrary language, larger memory footprints). Runs in your Azure subscription and is called by PlayFab through a signed webhook.
-
-## Operational best practices
-
-1. **Define segments before you need them** — retro-segmenting is hard.
-2. **Use Tags for hand-curated cohorts** — employees, VIPs, beta testers.
-3. **Plan event timing centrally** — don't let multiple teams ship overlapping events.
-4. **Build A/B literacy** — require experiment \+ win-condition for any contentious balance change.
-5. **Monitor PlayStream throughput** — event volume scales with your DAU; budget for it.
-
-## See also
-
-- [Game Manager](/playfab/game-manager) — the developer portal
-- [Experiments](/playfab/experiments) — A/B testing with scorecards
-- [CloudScript & Azure Functions](/playfab/cloudscript) — server-authoritative extensions
-- [Insights & analytics](/playfab/analytics) — event data feeding segments and experiments
-- [CloudScript reference](/reference/playfab-cloudscript)

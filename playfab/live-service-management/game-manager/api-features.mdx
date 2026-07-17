@@ -1,0 +1,49 @@
+---
+title: "API feature settings"
+sidebarTitle: "API feature settings"
+description: "Manage the behavior of PlayFab APIs for your title — JSON validation, disabling API access, IP address obfuscation, and more."
+---
+
+The **API Features** page in Game Manager gives you a small set of options that control how PlayFab APIs behave for your title. Use these settings to manage access, privacy, and title-wide feature toggles.
+
+Open it in Game Manager: **Settings \> API Features**.
+
+<Note>
+  Several demonstrations in this guide use [Postman](/playfab/sdks/postman/quickstart).
+</Note>
+
+## Require valid JSON for custom data values
+
+Hacked or rogue clients can post badly formatted data, producing noise, bugs, and cleanup work.
+
+When this flag is set, PlayFab performs basic content-type validation before saving data. Each key across all custom data — player, publisher, character, title, and item data — must be valid JSON.
+
+<Note>
+  This flag can be toggled on or off at any time, but it isn't retroactive. Existing values aren't validated — only newly written values.
+</Note>
+
+If a client submits invalid JSON, PlayFab returns `HTTP 400 Bad Request`.
+
+Simple JSON validation won't prevent every issue, but it catches many common problems early.
+
+## Disable all API request access
+
+It can be useful to disable all API access to your title — for a sensitive migration with downtime, or to retire the title cleanly.
+
+<Warning>
+  Checking this option literally breaks your game. Use with caution.
+</Warning>
+
+After you check the box, API requests start failing within a few minutes. PlayFab returns `HTTP 400 Bad Request`, indicating the title disabled such usage. Uncheck the box to restore access; the change also takes a few minutes to propagate.
+
+## Enable player IP address obfuscation
+
+For many studios, storing personally identifiable information (PII) is a liability. A player's full IP address is often considered PII, even though IP is useful for coarse geolocation.
+
+With obfuscation enabled, PlayFab records `0` for the last octet of every player's IP. Verify in the **Players** tab — every IP should end in `.0`. IPs recorded before the setting was enabled aren't changed retroactively.
+
+## Additional flags
+
+The API Features page includes other title-wide toggles. Enabling client-authoritative features increases convenience at the expense of security. Enable them only when you understand the risk.
+
+Save your changes with the **Save** button at the bottom of the page.

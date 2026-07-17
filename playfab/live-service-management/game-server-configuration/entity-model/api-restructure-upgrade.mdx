@@ -1,0 +1,121 @@
+---
+title: "Entity API restructure upgrade tutorial"
+sidebarTitle: "API restructure upgrade"
+description: "How the legacy PlayFabEntityModel API group was reorganized into six coherent API groups, and how to update your code."
+---
+
+PlayFab restructured the APIs that were lumped under the Entity API group into coherent logical groups. This makes them easier to use both in the documentation site and in the PlayFab SDKs.
+
+If you're using the entity-based APIs, you need to update your code when you upgrade your SDKs.
+
+## Prerequisites
+
+This upgrade guide applies if:
+
+1. You use the entity-based PlayFab APIs.
+2. You've upgraded to a PlayFab SDK published on 8/9/2018 or later.
+
+<Note>
+  There are no service-level changes. Existing titles using old SDKs continue to work without any change.
+</Note>
+
+## How to upgrade
+
+The `PlayFabEntityModel` API group was separated into six logical API groups (mapped in Appendix 1 below). The classic API mapping isn't affected.
+
+## Upgrade example: C# SDK
+
+**Step 1.** Change any `using` statements that reference `PlayFab.EntityModels`:
+
+```csharp
+using PlayFab.EntityModels;
+using PlayFab.DataModels;
+```
+
+You can now be more granular — pick just the API groups you need instead of pulling in the whole Entity API group.
+
+**Step 2.** An updated coding example with the new APIs:
+
+```csharp
+public async void Example()
+{
+    var logrequest = new PlayFab.ClientModels.LoginWithCustomIDRequest
+    {
+        CustomId = "TestExample",
+        CreateAccount = true,
+    };
+
+    var loginResult = await PlayFab.PlayFabClientAPI.LoginWithCustomIDAsync(logrequest);
+    var playfabId = loginResult?.Result?.PlayFabId;
+
+    // PlayFab EntityAPI has been replaced with PlayFabProfilesAPI
+    // and PlayFab.EntityModels has been replaced with PlayFab.ProfileModels
+    var getProfileResult = await PlayFab.PlayFabProfilesAPI.GetProfileAsync(new
+    PlayFab.ProfilesModels.GetEntityProfileRequest());
+    var profile = getProfileResult?.Result?.Profile;
+}
+```
+
+Apply the same pattern in other SDKs using the mapping below.
+
+## Appendix 1: Old-to-new API mappings
+
+All of these APIs were previously part of the `PlayFabEntityModel` API group and are now categorized under the following new API groups.
+
+### PlayFabProfilesApi
+
+- GetGlobalPolicy
+- GetProfile
+- GetProfiles
+- SetGlobalPolicy
+- SetProfilePolicy
+
+### PlayFabAuthenticationApi
+
+- GetEntityToken
+
+### PlayFabDataApi
+
+- AbortFileUploads
+- DeleteFiles
+- FinalizeFileUploads
+- GetFiles
+- InitiateFileUploads
+- GetObjects
+- SetObjects
+
+### PlayFabGroupsApi
+
+- AcceptGroupApplication
+- AcceptGroupInvitation
+- AddMembers
+- ApplyToGroup
+- BlockEntity
+- ChangeMemberRole
+- CreateGroup
+- CreateRole
+- DeleteGroup
+- DeleteRole
+- GetEntityToken
+- GetGroup
+- InviteToGroup
+- IsMember
+- ListGroupApplications
+- ListGroupBlocks
+- ListGroupInvitations
+- ListGroupMembers
+- ListMembershipOpportunities
+- RemoveGroupApplication
+- RemoveGroupInvitation
+- RemoveMembers
+- UnblockEntity
+- UpdateGroup
+- UpdateRole
+
+### PlayFabEventsApi
+
+- WriteEvents
+
+### PlayFabCloudScriptApi
+
+- ExecuteEntityCloudScript

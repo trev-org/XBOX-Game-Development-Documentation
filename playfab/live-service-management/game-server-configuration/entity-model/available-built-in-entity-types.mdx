@@ -1,0 +1,71 @@
+---
+title: "Available built-in entity types"
+sidebarTitle: "Built-in entity types"
+description: "Reference of the entity types you can use in an EntityKey — namespace, title, master_player_account, title_player_account, character, group, game_server."
+---
+
+This reference lists the entity types you can use to construct an `EntityKey`. Entity keys identify entities in most of the newer API methods.
+
+Use the value of the `EntityKey.Type` field to determine the value to set in the `Id` field.
+
+<Note>
+  Entity type values are **case sensitive**.
+</Note>
+
+## namespace
+
+Refers to all global information for all titles within your studio.
+
+<Note>
+  Changes to this entity aren't reflected in real time.
+</Note>
+
+Set the `Id` field to your game's **Publisher ID**:
+
+1. Sign in to [Game Manager](https://developer.playfab.com/).
+2. Select the gear icon.
+3. Select **Title Settings**.
+4. Select **API Features**.
+5. The **Publisher ID** appears in the **API ACCESS** section.
+
+## title
+
+Refers to all global information for a title.
+
+<Note>
+  Changes to this entity aren't reflected in real time.
+</Note>
+
+Set the `Id` field to your game's **Title ID**, which appears on the same **API Features** page as Publisher ID.
+
+## master\_player\_account
+
+A player entity shared by all titles associated with a given namespace.
+
+Set the `Id` field to `LoginResult.PlayFabId` from the classic API. Retrieve the `LoginResult` from any client authentication login method.
+
+## title\_player\_account
+
+For most developers, `title_player_account` represents the player in the most traditional way.
+
+Set the `Id` field to `LoginResult.EntityToken.Entity.Id` in the client API, or `GetEntityTokenResponse.Entity.Id` in the authentication API.
+
+## character
+
+A sub-entity of `title_player_account`. Direct mirror of Characters in the classic APIs.
+
+Set the `Id` field to any `characterId` from `result.Characters[i].CharacterId`.
+
+## group
+
+A container for other entities. Currently limited to players and characters.
+
+Set the `Id` field to `result.Group.Id` when creating a group, or `result.Groups[i].Group.Id` when listing memberships.
+
+## game\_server
+
+A unique entity used by game servers, primarily for the Matchmaking and Lobby features. Additional scenarios may be added in the future.
+
+The `game_server` entity gives servers their own identity, useful for uniquely identifying them for real-time updates to Matchmaking and Lobby, and features such as Lobby owner migration.
+
+To authenticate as a `game_server` entity, call `AuthenticateGameServerWithCustomId` as a title entity. Retrieve the `game_server` entity key and token pair. Use this key with the PlayFab Multiplayer SDK's `PFMultiplayerSetEntityToken`.

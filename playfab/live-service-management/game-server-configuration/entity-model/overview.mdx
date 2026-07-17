@@ -1,0 +1,69 @@
+---
+title: "Entity Programming Model"
+sidebarTitle: "Overview"
+description: "Entities are the addressable things PlayFab APIs operate on. Each has a Type and Id, a profile with resources, and a lineage of parent/child relationships."
+---
+
+Entities are the most basic addressable "things" that PlayFab APIs operate on. Each entity has a **Type** and an **Id** that together uniquely identify it.
+
+Some types are standard or built-in — PlayFab knows their meaning and creates them automatically (`namespace`, `title`, `group`, `master_player_account`, `title_player_account`). Others may have no inherent meaning to PlayFab but have meaning in your game.
+
+Every entity has a **profile** that contains resources owned by that entity — objects, files, language settings, policies, and more. Retrieve the profile directly with `GetProfile`. Many APIs operate on specific resources inside the profile, like `SetObjects`.
+
+Entities have **parent/child relationships** that factor into the permissions governing how an entity's resources can be accessed by other entities. The `Lineage` property of a profile lists an entity's ancestors.
+
+## Classic API comparison
+
+If you're using the classic APIs, you're already working with the same entities. They're just not always explicit. Examples:
+
+- Client `UpdateUserData` operates on a `title_player_account`.
+- Client `GetUserPublisherData` operates on a `master_player_account`.
+- `GetCharacterStatistics` operates on a `character` (child of the `title_player_account`).
+- `GetTitleData` operates on a `title`.
+- `GetPublisherData` operates on a `namespace`.
+
+Each classic API operates on one specific entity type, but the type is often implicit and doesn't follow from the API name. Equivalent APIs for two entity types may vary subtly in parameters, limits, and behavior (`UpdatePlayerStatistics` vs. `UpdateCharacterStatistics`, for example).
+
+**Entity APIs** are the newer PlayFab APIs. Their design goals:
+
+- Work with arbitrary entity types.
+- Have explicit parameters for entity Type and Id.
+- Perform a specific operation on a specific resource in the entity profile.
+- Can be called from multiple security contexts (game clients, game servers, CloudScript, back-end servers), with permissions defined by policies.
+
+## Considerations for classic API users
+
+Entity APIs exist side-by-side with classic APIs. They can work with the same entities, but in most cases they operate on a separate set of resources.
+
+**Downsides:**
+
+- If your title already uses classic APIs for data and inventories, that existing data won't automatically appear in the equivalent entity APIs.
+- Entity APIs are still reaching feature parity. Data is stored separately in most cases, and some classic functionality may never move to the entity API.
+
+**Upsides:**
+
+- You don't have to do anything. Existing titles keep working on classic APIs.
+- You can start using entity APIs alongside classic APIs on the same entities. Adding a new feature that saves larger data in a file, for example, works well without disturbing existing player data.
+
+## Functionality overview
+
+The entity programming model is the foundation for PlayFab's next-generation data and game services:
+
+- Authentication
+- Profiles
+- Groups
+- Data — File
+- Data — Object
+- Events
+- CloudScript
+- Multiplayer
+
+## Supported entity types
+
+Use these values in the `EntityKey.Type` field. Entity keys identify entities in most newer API methods.
+
+<Note>
+  Entity type values are **case sensitive**. Other or custom values don't work.
+</Note>
+
+See [Available built-in entity types](/playfab/live-service-management/game-server-configuration/entity-model/available-built-in-entity-types) for details on each type and how to get its `Id`.

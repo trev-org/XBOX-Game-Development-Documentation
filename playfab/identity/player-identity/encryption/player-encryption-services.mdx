@@ -1,0 +1,125 @@
+---
+title: "Player encryption services"
+sidebarTitle: "Player encryption services"
+description: "Add an extra encryption layer to player registration and API calls."
+icon: "lock"
+---
+
+PlayFab already encrypts every API call over TLS. Player encryption is an **extra** layer that makes it harder to impersonate a legitimate client. Most titles don't need it.
+
+If you do want it, three concepts fit together:
+
+- **Player shared secret** — a value baked into your client. You can rotate it at any time.
+- **Title public key** — an RSA public key returned by PlayFab when the client presents a valid shared secret.
+- **Player secret** — a per-player secret that signs API request headers.
+
+## Player shared secrets
+
+Player shared secrets are managed with Admin APIs: [Create](xref:titleid.playfabapi.com.admin.authentication.createplayersharedsecret), [Update](xref:titleid.playfabapi.com.admin.authentication.updateplayersharedsecret), [Delete](xref:titleid.playfabapi.com.admin.authentication.deleteplayersharedsecret), [List](xref:titleid.playfabapi.com.admin.authentication.getplayersharedsecrets). A title can have multiple simultaneously. There's no client API to fetch them — you bake them into your client build.
+
+## Title public key
+
+Client calls [GetTitlePublicKey](xref:titleid.playfabapi.com.client.authentication.gettitlepublickey) with the shared secret. If valid, PlayFab returns a Base64 RSA public key that can encrypt up to 237 bytes.
+
+Any account-creation API accepts an encrypted payload in the `EncryptedRequest` field. `TitleId`, `InfoRequestParameters`, and `CreateAccount` stay outside the encrypted payload.
+
+### Example — encrypted `LoginWithCustomID`
+
+```csharp
+var titleKeyResult = PlayFabClientAPI.GetTitlePublicKey(new GetTitlePublicKeyRequest {
+    TitleId = "TITLE", TitleSharedSecret = "player shared secret"
+});
+
+var cspBlob = Convert.FromBase64String(titleKeyResult.RSAPublicKey);
+var encryptionModel = JsonConvert.SerializeObject(new LoginWithCustomIDRequest {
+    CustomID = "my player's custom id",
+    PlayerSecret = "my player's individual secret"
+});
+
+string encryptedPayload;
+using (var rsa = new RSACryptoServiceProvider())
+{
+    rsa.ImportCspBlob(cspBlob);
+    var bytesToEncrypt = Encoding.UTF8.GetBytes(encryptionModel);
+    var encryptedBytes = rsa.Encrypt(bytesToEncrypt, false);
+    encryptedPayload = Convert.ToBase64String(encryptedBytes);
+}
+
+var postModel = new LoginWithCustomIDRequest {
+    TitleId = "TITLEID",
+    EncryptedRequest = encryptedPayload,
+    CreateAccount = true
+};
+
+var createAccountResult = PlayFabClientAPI.LoginWithCustomID(postModel);
+```
+
+## Player secret
+
+`PlayerSecret` is set once per player per title. It signs request headers, letting the server validate every call.
+
+Set it during registration or later via [SetPlayerSecret](xref:titleid.playfabapi.com.client.authentication.setplayersecret). Admin and Server APIs can also overwrite it.
+
+<Warning>
+  Store the player secret securely on the device. There is no recovery path if it's lost.
+</Warning>
+
+### Signing headers
+
+Signature format: `sha256(jsonBody + "." + utcTimestampISO + "." + playerSecret)`
+
+```csharp
+var postModel = new LoginWithCustomIDRequest {
+    TitleId = "TITLEID",
+    CustomID = "my player's custom id",
+    CreateAccount = false
+};
+
+string timestampHeader = DateTime.UtcNow.ToString("O");
+string signatureHeader;
+string playerSecret;
+
+using (var hash = new SHA256Managed())
+{
+    var bytesToHash = Encoding.UTF8.GetBytes(
+        JsonConvert.SerializeObject(postModel) + "." + timestampHeader + "." + playerSecret);
+    signatureHeader = Convert.ToBase64String(hash.ComputeHash(bytesToHash));
+}
+
+var customHeaders = new Dictionary<string, string> {
+    { "X-PlayFab-Signature", signatureHeader },
+    { "X-PlayFab-Timestamp", timestampHeader }
+};
+
+var loginResult = PlayFabClientAPI.LoginWithCustomID(postModel, customHeaders);
+```
+
+## API policies
+
+[API policies](https://playfab.com/blog/permission-policies/) can require encryption or headers per API. `ApiConditions.HasSignatureOrEncryption` accepts `Any` (default), `True`, or `False`.
+
+Example — require encrypted or signed calls to `LoginWithCustomID`:
+
+```json
+{
+    "PolicyName": "ApiPolicy",
+    "OverwritePolicy": true,
+    "Statements": [
+        {
+            "Comment": "Require headers on LoginWithCustomID",
+            "Action": "*",
+            "Principal": "*",
+            "Effect": "Deny",
+            "Resource": "pfrn:api--/Client/LoginWithCustomID",
+            "ApiConditions": { "HasSignatureOrEncryption": "False" }
+        },
+        {
+            "Comment": "Allow everything else",
+            "Action": "*",
+            "Principal": "*",
+            "Effect": "Allow",
+            "Resource": "pfrn:api--*"
+        }
+    ]
+}
+```

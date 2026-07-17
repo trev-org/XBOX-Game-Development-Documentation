@@ -1,0 +1,46 @@
+---
+title: "Game Server Configuration"
+sidebarTitle: "Overview"
+description: "Server-side key/value and file storage for your title's game server entities."
+---
+
+Game Server Configuration provides server-side storage for data scoped to your title's `game_server` entity. It uses the Entity Objects and Entity Files APIs to store and retrieve JSON objects and binary files that configure game server behavior.
+
+## What belongs in Game Server Configuration
+
+Use Game Server Configuration for data that:
+
+- Applies to your game servers rather than individual players.
+- Needs to be read by server-authoritative game logic.
+- Includes configuration such as match settings, server parameters, or feature flags that aren't per-player.
+
+## How it works
+
+Game Server Configuration uses the same underlying APIs as other entity data storage in PlayFab:
+
+- **Entity Objects** — store small JSON-serializable key/value pairs on the `game_server` entity using `SetObjects` and `GetObjects`.
+- **Entity Files** — store larger binary or text files on the `game_server` entity using the Data File APIs.
+
+To authenticate as a `game_server` entity, call `AuthenticateGameServerWithCustomId` as a title entity.
+
+## Related features
+
+Entity objects and files are used across several PlayFab features, each scoped to a different entity type:
+
+| Feature | Entity types | Use case |
+| --- | --- | --- |
+| Game Server Configuration | `game_server` | Server-side settings and server-authoritative data |
+| [Title Data](/playfab/live-service-management/title-data/overview) | `namespace`, `title` | Global key/value configuration shared across all players |
+| [Player Data](/playfab/player-progression/player-data) | `title_player_account`, `master_player_account`, `character` | Per-player profile, progress, and preference storage |
+| [Groups](/playfab/community/associations/groups/overview) | `group` | Data shared within a player group or guild |
+
+## View in Game Manager
+
+View and manage Game Server Configuration data in Game Manager under the entity browser by selecting a `game_server` entity.
+
+## See also
+
+- [Entity Programming Model](/playfab/live-service-management/game-server-configuration/entity-model/overview)
+- [Entity Objects](/playfab/live-service-management/game-server-configuration/entity-model/entity-objects)
+- [Entity Files](/playfab/live-service-management/game-server-configuration/entity-model/entity-files)
+- [Title Data](/playfab/live-service-management/title-data/overview)

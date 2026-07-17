@@ -1,0 +1,115 @@
+---
+title: "Winter Starfall"
+sidebarTitle: "Winter Starfall"
+description: "Winter Starfall is a playable demo game built by PlayFab so you can see how the services work in a real game."
+icon: "snowflake"
+keywords: ["PlayFab", "demo", "sample", "Winter Starfall"]
+---
+
+Winter Starfall is a fantasy RPG built by the PlayFab team. It's a live, playable web app that uses PlayFab's real services — useful when you want to see how features fit together before building your own game.
+
+Play it at [winterstarfall.com](https://winterstarfall.com/). If you have a PlayFab developer account, you can also open it from **My Studios and Titles** in Game Manager.
+
+## What it shows off
+
+Winter Starfall uses these PlayFab features:
+
+- **Economy V2** — catalog, currency, bundles, and stores.
+- **Title data** and **player data** for game state and config.
+- **Title news** for in-game messages.
+- **CloudScript with Azure Functions** for custom server-side logic.
+
+Want to see the code? Check out the [source code walkthrough](/playfab/demo-game/source-code-and-best-practices).
+
+## The activity sidebar
+
+Open the PlayFab icon next to the profile menu (top-right) to open the **activity sidebar**. It shows every API call the game makes as you play.
+
+- Each call is tagged by SDK and color-coded.
+- Select a call to see the full request and response.
+- Select **View title F8941** to open the title in Game Manager and inspect how each feature is configured. (You'll need a free [PlayFab developer account](https://developer.playfab.com) to open Game Manager.)
+- **Clear** wipes the current list.
+
+<Note>
+  You can play the demo anytime, but opening Game Manager requires a free [PlayFab developer account](https://developer.playfab.com).
+</Note>
+
+## Features in action
+
+### Authentication
+
+Every PlayFab game starts by signing in a player and getting a token to use for the rest of the session. Winter Starfall supports recoverable sign-in with email, Microsoft, Google, and Facebook.
+
+See the [login walkthrough](/playfab/demo-game/source-code-and-best-practices#login-flow) for the full flow.
+
+### Economy
+
+Players earn currency in combat and spend it in stores. Winter Starfall uses **Economy V2** for the catalog, inventory, and purchases. The [purchase walkthrough](/playfab/demo-game/source-code-and-best-practices#purchase-flow) shows exactly how it's wired up.
+
+### Player data
+
+Player data stores per-player key/value pairs — things like current story location, party members, and stats. Winter Starfall writes progress with `UpdateUserData` and reads it back with `GetUserData` on sign-in.
+
+Example `GetUserData` response for story location and party:
+
+```json
+{
+  "code": 200,
+  "status": "OK",
+  "data": {
+    "Data": {
+      "location": {
+        "Value": "{\"id\":\"intro\",\"map\":[\"intro\",\"intro-village\"]}",
+        "LastUpdated": "2024-09-20T18:16:13.68Z",
+        "Permission": "Private"
+      },
+      "party": {
+        "Value": "{\"characters\":[{\"id\":1}],\"guests\":[]}",
+        "LastUpdated": "2024-09-20T18:16:13.68Z",
+        "Permission": "Private"
+      }
+    },
+    "DataVersion": 20
+  }
+}
+```
+
+### Title data
+
+Title data holds title-wide key/value pairs. Winter Starfall stores a `multipliers` value (for example, `sell: 0.5`) so the sell price can be tuned without a code change.
+
+### CloudScript with Azure Functions
+
+CloudScript lets you run server-side logic that PlayFab hosts for you. Winter Starfall uses it for things you can't do purely on the client:
+
+- **CombatVictory** — grants XP, items, and party members after a battle.
+- **PlayerCreated** — equips a new player with starter gear and stats.
+- **ProgressCheckpoint** — unlocks items and characters at key story points.
+- **ResetPlayer** — wipes user data, items, and stats for a fresh start.
+- **SellItem** — sells items at a discount (not built into Economy).
+
+<Note>
+  Winter Starfall's functions are written in C#, but Azure Functions supports many languages. Use whichever fits your team.
+</Note>
+
+### Title news
+
+Title news broadcasts messages to every player in a title. Winter Starfall uses it for gameplay tips and in-game notices.
+
+PlayFab also supports templated email and push notifications for other communication needs.
+
+## What's hidden in this demo
+
+Because Winter Starfall runs on real player data, some parts of Game Manager are hidden to protect players and title secrets:
+
+- **Players** section — you can't browse or edit individual players.
+- **Data** and **Audit History** under Analyze — event records and change history are hidden.
+- **Secret keys** tab under title settings — hidden.
+
+To explore these in full, [download the source](https://github.com/PlayFab/winter-starfall) and run it locally, or create your own title.
+
+## Next steps
+
+- [Walk through the source code and best practices](/playfab/demo-game/source-code-and-best-practices)
+- [Play Winter Starfall](https://winterstarfall.com/)
+- [Try the legacy demo (Vanguard Outrider)](/playfab/demo-game/vanguard-outrider)

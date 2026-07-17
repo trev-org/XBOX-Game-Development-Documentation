@@ -1,0 +1,89 @@
+---
+title: "API access policy"
+sidebarTitle: "API access policy"
+description: "View and manage your title's API access policy in Game Manager — the list of statements that control which PlayFab APIs the game client can invoke."
+---
+
+## About PlayFab APIs
+
+Game clients make requests to PlayFab APIs using URIs like:
+
+- `/client/loginwithxbox`
+- `/catalog/getitems`
+- `/cloudscript/executefunction`
+
+Each request includes a payload that tells PlayFab what to do — which player to log in, which item to retrieve, which function to execute.
+
+## What is an API access policy?
+
+Every PlayFab title has an **API access policy**: a list of permission statements that control which PlayFab APIs players can invoke from the game client. The policy acts as a title-level firewall — when a client makes an API call, PlayFab evaluates the policy to decide whether the request is **allowed** or **denied**.
+
+The default policy allows most APIs.
+
+## Why modify the API access policy?
+
+- Restrict access to features your title isn't using.
+- Prevent malicious players from driving up your costs.
+- Guard against typos during development.
+
+## Structure
+
+A policy is an ordered list of **statements**. Each statement has these fields:
+
+| Field | Description |
+| --- | --- |
+| **Resource** | The API path the statement applies to, expressed as a PlayFab Resource Name (for example, `pfrn:api--/Client/*` or `pfrn:api--/Client/GetPlayerProfile`). A wildcard `*` matches all APIs in a namespace. |
+| **Action** | Always `*` (all actions). |
+| **Effect** | `Allow` or `Deny`. |
+| **Principal** | Who the statement applies to. `*` means all callers. A JSON object such as `{"master_player_account": "*"}` targets a specific principal type. We don't recommend using anything other than `*`. |
+| **Comment** | Optional description. |
+| **ApiConditions** | Optional conditions such as `HasSignatureOrEncryption`. |
+
+## Deny effect precedence
+
+A `Deny` effect takes precedence over an `Allow`. If a resource with a wildcard (for example, `pfrn:api--/CloudScript/*`) has a `Deny` effect, no APIs starting with that resource can be accessed — even if they have more specific `Allow` statements.
+
+## API Access Policy page
+
+The **API Access Policy** page in your title's settings gives you an interface for viewing and editing the policy.
+
+### Index page
+
+The index page displays a table of all API categories:
+
+| Column | Description |
+| --- | --- |
+| **Category** | The API category (for example, "Client", "Server"). Select to edit APIs for that category. |
+| **Wildcard Statement** | The current wildcard effect for the category — **Allow** or **Deny**. This is the default rule for every API in the category unless overridden. |
+| **Summary** | A brief count of per-API overrides (for example, "3 denied, 1 allowed"). |
+
+**Available actions:**
+
+- **Search** — filter categories by name or API path.
+- **Edit as JSON** — open a full-policy JSON editor. Saving here replaces the entire policy and takes effect immediately.
+- **Revert to Defaults** — reset the entire policy to PlayFab defaults. A confirmation dialog appears first.
+
+### Category page
+
+Selecting a category opens a detail page listing every API in the category with individual controls. Changes on this page must be saved before they take effect.
+
+**Wildcard rule.** At the top of each resource-pattern group is a radio button for `Allow` or `Deny`. This sets the default effect for all APIs in the group. When set to **Deny**, individual API toggles are disabled because the entire category is blocked.
+
+**Per-API toggles.** Each API endpoint has a checkbox. Checked = allowed, unchecked = denied. Use these to create exceptions to the wildcard rule (for example, deny all Client APIs by default, then explicitly allow only the ones your title uses).
+
+**Available actions:**
+
+- **Save** — save only the statements for the current category.
+- **Reset** — discard unsaved changes for this category.
+- **Edit as JSON** — JSON editor scoped to this category.
+- **Search** — filter the API list within the category.
+
+## Pending changes sidebar
+
+Both pages include a **Pending changes** sidebar on the right that lists every change since the last save with color-coded labels:
+
+- **Allow** — resource changed to allow.
+- **Deny** — resource changed to deny.
+- **Removed** — an explicit statement was removed (the API inherits its category's wildcard rule).
+
+On the index page, each entry links back to the relevant category page.

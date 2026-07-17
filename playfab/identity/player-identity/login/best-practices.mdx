@@ -1,0 +1,75 @@
+---
+title: "Login basics and best practices"
+sidebarTitle: "Login basics & best practices"
+description: "Choose the right sign-in mechanism for your title and platform."
+icon: "list-check"
+---
+
+## Custom ID logins
+
+Most sample code uses `LoginWithCustomID`. It's simple to demo but rarely the right choice for a shipped title. In production, a custom ID makes sense only when you're pairing a PlayFab account with an existing database or back-end.
+
+Migrate to a real provider before you launch.
+
+## Anonymous logins
+
+Anonymous logins require zero player input and create a unique account per device.
+
+- `LoginWithIOSDeviceID`
+- `LoginWithAndroidDeviceID`
+- `LoginWithCustomID`
+- `LoginWithNintendoSwitchDeviceId`
+
+Benefit: no barrier to trying your game.
+
+Drawback: no way to recover the account if the player loses the device.
+
+### Best practice
+
+- Start every player with an anonymous login. Even skeptical players will play.
+- Once they're invested (tutorial complete, first purchase, level up), prompt them to link a recoverable login.
+- **Paying customers must be nudged into a recoverable login.** A lost paid account is a support headache and lost revenue.
+
+### Platform notes
+
+- **iOS** — the device ID resets when the game is uninstalled and reinstalled. Save the device ID to the iOS Keychain so you can re-sign in the same player.
+- **Android** — follow [Google's user data ID guidelines](https://developer.android.com/training/articles/user-data-ids).
+
+<Note>
+  Linking a recoverable login is required only **once** per device. After that, keep using the anonymous login — no password prompts, no re-entry.
+</Note>
+
+## Recoverable logins
+
+### Pure PlayFab
+
+- `LoginWithPlayFab` — username \+ password
+- `LoginWithEmailAddress` — email \+ password
+
+PlayFab handles credentials. Recovery works by email even if the player forgets the password.
+
+### Third-party APIs (no extra SDK)
+
+- `LoginWithKongregate`
+- `LoginWithSteam`
+- `LoginWithTwitch`
+- `LoginWithGameCenter` (iOS only)
+
+### Third-party SDKs
+
+- `LoginWithFacebook`
+- `LoginWithGoogleAccount`
+
+For SDK-based options, the third-party SDK handles the credentials. PlayFab receives only a secure token — it never sees the player's password for that service.
+
+## Insecure logins
+
+Custom ID depends on your ID staying secret. A recoverable provider (Facebook, Google, Apple, etc.) is safer because a real third party verified the identity.
+
+## Wrap-up
+
+Start anonymous. Link at least one recoverable provider before the player has anything worth losing. Don't pressure the player to link every provider — one is enough.
+
+<Card title="Next: account linking quickstart" icon="arrow-right" href="/playfab/identity/player-identity/login/quickstart">
+  Step-by-step: bind an existing anonymous account to a recoverable provider.
+</Card>

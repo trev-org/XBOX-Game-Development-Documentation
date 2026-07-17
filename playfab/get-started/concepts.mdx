@@ -1,0 +1,67 @@
+---
+title: "PlayFab concepts"
+sidebarTitle: "Concepts"
+description: "The fundamental concepts and building blocks of PlayFab."
+icon: "book"
+keywords: ["PlayFab", "concepts", "namespaces", "titles", "identity", "PlayStream"]
+---
+
+These are the core ideas behind PlayFab. Understanding them makes everything else easier.
+
+## Namespaces and titles
+
+A **title** is your game in PlayFab. Each title has its own player accounts, data, and configuration.
+
+A **namespace** is your studio-level container. It groups titles that belong together — for example, a game and its dev/staging versions, or several games from the same studio that share players.
+
+Rules of thumb:
+
+- A title belongs to exactly one namespace and can't be moved later.
+- Titles in the same namespace can share player identities and data.
+- Use separate titles for different environments (dev, staging, production) or major versions of your game.
+
+## Game Manager
+
+**Game Manager** is PlayFab's web portal. You'll use it to create titles, invite teammates, configure features, view analytics, and run day-to-day live operations.
+
+Almost everything in Game Manager also has a REST API, so you can automate setup later.
+
+## Developer accounts and permissions
+
+You sign in with a Microsoft account to get a **developer identity**. Invite teammates and assign roles to control who can change what.
+
+## Player identity
+
+Before your game can call most PlayFab APIs, the player has to sign in. PlayFab supports the common login providers (Xbox, Steam, PlayStation™ Network, Nintendo, iOS, Android, and more) and issues a token your game uses for the rest of the session.
+
+Once signed in, the player's account is where you store their progress, inventory, friends, bans, and anything else specific to that player.
+
+## Title Data and Publisher Data
+
+**Title Data** stores game-wide config that any client or server can read — things like feature flags, tuning values, or seasonal settings. Update it from Game Manager without shipping a new build.
+
+**Publisher Data** works the same way but at the namespace level, so you can share it across every title in your studio.
+
+Need to target a subset of players? Use **Segmentation** to group players by behavior or properties, or **Experimentation** to A/B test config on part of your player base.
+
+## PlayStream: events and actions
+
+**PlayStream** is a stream of events from your game. Some events come from PlayFab services automatically (like "player signed in"); others you send yourself.
+
+You can wire up **rules** so that when a specific event happens, PlayFab runs an action — grant an item, ban a player, call your own webhook, or run custom code in Azure Functions.
+
+## Telemetry and reports
+
+If you just want to record what's happening (without reacting in real time), use **Telemetry**. Events land in a data lake you can explore in Game Manager, feed into built-in **reports**, or export to your own storage.
+
+## Economy
+
+**PlayFab Economy** handles items, currencies, stores, bundles, and purchases. It also supports **user-generated content (UGC)** if you want players to create and share their own content.
+
+## Multiplayer
+
+The multiplayer services — matchmaking, lobbies, party networking, chat, and dedicated servers — work independently or together. Use only the parts your game needs.
+
+## Next steps
+
+- [See if Foundation Mode fits your game](/playfab/get-started/foundation-mode-overview)

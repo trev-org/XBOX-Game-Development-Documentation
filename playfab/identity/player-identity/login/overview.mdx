@@ -1,0 +1,35 @@
+---
+title: "Player login"
+sidebarTitle: "Overview"
+description: "The first step for any PlayFab-integrated title is signing the player in."
+icon: "right-to-bracket"
+---
+
+Signing the player in is the first thing your game does. The login response returns a security token that every other PlayFab API call uses.
+
+PlayFab supports both anonymous and recoverable sign-in.
+
+## Anonymous sign-in
+
+Zero player input. A device ID or custom ID creates a unique PlayFab account with no friction.
+
+- Best first-run experience for mobile games.
+- Uniquely identifies a device, but the account is tied to that device.
+- If the player loses the device, the account is usually lost too.
+
+## Recoverable sign-in
+
+Requires identity information — a username/email \+ password, or authentication with a provider like Facebook, Apple, Google, Xbox, Steam, PlayStation™, or Nintendo.
+
+- Player can sign in on a new device.
+- Recommended before shipping.
+
+"PlayStation" is a registered trademark or trademark of Sony Interactive Entertainment Inc.
+
+## Recommended pattern
+
+1. Start players with an anonymous login — low friction, fast start.
+2. After a tutorial or paid purchase, prompt them to link a recoverable provider.
+3. Keep the anonymous login as the default; use the recoverable login only for cross-device play or recovery.
+
+Read [Login basics and best practices](/playfab/identity/player-identity/login/best-practices) next.

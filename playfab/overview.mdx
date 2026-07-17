@@ -7,110 +7,67 @@ keywords: ["PlayFab", "live game services", "backend-as-a-service", "PlayFab Eco
 related: ["/playfab/economy", "/playfab/multiplayer-lobby", "/playfab/leaderboards-stats", "/playfab/party-voice", "/playfab/analytics", "/playfab/identity"]
 ---
 
-[PlayFab](https://developer.microsoft.com/en-us/games/products/playfab/) is a complete backend-as-a-service (BaaS) platform designed to help you build, launch, and grow live games. Whether you need robust player identity management, a flexible in-game economy, real-time multiplayer infrastructure, community features, or deep analytics, PlayFab provides the managed services that let your team focus on gameplay rather than server operations. PlayFab integrates directly with XBOX services and the Microsoft GDK, making it the natural choice for titles shipping on XBOX and Windows.
+[PlayFab](https://developer.microsoft.com/en-us/games/products/playfab/) is Microsoft's backend platform for live games. It integrates directly with XBOX services and the Microsoft GDK, making it the natural choice for titles shipping on XBOX and Windows.
 
-## The seven PlayFab service pillars
+New to PlayFab? Start with [What is PlayFab?](/playfab/get-started/what-is-playfab) for the concepts, then head to [Foundation Mode onboarding](/playfab/get-started/foundation-mode-onboarding) to set up your title.
 
-PlayFab organizes its capabilities into seven service pillars. Each pillar has its own section in the navigation on the left.
+## PlayFab services
 
 <CardGroup cols={2}>
   <Card title="Identity" icon="user-check" href="/playfab/identity">
-    Manage player and developer identities across titles. Sign players in with XBOX, Steam, Apple, Google, Facebook, or custom IDs; secure your dev team with AAD, 2FA, and audit logs.
+    Sign players in across XBOX, Steam, PlayStation, Nintendo, and more.
   </Card>
 
-  <Card title="Live Service Management" icon="sliders" href="/playfab/live-service-management">
-    Run Game Manager, the entity programming model, title data, segments, experiments, throttling, add-ons, and CloudScript / Azure Functions extensions.
+  <Card title="Live service management" icon="sliders" href="/playfab/live-service-management">
+    Game Manager, title data, segments, experiments, CloudScript, and Azure Functions.
   </Card>
 
-  <Card title="Economy, Monetization & UGC" icon="coins" href="/playfab/economy">
-    PlayFab Economy v2 for catalogs, player inventory, virtual currencies, bundles, targeted offers, marketplace integrations, UGC ingestion and moderation, fraud prevention, and rewarded ads.
+  <Card title="Economy, monetization & UGC" icon="coins" href="/playfab/economy">
+    Catalogs, inventory, virtual currencies, marketplace integrations, and UGC moderation.
   </Card>
 
   <Card title="Multiplayer" icon="users" href="/playfab/multiplayer-lobby">
-    PlayFab Multiplayer Servers (Thunderhead), Matchmaking, Lobby, and Party Networking — from pre-game grouping to hosted VMs and low-latency voice/data.
+    Multiplayer Servers, Matchmaking, Lobby, and Party networking.
   </Card>
 
   <Card title="Community" icon="comments" href="/playfab/community">
-    Player Associations (Friends and Groups), community-scoped Leaderboards, and Synchronous Player Communications (voice chat, permissions, muting, text moderation, TTS/STT).
+    Friends, groups, leaderboards, and voice chat with moderation.
   </Card>
 
-  <Card title="Player Progression" icon="chart-line" href="/playfab/player-progression">
-    Player Data, Statistics v2, and Game Saves — including the October 2025 GDK Game Saves implementation and the Steam Deck implementation.
+  <Card title="Player progression" icon="chart-line" href="/playfab/player-progression">
+    Player data, statistics, and Game Saves on GDK and Steam Deck.
   </Card>
 
-  <Card title="Game Data" icon="magnifying-glass-chart" href="/playfab/analytics">
-    Ingest events with PlayStream and Telemetry Keys, export via Data Connections, learn with Reports, Trends, Churn Prediction, and Microsoft Fabric real-time analytics, and act with Webhooks, Actions & Rules, and Scheduled Tasks.
+  <Card title="Game data" icon="magnifying-glass-chart" href="/playfab/analytics">
+    Events, telemetry, data connections, reports, and Microsoft Fabric analytics.
   </Card>
 
-  <Card title="Fundamentals & SDKs" icon="book-open" href="https://learn.microsoft.com/en-us/gaming/playfab/get-started/">
-    New to PlayFab? Start with the core concepts, Foundation Mode onboarding, and SDK downloads on Microsoft Learn.
+  <Card title="Pricing" icon="tag" href="/playfab/pricing/overview">
+    Plans, meters, and consumption best practices.
   </Card>
 </CardGroup>
 
-## Supported SDKs and platforms
-
-[PlayFab](https://developer.microsoft.com/en-us/games/products/playfab/) meets you where your game is built. The following languages, platforms, and game engines all have first-class SDK support.
-
-<Tabs>
-  <Tab title="Languages">
-    - **C/C\+\+** — native SDK for GDK, console, and high-performance titles
-    - **C#** — ideal for Unity and .NET-based game servers
-    - **Java** — Android and server-side integrations
-    - **JavaScript** — browser and Node.js environments
-    - **Python** — tooling, automation, and back-end services
-  </Tab>
-  <Tab title="Platforms">
-    - **Android**
-    - **iOS**
-    - **macOS**
-    - **Linux**
-    - **Microsoft GDK** (XBOX Series X|S, XBOX One, Windows PC)
-  </Tab>
-  <Tab title="Game Engines">
-    - **Unity 3D** — plugin available from the GDK download site
-    - **Unreal Engine** — Online Subsystem plugin included with the GDK
-    - **Cocos2D-x** — supported via the JavaScript or C\+\+ SDK
-  </Tab>
-</Tabs>
-
-## GDK integration highlights
+## GDK integration
 
 <CardGroup cols={2}>
-  <Card title="Player Sign-In" icon="right-to-bracket" href="/playfab/player-sign-in">
-    Authenticate players with XBOX services and automatically provision their linked PlayFab account.
+  <Card title="Player sign-in" icon="right-to-bracket" href="/playfab/player-sign-in">
+    Authenticate with XBOX services and auto-provision PlayFab accounts.
   </Card>
 
-  <Card title="Microsoft Store Integration" icon="store" href="/playfab/microsoft-store">
-    Connect Microsoft Store in-app purchases to PlayFab Economy v2 inventory and virtual currencies.
+  <Card title="Microsoft Store" icon="store" href="/playfab/microsoft-store">
+    Connect Store in-app purchases to Economy v2 inventory.
   </Card>
 
-  <Card title="Game Saves on GDK" icon="floppy-disk" href="/playfab/game-saves">
-    October 2025 GDK Game Saves implementation and Steam Deck implementation — cross-device save state with conflict resolution and rollback.
+  <Card title="Game Saves" icon="floppy-disk" href="/playfab/game-saves">
+    Cross-device save state with conflict resolution.
   </Card>
 
   <Card title="Party voice + data" icon="phone" href="/playfab/party-voice">
-    Cross-platform voice chat and reliable/unreliable messaging over the PlayFab Party transport.
+    Cross-platform voice and reliable messaging over Party transport.
   </Card>
 </CardGroup>
 
-## Pricing
+## Community
 
-Creating a PlayFab title is free for all developers. Costs may apply when you launch a live title based on monthly active users (MAUs) and feature usage. Review the full pricing breakdown before you ship.
-
-<Tip>
-  See [PlayFab Pricing](https://playfab.com/pricing/) for the latest tier information, including the free development quota and launch pricing.
-</Tip>
-
-## Community and support
-
-You're not alone when building with PlayFab. The team and community are active across several channels:
-
-<CardGroup cols={2}>
-  <Card title="Discord" icon="discord" href="https://discord.com/invite/msftgamedev">
-    Post questions, share answers, and discuss the PlayFab product experience with other developers and the Microsoft team.
-  </Card>
-
-  <Card title="PlayFab Blog" icon="rss" href="https://blog.playfab.com/blog">
-    Stay up to date with the latest feature announcements, best-practice guides, and news from the PlayFab developers.
-  </Card>
-</CardGroup>
+- [Microsoft Game Dev Discord](https://discord.com/invite/msftgamedev)
+- [PlayFab blog](https://blog.playfab.com/blog)

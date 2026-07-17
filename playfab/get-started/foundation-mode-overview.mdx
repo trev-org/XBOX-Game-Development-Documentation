@@ -1,0 +1,114 @@
+---
+title: "Foundation Mode overview"
+sidebarTitle: "Foundation Mode overview"
+description: "Foundation Mode gives eligible Xbox ecosystem developers access to core PlayFab game services at no extra cost."
+icon: "layer-group"
+keywords: ["PlayFab", "Foundation Mode", "pricing", "free tier", "Xbox"]
+---
+
+Foundation Mode lets Xbox developers use core PlayFab services at **no extra cost**. It's the fastest way to get identity, multiplayer, progression, economy, and community running in your game without a bill.
+
+If you're shipping (or planning to ship) on Xbox, Foundation Mode is likely the right starting point.
+
+## Am I eligible?
+
+You qualify if you:
+
+- Register a studio in PlayFab Game Manager.
+- Ship, or plan to ship, your game on Xbox.
+- Link your PlayFab account to your Partner Center studio and product.
+
+<Warning>
+  During preview, Foundation Mode is only for **new PlayFab titles**. Existing titles can't be migrated yet — a migration path is planned for mid-2026.
+</Warning>
+
+## What's included
+
+### Identity
+
+| Feature | Description |
+| --- | --- |
+| Player Identity | Authenticate players and link accounts to enable cross-play and cross-progression features. |
+| Server identity | Authenticate game servers for secure backend communication. |
+| Developer identity | Manage developer accounts and studio access. |
+
+### Live service management
+
+| Feature | Description |
+| --- | --- |
+| API access policy | Control access to PlayFab APIs for your title. |
+| Title communications | Send targeted messages and notifications to players. |
+| Title data | Store and retrieve title-level configuration data. |
+| Add-ons | Discover and manage add-on integrations for your title. |
+| Functions | Invoke custom server-side logic using Azure Functions. Function invocations are included; however, Azure compute costs (GB-s) are billed separately through your Azure subscription. |
+
+### Game data stream
+
+| Feature | Description |
+| --- | --- |
+| Telemetry | Service-generated telemetry data (custom events excluded). |
+| PlayStream | System-generated PlayStream events for monitoring player activity. |
+| Reports | Built-in reports for player activity and title performance. |
+
+### Multiplayer
+
+| Feature | Description |
+| --- | --- |
+| Lobby | Create and manage game lobbies for players. |
+| Matchmaking | Match players based on skill, latency, and custom rules. |
+| Party Networking | Secure, low-latency networking for multiplayer games. |
+| Real-time messages | Real-time messages from Lobby and Matchmaking services. |
+
+### Community
+
+| Feature | Description |
+| --- | --- |
+| Friends | Manage player friend lists and relationships. |
+| Groups | Create and manage player groups and guilds. |
+| Player bans | Enforce community standards with player bans. |
+| Leaderboards | Display player rankings and competition results. |
+
+### Progression
+
+| Feature | Description |
+| --- | --- |
+| Player profile | Store and retrieve player profile data. |
+| Statistics | Track player statistics and achievements. |
+| Game saves | Cloud save support for player progress. |
+
+### Economy
+
+| Feature | Description |
+| --- | --- |
+| Catalog | Define and manage your game's virtual items. |
+| Inventory | Track player-owned items and currencies. |
+
+## What's not included
+
+If your game calls an API for a feature that isn't in Foundation Mode, the call fails with a permissions error — nothing is charged, but the feature won't work.
+
+- **Economy**: User-generated content (UGC), including `CreateDraftItem`, `PublishDraftItem`, UGC `SearchItems`, and UGC file uploads.
+- **Multiplayer**: Multiplayer Servers (dedicated hosting) and their allocation and management APIs.
+- **Live service management**: CloudScript (classic — use Azure Functions instead), Segmentation, Experimentation, Churn Prediction, and CDN.
+- **Game data stream**: Custom telemetry events and Telemetry Keys, Event Archive, Rules/Actions/Webhooks, Player Search, and cross-region or S3 Data Connections.
+- **Legacy APIs**: Economy v1 and Statistics/Leaderboards v1. Use the modern versions, which are included.
+
+## Rate limits
+
+Foundation Mode doesn't cap monthly usage, but it does apply per-API, per-player rate limits (for example, 30 calls per 2 minutes for a given endpoint). This keeps runaway loops from breaking your game in production.
+
+See all limits for your title in Game Manager under **Settings \> Limits**.
+
+## What it costs
+
+- No payment instrument required.
+- No per-operation charges for reads, writes, storage, or executions on included features.
+- Foundation Mode applies at the **title** level, so different titles in your studio can use different plans.
+
+<Note>
+  **Azure Functions:** Function _invocations_ are free under Foundation Mode, but the underlying Azure compute (GB-s) is billed through your Azure subscription. See [Azure Functions pricing](https://azure.microsoft.com/pricing/details/functions/).
+</Note>
+
+## Next steps
+
+- [Onboard to Foundation Mode](/playfab/get-started/foundation-mode-onboarding)

@@ -1,0 +1,45 @@
+---
+title: "Account linking quickstart"
+sidebarTitle: "Account linking quickstart"
+description: "Bind an existing anonymous PlayFab account to a recoverable provider."
+icon: "link"
+---
+
+A single PlayFab account can be reached from many devices and login providers. This quickstart shows how to add a recoverable login to an anonymous account, then how to bring a second device onto the same account safely.
+
+## Add a recoverable login to an anonymous account
+
+Most first sessions are anonymous — low friction, no signup. Once the player is invested, prompt them to link a recoverable option so they don't lose the account.
+
+Common paths:
+
+- **AddUsernamePassword** — stores username/email/password directly with PlayFab. Recover the account with `SendAccountRecoveryEmail`.
+- **LinkFacebookAccount**, **LinkGoogleAccount**, **LinkAppleAccount**, **LinkSteamAccount**, **LinkTwitch**, **LinkKongregate**, **LinkGameCenterAccount** — for third-party providers.
+
+Pattern for third-party providers:
+
+1. Have the player sign in through the provider's SDK or API.
+2. Take the token you get back.
+3. Call the matching `Link*` PlayFab API with that token. PlayFab links the provider to the current PlayFab account — it never sees the player's credentials.
+
+<Note>
+  Some providers need extra title-level config (Application ID, keys). Set these up in the **Add-on Marketplace** in Game Manager before you call the API.
+</Note>
+
+### Best practices
+
+- Never store or log the player's provider credentials.
+- Clear tokens from memory as soon as you're done.
+- COPPA compliance: talk to your legal counsel and follow their guidance on what you can persist.
+
+## Bring a second device onto the same account
+
+When a player picks up a new device, don't automatically sign in with the new device's anonymous ID — you'll orphan the account on the first device.
+
+Instead:
+
+1. On device 2, present the recoverable sign-in first (not the anonymous option).
+2. Player signs in with their linked provider or username/email.
+3. Once signed in, you can also link the new device ID with `LinkAndroidDeviceID` / `LinkIOSDeviceID` / etc. so future launches on device 2 can use the anonymous fast path.
+
+Always link providers using an authenticated session; never overwrite the login by re-signing in with a fresh anonymous ID.

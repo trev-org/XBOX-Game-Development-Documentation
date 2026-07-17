@@ -1,0 +1,38 @@
+---
+title: "Statistics meters"
+sidebarTitle: "Statistics meters"
+description: "Meters used by the Statistics service."
+icon: "chart-column"
+---
+
+Statistics bill on four meters: **Reads**, **Writes**, **Transactional Writes**, and **Storage**. Storage bills the average number of stored statistic values across a month.
+
+## Meters
+
+| Meter | What it measures |
+| --- | --- |
+| Statistics Reads | Read API calls per month. |
+| Statistics Writes | Standard write API calls per month. |
+| Statistics Transactional Writes | Writes made in a transaction (all-or-nothing update). |
+| Statistics Storage | Average number of stored statistic values across the month. |
+
+## Statistics read APIs
+
+- `GetStatisticDefinition`
+- `GetStatistics`
+- `GetStatisticsForEntities`
+- `ListStatisticDefinitions`
+
+## Statistics write APIs
+
+- `CreateStatisticDefinition`
+- `DeleteStatisticDefinition`
+- `DeleteStatistics`
+- `IncrementStatisticVersion`
+- `UpdateStatistics`
+
+## Transactional write APIs
+
+- `UpdateStatisticsTransactional` (and any statistic writes made inside a transaction envelope)
+
+For the full up-to-date list, see the [Statistics API reference](/playfab/community/statistics).
