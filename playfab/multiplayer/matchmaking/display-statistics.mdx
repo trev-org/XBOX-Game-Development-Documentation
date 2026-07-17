@@ -1,0 +1,11 @@
+---
+title: "Display statistics"
+sidebarTitle: "Display statistics"
+description: "Show players real-time queue statistics."
+---
+
+Call [`GetQueueStatistics`](https://learn.microsoft.com/rest/api/playfab/matchmaker/matchmaking/get-queue-statistics) to fetch queue-level statistics: number of tickets, average wait time, percentiles. Surface this in your matchmaking UI to reassure players who are waiting.
+
+Don't call the endpoint too often per client — poll intervals of 5–10 seconds are typical.
+
+Source: [`display-statistics.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/display-statistics.md).

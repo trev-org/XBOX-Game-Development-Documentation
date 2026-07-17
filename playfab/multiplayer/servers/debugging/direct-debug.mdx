@@ -1,0 +1,15 @@
+---
+title: "Directly debugging game servers"
+sidebarTitle: "Direct debug"
+description: "Attach a remote debugger to a live server instance."
+---
+
+For production repros, you can attach a debugger to a live server.
+
+1. Allocate a server to a debug build (unpartitioned, no real players).
+2. Retrieve the connection info from Game Manager.
+3. Enable the Visual Studio remote debugger inside the server (via startup script or CI-included assets).
+4. Connect from your dev box.
+5. Reproduce the bug.
+
+Source: [`directly-debugging-game-servers.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/directly-debugging-game-servers.md).

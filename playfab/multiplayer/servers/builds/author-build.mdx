@@ -1,0 +1,13 @@
+---
+title: "Author a game server build"
+sidebarTitle: "Author a build"
+description: "Package your binaries, upload assets, and register the build."
+---
+
+1. Package your Windows binaries into a `.zip` (or produce a Linux container image).
+2. Upload the asset to PlayFab via Game Manager or [`GetAssetUploadUrl`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/get-asset-upload-url).
+3. Register the build with [`CreateBuildWithManagedContainer`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/create-build-with-managed-container) or [`CreateBuildWithCustomContainer`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/create-build-with-custom-container).
+4. Wait for status `Deployed` per region.
+5. Attach the build to an alias for stable client references.
+
+Source: [`author-a-game-server-build.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/author-a-game-server-build.md).

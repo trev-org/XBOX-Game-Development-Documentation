@@ -1,0 +1,21 @@
+---
+title: "GSDK integration"
+sidebarTitle: "GSDK integration"
+description: "Integrate the PlayFab Game Server SDK into your dedicated server."
+---
+
+The **GSDK** is the bridge between your server binary and the Multiplayer Servers agent. It:
+
+- Reports server state (`Initializing` → `StandingBy` → `Active` → `Terminating`).
+- Delivers allocation details (initial players, session config).
+- Sends heartbeats so the agent knows the server is alive.
+- Publishes shutdown/maintenance hooks.
+
+## Basic loop
+
+1. On startup, call `Start()` — blocks on config from the agent.
+2. Transition to `ReadyForPlayers()` when initialization completes; server enters **StandingBy**.
+3. On `OnAllocation` callback, receive session config; enter **Active** and begin the match.
+4. On match end, call `Shutdown()` and exit cleanly.
+
+Source: [`integrating-game-servers-with-gsdk.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/integrating-game-servers-with-gsdk.md).

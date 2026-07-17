@@ -1,0 +1,16 @@
+---
+title: "Ticket attributes"
+sidebarTitle: "Ticket attributes"
+description: "Attach player attributes to tickets so rules have data."
+---
+
+A ticket carries a JSON `Attributes` object per member: skill, region, preferred mode, party size, anything a rule needs to match on. Attributes are trusted from the source that submits the ticket, so untrusted clients should have their attributes validated server-side before submission.
+
+Common attributes:
+
+- `skill` — numeric rating.
+- `latencies` — map of region -\> milliseconds.
+- `mode` — string game mode.
+- `group_id` — same value across friends who want to be co-matched.
+
+Source: [`ticket-attributes.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/ticket-attributes.md).

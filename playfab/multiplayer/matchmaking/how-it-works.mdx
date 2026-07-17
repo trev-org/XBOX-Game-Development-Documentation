@@ -1,0 +1,15 @@
+---
+title: "How matchmaking works"
+sidebarTitle: "How it works"
+description: "The internal ticket → rules → match loop."
+---
+
+Internally, matchmaking runs a continuous loop per queue:
+
+1. Tickets arrive and sit in the queue's pool.
+2. The matcher periodically evaluates pool combinations against the queue's rules.
+3. A candidate group that satisfies all rules and hits the target size becomes a match.
+4. Waiting tickets can **expand** their rules over time (widen skill window, accept higher ping) if configured.
+5. Tickets that expire without matching return a canceled status.
+
+Source: [`how-matchmaking-works.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/how-matchmaking-works.md).

@@ -1,0 +1,16 @@
+---
+title: "Determining required DLLs"
+sidebarTitle: "Required DLLs"
+description: "Find all runtime dependencies your Windows server needs on a clean VM."
+---
+
+A Windows Multiplayer Servers VM is a stripped Server Core image. Missing DLLs are a top cause of failed builds.
+
+## Recommended techniques
+
+- Copy the server binary to a fresh Server Core VM and run it. Watch for `Missing DLL` errors.
+- Use **Dependency Walker** or **Dependencies** (Lucas G. project on GitHub) to enumerate imports.
+- Use `procmon` with the `LoadImage` filter while the server starts.
+- Include the Visual C\+\+ Redistributable and DirectX runtime in your asset zip.
+
+Source: [`determining-required-dlls.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/determining-required-dlls.md).

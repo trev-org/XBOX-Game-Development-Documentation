@@ -1,0 +1,15 @@
+---
+title: "Rule weights"
+sidebarTitle: "Rule weights"
+description: "Weight rules to prioritize which constraints matter most."
+---
+
+Every rule has a **weight**. When the matcher scores candidate groupings, rules with higher weights dominate. Use weights to encode business priorities:
+
+- Latency and region rules — heaviest (players hate lag).
+- Skill rule — middle.
+- Cosmetic attribute rule (e.g. same game mode preference) — lightest.
+
+Rule weights combine with rule expansion: as time passes, the _effective_ weight of a rule drops, letting the matcher accept looser matches.
+
+Source: [`rule-weights.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/rule-weights.md).

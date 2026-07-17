@@ -1,0 +1,15 @@
+---
+title: "Archiving and retrieving server logs"
+sidebarTitle: "Logs"
+description: "Post-run log retrieval, archival, and access."
+---
+
+At server shutdown, the agent zips up any files in the `PF_SERVER_LOG_DIRECTORY` path and uploads them to PlayFab. Retrieve them from Game Manager → **Multiplayer → Servers → Build → Servers → \[instance\]** or via the `GetMultiplayerServerLogs` API.
+
+## Guidance
+
+- Write to `PF_SERVER_LOG_DIRECTORY`; anything outside is discarded.
+- Rotate large logs during the match; the agent copies the current file at shutdown.
+- Ship structured logs (JSON per line) so post-mortem queries are grep-able.
+
+Source: [`archiving-and-retrieving-multiplayer-server-logs.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/archiving-and-retrieving-multiplayer-server-logs.md).

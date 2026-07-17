@@ -1,0 +1,21 @@
+---
+title: "Identifying and increasing core limits"
+sidebarTitle: "Core limits"
+description: "Azure subscription core quota controls how many VMs your title can run."
+---
+
+Multiplayer Servers VMs count against your Azure subscription's core quota. Common causes of failed scaling:
+
+- Subscription core limit reached in a region.
+- VM family quota reached (e.g. `Dv4` cores in `EastUs`).
+- Regional capacity constraint (rare, transient).
+
+## Check and raise
+
+1. Open Azure Portal → **Subscriptions → Usage \+ quotas**.
+2. Filter by region \+ VM family used by the build.
+3. Request an increase via the portal; approval can take days.
+
+Raise limits well before launches and tournaments — an emergency request on the day of an event is a bad time to start.
+
+Source: [`identifying-and-increasing-core-limits.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/identifying-and-increasing-core-limits.md).

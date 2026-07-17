@@ -1,0 +1,11 @@
+---
+title: "Wrapper sample"
+sidebarTitle: "Wrapper"
+description: "Host third-party servers via a GSDK-integrating wrapper process."
+---
+
+The **Wrapper** sample launches an existing server binary as a child process, then integrates GSDK on its behalf. Use it when you can't recompile the server (third-party binaries, community mods).
+
+The wrapper watches the child's stdout for readiness markers, forwards heartbeats to the agent, and exits cleanly when the child exits.
+
+Source: [`wrapper-sample.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/wrapper-sample.md).

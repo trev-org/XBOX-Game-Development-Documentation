@@ -1,0 +1,16 @@
+---
+title: "Crash dump collection"
+sidebarTitle: "Crash dumps"
+description: "Enable minidumps on server crashes."
+---
+
+Enable **crash dump collection** on a build's region config to capture minidumps whenever the server process crashes. Dumps upload alongside logs when the agent tears down the VM.
+
+## Sizing
+
+- **Mini dumps** — small, stack \+ module list.
+- **Full dumps** — include heap; multi-GB. Bill impact for storage.
+
+Use full dumps sparingly (a specific bug hunt), mini dumps as a default.
+
+Source: [`crash-dump-collection.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/crash-dump-collection.md).

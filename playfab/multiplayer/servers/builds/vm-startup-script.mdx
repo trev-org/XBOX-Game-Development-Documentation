@@ -1,0 +1,14 @@
+---
+title: "VM startup script"
+sidebarTitle: "VM startup script"
+description: "Run a script inside every VM before your server binary starts."
+---
+
+Attach a **VM startup script** to a build to prepare the VM: install prerequisites, register anti-cheat drivers, seed local caches.
+
+- Windows: PowerShell.
+- Linux: shell script.
+
+The script runs once per VM, before the game server binary. Failures block server standby, so keep it fast and idempotent.
+
+Source: [`vmstartupscript.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/vmstartupscript.md).

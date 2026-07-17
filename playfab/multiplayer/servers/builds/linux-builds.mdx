@@ -1,0 +1,15 @@
+---
+title: "Deploying Linux-based builds"
+sidebarTitle: "Linux builds"
+description: "Package Linux servers as container images."
+---
+
+Linux servers run inside containers on Multiplayer Servers VMs.
+
+1. Build a Docker image with your server binary and the Linux GSDK.
+2. Push the image to your container registry (ACR is supported natively).
+3. Register the build with [`CreateBuildWithCustomContainer`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/create-build-with-custom-container), pointing to the image.
+4. Set VM size (`Standard_D*as_v4` recommended) and region standby counts.
+5. Test allocation.
+
+Source: [`deploying-linux-based-builds.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/deploying-linux-based-builds.md).

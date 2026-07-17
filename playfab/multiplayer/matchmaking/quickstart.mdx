@@ -1,0 +1,13 @@
+---
+title: "Matchmaking quickstart"
+sidebarTitle: "Quickstart"
+description: "Create a queue, submit tickets, receive a match."
+---
+
+1. In Game Manager, **Multiplayer → Matchmaking → New queue**. Set min/max players and a simple rule (e.g. region equality).
+2. From your client (or server), call [`CreateMatchmakingTicket`](https://learn.microsoft.com/rest/api/playfab/matchmaker/matchmaking/create-matchmaking-ticket) with the queue name and player attributes.
+3. Poll [`GetMatchmakingTicket`](https://learn.microsoft.com/rest/api/playfab/matchmaker/matchmaking/get-matchmaking-ticket) or subscribe via [Real-time messages](/playfab/multiplayer/real-time-messages/overview).
+4. When status is `Matched`, retrieve the `MatchId` and call [`GetMatch`](https://learn.microsoft.com/rest/api/playfab/matchmaker/matchmaking/get-match) to see all members.
+5. Hand off to your server allocation.
+
+Source: [`quickstart.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/quickstart.md).

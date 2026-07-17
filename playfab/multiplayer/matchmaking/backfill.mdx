@@ -1,0 +1,15 @@
+---
+title: "Backfill tickets"
+sidebarTitle: "Backfill"
+description: "Add new players to an in-progress match."
+---
+
+When a player leaves or a session isn't full, open a **backfill ticket** so matchmaking can find replacements.
+
+1. Server calls `CreateServerBackfillTicket` with the current match's session id and remaining seats.
+2. The matcher scans the queue for tickets that fit.
+3. Matching tickets receive the same `MatchId` and can join the session directly.
+
+Backfill respects the queue's rules; add rule relaxations if you need more permissive matching for late joins.
+
+Sources: [`backfill-tickets.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/backfill-tickets.md), [`backfill-tickets-multiplayer-sdk.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/backfill-tickets-multiplayer-sdk.md).

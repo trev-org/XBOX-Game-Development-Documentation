@@ -1,0 +1,13 @@
+---
+title: "Attaching a profiler"
+sidebarTitle: "Profiler"
+description: "Attach a profiler to a live server."
+---
+
+Profilers give you tick-time distributions and CPU hotspots on live servers.
+
+- **Windows** — ETW via `PerfView` or `wprui`; capture on the VM, then move the ETL back to your dev machine.
+- **Linux** — `perf record` inside the container, or use `dotnet-trace` for .NET servers.
+- Attach transiently — profiling adds overhead. Keep windows short (30–60 seconds).
+
+Source: [`attaching-a-profiler.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/attaching-a-profiler.md).

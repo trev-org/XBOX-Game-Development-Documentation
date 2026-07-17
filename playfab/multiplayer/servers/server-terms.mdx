@@ -1,0 +1,19 @@
+---
+title: "Server terms"
+sidebarTitle: "Server terms"
+description: "Glossary of Multiplayer Servers terminology."
+---
+
+Common terms:
+
+- **Build** — versioned bundle of server binaries and config.
+- **Build alias** — stable named pointer to one or more builds with weights.
+- **Region** — Azure datacenter hosting instances of a build.
+- **Standby** — pre-warmed instances waiting for allocation.
+- **Active** — an instance currently hosting a match.
+- **Allocation** — the act of selecting a `StandingBy` instance for a session.
+- **GSDK** — Game Server SDK; the API your server uses to talk to the agent.
+- **Agent** — the PlayFab process on each VM that manages your server.
+- **Session** — one match; instantiated from an allocation.
+
+Source: [`server-terms.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/server-terms.md).

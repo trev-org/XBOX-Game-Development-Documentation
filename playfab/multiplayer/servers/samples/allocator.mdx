@@ -1,0 +1,16 @@
+---
+title: "MPS allocator sample"
+sidebarTitle: "Allocator"
+description: "Reference allocator service that fronts RequestMultiplayerServer."
+---
+
+The **MPS allocator** sample is a small ASP.NET service that:
+
+- Accepts custom allocation requests from your clients.
+- Applies business rules (per-title concurrency caps, region overrides, cheat-check gates).
+- Forwards to [`RequestMultiplayerServer`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/request-multiplayer-server).
+- Returns the resulting connection info.
+
+Use it when you need logic between the client and PlayFab — or when your matchmaker is homegrown rather than PlayFab Matchmaking.
+
+Source: [`mps-allocator-sample.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/mps-allocator-sample.md).

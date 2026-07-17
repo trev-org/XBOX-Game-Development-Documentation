@@ -1,0 +1,20 @@
+---
+title: "Deploy a build using PowerShell API"
+sidebarTitle: "Deploy (PowerShell)"
+description: "Deploy builds programmatically for CI pipelines."
+---
+
+Using the `PlayFabMultiplayer` PowerShell module:
+
+```powershell
+New-PfMultiplayerServerBuild `
+  -BuildName "prod-2026-07-17" `
+  -VmSize Standard_D2as_v4 `
+  -GameAssetFileName "server.zip" `
+  -StartCommand "server.exe -log" `
+  -RegionConfiguration @{ Region = "EastUs"; MaxServers = 100; StandbyServers = 10 }
+```
+
+Hook this into your release pipeline so every green build produces a new PlayFab build.
+
+Source: [`deploy-using-powershell-api.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/deploy-using-powershell-api.md).

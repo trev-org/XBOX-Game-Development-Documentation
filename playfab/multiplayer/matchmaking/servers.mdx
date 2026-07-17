@@ -1,0 +1,15 @@
+---
+title: "Matchmaking with Multiplayer Servers"
+sidebarTitle: "Multiplayer Servers"
+description: "Hand a completed match off to a dedicated server allocation."
+---
+
+After matchmaking produces a `Match`, allocate a dedicated server:
+
+1. Server-side: call [`RequestMultiplayerServer`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/request-multiplayer-server) with the members and initial session data.
+2. Return the connection details to each member via [Real-time messages](/playfab/multiplayer/real-time-messages/overview) or a follow-up poll.
+3. Clients open a socket to the assigned VM.
+
+Or, configure the queue to auto-allocate on match completion so the flow happens without a separate service.
+
+Source: [`multiplayer-servers.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/multiplayer-servers.md).

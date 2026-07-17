@@ -1,0 +1,16 @@
+---
+title: "Peer-to-peer matchmaking"
+sidebarTitle: "Peer-to-peer"
+description: "Matchmaking without dedicated servers."
+---
+
+Without dedicated servers, one matched client becomes the **host** and the others connect to them directly — typically via [PlayFab Party](/playfab/multiplayer/networking/overview) as the transport.
+
+Flow:
+
+1. Matchmaking assembles the match.
+2. The queue's config picks a host member (e.g. lowest ping to the group).
+3. Clients read the host id from `GetMatch`.
+4. Host establishes a Party network; other members join.
+
+Source: [`peer-to-peer.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/peer-to-peer.md).

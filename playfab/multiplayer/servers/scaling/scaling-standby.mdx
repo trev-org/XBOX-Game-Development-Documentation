@@ -1,0 +1,18 @@
+---
+title: "Scaling standby"
+sidebarTitle: "Scaling standby"
+description: "The base per-region standby knob."
+---
+
+Each build region has a **StandbyServers** target and a **MaxServers** ceiling.
+
+- Standby = pre-warmed VMs waiting for allocation. Should cover expected spikes in the next minute or two.
+- Max = hard ceiling. Requests beyond this return `AllocationFailed` unless dynamic-standby raises it.
+
+## Rules of thumb
+
+- Start standby at ~10% of expected concurrent sessions per region.
+- Watch allocation latency — if it climbs above ~1 second, raise standby.
+- Watch idle-standby cost — if servers sit unused for \>30 minutes, standby is too high.
+
+Source: [`scaling-standby.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/scaling-standby.md).

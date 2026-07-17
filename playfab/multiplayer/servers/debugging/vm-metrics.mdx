@@ -1,0 +1,16 @@
+---
+title: "VM metrics"
+sidebarTitle: "VM metrics"
+description: "Per-VM CPU, memory, network, and disk metrics."
+---
+
+Each VM reports metrics to Game Manager:
+
+- CPU %.
+- Memory used / total.
+- Network in/out bytes.
+- Disk read/write bytes.
+
+Use them to right-size VM tiers. If CPU consistently sits below ~40%, drop to a smaller SKU; if memory spikes toward the limit, upgrade or fix a leak.
+
+Source: [`vm-metrics.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/vm-metrics.md).

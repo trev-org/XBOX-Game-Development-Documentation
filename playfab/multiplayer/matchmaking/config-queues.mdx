@@ -1,0 +1,21 @@
+---
+title: "Configure queues"
+sidebarTitle: "Configure queues"
+description: "Queue-level knobs: sizes, rule set, expansion, timeouts."
+---
+
+Each queue defines:
+
+- **Min/Max/Optimal players** — target match size.
+- **Rules** — constraints applied to combinations of tickets.
+- **Expansion** — how rules widen over time.
+- **Ticket timeout** — how long an unmatched ticket lives.
+- **Server capacity hints** — optional signals for allocation.
+
+## Best practices
+
+- Start with one rule, ship, then add rules based on data.
+- Set expansion so long-waiting players eventually match, even in imperfect groupings.
+- Keep timeouts short in playtests; longer in production to allow rule expansion.
+
+Sources: [`config-queues.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/config-queues.md), [`config-examples.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/config-examples.md).

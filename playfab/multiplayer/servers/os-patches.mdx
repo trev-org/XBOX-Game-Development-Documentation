@@ -1,0 +1,15 @@
+---
+title: "OS patch updates"
+sidebarTitle: "OS patches"
+description: "How PlayFab handles OS security patches for VMs."
+---
+
+PlayFab periodically applies OS security patches to Multiplayer Servers VM images. Impact:
+
+- New standby instances start on the patched image.
+- Existing `Active` instances continue on the previous image until deallocated.
+- No changes to your build asset are required unless the patch changes a runtime dependency.
+
+Subscribe to [aka.ms/playfabstatus](https://aka.ms/playfabstatus) or the maintenance notification channel to know when a patch cycle is scheduled.
+
+Source: [`os-patch-updates.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/os-patch-updates.md).

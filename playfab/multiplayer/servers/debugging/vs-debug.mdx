@@ -1,0 +1,15 @@
+---
+title: "Allocating and configuring VS debugging tools"
+sidebarTitle: "Visual Studio debug"
+description: "Provision debug allocations and connect Visual Studio's remote debugger."
+---
+
+Workflow for attaching Visual Studio to a Multiplayer Servers instance:
+
+1. Create a **debug build** with the VS Remote Debugger included in the asset zip.
+2. Allocate the build to a private session (not fed to matchmaking).
+3. RDP or use the agent's `heartbeat` extension to note the VM's IP.
+4. Point `Debug → Attach to Process` at the IP and port of the running server.
+5. Break on the code path of interest.
+
+Source: [`allocating-game-servers-and-configuring-vs-debugging-tools.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/allocating-game-servers-and-configuring-vs-debugging-tools.md).

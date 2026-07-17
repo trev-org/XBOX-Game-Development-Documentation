@@ -1,0 +1,17 @@
+---
+title: "Scaling overview"
+sidebarTitle: "Overview"
+description: "How to size standby capacity to match player demand."
+---
+
+Scaling in Multiplayer Servers is a balance between **speed** (enough standby for instant allocation) and **cost** (standby VMs bill even when idle).
+
+Three scaling modes stack:
+
+- [**Scaling standby**](/playfab/multiplayer/servers/scaling/scaling-standby) — the base per-region standby count.
+- [**Scheduled standby**](/playfab/multiplayer/servers/scaling/scheduled-standby) — time-based overrides (higher standby at peak hours).
+- [**Dynamic standby**](/playfab/multiplayer/servers/scaling/dynamic-standby) — automatic adjustment based on live allocation rate.
+
+Programmatic control via [`UpdateBuildRegion`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/update-build-region) is also available (see [Scaling programmatically](/playfab/multiplayer/servers/scaling/programmatic)).
+
+Source: [`scaling-standby.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/scaling-standby.md).

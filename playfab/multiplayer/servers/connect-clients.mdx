@@ -1,0 +1,15 @@
+---
+title: "Connecting clients to game servers"
+sidebarTitle: "Connect clients"
+description: "How the client reaches the server after allocation."
+---
+
+Allocation returns:
+
+- IP address of the VM (public IPv4 by default).
+- Port mappings (host ports assigned by the agent).
+- Session config and player-list metadata.
+
+Client uses these to open a socket to the server. The server, via GSDK, receives the pre-populated player list and can authorize joining clients against it.
+
+Source: [`connecting-clients-to-game-servers.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/connecting-clients-to-game-servers.md).

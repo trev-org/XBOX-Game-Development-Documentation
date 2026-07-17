@@ -1,0 +1,16 @@
+---
+title: "Best practices"
+sidebarTitle: "Best practices"
+description: "Battle-tested guidance for shipping Multiplayer Servers."
+---
+
+- **Bake dependencies into the asset.** Don't rely on VM defaults for redistributables.
+- **Use a build alias for clients.** Never hard-code build IDs.
+- **Ship structured logs.** Grep-friendly JSON per line beats free-form.
+- **Enable crash dumps early.** Mini dumps cost little and save days.
+- **Right-size VMs.** Watch VM metrics for weeks; drop tiers when possible.
+- **Pre-warm before events.** Increase standby well ahead of tournaments.
+- **Test locally with LocalMultiplayerAgent.** Iterate quickly before consuming Azure cores.
+- **Set MaxServers deliberately.** It's your only ceiling against runaway spend.
+
+Source: [`best-practices.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/best-practices.md).

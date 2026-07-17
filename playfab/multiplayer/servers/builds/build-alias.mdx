@@ -1,0 +1,16 @@
+---
+title: "Allocating with a build alias"
+sidebarTitle: "Build alias"
+description: "Ship builds without updating clients by pointing an alias at the current build."
+---
+
+A **build alias** is a stable name that maps to one or more build IDs with weights.
+
+## Uses
+
+- Zero-downtime rollout: `alias=live` initially maps 100% to `build-A`; add `build-B` at 10% for canary; ramp to 100% and retire `build-A`.
+- Rollback: point the alias back at the previous build.
+
+Clients request `RequestMultiplayerServer` with a `BuildAliasParams` instead of a build ID.
+
+Source: [`allocating-with-build-alias.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/allocating-with-build-alias.md).

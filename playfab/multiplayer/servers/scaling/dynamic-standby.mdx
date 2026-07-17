@@ -1,0 +1,17 @@
+---
+title: "Dynamic standby"
+sidebarTitle: "Dynamic standby"
+description: "Automatically raise standby when allocation rates rise."
+---
+
+**Dynamic standby** auto-scales standby up when the allocation rate accelerates and back down when demand falls.
+
+Configure per region:
+
+- `MinStandbyServers` and `MaxStandbyServers`.
+- `StandbyIncrementSize` — how many VMs to add per scale-up step.
+- `RampDownSeconds` — cooldown before scaling down.
+
+Combine with scheduled standby for the best of both: schedule the base for peak, let dynamic handle spikes on top.
+
+Source: [`dynamic-standby.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/dynamic-standby.md).

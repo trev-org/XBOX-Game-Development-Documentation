@@ -1,0 +1,14 @@
+---
+title: "Locally debugging game servers"
+sidebarTitle: "Local debugging"
+description: "Reproduce production behavior without uploading a build."
+---
+
+1. Copy your build asset next to `LocalMultiplayerAgent.exe`.
+2. Point `MultiplayerSettings.json` at the binary and asset folder.
+3. Set `RunContainer = false` for Windows or configure a Docker container for Linux.
+4. Start the agent.
+5. Attach your debugger to the child process it launches.
+6. Trigger allocations with `HTTP POST /v1/sessionHosts` to the agent.
+
+Source: [`locally-debugging-game-servers-and-integration-with-playfab.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/locally-debugging-game-servers-and-integration-with-playfab.md).

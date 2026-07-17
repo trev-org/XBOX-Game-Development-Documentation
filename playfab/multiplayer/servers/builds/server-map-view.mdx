@@ -1,0 +1,19 @@
+---
+title: "Diagnosing builds with the server map view"
+sidebarTitle: "Server map view"
+description: "Inspect standby, active, and unhealthy instances per region."
+---
+
+The **Server map** (Game Manager → Multiplayer → Servers → Build → Servers) shows:
+
+- Count of instances per region and per state (`StandingBy`, `Active`, `Terminating`, `Propping`).
+- Recent deallocations and their reasons.
+- Per-server details: session ID, host, uptime.
+
+Use it to diagnose:
+
+- "Allocation refused" — all regions at max servers.
+- "Slow allocations" — standby too low relative to demand.
+- Repeated `Terminating` transitions — crashing servers.
+
+Source: [`diagnosing-builds-with-the-server-map-view.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/diagnosing-builds-with-the-server-map-view.md).

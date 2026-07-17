@@ -1,0 +1,20 @@
+---
+title: "Billing for Multiplayer Servers"
+sidebarTitle: "Billing"
+description: "How Multiplayer Servers charges bill against your Azure subscription."
+---
+
+Charges are pay-as-you-go against the Azure subscription linked to your PlayFab title:
+
+- **VM compute** — per second while VMs are `StandingBy`, `Active`, or `Terminating`.
+- **Egress bandwidth** — outbound network from Azure to players.
+- **Storage** — build assets, logs, crash dumps.
+
+## Cost levers
+
+- Right-size VM SKU.
+- Trim standby to actual demand.
+- Turn off dev/staging builds when not in use.
+- Purge old build assets and log archives.
+
+Sources: [`billing-for-thunderhead.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/billing-for-thunderhead.md), [`ea-billing.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/ea-billing.md).

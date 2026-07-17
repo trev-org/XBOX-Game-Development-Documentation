@@ -1,0 +1,16 @@
+---
+title: "Basics of a PlayFab game server"
+sidebarTitle: "Basics"
+description: "How a Multiplayer Servers instance starts, receives allocations, and shuts down."
+---
+
+A PlayFab game server is a long-running process that:
+
+1. Starts inside an Azure VM, alongside the PlayFab agent.
+2. Initializes and calls `GSDK.ReadyForPlayers()` → enters `StandingBy`.
+3. Sits idle waiting for allocation.
+4. On allocation, the agent hands the server a session configuration (initial players, custom data) → enters `Active`.
+5. Runs the match, sending optional heartbeats.
+6. On shutdown, uploads logs / dumps, VM is deallocated (or reused, depending on config).
+
+Source: [`basics-of-a-playFab-game-server.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/basics-of-a-playFab-game-server.md).

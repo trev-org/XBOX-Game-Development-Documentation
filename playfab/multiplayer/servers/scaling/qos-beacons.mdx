@@ -1,0 +1,11 @@
+---
+title: "Using QoS beacons to measure player latency"
+sidebarTitle: "QoS beacons"
+description: "Have clients probe Azure regions to pick the best datacenter."
+---
+
+Each Multiplayer Servers region exposes a **QoS beacon** endpoint. Clients ping each beacon on startup, sort by round-trip time, and pass the ordered list to [`RequestMultiplayerServer`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/request-multiplayer-server) via `PreferredRegions`.
+
+PlayFab picks the top region with available standby and returns the allocation there.
+
+Source: [`using-qos-beacons-to-measure-player-latency-to-azure.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/using-qos-beacons-to-measure-player-latency-to-azure.md).

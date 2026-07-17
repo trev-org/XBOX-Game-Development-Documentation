@@ -1,0 +1,21 @@
+---
+title: "Build, region, and game server lifecycles"
+sidebarTitle: "Lifecycles"
+description: "Understand build, build-region, and game-server states."
+---
+
+## Build lifecycle
+
+`Uploading` → `Deploying` → `Deployed` → `Deleted`.
+
+## Build-region lifecycle
+
+Each region attached to a build reports its own state: `Deploying`, `Deployed`, `Unhealthy`. Regions can be added/removed independently.
+
+## Game-server lifecycle
+
+`Initializing` → `StandingBy` → `Active` → `Terminating`. Servers in `StandingBy` are eligible for allocation; `Active` servers host a match; `Terminating` are shutting down.
+
+Allocation only picks `StandingBy` instances. Ensure your standby \> 0 in every active region.
+
+Sources: [`multiplayer-build-lifecycle.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/multiplayer-build-lifecycle.md), [`multiplayer-build-region-lifecycle.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/multiplayer-build-region-lifecycle.md), [`multiplayer-game-server-lifecycle.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/multiplayer-game-server-lifecycle.md).

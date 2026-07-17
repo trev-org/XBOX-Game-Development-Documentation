@@ -1,0 +1,15 @@
+---
+title: "Matchmaking quickstart (client SDK)"
+sidebarTitle: "Quickstart (client SDK)"
+description: "Use the C++ Multiplayer client SDK for matchmaking."
+---
+
+The C\+\+ Multiplayer client SDK offers a friendlier matchmaking API than raw REST:
+
+1. Initialize with `PFMultiplayerInitialize`.
+2. Create a matchmaking ticket via `PFMatchmakingCreateTicket`.
+3. Poll `PFMatchmakingGetStatus` — or observe events on the multiplayer handle.
+4. On `Matched`, call `PFMatchmakingGetMatch` to inspect the assembled match.
+5. Hand off to your server allocation.
+
+Source: [`quickstart-client-sdk.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/quickstart-client-sdk.md).

@@ -1,0 +1,15 @@
+---
+title: "Matchmaking partitions"
+sidebarTitle: "Partitions"
+description: "Isolate ticket pools within a single queue using partition keys."
+---
+
+A **partition** splits a queue's ticket pool by a key so tickets only match against others with the same key. Use partitions when:
+
+- You want to keep test builds out of production pools.
+- Regional restrictions require geographic isolation.
+- You run experiments where segment A shouldn't be matched with segment B.
+
+Unlike separate queues, a partition shares queue config — easier to manage many small pools.
+
+Source: [`matchmaking-partition.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/matchmaking-partition.md).

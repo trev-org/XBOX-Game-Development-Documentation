@@ -1,0 +1,16 @@
+---
+title: "LocalMultiplayerAgent overview"
+sidebarTitle: "LocalMultiplayerAgent"
+description: "Emulate the PlayFab agent on your dev machine."
+---
+
+**LocalMultiplayerAgent** is a Windows/Linux tool that emulates the Multiplayer Servers agent on your development machine. Your server integrates GSDK the same way as in production; the agent stands in for PlayFab.
+
+## Workflow
+
+1. Configure `MultiplayerSettings.json` with your build's start command, ports, and asset paths.
+2. Run `LocalMultiplayerAgent.exe`.
+3. The agent starts your server binary, transitions it through the lifecycle, and issues fake allocations you can drive from `curl`.
+4. Debug and iterate; when green, upload as a real build.
+
+Source: [`LocalMultiplayerAgent`](https://github.com/MicrosoftDocs/playfab-docs/tree/main/playfab-docs/multiplayer/servers/LocalMultiplayerAgent).

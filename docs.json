@@ -320,7 +320,7 @@
         ]
       },
       {
-        "tab": "Build",
+        "tab": "Build & Develop",
         "pages": [
           {
             "group": "GDK and Game Engines Integration",
@@ -856,7 +856,7 @@
         ]
       },
       {
-        "tab": "Optimize",
+        "tab": "Services",
         "groups": [
           {
             "group": "XBOX Services",
@@ -1350,7 +1350,104 @@
                     "group": "Multiplayer",
                     "icon": "users",
                     "pages": [
+                      {
+                        "group": "Servers",
+                        "icon": "server",
+                        "pages": [
+                          "playfab/multiplayer/servers/lifecycles",
+                          "playfab/multiplayer/servers/gsdk-integration",
+                          {
+                            "group": "Builds",
+                            "icon": "box",
+                            "pages": [
+                              "playfab/multiplayer/servers/builds/overview",
+                              "playfab/multiplayer/servers/builds/build-overview",
+                              "playfab/multiplayer/servers/builds/author-build",
+                              "playfab/multiplayer/servers/builds/build-definition",
+                              "playfab/multiplayer/servers/builds/deploy-game-manager",
+                              "playfab/multiplayer/servers/builds/deploy-powershell",
+                              "playfab/multiplayer/servers/builds/linux-builds",
+                              "playfab/multiplayer/servers/builds/required-dlls",
+                              "playfab/multiplayer/servers/builds/server-map-view",
+                              "playfab/multiplayer/servers/builds/vm-startup-script",
+                              "playfab/multiplayer/servers/builds/build-alias",
+                              "playfab/multiplayer/servers/builds/manage-secrets"
+                            ]
+                          },
+                          {
+                            "group": "Scaling",
+                            "icon": "gauge-high",
+                            "pages": [
+                              "playfab/multiplayer/servers/scaling/overview",
+                              "playfab/multiplayer/servers/scaling/scaling-standby",
+                              "playfab/multiplayer/servers/scaling/scheduled-standby",
+                              "playfab/multiplayer/servers/scaling/dynamic-standby",
+                              "playfab/multiplayer/servers/scaling/programmatic",
+                              "playfab/multiplayer/servers/scaling/core-limits",
+                              "playfab/multiplayer/servers/scaling/qos-beacons"
+                            ]
+                          },
+                          {
+                            "group": "Debugging",
+                            "icon": "bug",
+                            "pages": [
+                              "playfab/multiplayer/servers/debugging/overview",
+                              "playfab/multiplayer/servers/debugging/local-agent-overview",
+                              "playfab/multiplayer/servers/debugging/local-repro",
+                              "playfab/multiplayer/servers/debugging/direct-debug",
+                              "playfab/multiplayer/servers/debugging/vs-debug",
+                              "playfab/multiplayer/servers/debugging/profiler",
+                              "playfab/multiplayer/servers/debugging/logs",
+                              "playfab/multiplayer/servers/debugging/crash-dumps",
+                              "playfab/multiplayer/servers/debugging/vm-metrics"
+                            ]
+                          },
+                          "playfab/multiplayer/servers/basics",
+                          "playfab/multiplayer/servers/create-first-server",
+                          "playfab/multiplayer/servers/connect-clients",
+                          "playfab/multiplayer/servers/server-sdks",
+                          {
+                            "group": "Samples",
+                            "icon": "code-branch",
+                            "pages": [
+                              "playfab/multiplayer/servers/samples/overview",
+                              "playfab/multiplayer/servers/samples/windows-runner",
+                              "playfab/multiplayer/servers/samples/wrapper",
+                              "playfab/multiplayer/servers/samples/mps-unity",
+                              "playfab/multiplayer/servers/samples/allocator"
+                            ]
+                          },
+                          "playfab/multiplayer/servers/using-playfab-to-host",
+                          "playfab/multiplayer/servers/server-comparison",
+                          "playfab/multiplayer/servers/server-terms",
+                          "playfab/multiplayer/servers/best-practices",
+                          "playfab/multiplayer/servers/billing",
+                          "playfab/multiplayer/servers/comm-sla",
+                          "playfab/multiplayer/servers/quotas",
+                          "playfab/multiplayer/servers/os-patches"
+                        ]
+                      },
                       "playfab/multiplayer-lobby",
+                      {
+                        "group": "Matchmaking",
+                        "icon": "users-rectangle",
+                        "pages": [
+                          "playfab/multiplayer/matchmaking/overview",
+                          "playfab/multiplayer/matchmaking/quickstart",
+                          "playfab/multiplayer/matchmaking/quickstart-client-sdk",
+                          "playfab/multiplayer/matchmaking/how-it-works",
+                          "playfab/multiplayer/matchmaking/config-queues",
+                          "playfab/multiplayer/matchmaking/rule-weights",
+                          "playfab/multiplayer/matchmaking/ticket-attributes",
+                          "playfab/multiplayer/matchmaking/display-statistics",
+                          "playfab/multiplayer/matchmaking/partition",
+                          "playfab/multiplayer/matchmaking/backfill",
+                          "playfab/multiplayer/matchmaking/servers",
+                          "playfab/multiplayer/matchmaking/peer-to-peer",
+                          "playfab/multiplayer/matchmaking/errors",
+                          "playfab/multiplayer/matchmaking/usage"
+                        ]
+                      },
                       "playfab/multiplayer-servers",
                       "playfab/party",
                       "playfab/party-voice"
@@ -1640,7 +1737,7 @@
         ]
       },
       {
-        "tab": "Publishing",
+        "tab": "Publishing & Commerce",
         "groups": [
           {
             "group": "Get started",
@@ -1953,7 +2050,7 @@
         ]
       },
       {
-        "tab": "API",
+        "tab": "API References",
         "groups": [
           {
             "group": "Error Codes",

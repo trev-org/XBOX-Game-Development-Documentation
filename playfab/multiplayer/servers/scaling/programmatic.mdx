@@ -1,0 +1,17 @@
+---
+title: "Scaling programmatically"
+sidebarTitle: "Programmatic scaling"
+description: "Drive standby and max via API for tournaments and custom events."
+---
+
+Call [`UpdateBuildRegion`](https://learn.microsoft.com/rest/api/playfab/multiplayer/multiplayer-server/update-build-region) to change `StandbyServers` and `MaxServers` on the fly.
+
+## Use cases
+
+- Bring 500 extra standby servers online 10 minutes before an announced tournament.
+- Pre-warm for a marketing push driven by an external campaign.
+- Emergency capacity increase during a viral moment.
+
+Wrap the call in an ops tool with least-privilege credentials — misconfigured maxes are the top cause of surprise bills.
+
+Source: [`scaling-programmatically.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/scaling-programmatically.md).

@@ -1,0 +1,21 @@
+---
+title: "Matchmaking error cases"
+sidebarTitle: "Errors"
+description: "Common matchmaking failures and how to recover."
+---
+
+## Failure modes
+
+- **`TicketExpired`** — no compatible group before timeout. Show a message and let the player retry.
+- **`InvalidQueue`** — queue name doesn't exist. Verify config.
+- **`InvalidAttributes`** — ticket attributes don't satisfy the queue's schema.
+- **`Canceled`** — you (or the platform) canceled the ticket.
+- **`InvalidPlatform`** — attribute values contradict platform restrictions (e.g. cross-play disabled).
+
+## Handling
+
+- Log the failure code and ticket id.
+- Surface user-friendly copy per code ("No matches found, please try again").
+- Retry with backoff for transient errors.
+
+Source: [`error-cases.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/matchmaking/error-cases.md).
