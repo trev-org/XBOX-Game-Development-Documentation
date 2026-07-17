@@ -1,0 +1,17 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "xbox-auth-mock",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-07-17",
+	"routes": [
+		{
+			"pattern": "xbox-auth-mock.mintli.fyi",
+			"custom_domain": true
+		}
+	],
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"compatibility_flags": ["nodejs_compat"]
+}
