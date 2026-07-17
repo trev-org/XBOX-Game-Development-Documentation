@@ -1,0 +1,30 @@
+---
+title: "Photon quickstart"
+sidebarTitle: "Photon"
+description: "Set up Photon multiplayer (RealTime and PUN) to work with PlayFab."
+---
+
+This add-on connects PlayFab with Photon multiplayer services: **Photon RealTime** and **Photon Unity Networking (PUN)**.
+
+## Prerequisites
+
+- A PlayFab title.
+- A Photon account and an application ID for the Photon product you plan to use.
+
+## Enable the Photon add-on
+
+1. In Game Manager, go to **Add-ons → Photon**.
+2. Enter your Photon Application ID.
+3. Save.
+
+## Client authentication flow
+
+1. Player authenticates with PlayFab (any login method).
+2. Client calls `GetPhotonAuthenticationToken`, passing the Photon application ID.
+3. Client uses the returned token as the auth token when connecting to Photon.
+
+Photon validates the token with PlayFab, ensuring only authenticated players enter your Photon room.
+
+## Next
+
+- See the [multiplayer section](/playfab/multiplayer/overview) for lobby, matchmaking, and PlayFab-hosted server options.

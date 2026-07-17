@@ -1,0 +1,42 @@
+---
+title: "Debugging CloudScript using Azure Functions with the Azure portal"
+sidebarTitle: "Debug in Azure portal"
+description: "Inspect live function logs in the Azure portal."
+---
+
+If you edit Azure Functions in the [Azure portal](https://portal.azure.com), you can view live logs there.
+
+## View logs
+
+1. Open your Function App in the portal.
+2. Select **Functions**, then choose your function.
+3. Select **Monitor** to see invocation history, or **Code \+ Test → Logs** for a live tail.
+
+## Reading a log entry
+
+Each invocation shows:
+
+- Timestamp and success/failure.
+- Duration.
+- Trigger details (HTTP path, PlayStream event name, etc.).
+- Custom `log.info` / `ILogger` output.
+- Full exception with stack trace on failure.
+
+## Turning up verbosity
+
+Edit `host.json` in your project and adjust `logging.logLevel` before deploying:
+
+```json
+{
+  "logging": {
+    "logLevel": {
+      "default": "Information",
+      "MyNamespace": "Debug"
+    }
+  }
+}
+```
+
+## Application Insights
+
+Enable Application Insights on the Function App for durable, queryable telemetry. Use Kusto queries to correlate failures with PlayStream events.

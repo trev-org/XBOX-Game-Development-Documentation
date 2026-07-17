@@ -1,0 +1,18 @@
+---
+title: "CloudScript overview"
+sidebarTitle: "Overview"
+description: "Custom JavaScript server-side logic that scales without you running any servers."
+---
+
+CloudScript is one of PlayFab's most versatile features. It runs custom JavaScript logic on PlayFab servers that scales with demand. Use it whenever the client shouldn't be trusted with a decision — rewards, purchases, moderation, or anything that requires server authority.
+
+<Note>
+  [CloudScript using Azure Functions](/playfab/live-service-management/cloudscript-azure-functions/overview) supports more languages (C#, JS/TS, Python, PowerShell, Java) and better debugging. Prefer it for new work.
+</Note>
+
+## Invocation
+
+- Explicit call from client (`ExecuteCloudScript`) or server.
+- Automatic invocation from a PlayStream rule.
+- On schedule via a scheduled task.
+- On segment entry/exit.

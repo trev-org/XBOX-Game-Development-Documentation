@@ -1,0 +1,49 @@
+---
+title: "SDK error handling best practices"
+sidebarTitle: "SDK error handling"
+description: "Access, recognize, and handle PlayFab API errors from your client and server SDKs."
+---
+
+How you access, recognize, and handle errors depends on your language, but the patterns generalize across Client, Server, and Admin SDKs.
+
+## Universal shape
+
+Every PlayFab error contains:
+
+- **HTTP status** (400–599).
+- **`code`** — numeric PlayFab error code.
+- **`error`** — short name (`"InvalidUsernameOrPassword"`).
+- **`errorMessage`** — human message.
+- **`errorDetails`** — optional map of field-level messages.
+
+## C# example
+
+```csharp
+PlayFabClientAPI.LoginWithPlayFab(request,
+    result => Debug.Log("Logged in"),
+    error => {
+        Debug.LogError(error.GenerateErrorReport());
+        if (error.Error == PlayFabErrorCode.InvalidUsernameOrPassword) {
+            // Show retry UI
+        }
+    });
+```
+
+## JS/TS example
+
+```typescript
+PlayFab.PlayFabClient.LoginWithPlayFab(request, (result, error) => {
+    if (error) {
+        console.error(error.GenerateErrorReport());
+        return;
+    }
+    // ...
+});
+```
+
+## Patterns
+
+- **User-facing errors:** map error codes to localized strings; never show raw messages.
+- **Retryable vs. non-retryable:** transient network/timeouts — retry with backoff; 4xx codes — don't retry.
+- **Rate limits (429):** honor `Retry-After` header. See [Throttling best practices](/playfab/live-service-management/throttling/best-practices).
+- **Central handler:** wrap all PlayFab calls to log/measure errors uniformly.

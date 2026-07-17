@@ -1,0 +1,47 @@
+---
+title: "Quickstart: writing a PlayFab CloudScript using Azure Functions"
+sidebarTitle: "Quickstart"
+description: "Author, deploy, and invoke your first Azure Functions CloudScript."
+---
+
+Write a CloudScript using Azure Functions with Visual Studio Code, Azure Functions C#, and Unity C#. After completing this quickstart you can link the function to rules, scheduled tasks, or call it from client code.
+
+## Prerequisites
+
+- Visual Studio Code with the **Azure Functions** extension.
+- .NET SDK matching the Azure Functions runtime you use.
+- Azure subscription and PlayFab title.
+- Azure Functions Core Tools.
+
+## Steps (summary)
+
+1. **Create an Azure Function App** in the Azure portal (or via VS Code Azure Functions extension).
+2. **Author a function** locally in VS Code. In C#:
+   ```csharp
+   [FunctionName("HelloWorld")]
+   public static async Task<dynamic> Run(
+       [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req,
+       ILogger log)
+   {
+       var context = await FunctionContext<dynamic>.Create(req);
+       var args = context.FunctionArgument;
+       return new { message = $"Hello {context.CallerEntityProfile.Lineage.MasterPlayerAccountId}!" };
+   }
+   ```
+3. **Deploy** the function to Azure from VS Code.
+4. **Register with PlayFab** — in Game Manager under **Automation → CloudScript → Functions (Preview)**, add the function name and Azure URL/key.
+5. **Invoke** from the client:
+   ```csharp
+   PlayFabCloudScriptAPI.ExecuteFunction(new ExecuteFunctionRequest {
+       FunctionName = "HelloWorld",
+       FunctionParameter = new { name = "Player" },
+       GeneratePlayStreamEvent = true
+   }, result => Debug.Log(result.FunctionResult),
+      err => Debug.LogError(err.GenerateErrorReport()));
+   ```
+
+## Next
+
+- [Context models](/playfab/live-service-management/cloudscript-azure-functions/context-models)
+- [Local debugging](/playfab/live-service-management/cloudscript-azure-functions/local-debugging)
+- [Debug in Azure portal](/playfab/live-service-management/cloudscript-azure-functions/debug-azure-portal)

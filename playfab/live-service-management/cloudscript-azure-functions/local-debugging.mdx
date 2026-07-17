@@ -1,0 +1,24 @@
+---
+title: "Local debugging for CloudScript using Azure Functions"
+sidebarTitle: "Local debugging"
+description: "Run and debug your function on your own machine while your live PlayFab title routes calls to it."
+---
+
+Run your Azure Functions CloudScript locally and hit breakpoints from your game client. Useful for tight iteration loops without redeploying to Azure.
+
+## Setup summary
+
+1. Install [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local).
+2. Install and configure [ngrok](https://ngrok.com/) (or another tunnel) so PlayFab can reach `http://localhost` on your dev machine.
+3. Register the function with PlayFab using the ngrok URL as the target.
+4. Run the function locally: `func start` from your project.
+5. Attach a debugger (VS Code, Visual Studio) to the running Functions host.
+6. Invoke from your client — PlayFab calls the ngrok URL, which forwards to your machine, and your breakpoints hit.
+
+## Detail
+
+- **VS Code:** F5 with the _Attach to .NET Functions_ / _Attach to Node Functions_ configuration.
+- **Visual Studio:** open the Functions project and F5 — the debugger auto-attaches.
+- **VS Code with TypeScript/JS:** use the built-in Node debugger.
+
+Remember to restore the original Azure URL in PlayFab when you're done debugging — otherwise production traffic keeps hitting your dev machine.

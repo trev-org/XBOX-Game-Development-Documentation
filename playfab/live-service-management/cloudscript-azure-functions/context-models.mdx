@@ -1,0 +1,33 @@
+---
+title: "Using CloudScript context models"
+sidebarTitle: "Context models"
+description: "Access the caller identity, PlayStream event, or scheduled-task data that triggered your function."
+---
+
+Azure Functions CloudScript exposes a **context model** describing how the function was invoked. Available data depends on the trigger:
+
+- **Client/server API** — caller entity, `FunctionArgument`.
+- **PlayStream rule** — the triggering event.
+- **Scheduled task** — task ID, run info.
+- **Segment entry/exit** — transitioning player, direction (enter or exit).
+
+## C# example
+
+```csharp
+var context = await FunctionContext<dynamic>.Create(req);
+var args = context.FunctionArgument;
+var callerPlayerId = context.CallerEntityProfile.Lineage.MasterPlayerAccountId;
+var triggeringEvent = context.TriggerEvent; // may be null
+```
+
+## PlayStream event context
+
+When a rule fires the function, `context.TriggerEvent` contains the PlayStream event that triggered the rule. Use it to react to logins, purchases, statistic changes, etc.
+
+## Segment entry/exit context
+
+For segment-triggered functions, `context.TriggerEvent` describes the transition, and `EventName` starts with `player_entered_segment` or `player_left_segment`.
+
+## Server calls with the caller's authority
+
+Use `PlayFabServerAPI` to act on the caller by copying their `PlayFabId` from `CallerEntityProfile.Lineage`.

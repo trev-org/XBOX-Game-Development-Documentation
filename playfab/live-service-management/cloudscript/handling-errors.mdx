@@ -1,0 +1,35 @@
+---
+title: "Handling errors in CloudScript"
+sidebarTitle: "Handling errors"
+description: "Recognize server API errors inside CloudScript and return usable errors to the client."
+---
+
+When a Server API call fails inside CloudScript, the SDK throws a JavaScript exception. Wrap calls in `try / catch` to inspect the error.
+
+```javascript
+handlers.grantIfEligible = function (args, context) {
+    try {
+        var res = server.GrantItemsToUser({
+            PlayFabId: currentPlayerId,
+            ItemIds: [args.itemId]
+        });
+        return { ok: true, granted: res.ItemGrantResults };
+    } catch (e) {
+        log.error("Grant failed", e);
+        return { ok: false, error: e.apiErrorInfo ? e.apiErrorInfo.apiError : e.message };
+    }
+};
+```
+
+## Distinguishing errors
+
+- `e.apiErrorInfo` is present on Server API failures. `e.apiErrorInfo.apiError` contains `code`, `error`, and `errorMessage`.
+- Generic JavaScript exceptions (undefined variables, type errors) don't have `apiErrorInfo` — use `e.message`.
+
+## Return usable errors
+
+Always return a plain-JSON error shape. Never leak stack traces to the client. Log the full error with `log.error` so it lands in PlayStream.
+
+## Retry vs. fail fast
+
+Most server errors are non-retryable (bad input, forbidden). Only retry on transient network errors, and cap retries — CloudScript execution time is short.

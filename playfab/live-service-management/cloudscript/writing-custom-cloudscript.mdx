@@ -1,0 +1,57 @@
+---
+title: "Writing custom CloudScript"
+sidebarTitle: "Writing custom scripts"
+description: "Handler shape, calling PlayFab APIs from a script, and returning data to the client."
+---
+
+CloudScript handlers are JavaScript functions attached to the `handlers` object. They can be called explicitly by client/server, or automatically by PlayStream rules or scheduled tasks.
+
+<Note>
+  Prefer [CloudScript using Azure Functions](/playfab/live-service-management/cloudscript-azure-functions/overview) for new development — more languages, better debugging.
+</Note>
+
+## Handler shape
+
+```javascript
+handlers.myHandler = function (args, context) {
+    // args = client-provided FunctionParameter
+    // context = system-provided data (PlayStream event, etc.)
+    return { /* JSON returned to caller */ };
+};
+```
+
+## Available globals
+
+- `currentPlayerId` — PlayFab ID of the player invoking the script.
+- `log.info`, `log.debug`, `log.error` — logging visible in Game Manager and PlayStream.
+- `server.*` — all Server APIs.
+- `entity.*` — Entity APIs.
+- `http` — make outbound webhook calls.
+
+## Calling PlayFab APIs
+
+```javascript
+handlers.grantStarterPack = function (args, context) {
+    var result = server.GrantItemsToUser({
+        PlayFabId: currentPlayerId,
+        ItemIds: ["starter_sword", "starter_shield"]
+    });
+    return { granted: result.ItemGrantResults };
+};
+```
+
+Server APIs from CloudScript execute with server privileges — don't accept sensitive parameters from the client without validation.
+
+## Invoked automatically
+
+- **PlayStream rule** — `context` includes the triggering event.
+- **Scheduled task** — `context` includes the task ID and run info.
+- **Segment entry/exit** — `context` describes the transition.
+
+## Limits
+
+- Handler execution time cap (short — seconds).
+- HTTP request cap per invocation.
+- Response payload size cap.
+
+When you outgrow these, migrate to CloudScript using Azure Functions.

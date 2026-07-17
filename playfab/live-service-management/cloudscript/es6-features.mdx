@@ -1,0 +1,22 @@
+---
+title: "ES6 features in CloudScript"
+sidebarTitle: "ES6 features"
+description: "Modern JavaScript syntax you can use in CloudScript."
+---
+
+The CloudScript runtime supports most modern ECMAScript 6 features. Useful ones:
+
+- `let` and `const` block scoping.
+- Arrow functions.
+- Template literals: ``Hello ${name}``.
+- Default and rest parameters.
+- Destructuring assignment.
+- `class` syntax.
+- `Map` and `Set`.
+- `Promise` (with caveats — CloudScript is fundamentally synchronous for server API calls).
+
+A complete overview: [ES6 cheatsheet](https://devhints.io/es6).
+
+<Note>
+  CloudScript is synchronous by design — `server.*` calls block. Don't try to use `async`/`await` for API calls; use them only for pure JavaScript async patterns.
+</Note>

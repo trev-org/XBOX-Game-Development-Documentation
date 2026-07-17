@@ -1,0 +1,25 @@
+---
+title: "Debugging with CloudScript Azure Functions in VS Code"
+sidebarTitle: "Debug in VS Code"
+description: "Breakpoints and step-through inside Visual Studio Code."
+---
+
+Debug Azure Functions CloudScript locally in VS Code.
+
+## Prerequisites
+
+- VS Code with the **Azure Functions** extension.
+- Language runtime (Node.js, .NET SDK, or Python) matching your project.
+- Azure Functions Core Tools installed.
+
+## Steps
+
+1. Open your Functions project folder in VS Code.
+2. Set a breakpoint inside your function.
+3. Press **F5** — VS Code launches `func start` and attaches the debugger.
+4. From your game client, invoke `ExecuteFunction` targeting your local (tunneled) URL.
+5. Execution pauses on your breakpoint; inspect variables and step through.
+
+<Note>
+  Make sure PlayFab is configured to call your tunneled localhost URL, not the deployed Azure URL, while debugging.
+</Note>

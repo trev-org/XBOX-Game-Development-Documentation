@@ -1,0 +1,50 @@
+---
+title: "CloudScript quickstart"
+sidebarTitle: "Quickstart"
+description: "Upload a JS file to Game Manager, then call a handler from your client."
+---
+
+CloudScript is a fast, secure, scalable alternative to running dedicated servers for custom logic. Your JavaScript lives and runs on PlayFab machines.
+
+<Note>
+  [CloudScript using Azure Functions](/playfab/live-service-management/cloudscript-azure-functions/quickstart) supports more languages and better debugging.
+</Note>
+
+## Write your first handler
+
+Create a JS file with a handler:
+
+```javascript
+handlers.helloWorld = function (args, context) {
+    var message = "Hello " + currentPlayerId + "!";
+    log.info(message);
+    return { messageValue: message };
+};
+```
+
+Each handler receives `args` (client-provided) and `context` (system-provided, e.g. PlayStream event). `currentPlayerId` is available implicitly.
+
+## Upload the file
+
+1. In Game Manager, go to **Automation → CloudScript → Revisions**.
+2. Paste or upload your JavaScript.
+3. Select **Save as Latest** to save without publishing, or **Save and Deploy** to publish.
+
+## Call from the client
+
+```csharp
+PlayFabClientAPI.ExecuteCloudScript(new ExecuteCloudScriptRequest {
+    FunctionName = "helloWorld",
+    FunctionParameter = new { inputValue = "YOUR NAME" },
+    GeneratePlayStreamEvent = true
+}, OnCloudHelloWorld, OnErrorShared);
+
+void OnCloudHelloWorld(ExecuteCloudScriptResult result) {
+    var msg = ((JsonObject)result.FunctionResult)["messageValue"];
+    Debug.Log(msg);
+}
+```
+
+## Revisions
+
+Each save creates a numbered revision. The **Live** revision is what production runs; others can be tested by targeting a specific `RevisionSelection` in `ExecuteCloudScript`.

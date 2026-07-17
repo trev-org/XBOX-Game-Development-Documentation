@@ -1,0 +1,25 @@
+---
+title: "Debugging with CloudScript Azure Functions in Visual Studio"
+sidebarTitle: "Debug in Visual Studio"
+description: "Breakpoints and step-through inside Visual Studio (C#)."
+---
+
+Debug Azure Functions CloudScript locally in Visual Studio.
+
+## Prerequisites
+
+- Visual Studio with the **Azure development** workload.
+- .NET SDK matching your Functions runtime.
+- Azure Functions Core Tools.
+
+## Steps
+
+1. Open your Functions project (`.csproj`) in Visual Studio.
+2. Set breakpoints in your function code.
+3. Press **F5** — Visual Studio launches the Functions host and attaches the debugger.
+4. From your game client, invoke `ExecuteFunction` targeting your tunneled localhost URL.
+5. Execution pauses on your breakpoint. Inspect and step.
+
+<Note>
+  Make sure PlayFab targets your tunneled localhost URL, not the deployed Azure URL, while debugging.
+</Note>

@@ -1,0 +1,40 @@
+---
+title: "Making webhook calls from CloudScript"
+sidebarTitle: "Webhook calls"
+description: "Call any HTTPS endpoint from CloudScript with REST verbs and headers."
+---
+
+CloudScript can make webhook (REST) calls to any HTTPS endpoint, letting you integrate with third-party services or your own backend.
+
+<Note>
+  For new work, prefer [CloudScript using Azure Functions](/playfab/live-service-management/cloudscript-azure-functions/overview).
+</Note>
+
+## Basic call
+
+```javascript
+handlers.notifyDiscord = function (args, context) {
+    var url = "https://discord.com/api/webhooks/XXXX/YYYY";
+    var body = JSON.stringify({ content: args.message });
+    var headers = { "Content-Type": "application/json" };
+    var response = http.request(url, "post", body, "application/json", headers);
+    return { response: response };
+};
+```
+
+## Adding auth headers
+
+Secrets should live in Title Data (internal) so they never ship with client code:
+
+```javascript
+var cfg = server.GetTitleData({ Keys: ["third_party_api_key"] });
+var apiKey = cfg.Data["third_party_api_key"];
+var response = http.request("https://api.example.com/notify", "post", body,
+    "application/json", { "Authorization": "Bearer " + apiKey });
+```
+
+## Timeouts and retries
+
+- CloudScript enforces a per-invocation execution cap. Slow endpoints will kill your script.
+- Don't retry endlessly — fail fast and let a rule/scheduled task retry externally.
+- On non-2xx responses, `http.request` returns the body as a string; parse and inspect it.

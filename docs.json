@@ -1112,6 +1112,40 @@
                           "playfab/live-service-management/experiments/analyze-experiments",
                           "playfab/live-service-management/experiments/pricing"
                         ]
+                      },
+                      {
+                        "group": "Add-ons",
+                        "icon": "puzzle-piece",
+                        "pages": [
+                          "playfab/live-service-management/add-ons/overview",
+                          "playfab/live-service-management/add-ons/photon-quickstart"
+                        ]
+                      },
+                      {
+                        "group": "CloudScript",
+                        "icon": "cloud",
+                        "pages": [
+                          "playfab/live-service-management/cloudscript/overview",
+                          "playfab/live-service-management/cloudscript/quickstart",
+                          "playfab/live-service-management/cloudscript/writing-custom-cloudscript",
+                          "playfab/live-service-management/cloudscript/handling-errors",
+                          "playfab/live-service-management/cloudscript/es6-features",
+                          "playfab/live-service-management/cloudscript/webhook-calls",
+                          "playfab/live-service-management/cloudscript/sdk-error-handling"
+                        ]
+                      },
+                      {
+                        "group": "CloudScript using Azure Functions",
+                        "icon": "microchip",
+                        "pages": [
+                          "playfab/live-service-management/cloudscript-azure-functions/overview",
+                          "playfab/live-service-management/cloudscript-azure-functions/quickstart",
+                          "playfab/live-service-management/cloudscript-azure-functions/context-models",
+                          "playfab/live-service-management/cloudscript-azure-functions/local-debugging",
+                          "playfab/live-service-management/cloudscript-azure-functions/debug-vs-code",
+                          "playfab/live-service-management/cloudscript-azure-functions/debug-visual-studio",
+                          "playfab/live-service-management/cloudscript-azure-functions/debug-azure-portal"
+                        ]
                       }
                     ]
                   },
