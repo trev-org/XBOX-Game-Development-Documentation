@@ -1,0 +1,11 @@
+---
+title: "Lobby time to live"
+sidebarTitle: "TTL"
+description: "Lifetime of empty lobbies."
+---
+
+Lobbies have a service-side **TTL**. Once a lobby has no members, the service starts a countdown; if nobody joins before the TTL expires, the lobby is deleted.
+
+Adjust the default at the title level, or override per lobby on creation for special cases (e.g. lobbies that need to persist while the owner reconnects).
+
+Source: [`lobby-ttl.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/lobby-ttl.md).

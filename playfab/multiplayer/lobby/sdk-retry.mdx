@@ -1,0 +1,15 @@
+---
+title: "Client SDK: retry behavior"
+sidebarTitle: "Retry behavior"
+description: "SDK retry and backoff."
+---
+
+The multiplayer SDK auto-retries transient failures (throttling, network blips) with exponential backoff. For non-transient failures it surfaces the error immediately.
+
+Guidance:
+
+- Don't wrap every call with your own retry loop — you'll compound backoff.
+- Do retry on `S_OK` failures reported by your own gameplay logic (e.g. a bad user input).
+- Cancel operations that no longer matter (player left the lobby screen).
+
+Source: [`playfab-multiplayer-sdk-retry-behavior.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/playfab-multiplayer-sdk-retry-behavior.md).

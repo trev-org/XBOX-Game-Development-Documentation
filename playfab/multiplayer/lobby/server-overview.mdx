@@ -1,0 +1,13 @@
+---
+title: "Lobby server ownership"
+sidebarTitle: "Server overview"
+description: "Server-owned lobbies."
+---
+
+Game-server entities can own a lobby directly. Server-owned lobbies:
+
+- Are created via title/entity auth, not client auth.
+- Never migrate ownership on player disconnect.
+- Are useful when the authoritative server needs to change lobby state (e.g. update ready flags, kick members after votes).
+
+Source: [`lobby-server-overview.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/lobby-server-overview.md).

@@ -1,0 +1,14 @@
+---
+title: "Party + Lobby integration"
+sidebarTitle: "Lobby integration"
+description: "Combine Lobby with Party."
+---
+
+Common pattern:
+
+1. Players group via [Lobby](/playfab/multiplayer/lobby/overview).
+2. Owner (or first member) creates a Party **network descriptor** and stashes it in a lobby property.
+3. Every member reads the property and calls `ConnectToNetwork`.
+4. Party carries voice \+ game data for the session.
+
+Source: [`party-lobby-integration.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/networking/party-lobby-integration.md).

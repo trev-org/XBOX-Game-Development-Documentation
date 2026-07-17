@@ -1350,10 +1350,15 @@
                     "group": "Multiplayer",
                     "icon": "users",
                     "pages": [
+                      "playfab/multiplayer/overview",
                       {
                         "group": "Servers",
                         "icon": "server",
                         "pages": [
+                          "playfab/multiplayer/servers/overview",
+                          "playfab/multiplayer/servers/enable",
+                          "playfab/multiplayer/servers/quickstart-game-manager",
+                          "playfab/multiplayer/servers/quickstart-powershell",
                           "playfab/multiplayer/servers/lifecycles",
                           "playfab/multiplayer/servers/gsdk-integration",
                           {
@@ -1427,7 +1432,6 @@
                           "playfab/multiplayer/servers/os-patches"
                         ]
                       },
-                      "playfab/multiplayer-lobby",
                       {
                         "group": "Matchmaking",
                         "icon": "users-rectangle",
@@ -1448,9 +1452,80 @@
                           "playfab/multiplayer/matchmaking/usage"
                         ]
                       },
-                      "playfab/multiplayer-servers",
-                      "playfab/party",
-                      "playfab/party-voice"
+                      {
+                        "group": "Lobby",
+                        "icon": "handshake",
+                        "pages": [
+                          "playfab/multiplayer/lobby/overview",
+                          "playfab/multiplayer/lobby/getting-started",
+                          "playfab/multiplayer/lobby/lobby-and-matchmaking",
+                          "playfab/multiplayer/lobby/join",
+                          "playfab/multiplayer/lobby/create",
+                          "playfab/multiplayer/lobby/invites",
+                          "playfab/multiplayer/lobby/find",
+                          "playfab/multiplayer/lobby/search-keywords",
+                          "playfab/multiplayer/lobby/properties",
+                          "playfab/multiplayer/lobby/owner",
+                          "playfab/multiplayer/lobby/ownership-changes",
+                          "playfab/multiplayer/lobby/ttl",
+                          "playfab/multiplayer/lobby/server-overview",
+                          "playfab/multiplayer/lobby/real-time-messages",
+                          {
+                            "group": "Multiplayer SDK",
+                            "icon": "code",
+                            "pages": [
+                              "playfab/multiplayer/lobby/sdk-async",
+                              "playfab/multiplayer/lobby/sdk-errors",
+                              "playfab/multiplayer/lobby/sdk-retry",
+                              "playfab/multiplayer/lobby/sdk-cpp-reference",
+                              "playfab/multiplayer/lobby/sdk-unity-reference"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Networking (Party)",
+                        "icon": "phone-volume",
+                        "pages": [
+                          "playfab/multiplayer/networking/overview",
+                          "playfab/multiplayer/networking/quickstart",
+                          "playfab/multiplayer/networking/enable-party",
+                          "playfab/multiplayer/networking/party-features",
+                          "playfab/multiplayer/networking/party-sdks",
+                          "playfab/multiplayer/networking/party-samples",
+                          "playfab/multiplayer/networking/party-logging",
+                          "playfab/multiplayer/networking/party-lobby-integration",
+                          "playfab/multiplayer/networking/party-playstream-events",
+                          "playfab/multiplayer/networking/party-tutorial-requestpartyservice.md",
+                          "playfab/multiplayer/networking/party-usage",
+                          "playfab/multiplayer/networking/party-ux-guidelines",
+                          "playfab/multiplayer/networking/party-xbox-live-guide",
+                          "playfab/multiplayer/networking/release-notes",
+                          "playfab/multiplayer/networking/regions",
+                          "playfab/multiplayer/networking/transport-options",
+                          "playfab/multiplayer/networking/troubleshooting",
+                          "playfab/multiplayer/networking/using-mpsd",
+                          {
+                            "group": "Concepts",
+                            "icon": "lightbulb",
+                            "pages": [
+                              "playfab/multiplayer/networking/concepts/overview",
+                              "playfab/multiplayer/networking/concepts/async-operations",
+                              "playfab/multiplayer/networking/concepts/direct-peer-connectivity",
+                              "playfab/multiplayer/networking/concepts/discovery",
+                              "playfab/multiplayer/networking/concepts/endpoint-transmission",
+                              "playfab/multiplayer/networking/concepts/faq",
+                              "playfab/multiplayer/networking/concepts/invitations-security",
+                              "playfab/multiplayer/networking/concepts/multiple-networks",
+                              "playfab/multiplayer/networking/concepts/objects",
+                              "playfab/multiplayer/networking/concepts/port-usage",
+                              "playfab/multiplayer/networking/concepts/porting-from-sockets",
+                              "playfab/multiplayer/networking/concepts/regions",
+                              "playfab/multiplayer/networking/concepts/text-to-speech-profiles"
+                            ]
+                          }
+                        ]
+                      }
                     ]
                   },
                   {
@@ -1545,7 +1620,7 @@
         ]
       },
       {
-        "tab": "Tools",
+        "tab": "Optimize & Validate",
         "groups": [
           {
             "group": "Tools",

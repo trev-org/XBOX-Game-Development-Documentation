@@ -1,0 +1,15 @@
+---
+title: "Define search keywords"
+sidebarTitle: "Search keywords"
+description: "Declare which lobby properties are indexed."
+---
+
+Only indexed properties can appear in `FindLobbies` filters. Declare them per title:
+
+- **String search keys** — `string_key1..N`.
+- **Number search keys** — `number_key1..N`.
+- **System keys** — `member_count`, `owner_migration`, `lobby_type`.
+
+Assign business meaning per key in your client (e.g. `string_key1 = mode`, `number_key1 = ping_estimate`).
+
+Source: [`define-search-keywords.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/define-search-keywords.md).

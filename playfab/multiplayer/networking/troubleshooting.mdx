@@ -1,0 +1,11 @@
+---
+title: "Party troubleshooting"
+sidebarTitle: "Troubleshooting"
+description: "Common Party issues."
+---
+
+See source: [`troubleshooting.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/networking/troubleshooting.md). Recurring issues:
+
+- NAT traversal failures — verify [port usage](/playfab/multiplayer/networking/concepts/port-usage).
+- Audio dropouts — check region selection and platform-specific requirements.
+- Missed callbacks — confirm you pump `PartyManager::StartProcessingStateChanges` every frame.

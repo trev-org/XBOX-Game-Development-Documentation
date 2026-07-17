@@ -1,0 +1,17 @@
+---
+title: "Find lobbies"
+sidebarTitle: "Find"
+description: "Search public lobbies."
+---
+
+Call [`FindLobbies`](https://learn.microsoft.com/rest/api/playfab/lobby/lobby/find-lobbies) with an OData-style filter over your `SearchData` keys.
+
+Common filters:
+
+- `string_key1 eq 'ranked'` — exact match on game mode.
+- `number_key1 lt 300` — numeric range on ping estimate.
+- `member_count_remaining gt 0` — skip full lobbies.
+
+Page through results with a continuation token.
+
+Source: [`find-lobbies.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/find-lobbies.md).

@@ -1,0 +1,17 @@
+---
+title: "Client SDK: errors"
+sidebarTitle: "Errors"
+description: "SDK error codes and handling."
+---
+
+Every operation surfaces an `HRESULT` on completion. Common values:
+
+- `S_OK` — success.
+- `E_PF_LOBBY_NOT_JOINED` — client not a member.
+- `E_PF_LOBBY_DOES_NOT_EXIST` — stale id.
+- `E_PF_LOBBY_MEMBER_LIMIT_EXCEEDED` — lobby is full.
+- `E_PF_MATCHMAKING_TICKET_ALREADY_EXISTS` — duplicate submit.
+
+Map error codes to user-facing copy and retry policy. See [SDK retry behavior](/playfab/multiplayer/lobby/sdk-retry).
+
+Source: [`playfab-multiplayer-sdk-errors.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/playfab-multiplayer-sdk-errors.md).

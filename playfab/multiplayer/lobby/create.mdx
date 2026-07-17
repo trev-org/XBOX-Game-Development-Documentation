@@ -1,0 +1,18 @@
+---
+title: "Create a lobby"
+sidebarTitle: "Create"
+description: "Create a lobby and become its owner."
+---
+
+API: `PFLobbyCreateAndJoinLobby` (client SDK) or [`CreateLobby`](https://learn.microsoft.com/rest/api/playfab/lobby/lobby/create-lobby) (REST).
+
+Specify:
+
+- **MaxPlayers** — hard cap.
+- **AccessPolicy** — `Public`, `Friends`, `Private`.
+- **LobbyProperties** and **MemberProperties** — initial payloads.
+- **SearchData** — indexed keys other players will query on.
+
+The caller becomes the owner and receives the `LobbyId` and `ConnectionString` for shareable invites.
+
+Source: [`create-a-lobby.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/create-a-lobby.md).

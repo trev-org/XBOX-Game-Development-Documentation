@@ -1,0 +1,15 @@
+---
+title: "Client SDK: async operations"
+sidebarTitle: "Async operations"
+description: "How the SDK exposes async work."
+---
+
+All long-running lobby and matchmaking calls in the C/C\+\+ multiplayer client SDK are asynchronous. The pattern:
+
+1. Kick off an operation (e.g. `PFLobbyCreateAndJoinLobby`).
+2. On every frame, call `PFMultiplayerStartProcessingLobbyStateChanges` → process → `FinishProcessingLobbyStateChanges`.
+3. State change events surface completion, errors, and property updates.
+
+Don't block on the calling thread — SDK APIs return quickly and deliver results through the state-change pump.
+
+Source: [`lobby-matchmaking-sdks-and-async-operations.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/lobby-matchmaking-sdks-and-async-operations.md).

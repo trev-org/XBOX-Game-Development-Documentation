@@ -1,0 +1,27 @@
+---
+title: "PowerShell quickstart"
+sidebarTitle: "Quickstart: PowerShell"
+description: "Automate build upload and allocation using PowerShell."
+---
+
+Install the module and log in:
+
+```powershell
+Install-Module -Name PlayFabMultiplayer
+Connect-PlayFabTitle -TitleId <YourTitleId>
+```
+
+Upload a build:
+
+```powershell
+New-PlayFabBuild -BuildName "my-build" -ContainerImageName "myrepo/server:latest" `
+  -VmSize "Standard_D2as_v4" -RegionConfiguration @{ EastUs = @{ StandbyServers = 2; MaxServers = 10 } }
+```
+
+Allocate:
+
+```powershell
+Request-PlayFabMultiplayerServer -BuildId <BuildId> -PreferredRegions @("EastUs") -SessionId (New-Guid)
+```
+
+Source: [`quickstart-for-multiplayer-servers-api-features-through-powershell.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/servers/quickstart-for-multiplayer-servers-api-features-through-powershell.md).

@@ -1,0 +1,14 @@
+---
+title: "Party quickstart"
+sidebarTitle: "Quickstart"
+description: "Create a Party network."
+---
+
+1. Add the Party SDK for your platform ([SDKs](/playfab/multiplayer/networking/party-sdks)).
+2. `PartyManager::Initialize(titleId)`.
+3. `CreateNewNetwork` — returns a network descriptor.
+4. `ConnectToNetwork` on every device using the descriptor.
+5. `CreateEndpoint` → `SendMessage` for data; `CreateChatControl` for voice.
+6. On shutdown, `LeaveNetwork` and `Cleanup`.
+
+Source: [`quickstart.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/networking/quickstart.md).

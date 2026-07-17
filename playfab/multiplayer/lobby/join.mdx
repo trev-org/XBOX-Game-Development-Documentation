@@ -1,0 +1,15 @@
+---
+title: "Join lobbies"
+sidebarTitle: "Join"
+description: "Three ways to join: by id, connection string, or invite."
+---
+
+Join methods:
+
+- **By lobby id** — `PFLobbyJoinLobby(lobbyId)`.
+- **By connection string** — platform-shared token that identifies the lobby.
+- **By invite** — targeted; the invitee doesn't need to know the id.
+
+Before joining, the client can pre-set its member properties via a join payload. On success, the client subscribes to the lobby's change stream.
+
+Source: [`join-lobbies.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/multiplayer/lobby/join-lobbies.md).
