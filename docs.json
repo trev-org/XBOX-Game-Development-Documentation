@@ -1496,7 +1496,7 @@
                           "playfab/multiplayer/networking/party-logging",
                           "playfab/multiplayer/networking/party-lobby-integration",
                           "playfab/multiplayer/networking/party-playstream-events",
-                          "playfab/multiplayer/networking/party-tutorial-requestpartyservice.md",
+                          "playfab/multiplayer/networking/party-tutorial-requestpartyservice",
                           "playfab/multiplayer/networking/party-usage",
                           "playfab/multiplayer/networking/party-ux-guidelines",
                           "playfab/multiplayer/networking/party-xbox-live-guide",
@@ -1522,6 +1522,43 @@
                               "playfab/multiplayer/networking/concepts/porting-from-sockets",
                               "playfab/multiplayer/networking/concepts/regions",
                               "playfab/multiplayer/networking/concepts/text-to-speech-profiles"
+                            ]
+                          },
+                          {
+                            "group": "Platform requirements",
+                            "icon": "gear",
+                            "pages": []
+                          },
+                          {
+                            "group": "Unity",
+                            "icon": "unity",
+                            "pages": [
+                              "playfab/multiplayer/networking/unity/overview",
+                              "playfab/multiplayer/networking/unity/quickstart",
+                              "playfab/multiplayer/networking/unity/release-notes",
+                              "playfab/multiplayer/networking/unity/api-reference"
+                            ]
+                          },
+                          {
+                            "group": "Unreal OSS",
+                            "icon": "code-branch",
+                            "pages": [
+                              "playfab/multiplayer/networking/unreal/overview",
+                              "playfab/multiplayer/networking/unreal/quickstart",
+                              "playfab/multiplayer/networking/unreal/obtain-libraries",
+                              "playfab/multiplayer/networking/unreal/playfab-plugin",
+                              "playfab/multiplayer/networking/unreal/dedicated-servers",
+                              "playfab/multiplayer/networking/unreal/cognitive-services",
+                              "playfab/multiplayer/networking/unreal/older-versions"
+                            ]
+                          },
+                          {
+                            "group": "Reference",
+                            "icon": "book",
+                            "pages": [
+                              "playfab/multiplayer/networking/reference/overview",
+                              "playfab/multiplayer/networking/reference/native",
+                              "playfab/multiplayer/networking/reference/xbl"
                             ]
                           }
                         ]
