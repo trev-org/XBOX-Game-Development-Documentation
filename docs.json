@@ -1114,6 +1114,14 @@
                         ]
                       },
                       {
+                        "group": "Throttling",
+                        "icon": "gauge-high",
+                        "pages": [
+                          "playfab/live-service-management/throttling/overview",
+                          "playfab/live-service-management/throttling/best-practices"
+                        ]
+                      },
+                      {
                         "group": "Add-ons",
                         "icon": "puzzle-piece",
                         "pages": [

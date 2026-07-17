@@ -1,0 +1,31 @@
+---
+title: "Throttling best practices"
+sidebarTitle: "Best practices"
+description: "Read 429 response headers, back off correctly, and avoid throttling by design."
+---
+
+When PlayFab throttles, you get HTTP `429`. Headers and body describe why.
+
+## Reading the 429 response
+
+Typical headers:
+
+- `X-RateLimit-Limit` — requests allowed per window.
+- `X-RateLimit-Remaining` — requests remaining in the current window.
+- `Retry-After` — seconds to wait before retrying.
+
+Body includes a PlayFab error code and message.
+
+## Client design
+
+- **Respect `Retry-After`.** Never retry immediately on 429.
+- **Exponential backoff with jitter.** Randomize wait times.
+- **Batch when possible.** Prefer bulk APIs over per-player loops.
+- **Cache read-mostly data** (title data, catalog).
+- **Move work to CloudScript** to reduce round-trips.
+- **Avoid client-side polling.** Use PlayStream rules or push notifications.
+
+## Server design
+
+- Cache Insights and admin API results.
+- Stagger scheduled tasks; avoid _cron at midnight_ patterns.

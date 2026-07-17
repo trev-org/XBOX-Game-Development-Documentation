@@ -1,0 +1,19 @@
+---
+title: "Throttling overview"
+sidebarTitle: "Overview"
+description: "How PlayFab enforces per-title API rate limits."
+---
+
+Throttling happens when a client exceeds the API request-rate limit for a specific API. PlayFab throttles to ensure fair access across all titles.
+
+## How it works
+
+Each API endpoint has a per-title rate limit measured in requests per unit time. Exceeding it returns HTTP `429 Too Many Requests` with headers describing the limit and retry window.
+
+## What you receive
+
+- HTTP status `429`.
+- Response headers describe the limit and retry window.
+- Response body contains a PlayFab error code and message.
+
+See [Best practices](/playfab/live-service-management/throttling/best-practices).
