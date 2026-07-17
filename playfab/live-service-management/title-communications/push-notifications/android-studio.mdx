@@ -1,0 +1,58 @@
+---
+title: "Getting started with Android Studio and push notifications"
+sidebarTitle: "Android Studio setup"
+description: "End-to-end configuration for Android push through Firebase, Google Play, PlayFab, and your client."
+---
+
+This tutorial gets you up and running with Android \+ PlayFab push notifications.
+
+Four systems must be configured, in order:
+
+1. **Google Play Services** — identifies your app in the Play Store via package name (e.g. `com.foo.playfab.app`).
+2. **Firebase Cloud Messaging (FCM)** — the cloud pipeline that delivers your pushes.
+3. **PlayFab Services** — uses the FCM server key to send on your behalf.
+4. **Client application** — receives and processes notifications.
+
+## Prerequisites
+
+- Google account.
+- PlayFab account.
+- A notification icon generated with the [Android Asset Studio](https://romannurik.github.io/AndroidAssetStudio/icons-notification.html).
+
+## Chapter 1 — Configure Firebase
+
+1. Open the [Firebase console](https://console.firebase.google.com/) and select **Add project**.
+2. Set a project name and select **Create Project**.
+3. Add an **Android application** to the project.
+4. Provide your Android **package name** and select **Register App**.
+5. Download the `google-services.json` file.
+6. In **Project settings → Cloud Messaging**, copy the **Server Key**.
+
+## Chapter 2 — Configure Google Play console
+
+1. Open the [Google Play console](https://play.google.com/apps/publish) and create a new application.
+2. In **Services & APIs → Firebase Cloud Messaging**, link the Firebase sender ID.
+
+## Chapter 3 — Configure PlayFab
+
+1. In Game Manager, go to **Settings → Push Notifications**.
+2. Under **Google Cloud Messaging (Android)**, paste the FCM Server Key.
+3. Save.
+
+Alternatively, call the Admin API `SetupPushNotification`.
+
+## Chapter 4 — Configure the Android client
+
+1. Create a new Android Studio project matching your Firebase package name.
+2. Copy `google-services.json` to `app/`.
+3. Add the Firebase SDK dependencies (`google-services` plugin and `firebase-messaging`).
+4. Register a `FirebaseMessagingService` subclass to receive tokens and messages.
+5. On PlayFab login, call `AndroidDevicePushNotificationRegistration` with the FCM token.
+
+## Testing
+
+Send a push via `SendPushNotification` (server or CloudScript). Verify it reaches the device.
+
+<Note>
+  See the full tutorial in the [source repository](https://github.com/microsoft/xbox-game-development-documentation/blob/main/sources/playfab-docs/live-service-management/game-configuration/title-communications/push-notifications/getting-started-android-studio-push-notifications.md) for detailed screenshots.
+</Note>

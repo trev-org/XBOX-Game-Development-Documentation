@@ -1,0 +1,42 @@
+---
+title: "Push notifications for iOS"
+sidebarTitle: "iOS"
+description: "Enable iOS push using APNs certificates and register devices with PlayFab."
+---
+
+iOS push notifications route through Apple Push Notification service (APNs). Setup is: create an APNs certificate in the Apple Developer portal, upload it to PlayFab, then register device tokens on login.
+
+## Steps
+
+1. In the Apple Developer portal, create an App ID for your bundle and enable **Push Notifications**.
+2. Generate an **APNs certificate** (Development and/or Production) and export it as a `.p12`.
+3. In PlayFab Game Manager, go to **Settings → Push Notifications**. Under Apple, upload the certificate and password.
+4. Choose **APNS** (production) or **APNS\_SANDBOX** (development).
+5. In your iOS client, request notification permission and pass the resulting device token to PlayFab via `RegisterForIOSPushNotification`.
+
+## Client code (Unity)
+
+```csharp
+void Start() {
+    UnityEngine.iOS.NotificationServices.RegisterForNotifications(
+        UnityEngine.iOS.NotificationType.Alert |
+        UnityEngine.iOS.NotificationType.Badge |
+        UnityEngine.iOS.NotificationType.Sound);
+}
+
+void RegisterDeviceToken(byte[] token) {
+    string tokenHex = System.BitConverter.ToString(token).Replace("-", "").ToLower();
+    PlayFabClientAPI.RegisterForIOSPushNotification(
+        new RegisterForIOSPushNotificationRequest { DeviceToken = tokenHex },
+        result => Debug.Log("iOS push registered."),
+        err => Debug.LogError(err.GenerateErrorReport()));
+}
+```
+
+<Warning>
+  Development builds must use `APNS_SANDBOX`; TestFlight and App Store builds must use `APNS`. Mixing them silently fails.
+</Warning>
+
+<Note>
+  See the full tutorial in the [source repository](https://github.com/microsoft/xbox-game-development-documentation/blob/main/sources/playfab-docs/live-service-management/game-configuration/title-communications/push-notifications/push-notifications-for-ios.md).
+</Note>

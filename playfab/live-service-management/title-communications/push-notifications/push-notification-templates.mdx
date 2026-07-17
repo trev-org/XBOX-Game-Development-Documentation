@@ -1,0 +1,32 @@
+---
+title: "Push notification templates"
+sidebarTitle: "Templates"
+description: "Author reusable, localized push notification templates in Game Manager."
+---
+
+Push notification templates let you author reusable push messages, including localized versions, and reference them by ID from server code or PlayStream rules.
+
+## Creating a template
+
+1. In Game Manager, go to **Content → Push Notification Templates**.
+2. Select **New Push Template**.
+3. Enter a **Template Name**, **Title**, and **Message**.
+4. Optionally add localized versions with **Add Language**.
+5. Save.
+
+## Sending a templated push
+
+Use the server API `SendPushNotificationFromTemplate` with the template ID and target `PlayFabId`. PlayFab automatically substitutes the recipient's preferred language when available, or falls back to the title default.
+
+```csharp
+PlayFabServerAPI.SendPushNotificationFromTemplate(new SendPushNotificationFromTemplateRequest {
+    Recipient = "<PlayFabId>",
+    PushNotificationTemplateId = "<TemplateId>"
+}, null, err => Debug.LogError(err.GenerateErrorReport()));
+```
+
+## Best practices
+
+- Keep messages short — device notification areas truncate long text.
+- Test each localized version by setting a test player's preferred language.
+- Don't include sensitive information; pushes may be visible on lock screens.

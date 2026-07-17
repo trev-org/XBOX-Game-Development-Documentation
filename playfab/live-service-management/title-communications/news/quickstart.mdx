@@ -1,0 +1,92 @@
+---
+title: "Title news quickstart"
+sidebarTitle: "Quickstart"
+description: "Create, read, update, and delete title news, including localized versions."
+---
+
+Title News is a mechanism for communicating with players about patch notes, big events, or downtime. Each entry contains:
+
+- **Date**
+- **Status**
+- **Title**
+- **Body**
+- **Language(s)**
+
+<Note>
+  The Body element is a string containing raw text or JSON.
+</Note>
+
+## Requirements
+
+- Familiarity with the [Game Manager quickstart](/playfab/live-service-management/game-manager/quickstart).
+- A **title default language** set to use localized title news. See [Setting default languages](/playfab/live-service-management/title-communications/news/setting-default-languages).
+
+PlayFab stores localized strings by associating a title and body with a language for each entry. When a client queries for title news, PlayFab returns the correct version for the player's preferred language.
+
+## Creating title news
+
+### With Game Manager
+
+Navigate to **your title → Content → Title News → New Title News**.
+
+Add strings for your default language before saving. Add more languages with **ADD LANGUAGE**. Select **Save Title News**.
+
+The timestamp defaults to the current system time when saved. You can also set it manually.
+
+### With the PlayFab Admin API
+
+Call `AddNews` to create the entry (with an optional custom timestamp). Add localized content with `AddLocalizedNews` using the returned `NewsId`.
+
+```csharp
+void CreateNews() {
+    PlayFabAdminAPI.AddNews(new AddNewsRequest {
+        Timestamp = new DateTime(2014, 1, 8, 12, 0, 0),
+        Title = "My Second News",
+        Body = "This is my second news post."
+    },
+    result => Debug.Log("News post added!"),
+    error => Debug.LogError(error.GenerateErrorReport()));
+}
+
+void AddLocalized() {
+    PlayFabAdminAPI.AddLocalizedNewsRequest(new AddLocalizedNewsRequest {
+        NewsId = "74623b12-6c80-ee4b-7c3b-58e638aa62bd",
+        Language = "de",
+        Title = "Meine zweite Nachricht",
+        Body = "Dies ist meine zweite Nachricht."
+    },
+    result => Debug.Log("Localized news post added!"),
+    error => Debug.LogError(error.GenerateErrorReport()));
+}
+```
+
+## Reading title news
+
+`GetTitleNews` returns all published entries. Archived and unpublished entries aren't returned.
+
+- The **client API** returns entries in the player's preferred language when a localized version exists, otherwise the title default language.
+- The **server API** always returns entries in the title default language.
+
+```csharp
+// Client
+void ReadTitleNews() {
+    PlayFabClientAPI.GetTitleNews(new GetTitleNewsRequest(), result => {
+        // Process result.News
+    }, error => Debug.LogError(error.GenerateErrorReport()));
+}
+
+// Server
+void ReadTitleNewsServer() {
+    PlayFabServerAPI.GetTitleNews(new GetTitleNewsRequest(), result => {
+        // Process result.News
+    }, error => Debug.LogError(error.GenerateErrorReport()));
+}
+```
+
+## Updating title news
+
+Edit entries only in Game Manager. Navigate to **Content → Title News**, select an existing entry, update **Title**, **Status**, or **Body**, and save. Add localized versions with **Add Language**.
+
+## Deleting title news
+
+In Game Manager, go to **Content → Title News**, check the entry, and choose **X Delete Title News**.

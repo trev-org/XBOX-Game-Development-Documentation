@@ -1,0 +1,28 @@
+---
+title: "Using email templates to send an account recovery email"
+sidebarTitle: "Account recovery email"
+description: "Author an account recovery template and trigger it from the Admin API."
+---
+
+Use an email template to send a password-reset link to a player. The template's body uses `$ConfirmationUrl$` for the recovery URL.
+
+## Steps
+
+1. Install SMTP. See [SMTP add-on](/playfab/live-service-management/title-communications/emails/smtp-add-on).
+2. Ensure the player has a username, password, login email, and contact email.
+3. In Game Manager, go to **Content → Email Templates → New Email Template**.
+4. Name it `Account Recovery`. Add subject and HTML body containing `$ConfirmationUrl$`.
+5. Save.
+6. Call `SendCustomAccountRecoveryEmail` or `SendAccountRecoveryEmail` to send the email to a player.
+
+```csharp
+PlayFabAdminAPI.SendAccountRecoveryEmail(new SendAccountRecoveryEmailRequest {
+    Email = "player@example.com",
+    EmailTemplateId = "<TemplateId>"
+}, result => Debug.Log("Sent."),
+   err => Debug.LogError(err.GenerateErrorReport()));
+```
+
+<Note>
+  See the full tutorial in the [source repository](https://github.com/microsoft/xbox-game-development-documentation/blob/main/sources/playfab-docs/live-service-management/game-configuration/title-communications/emails/using-email-templates-to-send-an-account-recovery-email.md).
+</Note>

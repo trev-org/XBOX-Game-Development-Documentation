@@ -1,0 +1,57 @@
+---
+title: "Setting default languages"
+sidebarTitle: "Default languages"
+description: "Set your title default language and each player's preferred language for localized content."
+---
+
+PlayFab stores localized strings on your behalf and matches them to each player's preferred language. Two settings drive this:
+
+1. **Title default language** — your title's primary supported language. Once set, your title must support this language for any localized feature. Used as a fallback when a player has no preference or prefers a language you don't support.
+2. **Player language** — the player's preferred language, stored on their entity profile per title.
+
+<Note>
+  Players who prefer a language your title doesn't support get strings in the title default language.
+</Note>
+
+## Requirements
+
+- Basic familiarity with creating players.
+- Read the [Game Manager quickstart](/playfab/live-service-management/game-manager/quickstart).
+- Familiarity with player profile APIs.
+
+## Setting a player's preferred language
+
+Decide how to collect it — ask via menu, or intuit from device locale (for example, `Locale.getDefault.getLanguage()` on Android).
+
+Call `GetLanguageList()` to see supported codes. Use ISO 639-1 (`"en"`, `"es"`, `"ja"`, etc.) with `SetProfileLanguage`. The code `"zh"` is not currently supported.
+
+```csharp
+void SetProfileLanguage(string language, int? profileExpectedVersion, EntityKey entity)
+{
+    var request = new SetProfileLanguageRequest
+    {
+        Language = language,
+        ExpectedVersion = profileExpectedVersion,
+        Entity = entity
+    };
+    PlayFabProfilesAPI.SetProfileLanguage(request,
+        res => Debug.Log("Language updated."),
+        err => Debug.LogError(err.GenerateErrorReport()));
+}
+```
+
+After saving, verify in Game Manager under **Player → Overview** (contact info section shows the language). A PlayStream `entity_language_updated` event will appear.
+
+## Setting a title default language
+
+All localization features associate a language with each translated version.
+
+1. In Game Manager, go to **Settings → General**.
+2. Under **Title Defaults**, use the **Default language** dropdown.
+3. Select **Save**.
+
+A `title_api_settings_changed` PlayStream event is emitted.
+
+## Updating the default language
+
+You can change the title default at any time — but PlayFab requires all your current communication templates to support the new default. If templates are missing translations, an error message lists which content you must update first.

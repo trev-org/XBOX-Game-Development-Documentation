@@ -1,0 +1,25 @@
+---
+title: "Email messaging quickstart"
+sidebarTitle: "Quickstart"
+description: "Set up an SMTP server, then send emails via template or rule."
+---
+
+To send emails from PlayFab, you need an external SMTP server with a username and password. See [Setting up an SMTP server with add-ons](/playfab/live-service-management/title-communications/emails/smtp-add-on).
+
+<Note>
+  You can use Gmail as an SMTP server for testing, but it caps at 2,000 emails per day.
+</Note>
+
+Once configured, follow:
+
+- [Using a rule to verify a contact email address](/playfab/live-service-management/title-communications/emails/verify-contact-email)
+- [Using email templates to send an account recovery email](/playfab/live-service-management/title-communications/emails/account-recovery-email)
+
+## Related APIs
+
+- `AddOrUpdateContactEmail` — add/update a player's contact email.
+- `RemoveContactEmail` — delete a contact email.
+- `SendEmailFromTemplate` — send a template email to a player's primary contact email.
+- `SendAccountRecoveryEmail` — send an account-recovery email.
+- `ResetPassword` — reset the player's password.
+- `GetPlayerIdFromAuthToken` — get a player's ID from an auth token.

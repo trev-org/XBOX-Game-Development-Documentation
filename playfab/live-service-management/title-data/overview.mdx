@@ -1,0 +1,40 @@
+---
+title: "Title Data overview"
+sidebarTitle: "Overview"
+description: "Global key/value configuration for your title and namespace entities."
+---
+
+Title Data is global key/value configuration storage scoped to your `title` and `namespace` entities. Use it to manage game settings remotely without deploying a new build.
+
+Title Data is one of several storage features in PlayFab, each scoped to a different entity type. See [Entity objects — related features](/playfab/live-service-management/game-server-configuration/entity-model/entity-objects#related-features) for a comparison.
+
+## How it works
+
+Title Data is a set of key/value pairs set in Game Manager or through the Admin/Server API. This is commonly called Primary Title Data.
+
+**Internal Title Data** is a special set that clients can't access. Use it for configuration that should be visible only to services you control.
+
+<Note>
+  Title Data values are copied and distributed to potentially hundreds of machines in the PlayFab cluster. Values are cached, and changes may take up to 15 minutes to refresh. Title Data is best suited for **global constant/static data** and isn't reliable for global variables.
+</Note>
+
+## Title Data Overrides
+
+Title Data Overrides are additive key/value pairs stored alongside Primary Title Data. Use them to:
+
+- **Add** a new key/value pair not present in the default data.
+- **Change** an existing key/value pair (the new value replaces the primary value).
+- **Remove** an existing key/value pair (include the existing key with an empty value).
+
+In the UI, each entry is marked `+`, `●`, or `-`.
+
+Overrides let you update remote configuration without deploying a new build. They're a subset of Primary Title Data.
+
+<Note>
+  Title Data Overrides currently take effect only through [Experiments](/playfab/live-service-management/experiments/overview). If a player is in an experiment variant that contains overrides, the overrides apply automatically on the server and are returned with title data on the client. Override values may take up to 1 minute to refresh.
+</Note>
+
+## Links
+
+- [Title Data quickstart](/playfab/live-service-management/title-data/quickstart)
+- [Using publisher data](/playfab/live-service-management/title-data/using-publisher-data)

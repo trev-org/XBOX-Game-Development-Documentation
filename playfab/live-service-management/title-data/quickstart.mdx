@@ -1,0 +1,124 @@
+---
+title: "Title Data quickstart"
+sidebarTitle: "Quickstart"
+description: "Programmatically create, read, and update Title Data from clients and servers."
+---
+
+Title Data is a set of plain-text key/value pairs used for storing and managing your game's configuration remotely. It keeps title-wide configuration accessible and organized so clients can retrieve it at runtime.
+
+Storing configuration data remotely — changeable at any time — is one of the most basic reasons to use a service like PlayFab.
+
+## Get Title Data
+
+### From the game client
+
+Use `PlayFabClientAPI.GetTitleData` to retrieve KVPs for a title.
+
+```csharp
+public void ClientGetTitleData() {
+    PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(),
+        result => {
+            if (result.Data == null || !result.Data.ContainsKey("MonsterName")) Debug.Log("No MonsterName");
+            else Debug.Log("MonsterName: " + result.Data["MonsterName"]);
+        },
+        error => {
+            Debug.Log("Got error getting titleData:");
+            Debug.Log(error.GenerateErrorReport());
+        }
+    );
+}
+```
+
+### From the game server
+
+```csharp
+public void ServerGetTitleData() {
+    PlayFabServerAPI.GetTitleData(new GetTitleDataRequest(),
+        result => {
+            if (result.Data == null || !result.Data.ContainsKey("MonsterName")) Debug.Log("No MonsterName");
+            else Debug.Log("MonsterName: " + result.Data["MonsterName"]);
+        },
+        error => Debug.Log(error.GenerateErrorReport())
+    );
+}
+```
+
+## Set Title Data
+
+Title Data is best used for static data that changes rarely across the lifetime of the title.
+
+### Using Game Manager
+
+1. Open the title in **Game Manager**.
+2. Select **Content \> Title Data**.
+3. Select **New Title Data**.
+4. Enter a **Key** and **Value** (both stored as strings).
+5. Select **Save**.
+
+### Using the server API
+
+`SetTitleData` is a server API called from a dedicated server. Set one KVP per call.
+
+```csharp
+public void SetTitleData() {
+    PlayFabServerAPI.SetTitleData(
+        new SetTitleDataRequest { Key = "MonsterName", Value = "Dorf" },
+        result => Debug.Log("Set titleData successful"),
+        error => Debug.Log(error.GenerateErrorReport())
+    );
+}
+```
+
+## Set Title Data Overrides in Game Manager
+
+An override is a set of key/value pairs that expresses a delta over the Primary Title Data — new key/values, changed values, or deletions (empty value).
+
+1. Open the title in **Game Manager**.
+2. Select **Content \> Title Data**.
+3. Select **New Override**.
+4. Enter an **Override Label** plus **Key** and **Value** entries (strings).
+5. Select **Save**.
+
+<Note>
+  Overrides take effect only through [Experiments](/playfab/live-service-management/experiments/overview). Override values may take up to 1 minute to refresh.
+</Note>
+
+## Internal Title Data
+
+Internal Title Data is hidden from clients. Set it in Game Manager or via the server API.
+
+**Get internal title data:**
+
+```csharp
+public void GetTitleInternalData()
+{
+    PlayFabServerAPI.GetTitleInternalData(new GetTitleDataRequest(),
+        result => {
+            if (result.Data == null || !result.Data.ContainsKey("PlayFab")) Debug.Log("No PlayFab");
+            else Debug.Log("PlayFab: " + result.Data["PlayFab"]);
+        },
+        error => Debug.Log(error.GenerateErrorReport())
+    );
+}
+```
+
+**Set internal title data:**
+
+```csharp
+public void SetTitleInternalData() {
+    PlayFabServerAPI.SetTitleInternalData(
+        new SetTitleDataRequest {
+            Key = "PlayFab",
+            Value = "{ \"Status\": \"Secretly Awesome\" }"
+        },
+        result => Debug.Log("Set titleData successful"),
+        error => Debug.Log(error.GenerateErrorReport())
+    );
+}
+```
+
+## See also
+
+- [Using publisher data](/playfab/live-service-management/title-data/using-publisher-data)
+- [Player data quickstart](/playfab/player-progression/player-data)
+- [CloudScript quickstart](/playfab/live-service-management/extensions/cloudscript/quickstart)

@@ -1,0 +1,34 @@
+---
+title: "Setting up an SMTP server with add-ons"
+sidebarTitle: "SMTP add-on"
+description: "Install and configure the SMTP add-on to send email from PlayFab."
+---
+
+Emails from PlayFab are sent through your own SMTP server, configured via the SMTP add-on.
+
+## Requirements
+
+Familiarity with the [Game Manager quickstart](/playfab/live-service-management/game-manager/quickstart).
+
+## Install the add-on
+
+1. In Game Manager, go to **Add-ons**.
+2. Under **Marketing**, select **SMTP**.
+3. Select **INSTALL SMTP**.
+
+## Configure
+
+Fill in **Host name**, **Port number**, **Username**, and **Password** for your SMTP server, then **Save Settings**.
+
+<Note>
+  If your SMTP server requires SSL/TLS, use port **587**.
+</Note>
+
+### Testing with Gmail
+
+- **Host name:** `smtp.gmail.com`
+- **Port:** `587`
+- **Username:** your Gmail address
+- **Password:** your account password (or [App password](https://support.google.com/accounts/answer/185833?hl=en) if 2FA is on)
+
+After saving, the add-on shows a green success indicator.

@@ -1,0 +1,38 @@
+---
+title: "Push notifications for Android"
+sidebarTitle: "Android"
+description: "Enable Android push using Firebase Cloud Messaging and register devices with PlayFab."
+---
+
+Android push notifications route through Firebase Cloud Messaging (FCM). Setup is: create a Firebase project, add your Android app, upload the FCM server key to PlayFab, then have your client register its FCM token with PlayFab on login.
+
+## Steps
+
+1. Create a Firebase project and add your Android package.
+2. Copy the **FCM Server Key** from Firebase **Project settings → Cloud Messaging**.
+3. In PlayFab Game Manager, go to **Settings → Push Notifications** and paste the server key under Android.
+4. In your client, add the Firebase Messaging SDK and a `FirebaseMessagingService` subclass that receives the FCM token.
+5. On PlayFab login, call `AndroidDevicePushNotificationRegistration` with the token to associate the device with the player.
+
+## Client code (Unity FCM plugin)
+
+```csharp
+void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token) {
+    PlayFabClientAPI.AndroidDevicePushNotificationRegistration(
+        new AndroidDevicePushNotificationRegistrationRequest {
+            DeviceToken = token.Token,
+            SendPushNotificationConfirmation = true,
+            ConfirmationMessage = "Push notifications registered successfully"
+        },
+        result => Debug.Log("Registered."),
+        err => Debug.LogError(err.GenerateErrorReport()));
+}
+```
+
+## Verifying registration
+
+After successful registration, look for a `player_registered_push_notifications` PlayStream event on the player.
+
+<Note>
+  See the full tutorial in the [source repository](https://github.com/microsoft/xbox-game-development-documentation/blob/main/sources/playfab-docs/live-service-management/game-configuration/title-communications/push-notifications/push-notifications-for-android.md).
+</Note>

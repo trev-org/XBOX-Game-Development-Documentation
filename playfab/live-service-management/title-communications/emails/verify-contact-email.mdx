@@ -1,0 +1,24 @@
+---
+title: "Using a rule to verify a contact email address"
+sidebarTitle: "Verify contact email"
+description: "Create a PlayStream rule that triggers an email verification link when a contact email is added."
+---
+
+Adding a contact email to a player's profile emits a `player_added_contact_email` PlayStream event. Attach a rule that sends a verification email in response.
+
+## Steps
+
+1. Make sure the SMTP add-on is installed. See [SMTP add-on](/playfab/live-service-management/title-communications/emails/smtp-add-on).
+2. In Game Manager, create an email template under **Content → Email Templates** using the built-in `$ConfirmationUrl$` token for the verification link.
+3. Go to **Automation → Rules** and create a rule.
+4. **Trigger:** `player_added_contact_email`.
+5. **Action:** `Send email from template`, selecting your verification template.
+6. Save the rule.
+
+## Testing
+
+Call `AddOrUpdateContactEmail` for a test player. The rule fires, PlayFab sends the verification email, and the player's status updates when they click the link.
+
+<Note>
+  See the full tutorial in the [source repository](https://github.com/microsoft/xbox-game-development-documentation/blob/main/sources/playfab-docs/live-service-management/game-configuration/title-communications/emails/using-a-rule-to-verify-a-contact-email-address.md).
+</Note>

@@ -1,0 +1,44 @@
+---
+title: "Localized email templates"
+sidebarTitle: "Localized templates"
+description: "Store multiple language versions of an email under a single template ID."
+---
+
+Localized email templates let you author multiple translated versions of one email under a single template ID. PlayFab picks the language that matches the player's preference, falling back to the title default.
+
+## Requirements
+
+- Read [Using email templates](/playfab/live-service-management/title-communications/emails/account-recovery-email).
+- Set your title default language and a preferred language on test players. See [Setting default languages](/playfab/live-service-management/title-communications/news/setting-default-languages).
+
+## Update an existing template
+
+1. In Game Manager, go to **Content → Email Templates**.
+2. Select the template (for example, `Account Recovery`).
+3. Select **\+ Add Language** and pick a language.
+4. Enter the localized subject and body. Save.
+
+Example — French version of an account recovery email:
+
+```html
+<!-- Subject -->
+Réinitialisation du mot de passe demandée
+
+<!-- Body -->
+<p>Vous avez récemment demandé un mot de passe avec nous.</p>
+<p>Cliquez <a href="$ConfirmationUrl$">ici</a> pour réinitialiser votre mot de passe.</p>
+```
+
+All language versions live under the same template ID.
+
+## Send a localized email
+
+1. Create two test players. Leave one without a preferred language; set the other's to `fr` via `SetProfileLanguage` (ISO 639-1).
+2. Set contact emails on both.
+3. Call `SendCustomAccountRecoveryEmail` for each.
+
+The player with `fr` receives the French version; the player with no preference receives the title default.
+
+<Note>
+  `SetProfileLanguage` uses ISO 639-1 codes such as `en`, `es`, `ja`. The code `zh` is currently unsupported.
+</Note>

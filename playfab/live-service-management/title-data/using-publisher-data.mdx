@@ -1,0 +1,120 @@
+---
+title: "Using publisher data"
+sidebarTitle: "Publisher data"
+description: "Publisher (studio) data spans more than one title — useful when multiple games need to share information."
+---
+
+Publisher (studio) data spans more than one title. Use it when multiple games in a studio need to share common information. This category also includes player data that spans multiple games.
+
+PlayFab stores publisher data as key/value pairs.
+
+Most of these APIs are server APIs. Call them from a dedicated server or through a CloudScript function:
+
+- **`SetPublisherData`** / **`GetPublisherData`** — publisher-wide KVPs.
+- **`UpdateUserPublisherData`** / **`GetUserPublisherData`** — publisher KVPs for a specific player.
+- **`UpdateUserPublisherReadOnlyData`** / **`GetUserPublisherReadOnlyData`** — read-only publisher KVPs for a player.
+- **`UpdateUserPublisherInternalData`** / **`GetUserPublisherInternalData`** — internal publisher KVPs for a player.
+
+<Warning>
+  Don't use server APIs from a game client. If you need server-only behavior, use CloudScript. Server APIs require your secret key.
+</Warning>
+
+Publisher data is cached across PlayFab servers; changes may take up to 15 minutes to propagate. Best used for global constant/static data — not reliable as global variables.
+
+## Publisher data
+
+Used to store static data for a set of titles. Not bound to any PlayFab entity (unlike user publisher data).
+
+**Set publisher data (server API):**
+
+```csharp
+public void ServerSetPublisherData() {
+    PlayFabServerAPI.SetPublisherData(new SetPublisherDataRequest() {
+            Key = "SomeKey",
+            Value = "SomeValue"
+        },
+        result => Debug.Log("Complete setting publisher data"),
+        error => Debug.Log(error.GenerateErrorReport())
+    );
+}
+```
+
+**Get publisher data (client API):**
+
+```csharp
+public void ClientGetPublisherData() {
+    PlayFabClientAPI.GetPublisherData(new GetPublisherDataRequest(),
+    result => {
+        if (result.Data == null || !result.Data.ContainsKey("SomeKey")) Debug.Log("No SomeKey");
+        else Debug.Log("SomeKey: " + result.Data["SomeKey"]);
+    },
+    error => Debug.Log(error.GenerateErrorReport()));
+}
+```
+
+## User publisher data
+
+User publisher data is bound to a PlayFab user. Unlike regular publisher data, a client can alter it (for the current player).
+
+Three protection levels:
+
+1. **Regular** — read and write access for clients (set/get via Client, Server, Admin). The client can only set data for the currently signed-in player.
+2. **Read-only** — clients can read; only server/admin can set.
+3. **Internal** — no client access. Set/get via Server or Admin. Use for secret data.
+
+**Set all three kinds:**
+
+```csharp
+// Client-side regular
+public void ClientSetUserPublisherData() {
+    PlayFabClientAPI.UpdateUserPublisherData(new UpdateUserDataRequest() {
+         Data = new Dictionary<string, string>() { { "SomeKey", "SomeValue" } }
+    }, result => Debug.Log("Complete"), error => Debug.Log(error.GenerateErrorReport()));
+}
+
+// Server-side read-only
+public void ServerSetUserPublisherReadOnlyData() {
+    PlayFabServerAPI.UpdateUserPublisherReadOnlyData(new UpdateUserDataRequest() {
+         PlayFabId = "< PlayFab Player Id >",
+         Data = new Dictionary<string, string>() { { "SomeKey", "SomeValue" } }
+    }, result => Debug.Log("Complete"), error => Debug.Log(error.GenerateErrorReport()));
+}
+
+// Server-side internal
+public void ServerSetUserPublisherInternalData() {
+    PlayFabServerAPI.UpdateUserPublisherInternalData(new UpdateUserInternalDataRequest() {
+         PlayFabId = "< PlayFab Player Id >",
+         Data = new Dictionary<string, string>() { { "SomeKey", "SomeValue" } }
+    }, result => Debug.Log("Complete"), error => Debug.Log(error.GenerateErrorReport()));
+}
+```
+
+**Get all three kinds:**
+
+```csharp
+// Client-side regular
+public void ClientGetUserPublisherData() {
+    PlayFabClientAPI.GetUserPublisherData(new GetUserDataRequest() { PlayFabId = "<PlayFab Player Id>" },
+    result => { /* result.Data */ },
+    error => Debug.Log(error.GenerateErrorReport()));
+}
+
+// Client-side read-only
+public void ClientGetUserPublisherReadOnlyData() {
+    PlayFabClientAPI.GetUserPublisherReadOnlyData(new GetUserDataRequest() { PlayFabId = "<PlayFab Player Id>" },
+    result => { /* result.Data */ },
+    error => Debug.Log(error.GenerateErrorReport()));
+}
+
+// Server-side internal
+public void ServerGetUserPublisherInternalData() {
+    PlayFabServerAPI.GetUserPublisherInternalData(new GetUserDataRequest() { PlayFabId = "<PlayFab Player Id>" },
+    result => { /* result.Data */ },
+    error => Debug.Log(error.GenerateErrorReport()));
+}
+```
+
+## See also
+
+- [Title Data quickstart](/playfab/live-service-management/title-data/quickstart)
+- [CloudScript quickstart](/playfab/live-service-management/extensions/cloudscript/quickstart)

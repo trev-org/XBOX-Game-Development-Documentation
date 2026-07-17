@@ -1,0 +1,75 @@
+---
+title: "Push notifications quickstart"
+sidebarTitle: "Quickstart"
+description: "Understand the push notification pipeline and test it end to end."
+---
+
+Push notifications flow through three linked systems:
+
+1. **Device OS** (Android, iOS, etc.).
+2. **Vendor channel** (Google FCM, Apple APNS).
+3. **Cross-platform routing** (PlayFab via Amazon SNS).
+
+<Warning>
+  If any one system is misconfigured, notifications stop. It's easy to accidentally break a link and hard to see which one broke.
+</Warning>
+
+## PlayFab push routing
+
+Each PlayFab title can enable one Google (GCM) and one Apple (APNS / APNS\_SANDBOX) channel at a time. Configure them either:
+
+- In Game Manager under **Settings → Push Notifications**, or
+- With the Admin API `SetupPushNotification`.
+
+See platform-specific setup:
+
+- [Push notifications for Android](/playfab/live-service-management/title-communications/push-notifications/push-notifications-for-android)
+- [Push notifications for iOS](/playfab/live-service-management/title-communications/push-notifications/push-notifications-for-ios)
+
+## Receiving push in-game
+
+- **Android** — requires a plugin. The best-supported is the native FCM plugin.
+- **iOS** — doesn't require a plugin for basic push messages.
+
+See the [FCM Unity plugin](https://firebase.google.com/docs/cloud-messaging/unity/client) or [FCM Android](https://firebase.google.com/docs/cloud-messaging/android/client) docs.
+
+## Testing your setup
+
+Call the server API `SendPushNotification`. There's no per-message cost.
+
+A fast way to test: put a small handler in CloudScript that calls `SendPushNotification` and invoke it from a client via `ExecuteCloudScript`. Example: challenge the nearest player on the leaderboard.
+
+```csharp
+public void ChallengeRandomClosePlayer(string currentPlayerId) {
+    PlayFabClientAPI.GetLeaderboardAroundPlayer(new GetLeaderboardAroundPlayerRequest() {
+        MaxResultsCount = 10,
+        StatisticName = "Rank",
+        PlayFabId = currentPlayerId,
+    }, result => OnLeaderboardLoaded(result, currentPlayerId), OnPlayFabError);
+}
+```
+
+```javascript
+handlers.ChallengePlayer = function (args) {
+    // Validate leaderboard, deduct currency, then:
+    server.SendPushNotification({
+        Recipient: args.TargetId,
+        Package: {
+            Message: "You have been challenged!",
+            Title: "Challenge"
+        }
+    });
+}
+```
+
+## Usage guidance
+
+- Push is fire-and-forget — no delivery guarantee. Treat push as _bonus_ functionality, not a critical gameplay path.
+- On iOS, users see a one-time OS prompt on first launch. Choice persists until app update/reinstall or a settings change.
+- On Android, notifications are on by default but users can disable them from the client.
+- Re-initialize your notification listeners each session.
+
+## Resources
+
+- [Firebase Unity SDK](https://firebase.google.com/docs/unity/setup)
+- [Push It Real Good — blog](https://blog.playfab.com/blog/push-it-real-good-how-get-players-say-yes-push-notifications/)

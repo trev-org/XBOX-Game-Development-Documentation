@@ -1043,6 +1043,55 @@
                             ]
                           }
                         ]
+                      },
+                      {
+                        "group": "Title Data",
+                        "icon": "database",
+                        "pages": [
+                          "playfab/live-service-management/title-data/overview",
+                          "playfab/live-service-management/title-data/quickstart",
+                          "playfab/live-service-management/title-data/using-publisher-data"
+                        ]
+                      },
+                      {
+                        "group": "Title communications",
+                        "icon": "envelope",
+                        "pages": [
+                          "playfab/live-service-management/title-communications/overview",
+                          {
+                            "group": "Title news",
+                            "icon": "newspaper",
+                            "pages": [
+                              "playfab/live-service-management/title-communications/news/overview",
+                              "playfab/live-service-management/title-communications/news/quickstart",
+                              "playfab/live-service-management/title-communications/news/setting-default-languages"
+                            ]
+                          },
+                          {
+                            "group": "Push notifications",
+                            "icon": "bell",
+                            "pages": [
+                              "playfab/live-service-management/title-communications/push-notifications/overview",
+                              "playfab/live-service-management/title-communications/push-notifications/quickstart",
+                              "playfab/live-service-management/title-communications/push-notifications/android-studio",
+                              "playfab/live-service-management/title-communications/push-notifications/push-notification-templates",
+                              "playfab/live-service-management/title-communications/push-notifications/push-notifications-for-android",
+                              "playfab/live-service-management/title-communications/push-notifications/push-notifications-for-ios"
+                            ]
+                          },
+                          {
+                            "group": "Email templates",
+                            "icon": "envelope-open",
+                            "pages": [
+                              "playfab/live-service-management/title-communications/emails/overview",
+                              "playfab/live-service-management/title-communications/emails/quickstart",
+                              "playfab/live-service-management/title-communications/emails/smtp-add-on",
+                              "playfab/live-service-management/title-communications/emails/verify-contact-email",
+                              "playfab/live-service-management/title-communications/emails/account-recovery-email",
+                              "playfab/live-service-management/title-communications/emails/localized-email-templates"
+                            ]
+                          }
+                        ]
                       }
                     ]
                   },
