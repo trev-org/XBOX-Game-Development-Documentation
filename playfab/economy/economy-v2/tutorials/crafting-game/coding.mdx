@@ -1,0 +1,16 @@
+---
+title: "Crafting game: coding"
+sidebarTitle: "Coding"
+description: "Write the client and server logic that ties the crafting game to Economy v2."
+---
+
+The crafting flow:
+
+1. Client asks server "craft SWORD" (via CloudScript or Azure Function).
+2. Server reads the player's resource inventory.
+3. Server verifies the recipe requirements (e.g. 2 WOOD \+ 1 IRON).
+4. Server calls [`ExecuteInventoryOperations`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/execute-inventory-operations) to subtract resources and add the SWORD atomically.
+5. Server logs a PlayStream event `weapon_crafted` for analytics.
+6. Client refreshes inventory and shows the new weapon.
+
+Source: [`tutorials/craftingGame/crafting-game-coding.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/economy-monetization/economy-v2/tutorials/craftingGame/crafting-game-coding.md).

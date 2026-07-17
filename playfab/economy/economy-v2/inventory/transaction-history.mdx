@@ -1,0 +1,24 @@
+---
+title: "Transaction history"
+sidebarTitle: "Transaction history"
+description: "Immutable ledger of every inventory change."
+---
+
+Every inventory mutation is recorded as a **transaction** with:
+
+- Timestamp.
+- Operator (client, server, CloudScript, marketplace, PlayStream).
+- Items and currencies affected.
+- Result state (success, failure).
+
+## APIs
+
+- [`GetTransactionHistory`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/get-transaction-history).
+
+## Use for
+
+- Player-support lookups ("where did my item go?").
+- Detecting duplicate grants during refactors.
+- Fraud investigations.
+
+History is append-only and cannot be edited.

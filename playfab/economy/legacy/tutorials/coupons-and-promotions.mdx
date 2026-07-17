@@ -1,0 +1,18 @@
+---
+title: "Coupons and promotions (legacy)"
+sidebarTitle: "Coupons and promotions"
+description: "Redeem single-use codes to grant items."
+---
+
+Legacy Economy supports **coupons** — pre-generated single-use codes that grant items on redemption. Ideal for launch promos, influencer campaigns, and player-support make-goods.
+
+## Configure
+
+- **Engage → Economy → Coupons** → generate a batch of codes for a given catalog item bundle.
+- Set expiry, usage limits, and eligibility segments.
+
+## Redeem
+
+Client calls `RedeemCoupon(couponCode)`. The server validates and grants items to the player.
+
+Protect codes with rate limits and PlayStream rules; see [Fraud prevention](/playfab/economy/economy-v2/fraud-prevention/overview) — the same principles apply to legacy coupons.

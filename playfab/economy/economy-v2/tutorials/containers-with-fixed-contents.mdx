@@ -1,0 +1,19 @@
+---
+title: "Containers with fixed contents"
+sidebarTitle: "Containers (fixed)"
+description: "Bundles that always yield the same contents when opened."
+---
+
+A **fixed container** is a bundle whose contents are deterministic. Every open yields the same items.
+
+## Authoring
+
+- Create a catalog item with `ContentType = "Bundle"`.
+- List each child item and quantity.
+- Publish.
+
+## Opening
+
+Use [`ExecuteInventoryOperations`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/execute-inventory-operations) with a `SubtractInventoryItems` on the container and `AddInventoryItems` for the contents — the platform handles it atomically.
+
+For probabilistic contents, see [Drop tables and randomized loot](/playfab/economy/economy-v2/tutorials/drop-tables-and-randomized-loot).

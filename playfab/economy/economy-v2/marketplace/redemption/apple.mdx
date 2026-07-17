@@ -1,0 +1,14 @@
+---
+title: "Apple App Store redemption"
+sidebarTitle: "Apple"
+description: "Redeem an App Store receipt to grant Economy items."
+---
+
+On iOS, StoreKit produces a signed transaction. Pass it to PlayFab for validation and grant.
+
+1. Complete the purchase in StoreKit (`Product.purchase`).
+2. Retrieve the signed JWS transaction from `VerificationResult`.
+3. Call [`RedeemAppleAppStoreInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-apple-app-store-inventory-items).
+4. PlayFab validates with Apple, records the transaction, and grants the linked items.
+
+For subscriptions, see [iOS subscription redemption](/playfab/economy/economy-v2/marketplace/redemption/ios-subscription).

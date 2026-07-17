@@ -1,0 +1,12 @@
+---
+title: "Steam redemption"
+sidebarTitle: "Steam"
+description: "Redeem a Steam microtransaction to grant Economy items."
+---
+
+1. Client initiates a Steam microtransaction via Steamworks (`MicroTxn`).
+2. Steam confirms via callback.
+3. Client (or server) calls [`RedeemSteamInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-steam-inventory-items) with the transaction id.
+4. PlayFab validates with Steam using the app's Web API key and grants the linked items.
+
+For item-defined transactions, use the appropriate `ItemDef` identifiers in the catalog's Steam mapping.

@@ -1,0 +1,16 @@
+---
+title: "Publish UGC"
+sidebarTitle: "Publish UGC"
+description: "End-to-end walkthrough of authoring and publishing UGC."
+---
+
+Steps to publish a piece of UGC as a client-authored catalog item:
+
+1. Client calls `CreateDraftItem` with `ContentType = "UGC"` and required metadata.
+2. Server returns a presigned URL for each content file (thumbnails, payloads).
+3. Client `PUT`s bytes to each presigned URL.
+4. Client calls `PublishDraftItem` when the upload completes.
+5. The item enters `Under Review` and awaits moderation.
+6. On approval, the item becomes `Published` and appears in `SearchItems`.
+
+See [Moderation](/playfab/economy/economy-v2/ugc/moderation) and [UGC quickstart](/playfab/economy/economy-v2/ugc/quickstart).

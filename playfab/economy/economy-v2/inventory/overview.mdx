@@ -1,0 +1,39 @@
+---
+title: "Inventory overview"
+sidebarTitle: "Overview"
+description: "Player inventories, collections, stacks, and transactions in Economy v2."
+---
+
+Each player has an **inventory** of items and currencies. Inventory is server-authoritative; only server-scoped tokens or CloudScript may mutate it.
+
+## Building blocks
+
+- **Item instances** — an entry in a player's inventory referencing a catalog item.
+- **Stacks** — identical items grouped by quantity to reduce entry count.
+- **Collections** — named subsets of a player's inventory (e.g. `"default"`, `"vault"`, `"loadout1"`).
+- **Transactions** — immutable ledger of every add/remove.
+
+## In this section
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/playfab/economy/economy-v2/inventory/quickstart">
+  </Card>
+
+  <Card title="Items and inventory" icon="box" href="/playfab/economy/economy-v2/inventory/items-and-inventory">
+  </Card>
+
+  <Card title="Stacks" icon="layer-group" href="/playfab/economy/economy-v2/inventory/stacks">
+  </Card>
+
+  <Card title="Collections" icon="folder-tree" href="/playfab/economy/economy-v2/inventory/collections">
+  </Card>
+
+  <Card title="Transaction history" icon="clock-rotate-left" href="/playfab/economy/economy-v2/inventory/transaction-history">
+  </Card>
+
+  <Card title="ETags" icon="code" href="/playfab/economy/economy-v2/inventory/etags">
+  </Card>
+
+  <Card title="Turboloading" icon="gauge-high" href="/playfab/economy/economy-v2/inventory/turboloading">
+  </Card>
+</CardGroup>

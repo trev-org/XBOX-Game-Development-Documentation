@@ -1,0 +1,13 @@
+---
+title: "Catalog ETags"
+sidebarTitle: "ETags"
+description: "Use ETags on catalog writes for optimistic concurrency."
+---
+
+Catalog write APIs support **ETags** for optimistic concurrency:
+
+- Read returns an `ETag` header for each catalog item.
+- Include that value when calling `UpdateCatalogItem` or `DeleteItem`.
+- If the server-side ETag no longer matches, the write is rejected with a conflict error.
+
+Use ETags whenever multiple editors or automated tools can modify the same catalog concurrently.

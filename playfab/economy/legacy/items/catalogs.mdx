@@ -1,0 +1,15 @@
+---
+title: "Catalogs (legacy)"
+sidebarTitle: "Catalogs"
+description: "Catalog versions in legacy Economy."
+---
+
+Legacy Economy supports multiple **catalog versions** per title. Common patterns:
+
+- `primary` — the shipping catalog.
+- `season1`, `season2`, ... — seasonal catalogs.
+- `test` — experimental content that shouldn't leak into production.
+
+Each client-facing API accepts an optional `CatalogVersion`. Server APIs default to the title's primary catalog if omitted.
+
+Use `GetCatalogItems` to enumerate all items in a version. Publish updates via Game Manager or `SetCatalogItems`.

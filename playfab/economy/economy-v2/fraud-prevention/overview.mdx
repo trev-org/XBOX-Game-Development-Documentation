@@ -1,0 +1,19 @@
+---
+title: "Fraud prevention"
+sidebarTitle: "Overview"
+description: "Protect Economy revenue from receipt replay, code abuse, cheating clients, and UGC-related fraud."
+---
+
+PlayFab Economy applies fraud checks at every mutation:
+
+- **Server-only mutations** — client tokens cannot grant items; only entity tokens with server scope may.
+- **Receipt replay defense** — marketplace redemptions keep a de-duplicated transactions ledger.
+- **Redemption cool-downs** — rate limits per player and per code.
+- **UGC moderation** — automated \+ human review \+ player reports.
+- **PlayStream \+ segmentation signals** — build custom rules that flag suspicious behavior.
+
+## Related
+
+- [Quickstart](/playfab/economy/economy-v2/fraud-prevention/quickstart)
+- [Marketplace error handling](/playfab/economy/economy-v2/marketplace/error-handling)
+- [Segmentation](/playfab/live-service-management/segmentation/overview)

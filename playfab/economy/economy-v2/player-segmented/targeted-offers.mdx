@@ -1,0 +1,18 @@
+---
+title: "Targeted offers"
+sidebarTitle: "Targeted offers"
+description: "Segment-specific stores and offers tailored to each player."
+---
+
+Targeted offers combine stores, segments, and player-context to surface the right monetization at the right time.
+
+## Patterns
+
+- **Segment-specific stores** — hide/show a store based on segment membership.
+- **Personalized prices** — the same catalog item offered at different virtual-currency prices per store.
+- **Time-bounded offers** — use catalog item `StartDate`/`EndDate` to create limited windows.
+- **Bundle up-sells** — promote a bundle to players who just consumed a matching consumable.
+
+## Client behavior
+
+Call `SearchItems` scoped to the store; the server returns only the items and prices that segment allows. Never rely on the client to filter offers.

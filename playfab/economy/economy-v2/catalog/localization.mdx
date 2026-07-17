@@ -1,0 +1,16 @@
+---
+title: "Catalog localization"
+sidebarTitle: "Localization"
+description: "Ship localized titles, descriptions, and images per catalog item."
+---
+
+Every catalog item can carry localized values for:
+
+- Title.
+- Description.
+- Keywords (used in search).
+- Image references.
+
+Each localization is keyed by an ISO 639-1 language code (`en`, `es`, `ja`, ...). At runtime, `SearchItems` returns strings matching the caller's preferred language, or the title default when there's no match.
+
+Set a default language for your title in **Settings → General**. See [Setting default languages](/playfab/live-service-management/title-communications/news/setting-default-languages).

@@ -1,0 +1,20 @@
+---
+title: "Inventory quickstart"
+sidebarTitle: "Quickstart"
+description: "Add, read, subtract, and transfer items in a player's inventory."
+---
+
+## APIs
+
+- [`AddInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/add-inventory-items) — grant items/currency.
+- [`GetInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/get-inventory-items) — paged read.
+- [`SubtractInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/subtract-inventory-items) — consume/spend.
+- [`TransferInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/transfer-inventory-items) — move between collections or players.
+- [`PurchaseInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/purchase-inventory-items) — spend a virtual currency price in one call.
+- [`GetInventoryCollectionIds`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/get-inventory-collection-ids).
+
+## Golden rules
+
+- Server-only mutations. Never grant items from a trusted client.
+- Pass the previously returned **ETag** on writes for concurrency.
+- Use `IdempotencyId` on grants that may be retried.

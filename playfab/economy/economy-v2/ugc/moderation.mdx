@@ -1,0 +1,18 @@
+---
+title: "UGC moderation"
+sidebarTitle: "Moderation"
+description: "Automated and manual moderation for UGC and player reports."
+---
+
+UGC moderation combines automated checks and human review:
+
+- **Automated moderation** — configurable rules run at submission time. Rejects obvious policy violations (profanity, image classifier signals, prohibited words in metadata).
+- **Human review queue** — items that pass automation but need judgment. Reviewed by trusted moderators in Game Manager.
+- **Player reports** — `ReportItem` and `ReportItemReview` add reports to the moderator queue. Aggregated report signals can auto-hide content pending re-review.
+
+## APIs
+
+- Moderator actions: `SubmitItemReviewVote`, `TakedownItemReviews`, `SetItemModerationState`.
+- Configure automated rules in Game Manager under **Engage → Economy → UGC → Moderation**.
+
+Moderation is essential for compliance in most regions; enable it before opening UGC to production.

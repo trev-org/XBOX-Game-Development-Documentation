@@ -1,0 +1,12 @@
+---
+title: "Legacy economy quickstart"
+sidebarTitle: "Quickstart"
+description: "Author a catalog item and grant it to a legacy Economy player."
+---
+
+1. In Game Manager, open **Engage → Economy → Currencies** and define at least one virtual currency (e.g. `GO`).
+2. Open **Engage → Economy → Catalogs** and create a catalog with one item.
+3. Grant it to a player using [`GrantItemsToUser`](https://learn.microsoft.com/rest/api/playfab/server/player-item-management/grant-items-to-user).
+4. From the client, call [`GetUserInventory`](https://learn.microsoft.com/rest/api/playfab/client/player-item-management/get-user-inventory) to read it back.
+
+See [Items](/playfab/economy/legacy/items/overview) and [Stores](/playfab/economy/legacy/stores/overview).

@@ -1,0 +1,13 @@
+---
+title: "Turboloading"
+sidebarTitle: "Turboloading"
+description: "Fast-load a player's inventory for cold starts."
+---
+
+**Turboloading** minimizes cold-start latency for reading a player's inventory during login.
+
+- Economy maintains a compact projected view of each player's inventory optimized for reads.
+- A single call returns the projection plus a paging cursor for larger inventories.
+- Use turboloading for game-launch flows; use standard reads for full inventory pages.
+
+On very large inventories (thousands of unique items), pair turboloading with collection filtering to load only the collections the current screen needs.

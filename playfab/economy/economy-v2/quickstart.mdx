@@ -1,0 +1,24 @@
+---
+title: "Economy v2 quickstart"
+sidebarTitle: "Quickstart"
+description: "Set up your first Economy v2 catalog item and grant it to a player."
+---
+
+Set up your first catalog and grant an item to a test player.
+
+## Steps
+
+1. **Enable Economy v2** in Game Manager under **Settings → Economy (V2)**.
+2. **Define a content type** — e.g. `Weapon`, `Skin`, `Currency`.
+3. **Create a catalog item** at **Engage → Economy → Catalog (V2) → Items → New item**.
+   - Set `FriendlyId`, `Title`, `Content type`, `Start date`.
+   - Optionally add price (virtual currency or real money) and tags.
+4. **Publish** the item.
+5. **Grant to a player** using the [AddInventoryItems](https://learn.microsoft.com/rest/api/playfab/economy/inventory/add-inventory-items) API (server or CloudScript).
+6. **Read the player's inventory** from your client with [GetInventoryItems](https://learn.microsoft.com/rest/api/playfab/economy/inventory/get-inventory-items).
+
+## Next
+
+- [Catalog concepts](/playfab/economy/economy-v2/catalog/overview)
+- [Inventory concepts](/playfab/economy/economy-v2/inventory/overview)
+- [Currencies tutorial](/playfab/economy/economy-v2/tutorials/currencies)

@@ -1,0 +1,17 @@
+---
+title: "Collections"
+sidebarTitle: "Collections"
+description: "Named groupings within a player's inventory."
+---
+
+A **collection** is a named grouping inside one player's inventory. Every write specifies a `CollectionId`; the default is `default`.
+
+## Use cases
+
+- **Character loadouts** — one collection per character.
+- **Vaults** — items owned but not equipped/active.
+- **Regional or platform-scoped** grants.
+
+## Transferring between collections
+
+Use [`TransferInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/transfer-inventory-items). The source and destination `CollectionId` differ; the source is decremented and destination incremented atomically.

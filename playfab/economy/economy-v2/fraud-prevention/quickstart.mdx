@@ -1,0 +1,15 @@
+---
+title: "Fraud prevention quickstart"
+sidebarTitle: "Quickstart"
+description: "Turn on the core fraud controls before shipping monetization."
+---
+
+Before your title's first paid launch:
+
+1. **Force server-only inventory writes.** Never grant items using client-scoped tokens.
+2. **Enable receipt validation** for every marketplace you sell on.
+3. **Set per-player redemption cool-downs** on redemption codes and coupon flows.
+4. **Turn on UGC moderation** if you accept UGC.
+5. **Add PlayStream rules** for anomalies (100 grants in a minute, 20 rejected receipts in an hour, etc.) and route them to a review segment.
+6. **Rate-limit CloudScript** endpoints that touch inventory (see [CloudScript throttling](/playfab/live-service-management/throttling/overview)).
+7. **Enable receipt-linked account matching** to detect one platform account trying to redeem across multiple PlayFab accounts.

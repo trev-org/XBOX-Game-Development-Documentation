@@ -1,0 +1,19 @@
+---
+title: "Subscriptions"
+sidebarTitle: "Subscriptions"
+description: "Recurring entitlements linked to marketplace subscriptions."
+---
+
+Subscriptions are catalog items whose ownership renews on a schedule via an external marketplace (Microsoft Store, Apple, Google, Steam).
+
+## What Economy tracks
+
+- Current subscription state (`Active`, `Grace`, `Expired`).
+- Renewal timestamp reported by the marketplace.
+- Grace-period behavior when a renewal fails.
+
+## Server responsibilities
+
+- Validate marketplace receipts on renewal.
+- Grant subscription-only rewards through server logic or PlayStream when the state transitions to `Active`.
+- Gate content in-game against the subscription entitlement, not just its initial purchase.

@@ -1,0 +1,18 @@
+---
+title: "Marketplace redemption overview"
+sidebarTitle: "Overview"
+description: "Redeem platform receipts so players receive their Economy items."
+---
+
+Redemption is how a platform receipt turns into inventory. It's the enforcement point for both grants and fraud checks.
+
+## APIs
+
+- [`RedeemMicrosoftStoreInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-microsoft-store-inventory-items).
+- [`RedeemAppleAppStoreInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-apple-app-store-inventory-items).
+- [`RedeemGooglePlayInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-google-play-inventory-items).
+- [`RedeemSteamInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-steam-inventory-items).
+
+## Idempotency
+
+All platform receipts are single-use. PlayFab tracks a redeemed-transactions ledger; the same receipt cannot be redeemed twice. See [Fraud prevention](/playfab/economy/economy-v2/fraud-prevention/overview).

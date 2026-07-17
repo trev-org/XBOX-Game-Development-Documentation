@@ -1,0 +1,14 @@
+---
+title: "Microsoft Store redemption"
+sidebarTitle: "Microsoft"
+description: "Redeem an XStore receipt to grant Economy items."
+---
+
+On GDK, call [XStore](https://learn.microsoft.com/gaming/gdk/_content/gc/reference/system/xstore/xstore_members) to obtain a signed receipt from the Microsoft Store, then pass it to PlayFab.
+
+1. Client purchase completes via `XStoreShowPurchaseUIAsync` or an already-owned entitlement.
+2. Client retrieves a signed receipt (`XStoreGetUserCollectionsIdAsync`).
+3. Client (or server) calls [`RedeemMicrosoftStoreInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-microsoft-store-inventory-items) with the receipt.
+4. PlayFab validates against Microsoft, records the transaction, and grants the linked catalog item(s) to the player's inventory.
+
+See also the higher-level walkthrough at [Store integration](/playfab/microsoft-store).

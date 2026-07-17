@@ -1,0 +1,12 @@
+---
+title: "Best practices for store segmentation (legacy)"
+sidebarTitle: "Store segmentation"
+description: "Serve the right store to the right cohort."
+---
+
+- Define coarse segments first (`NewPlayers`, `Returning`, `Whales`), then refine as you learn.
+- Keep one **canonical store** as the fallback so no segment ends up storeless.
+- Never rely on the client to pick the segment — route through server logic that reads segment membership.
+- Instrument every store impression as a PlayStream event to compare conversion per segment.
+
+See also [Custom stores for player segments](/playfab/economy/legacy/tutorials/custom-stores-for-player-segments).

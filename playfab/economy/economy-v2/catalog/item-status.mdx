@@ -1,0 +1,18 @@
+---
+title: "Item status"
+sidebarTitle: "Item status"
+description: "The lifecycle states of a catalog item: Draft, Under Review, Published, Deleted."
+---
+
+Catalog items move through a lifecycle:
+
+- **Draft** — authored but not visible to clients.
+- **Under Review** — pending moderation (typical for UGC).
+- **Published** — visible in the client-facing catalog.
+- **Deleted** — removed from the catalog. Existing inventory grants persist.
+
+## Transitions
+
+- Draft → Published: automatic after a manual publish, or on moderation approval for UGC.
+- Published → Deleted: marks the item as unavailable but does not revoke existing player inventories.
+- Under Review → Published or Draft (rejected): decided by moderators.

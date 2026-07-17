@@ -1,0 +1,25 @@
+---
+title: "Economy v2 FAQ"
+sidebarTitle: "FAQ"
+description: "Frequently asked questions about PlayFab Economy v2."
+---
+
+## Should new titles use v2 or legacy?
+
+**v2.** Legacy is maintained for existing titles only.
+
+## Can I migrate a legacy title to v2?
+
+Yes, but plan it carefully. Migration involves re-mapping catalog items, re-issuing inventories, and reconfiguring stores. See the [source FAQ](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/economy-monetization/economy-v2/faq.md) for the current guidance.
+
+## Are inventory writes eventually consistent?
+
+Economy inventory writes are strongly consistent within a single collection and use ETags for concurrency. Cross-player and cross-collection reads may lag briefly under high write load.
+
+## Where do I look up API rate limits?
+
+See [Limits](/playfab/economy/economy-v2/limits) and [Throttling](/playfab/live-service-management/throttling/overview).
+
+## Does Economy support real money without a marketplace?
+
+No. Real-money grants must go through a validated marketplace receipt.

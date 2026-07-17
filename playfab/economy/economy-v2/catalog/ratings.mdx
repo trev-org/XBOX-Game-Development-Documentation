@@ -1,0 +1,16 @@
+---
+title: "Ratings & reviews"
+sidebarTitle: "Ratings & reviews"
+description: "Player-submitted 1–5 star ratings and text reviews on catalog items, most commonly UGC."
+---
+
+Players can submit a **rating** (1–5 stars) and optional **review** text on any catalog item. Ratings and reviews are especially useful for UGC — they help other players find good content and provide signal for moderation.
+
+## APIs
+
+- `ReviewItem` — submit a rating \+ review.
+- `GetItemReviews` — paged list of reviews for an item.
+- `GetItemReviewSummary` — aggregated rating counts and average.
+- `ReportItem` and `ReportItemReview` — flag content or reviews for moderator attention.
+
+Reviews may themselves be moderated (see [UGC moderation](/playfab/economy/economy-v2/ugc/moderation)).

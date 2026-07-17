@@ -1,0 +1,17 @@
+---
+title: "Catalog search"
+sidebarTitle: "Search"
+description: "Query the published catalog with filters, ordering, and paging."
+---
+
+Clients discover catalog contents through [SearchItems](https://learn.microsoft.com/rest/api/playfab/economy/catalog/search-items):
+
+- **Filter** by OData-style expressions on tags, content type, properties, or price.
+- **OrderBy** by `creationDate`, `lastModifiedDate`, `title`, or numeric properties.
+- **ContinuationToken** for paging through large result sets.
+
+## Best practices
+
+- Pre-define common queries as **catalog views** for one-tap access.
+- Cache results client-side and refresh on catalog change events.
+- Never send server-side price lists through a client filter — keep server-only content behind a server-side entity token.

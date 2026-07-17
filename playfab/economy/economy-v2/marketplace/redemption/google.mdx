@@ -1,0 +1,12 @@
+---
+title: "Google Play redemption"
+sidebarTitle: "Google"
+description: "Redeem a Google Play purchase token to grant Economy items."
+---
+
+1. Client completes purchase via Play Billing Library.
+2. Client acknowledges the purchase (`acknowledgePurchase`) to avoid auto-refund.
+3. Client (or server) calls [`RedeemGooglePlayInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-google-play-inventory-items) with the purchase token.
+4. PlayFab validates with Google, records the transaction, and grants the linked items.
+
+For subscriptions, see [Google subscription redemption](/playfab/economy/economy-v2/marketplace/redemption/google-subscription).

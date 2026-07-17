@@ -1,0 +1,15 @@
+---
+title: "Timed consumables (legacy)"
+sidebarTitle: "Timed consumables"
+description: "Items that expire after a duration or at an absolute time."
+---
+
+Make a legacy item a **consumable** with an expiration by setting `UsageCount = 1` and `UsagePeriod` in seconds. When granted, the server records `Expiration` on the inventory instance.
+
+## Patterns
+
+- **XP boost** — 30-minute duration, `UsagePeriod = 1800`.
+- **Weekly rental** — 7 days, `UsagePeriod = 604800`.
+- **Absolute event pass** — use a normal item plus a client-side check against an event end time in title data.
+
+`ConsumeItem` decrements usage; the server drops the instance when usage or time expires.

@@ -1,0 +1,13 @@
+---
+title: "Inventory ETags"
+sidebarTitle: "ETags"
+description: "Concurrency control for inventory writes."
+---
+
+Inventory writes return and accept an **ETag** for optimistic concurrency:
+
+- Read the player's inventory or collection; capture the returned ETag.
+- Include it on the next write for that collection.
+- On mismatch, the server rejects the write with a conflict error and returns the current ETag — refresh state and retry.
+
+See the tutorial [ETags and concurrency control](/playfab/economy/economy-v2/tutorials/etags-and-concurrency-control) for a worked example.

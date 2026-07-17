@@ -1,0 +1,19 @@
+---
+title: "ETags and concurrency control"
+sidebarTitle: "ETags and concurrency"
+description: "Use ETags on catalog and inventory writes to avoid lost updates."
+---
+
+When two writes race against the same catalog item or inventory collection, ETags prevent silent overwrites.
+
+## Flow
+
+1. Read the item or collection; capture the `ETag`.
+2. Compute the update client- or server-side.
+3. Write with the captured `ETag` in the `If-Match` header (or SDK equivalent).
+4. On `PreconditionFailed`, refresh the state, recompute, and retry.
+
+## Rules of thumb
+
+- Never bypass ETags on multi-editor catalog authoring.
+- Prefer atomic `ExecuteInventoryOperations` for compound inventory changes rather than ETag-loop retries.

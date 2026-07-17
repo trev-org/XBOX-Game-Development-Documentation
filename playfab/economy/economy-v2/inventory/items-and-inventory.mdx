@@ -1,0 +1,15 @@
+---
+title: "Items and inventory"
+sidebarTitle: "Items and inventory"
+description: "Relationship between catalog items and player inventory entries."
+---
+
+A **catalog item** is a template; an **inventory item** is an instance held by a player.
+
+- Inventory items reference their catalog item by `Id`.
+- They carry per-instance data such as `Amount`, `StackId`, `DisplayProperties`, `ExpirationDate`.
+- Client reads of inventory only include Published catalog items unless a server-scoped token is used.
+
+## Custom per-instance data
+
+Use `DisplayProperties` on an inventory item for state that varies per instance (e.g. seed for a randomized weapon, current durability). Keep large or sensitive data in server-side data stores instead.

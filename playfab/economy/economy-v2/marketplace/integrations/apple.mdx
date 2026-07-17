@@ -1,0 +1,14 @@
+---
+title: "Apple App Store integration"
+sidebarTitle: "Apple"
+description: "Link Economy catalog items to Apple App Store in-app purchases."
+---
+
+Create an in-app purchase in App Store Connect and link its product ID to the catalog item.
+
+1. Create the product in **App Store Connect → In-App Purchases**.
+2. Note the **Product ID** (reverse-DNS style) and IAP type.
+3. In Game Manager, add an **Apple** marketplace mapping to the catalog item using that Product ID.
+4. Configure App Store Server Notifications so PlayFab can receive lifecycle events for subscriptions.
+
+Source: [`marketplace-integrations/apple.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/economy-monetization/economy-v2/marketplace/marketplace-integrations/apple.md).

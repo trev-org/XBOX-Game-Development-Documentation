@@ -1,0 +1,22 @@
+---
+title: "Segment actions"
+sidebarTitle: "Segment actions"
+description: "Grant items, currencies, or offers automatically when a player enters or leaves a segment."
+---
+
+A **segment action** is a rule that fires when a player transitions in or out of a segment (see [Segmentation](/playfab/live-service-management/segmentation/overview)).
+
+## Monetization uses
+
+- Grant a welcome bundle to `NewPlayers`.
+- Offer a targeted starter pack to `NonSpenders`.
+- Grant a loyalty currency to `Whales`.
+- Show a `WinbackOffer` to `Churned` players.
+
+## Authoring
+
+- Define the segment in **Engage → Segmentation → New segment**.
+- Attach an "On entered segment" or "On left segment" action.
+- Common actions: grant catalog item, grant currency, send push, run CloudScript.
+
+All actions run server-side and are trusted; the client cannot skip or spoof them.

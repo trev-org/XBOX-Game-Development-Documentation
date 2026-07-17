@@ -1,0 +1,18 @@
+---
+title: "Marketplace error handling"
+sidebarTitle: "Error handling"
+description: "Common marketplace redemption errors and how to recover."
+---
+
+Marketplace redemption can fail for several reasons. Handle each explicitly rather than surfacing a generic error to players.
+
+## Common errors
+
+- **Invalid receipt** — signature or format is wrong. Re-fetch from the platform SDK.
+- **Duplicate transaction** — the receipt has already been redeemed. Read the player's inventory to confirm the entitlement is present; if so, this is a benign retry.
+- **Platform account mismatch** — the receipt's platform account is not linked to the current PlayFab account. Prompt the player to link or sign in.
+- **Marketplace product not linked** — the platform product ID is not associated with a catalog item. Fix by updating the deep link in the catalog.
+- **Rate-limited** — back off and retry with exponential delay.
+- **Fraud / cool-down** — the account is temporarily blocked from redemptions.
+
+Surface a differentiated message for each so support can triage.

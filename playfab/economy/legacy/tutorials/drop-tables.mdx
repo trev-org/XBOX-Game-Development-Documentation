@@ -1,0 +1,15 @@
+---
+title: "Drop tables (legacy)"
+sidebarTitle: "Drop tables"
+description: "Weighted random rewards in legacy Economy."
+---
+
+Legacy Economy has first-class **drop tables**: named weighted lists of rewards used by containers and grants.
+
+## Configure
+
+- Open **Engage → Economy → Drop Tables**.
+- Define entries as `{ ItemId, Weight }`.
+- Reference the drop table from a **container** item's contents.
+
+When a player opens a container, the server rolls once against each referenced drop table and adds the results to inventory.

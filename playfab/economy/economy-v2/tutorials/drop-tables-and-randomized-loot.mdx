@@ -1,0 +1,20 @@
+---
+title: "Drop tables and randomized loot"
+sidebarTitle: "Drop tables"
+description: "Weighted, random rewards using drop tables."
+---
+
+Economy v2 does not have a built-in drop-table type. Model randomized loot with a server-side function.
+
+## Pattern
+
+- Define a drop table in title data or Azure Functions config: an array of `{ itemId, weight, count }` entries.
+- Player opens a container; CloudScript / Azure Function:
+  1. `SubtractInventoryItems` on the container (with ETag).
+  2. Rolls weighted random selection.
+  3. `AddInventoryItems` for the selected reward.
+  4. Logs a PlayStream event for analytics.
+
+## Server-authoritative
+
+Always run the roll on the server, never on the client. Cheating clients otherwise pick their favorite outcome.

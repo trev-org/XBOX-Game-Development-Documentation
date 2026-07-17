@@ -1,0 +1,21 @@
+---
+title: "Rewarded ads overview"
+sidebarTitle: "Overview"
+description: "Let players opt in to watch an ad for an in-game reward."
+---
+
+**Rewarded ads** let players opt in to watch an ad in exchange for an in-game reward — currency, a consumable, or a bundle. PlayFab integrates with ad networks so grants happen server-side after a validated impression.
+
+## Flow
+
+1. Player taps "Watch ad for reward."
+2. Client requests an ad from the network's SDK.
+3. Player views the ad; the network calls PlayFab with a signed callback (SSV, server-side verification).
+4. PlayFab validates the callback and grants the linked reward via Economy.
+5. Client re-reads inventory.
+
+## Related
+
+- [Quickstart](/playfab/economy/rewarded-ads/quickstart)
+- [Segmentation](/playfab/live-service-management/segmentation/overview) — target ads to non-payers.
+- [Fraud prevention](/playfab/economy/economy-v2/fraud-prevention/overview) — rate limits and duplicate impression defense.

@@ -1,0 +1,15 @@
+---
+title: "Getting started with Unity and Android"
+sidebarTitle: "Unity + Android"
+description: "Wire Unity clients to PlayFab Economy v2 on Android."
+---
+
+Walkthrough for connecting a Unity Android build to PlayFab Economy v2.
+
+1. Import the [PlayFab Unity Editor Extensions](https://github.com/PlayFab/UnityEditorExtensions) and Unity SDK.
+2. Sign in with `LoginWithAndroidDeviceID` (dev) or `LoginWithGoogle` (production).
+3. Fetch the catalog with `SearchItems`.
+4. Add Google Play Billing for real-money items; redeem with [`RedeemGooglePlayInventoryItems`](https://learn.microsoft.com/rest/api/playfab/economy/inventory/redeem-google-play-inventory-items).
+5. Read the player inventory with `GetInventoryItems`.
+
+Source: [`tutorials/getting-started-with-unity-and-android.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/economy-monetization/economy-v2/tutorials/getting-started-with-unity-and-android.md).

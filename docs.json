@@ -1161,11 +1161,189 @@
                     "group": "Economy, Monetization, & UGC",
                     "icon": "coins",
                     "pages": [
-                      "playfab/economy",
-                      "playfab/microsoft-store",
-                      "playfab/ugc",
-                      "playfab/marketplace-integrations",
-                      "playfab/fraud-prevention"
+                      "playfab/economy/overview",
+                      {
+                        "group": "Economy v2 & UGC",
+                        "icon": "coins",
+                        "pages": [
+                          "playfab/economy/economy-v2/overview",
+                          "playfab/economy/economy-v2/quickstart",
+                          {
+                            "group": "Catalog",
+                            "icon": "list",
+                            "pages": [
+                              "playfab/economy/economy-v2/catalog/overview",
+                              "playfab/economy/economy-v2/catalog/bundles",
+                              "playfab/economy/economy-v2/catalog/catalog-views",
+                              "playfab/economy/economy-v2/catalog/content-types-tags-properties",
+                              "playfab/economy/economy-v2/catalog/deep-links",
+                              "playfab/economy/economy-v2/catalog/etags",
+                              "playfab/economy/economy-v2/catalog/item-status",
+                              "playfab/economy/economy-v2/catalog/localization",
+                              "playfab/economy/economy-v2/catalog/ratings",
+                              "playfab/economy/economy-v2/catalog/real-money-prices",
+                              "playfab/economy/economy-v2/catalog/search",
+                              "playfab/economy/economy-v2/catalog/stores",
+                              "playfab/economy/economy-v2/catalog/subscriptions"
+                            ]
+                          },
+                          {
+                            "group": "Inventory",
+                            "icon": "box",
+                            "pages": [
+                              "playfab/economy/economy-v2/inventory/overview",
+                              "playfab/economy/economy-v2/inventory/quickstart",
+                              "playfab/economy/economy-v2/inventory/items-and-inventory",
+                              "playfab/economy/economy-v2/inventory/stacks",
+                              "playfab/economy/economy-v2/inventory/collections",
+                              "playfab/economy/economy-v2/inventory/transaction-history",
+                              "playfab/economy/economy-v2/inventory/etags",
+                              "playfab/economy/economy-v2/inventory/turboloading"
+                            ]
+                          },
+                          {
+                            "group": "Marketplace",
+                            "icon": "store",
+                            "pages": [
+                              "playfab/economy/economy-v2/marketplace/overview",
+                              "playfab/economy/economy-v2/marketplace/error-handling",
+                              {
+                                "group": "Integrations",
+                                "icon": "plug",
+                                "pages": [
+                                  "playfab/economy/economy-v2/marketplace/integrations/overview",
+                                  "playfab/economy/economy-v2/marketplace/integrations/microsoft",
+                                  "playfab/economy/economy-v2/marketplace/integrations/apple",
+                                  "playfab/economy/economy-v2/marketplace/integrations/google",
+                                  "playfab/economy/economy-v2/marketplace/integrations/steam"
+                                ]
+                              },
+                              {
+                                "group": "Redemption",
+                                "icon": "receipt",
+                                "pages": [
+                                  "playfab/economy/economy-v2/marketplace/redemption/overview",
+                                  "playfab/economy/economy-v2/marketplace/redemption/microsoft",
+                                  "playfab/economy/economy-v2/marketplace/redemption/apple",
+                                  "playfab/economy/economy-v2/marketplace/redemption/ios-subscription",
+                                  "playfab/economy/economy-v2/marketplace/redemption/google",
+                                  "playfab/economy/economy-v2/marketplace/redemption/google-subscription",
+                                  "playfab/economy/economy-v2/marketplace/redemption/steam"
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "group": "User-Generated Content (UGC)",
+                            "icon": "pen-nib",
+                            "pages": [
+                              "playfab/economy/economy-v2/ugc/overview",
+                              "playfab/economy/economy-v2/ugc/quickstart",
+                              "playfab/economy/economy-v2/ugc/moderation"
+                            ]
+                          },
+                          {
+                            "group": "Fraud prevention",
+                            "icon": "shield-check",
+                            "pages": [
+                              "playfab/economy/economy-v2/fraud-prevention/overview",
+                              "playfab/economy/economy-v2/fraud-prevention/quickstart"
+                            ]
+                          },
+                          {
+                            "group": "Player-segmented monetization",
+                            "icon": "bullseye",
+                            "pages": [
+                              "playfab/economy/economy-v2/player-segmented/segment-actions",
+                              "playfab/economy/economy-v2/player-segmented/targeted-offers"
+                            ]
+                          },
+                          {
+                            "group": "Tutorials",
+                            "icon": "chalkboard",
+                            "pages": [
+                              "playfab/economy/economy-v2/tutorials/currencies",
+                              "playfab/economy/economy-v2/tutorials/containers-with-fixed-contents",
+                              "playfab/economy/economy-v2/tutorials/drop-tables-and-randomized-loot",
+                              "playfab/economy/economy-v2/tutorials/etags-and-concurrency-control",
+                              "playfab/economy/economy-v2/tutorials/getting-started-unity-android.md",
+                              "playfab/economy/economy-v2/tutorials/idempotent-transactions-and-retries",
+                              "playfab/economy/economy-v2/tutorials/publish-ugc",
+                              "playfab/economy/economy-v2/tutorials/real-money-price-tracking",
+                              {
+                                "group": "Crafting game",
+                                "icon": "hammer",
+                                "pages": [
+                                  "playfab/economy/economy-v2/tutorials/crafting-game/game-context",
+                                  "playfab/economy/economy-v2/tutorials/crafting-game/game-manager",
+                                  "playfab/economy/economy-v2/tutorials/crafting-game/environment",
+                                  "playfab/economy/economy-v2/tutorials/crafting-game/coding"
+                                ]
+                              }
+                            ]
+                          },
+                          "playfab/economy/economy-v2/settings",
+                          "playfab/economy/economy-v2/limits",
+                          "playfab/economy/economy-v2/faq"
+                        ]
+                      },
+                      {
+                        "group": "Legacy economy",
+                        "icon": "clock-rotate-left",
+                        "pages": [
+                          "playfab/economy/legacy/overview",
+                          "playfab/economy/legacy/quickstart",
+                          {
+                            "group": "Items",
+                            "icon": "cube",
+                            "pages": [
+                              "playfab/economy/legacy/items/overview",
+                              "playfab/economy/legacy/items/catalogs",
+                              "playfab/economy/legacy/items/quickstart"
+                            ]
+                          },
+                          {
+                            "group": "Stores",
+                            "icon": "store",
+                            "pages": [
+                              "playfab/economy/legacy/stores/overview",
+                              "playfab/economy/legacy/stores/quickstart"
+                            ]
+                          },
+                          {
+                            "group": "Trading",
+                            "icon": "arrow-right-arrow-left",
+                            "pages": [
+                              "playfab/economy/legacy/trading/overview",
+                              "playfab/economy/legacy/trading/quickstart"
+                            ]
+                          },
+                          {
+                            "group": "Tutorials",
+                            "icon": "chalkboard",
+                            "pages": [
+                              "playfab/economy/legacy/tutorials/currencies",
+                              "playfab/economy/legacy/tutorials/drop-tables",
+                              "playfab/economy/legacy/tutorials/coupons-and-promotions",
+                              "playfab/economy/legacy/tutorials/best-practices-store-segmentation",
+                              "playfab/economy/legacy/tutorials/custom-stores-for-player-segments",
+                              "playfab/economy/legacy/tutorials/stores-and-sales",
+                              "playfab/economy/legacy/tutorials/timed-consumables",
+                              "playfab/economy/legacy/tutorials/getting-a-players-vtd",
+                              "playfab/economy/legacy/tutorials/non-receipt-payment-processing",
+                              "playfab/economy/legacy/tutorials/unity-iap-android"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Rewarded ads",
+                        "icon": "video",
+                        "pages": [
+                          "playfab/economy/rewarded-ads/overview",
+                          "playfab/economy/rewarded-ads/quickstart"
+                        ]
+                      }
                     ]
                   },
                   {

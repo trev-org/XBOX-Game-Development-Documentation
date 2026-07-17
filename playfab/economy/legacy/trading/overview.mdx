@@ -1,0 +1,18 @@
+---
+title: "Trading (legacy)"
+sidebarTitle: "Overview"
+description: "Player-to-player item trades in legacy Economy."
+---
+
+Legacy Economy supports player-initiated trades between two players. A trade is an offer of specific item instances plus optional virtual currency, targeted at another player who can accept or decline.
+
+## APIs
+
+- `OpenTrade` — offer items and terms.
+- `GetTradeStatus` — read a trade.
+- `AcceptTrade` — counterparty completes the trade.
+- `CancelTrade` — initiator withdraws.
+
+## Server-mediated
+
+Trades are executed server-side; each side's inventory is updated atomically only after both consent.

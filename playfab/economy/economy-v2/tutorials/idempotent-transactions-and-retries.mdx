@@ -1,0 +1,19 @@
+---
+title: "Idempotent transactions and retries"
+sidebarTitle: "Idempotency and retries"
+description: "Safely retry inventory operations."
+---
+
+Economy inventory writes accept an **`IdempotencyId`**. If the client retries with the same id, the server returns the original result instead of applying the operation twice.
+
+## Pattern
+
+- Generate a stable GUID per logical operation (e.g. per purchase, per grant).
+- Pass it on every retry.
+- Persist it client-side until the server acknowledges success.
+
+## When it matters
+
+- Network retries mid-purchase.
+- Reward-of-the-day grants launched from schedulers that might overlap.
+- CloudScript webhooks that Azure retries automatically on transient failure.

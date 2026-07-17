@@ -1,0 +1,13 @@
+---
+title: "Stores and sales (legacy)"
+sidebarTitle: "Stores and sales"
+description: "Run limited-time sales by publishing discounted stores."
+---
+
+Legacy Economy stores support per-item price overrides. Use this to run sales without editing the base catalog:
+
+1. Duplicate the primary store into `sale_summer`.
+2. Set discounted virtual-currency prices on selected items.
+3. Publish `sale_summer` at the sale start; revert to primary at the end.
+
+Automate the switchover with a scheduled task or Azure Function calling `SetStoreItems`.

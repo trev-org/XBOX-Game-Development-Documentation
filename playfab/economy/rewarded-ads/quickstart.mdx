@@ -1,0 +1,17 @@
+---
+title: "Rewarded ads quickstart"
+sidebarTitle: "Quickstart"
+description: "Configure a rewarded-ad placement and grant an Economy reward."
+---
+
+1. In Game Manager, open **Engage → Add-ons** and enable a supported ad network (e.g. Unity Ads, AdMob).
+2. Create a **placement** and link it to a catalog item or currency grant.
+3. On the client, initialize the network SDK with the placement id.
+4. Trigger the ad from a player-visible "Watch ad" button.
+5. Handle the completion callback — refresh inventory so the granted reward shows up.
+
+## Best practices
+
+- Cap rewards per day per player to avoid abuse.
+- Require player-initiated triggers only; never auto-play a rewarded ad.
+- Log every completed impression as a PlayStream event for analytics.

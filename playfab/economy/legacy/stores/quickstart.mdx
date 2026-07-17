@@ -1,0 +1,12 @@
+---
+title: "Stores quickstart (legacy)"
+sidebarTitle: "Quickstart"
+description: "Create a store and let a player purchase from it."
+---
+
+1. In **Engage → Economy → Stores**, create a new store and add catalog items with optional price overrides.
+2. Client reads store contents with `GetStoreItems(storeId)`.
+3. Player purchases: `PurchaseItem(itemId, price, storeId)`.
+4. Server refreshes the player's inventory with `GetUserInventory`.
+
+Store items respect virtual-currency prices. For real-money items, use the appropriate purchase flow for the platform.

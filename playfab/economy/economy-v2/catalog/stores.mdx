@@ -1,0 +1,21 @@
+---
+title: "Stores"
+sidebarTitle: "Stores"
+description: "Curated storefronts that expose a subset of the catalog at segment-specific prices."
+---
+
+A **store** is a curated view over the catalog with its own item list and price overrides.
+
+## Common patterns
+
+- **Featured store** — hand-picked highlights on the main menu.
+- **Segment-specific store** — discounts for `NewPlayers`, `Whales`, or region-based cohorts.
+- **Event store** — seasonal, limited-time.
+
+## Authoring
+
+Stores are catalog items with `ContentType = "Store"`. Each entry references another catalog item and can override its virtual-currency price.
+
+## Segmentation
+
+Combine stores with [player segmentation](/playfab/live-service-management/segmentation/overview) and [player-segmented monetization](/playfab/economy/economy-v2/player-segmented/segment-actions) to run targeted promotions.

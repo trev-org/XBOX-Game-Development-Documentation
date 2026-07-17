@@ -1,0 +1,19 @@
+---
+title: "Real-money price tracking"
+sidebarTitle: "Real-money price tracking"
+description: "Report and reconcile real-money prices for revenue analytics."
+---
+
+When an item's real-money price varies by platform or region, PlayFab keeps a canonical price on the catalog item and reconciles the actual paid amount at redemption time.
+
+## Pattern
+
+- Store the intended reference price on the catalog item (e.g. `USD 4.99`).
+- Platform storefronts localize the display price and process the actual payment.
+- On redemption, the receipt reports the true paid amount and currency; PlayFab records it against the transaction.
+- Analytics can slice revenue by paid currency and reference currency.
+
+## Related
+
+- [Real-money prices](/playfab/economy/economy-v2/catalog/real-money-prices)
+- [Marketplace redemption](/playfab/economy/economy-v2/marketplace/redemption/overview)

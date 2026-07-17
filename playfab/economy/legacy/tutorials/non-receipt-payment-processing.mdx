@@ -1,0 +1,16 @@
+---
+title: "Non-receipt payment processing (legacy)"
+sidebarTitle: "Non-receipt payments"
+description: "Handle real-money purchases that don't originate from a first-party storefront receipt."
+---
+
+Some real-money flows (web checkout, tournament entry, publisher-side gifting) can't produce a platform receipt. Legacy Economy supports these through the **PayForPurchase / ConfirmPurchase** flow:
+
+1. Client (or web front-end) calls `StartPurchase` with the desired items.
+2. External payment provider processes payment.
+3. Server-side webhook calls `PayForPurchase` with the provider transaction id.
+4. Server calls `ConfirmPurchase` — items are granted to the player.
+
+All steps are server-authoritative. Never call `ConfirmPurchase` from an untrusted client.
+
+Source: [`tutorials/non-receipt-payment-processing.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/economy-monetization/economy/tutorials/non-receipt-payment-processing.md).

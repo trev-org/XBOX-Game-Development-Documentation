@@ -1,0 +1,25 @@
+---
+title: "Bundles"
+sidebarTitle: "Bundles"
+description: "Group items together for a single grant or purchase."
+---
+
+A **bundle** is a catalog item whose contents are one or more other catalog items and/or currencies. When a bundle is granted or purchased, its contents are unpacked into the player's inventory.
+
+## Use cases
+
+- Starter packs.
+- Season passes.
+- Reward-track payouts.
+
+## Authoring
+
+Create a new catalog item with `ContentType = "Bundle"`. Add child items and quantities. Set price(s) if the bundle is directly purchasable.
+
+## Behavior
+
+When a player receives a bundle:
+
+- Each contained item is added to their inventory using its own stack rules.
+- Contained currencies are added to their currency totals.
+- The bundle itself is _not_ held in inventory; it's a grant-time construct.

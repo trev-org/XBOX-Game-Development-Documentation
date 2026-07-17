@@ -1,0 +1,14 @@
+---
+title: "Stacks"
+sidebarTitle: "Stacks"
+description: "Group multiple copies of the same item into a single entry with a quantity."
+---
+
+A **stack** is a single inventory entry that represents multiple copies of the same catalog item. Stacks reduce entry counts, latency, and inventory limits.
+
+- Each stack has a `StackId`. Default is `default`.
+- Grants of the same item and stack merge amounts.
+- Grants with distinct `StackId` values remain separate (useful for per-instance state like durability tiers or randomized rolls).
+- Consumable currencies are always stacked.
+
+See [Items and inventory](/playfab/economy/economy-v2/inventory/items-and-inventory) for stack \+ `DisplayProperties` interaction.

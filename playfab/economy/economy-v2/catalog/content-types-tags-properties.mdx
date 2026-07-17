@@ -1,0 +1,13 @@
+---
+title: "Content types, tags, and properties"
+sidebarTitle: "Content types, tags, properties"
+description: "How to classify catalog items with content types, filter with tags, and attach custom data with properties."
+---
+
+Three mechanisms shape catalog items:
+
+- **Content type** — required, defines the kind of item (`Weapon`, `Skin`, `Bundle`, `Currency`). Configure allowed content types in **Catalog settings**.
+- **Tags** — free-form labels for filtering and search. Typical: `season2`, `rare`, `holiday`.
+- **Properties** — typed key/value custom data attached per item (strings, numbers, booleans, JSON). Read by your game to drive behavior.
+
+All three are queryable in `SearchItems`.

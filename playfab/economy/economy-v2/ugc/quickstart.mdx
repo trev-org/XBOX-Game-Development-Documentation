@@ -1,0 +1,26 @@
+---
+title: "UGC quickstart"
+sidebarTitle: "Quickstart"
+description: "Enable UGC, define content types, and publish your first player-authored item."
+---
+
+## Enable
+
+1. In Game Manager, open **Settings → Economy (V2) → UGC** and enable UGC.
+2. Define UGC content types (e.g. `Level`, `Skin`, `Mod`).
+3. Configure moderation settings (see [Moderation](/playfab/economy/economy-v2/ugc/moderation)).
+
+## Author from the client
+
+- Sign in with a normal player entity token.
+- Call `CreateDraftItem` (from Economy Catalog API) with the desired content type, tags, and metadata.
+- Upload the payload via presigned URL returned by the API.
+- Call `PublishDraftItem` to move it to `Under Review`.
+
+## Discover
+
+- Use `SearchItems` with `ContentType eq 'UGC'` and OrderBy `rating average desc` or `creationDate desc`.
+
+## Grant to a player
+
+- Same as any catalog item: `AddInventoryItems` (server-only).

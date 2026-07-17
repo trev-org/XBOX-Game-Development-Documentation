@@ -1,0 +1,13 @@
+---
+title: "Getting started with Unity IAP (Android)"
+sidebarTitle: "Unity IAP + Android"
+description: "Connect Unity IAP on Android to legacy Economy."
+---
+
+1. Import Unity IAP and the PlayFab Unity SDK.
+2. In Google Play Console, create managed products with matching product IDs.
+3. Configure Unity IAP with those IDs and initialize the IAP service.
+4. On purchase success, hand the Google receipt token to PlayFab via [`ValidateGooglePlayPurchase`](https://learn.microsoft.com/rest/api/playfab/client/platform-specific-methods/validate-google-play-purchase).
+5. Player inventory is granted server-side after validation.
+
+Source: [`tutorials/getting-started-with-unity-iap-android.md`](https://github.com/MicrosoftDocs/playfab-docs/blob/main/playfab-docs/economy-monetization/economy/tutorials/getting-started-with-unity-iap-android.md).

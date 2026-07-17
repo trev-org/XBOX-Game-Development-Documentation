@@ -1,0 +1,13 @@
+---
+title: "iOS subscription redemption"
+sidebarTitle: "iOS subscription"
+description: "Redeem and renew Apple auto-renewable subscriptions."
+---
+
+Apple auto-renewable subscriptions require:
+
+- **Initial redemption** — same flow as one-off purchase; PlayFab records the entitlement.
+- **Renewal handling** — configure App Store Server Notifications so Apple pushes renewal / lapse events. PlayFab updates the subscription state (`Active`, `Grace`, `Expired`).
+- **Client verification** — on launch, refresh the current entitlement from Apple and compare with PlayFab's state.
+
+Gate content against the subscription's _current_ state, not just the initial purchase.

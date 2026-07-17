@@ -1,0 +1,13 @@
+---
+title: "Trading quickstart (legacy)"
+sidebarTitle: "Quickstart"
+description: "Open, accept, and cancel a legacy Economy trade."
+---
+
+1. Player A calls `OpenTrade` with the item instance ids they're offering and (optionally) a target player id.
+2. The trade appears to player B (poll or push).
+3. Player B calls `AcceptTrade` referencing the trade id and the counter-items they're offering.
+4. Server atomically swaps inventories.
+5. Either side can `CancelTrade` before completion.
+
+Enforce anti-fraud checks (max trade value per day, cooldowns) via PlayStream and CloudScript.

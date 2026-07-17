@@ -1,0 +1,13 @@
+---
+title: "Google Play subscription redemption"
+sidebarTitle: "Google subscription"
+description: "Redeem and renew Google Play subscriptions."
+---
+
+Google Play subscriptions require:
+
+- **Initial redemption** — same flow as one-off purchase.
+- **Renewal notifications** — configure Google Real-time Developer Notifications (Cloud Pub/Sub) so PlayFab receives renewal, cancellation, and pause events.
+- **Client verification** — on launch, query the current subscription from Play Billing and compare with PlayFab state.
+
+Gate features against the current subscription state, not just the initial purchase.

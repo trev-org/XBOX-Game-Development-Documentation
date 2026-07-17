@@ -1,0 +1,22 @@
+---
+title: "Currencies"
+sidebarTitle: "Currencies"
+description: "Model virtual currencies as catalog items."
+---
+
+In Economy v2, currencies are catalog items with `ContentType = "Currency"`.
+
+## Configuration
+
+- **`FriendlyId`** — short code, e.g. `GOLD`, `GEMS`.
+- **`MaxAmount`** — optional cap per player.
+- **`InitialAmount`** — granted to new players.
+- **`RechargeMax`** / **`RechargeInterval`** — optional automatic recharge for energy-like currencies.
+
+## Granting
+
+Use `AddInventoryItems` with the currency `Id` and an amount. Inventory automatically stacks currency totals.
+
+## Spending
+
+Use `SubtractInventoryItems` or `PurchaseInventoryItems` — the latter debits currency and grants an item atomically.

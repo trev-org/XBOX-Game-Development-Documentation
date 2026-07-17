@@ -1,0 +1,13 @@
+---
+title: "Custom stores for player segments (legacy)"
+sidebarTitle: "Custom stores per segment"
+description: "Deliver different stores to different player segments."
+---
+
+1. Author distinct stores for each segment (`store_new`, `store_return`, `store_whale`).
+2. Add a CloudScript handler `GetStoreForPlayer` that:
+   - Reads segment membership via `GetPlayerSegments`.
+   - Returns the appropriate store id.
+3. Client calls the handler at store-view time and passes the returned id into `GetStoreItems`.
+
+Cache the mapping client-side for the session, but re-fetch on next login — segment membership updates asynchronously.

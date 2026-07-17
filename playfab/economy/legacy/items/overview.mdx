@@ -1,0 +1,14 @@
+---
+title: "Items (legacy)"
+sidebarTitle: "Overview"
+description: "Catalog items in legacy Economy."
+---
+
+Legacy Economy items belong to a **catalog version** (`primary`, or a named alternate). Each item has:
+
+- `ItemId`, `DisplayName`, `Description`.
+- `VirtualCurrencyPrices` and `RealCurrencyPrices` maps.
+- `Tags`, `CustomData`.
+- Optional `Consumable`, `Container`, `Bundle` behavior.
+
+Items in a catalog are copied into a player's inventory on grant, purchase, or bundle-open. Inventory instances have their own `ItemInstanceId`.
